@@ -25,7 +25,7 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
     BrowserModule,
     AppRoutingModule,
     BrowserAnimationsModule,
-    AngularFireModule.initializeApp(environment.firebaseConfig, "mandaditos"),
+    AngularFireModule.initializeApp(environment.firebaseConfig, "disto-productos"),
     AngularFirestoreModule,
     AngularFireAuthModule,
     AngularFireStorageModule,

@@ -12,11 +12,78 @@
 // Define the palettes for your theme using the Material Design palettes available in palette.scss
 // (imported above). For each palette, you can optionally specify a default, lighter, and darker
 // hue. Available color palettes: https://material.io/design/color/
-$disto-productos-primary: mat-palette($mat-indigo);
-$disto-productos-accent: mat-palette($mat-pink, A200, A100, A400);
+$mat-disto-productos-primary-palette: (
+  50 : #ecf5e6,
+  100 : #cee5c1,
+  200 : #aed497,
+  300 : #8ec36d,
+  400 : #75b64e,
+  500 : #5da92f,
+  600 : #55a22a,
+  700 : #4b9823,
+  800 : #418f1d,
+  900 : #307e12,
+  A100 : #c5ffb3,
+  A200 : #9eff80,
+  A400 : #77ff4d,
+  A700 : #64ff33,
+  contrast: (
+      50 : #000000,
+      100 : #000000,
+      200 : #000000,
+      300 : #000000,
+      400 : #000000,
+      500 : #ffffff,
+      600 : #ffffff,
+      700 : #ffffff,
+      800 : #ffffff,
+      900 : #ffffff,
+      A100 : #000000,
+      A200 : #000000,
+      A400 : #000000,
+      A700 : #000000,
+  )
+);
+
+$mat-disto-productos-accent-palette: (
+  50 : #fffaea,
+  100 : #fef3cb,
+  200 : #feeba9,
+  300 : #fde286,
+  400 : #fcdc6c,
+  500 : #fcd652,
+  600 : #fcd14b,
+  700 : #fbcc41,
+  800 : #fbc638,
+  900 : #fabc28,
+  A100 : #ffffff,
+  A200 : #ffffff,
+  A400 : #fff0d0,
+  A700 : #ffe8b7,
+  contrast: (
+      50 : #000000,
+      100 : #000000,
+      200 : #000000,
+      300 : #000000,
+      400 : #000000,
+      500 : #000000,
+      600 : #000000,
+      700 : #000000,
+      800 : #000000,
+      900 : #000000,
+      A100 : #000000,
+      A200 : #000000,
+      A400 : #000000,
+      A700 : #000000,
+  )
+);
+
+
+$disto-productos-primary: mat-palette($mat-disto-productos-primary-palette);
+$disto-productos-accent: mat-palette($mat-disto-productos-accent-palette);
 
 // The warn palette is optional (defaults to red).
-$disto-productos-warn: mat-palette($mat-red);
+$disto-productos-warn: mat-palette($mat-red, 400, 100, 700);
 
 // Create the theme object (a Sass map containing all of the palettes).
 $disto-productos-theme: mat-light-theme($disto-productos-primary, $disto-productos-accent, $disto-productos-warn);
@@ -28,5 +95,10 @@ $disto-productos-theme: mat-light-theme($disto-productos-primary, $disto-product
 
 /* You can add global styles to this file, and also import other style files */
 
-html, body { height: 100%; }
-body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+html, body { 
+  height: 100%; 
+}
+body { 
+  margin: 0; 
+  font-family: Raleway, sans-serif; 
+}
