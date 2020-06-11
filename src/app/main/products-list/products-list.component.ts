@@ -4,7 +4,7 @@ import { FormBuilder, FormControl } from '@angular/forms';
 import { DatabaseService } from 'src/app/core/services/database.service';
 import { AuthService } from 'src/app/core/services/auth.service';
 
-import { MatDialog } from '@angular/material/dialog';
+import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatTableDataSource } from '@angular/material/table';
 import { MatPaginator } from '@angular/material/paginator';
@@ -12,6 +12,7 @@ import { MatPaginator } from '@angular/material/paginator';
 import { Product } from 'src/app/core/models/product.model';
 import { Observable, combineLatest } from 'rxjs';
 import { startWith, tap, map, share } from 'rxjs/operators';
+import { ProductCreateEditComponent } from './product-create-edit/product-create-edit.component';
 
 
 @Component({
@@ -173,48 +174,48 @@ export class ProductsListComponent implements OnInit {
   }
 
   onCreateEditItem(edit: boolean, product?: Product) {
-    // let dialogRef: MatDialogRef<ProductConfigCreateEditComponent>;
-    // if (edit == true) {
-    //   dialogRef = this.dialog.open(ProductConfigCreateEditComponent, {
-    //     width: '350px',
-    //     data: {
-    //       data: product,
-    //       edit: edit
-    //     }
-    //   });
-    //   dialogRef.afterClosed().subscribe(res => {
-    //     switch (res) {
-    //       case true:
-    //         this.snackBar.open('El producto fue editado satisfactoriamente', 'Aceptar', { duration: 5000 });
-    //         break;
-    //       case false:
-    //         this.snackBar.open('Ocurrió un error. Por favor, vuelva a intentarlo', 'Aceptar', { duration: 5000 });
-    //         break;
-    //       default:
-    //         break;
-    //     }
-    //   })
-    // }
-    // else {
-    //   dialogRef = this.dialog.open(ProductConfigCreateEditComponent, {
-    //     width: '350px',
-    //     data: {
-    //       data: null,
-    //       edit: edit
-    //     }
-    //   });
-    //   dialogRef.afterClosed().subscribe(res => {
-    //     switch (res) {
-    //       case true:
-    //         this.snackBar.open('El nuevo producto fue creado satisfactoriamente', 'Aceptar', { duration: 5000 });
-    //         break;
-    //       case false:
-    //         this.snackBar.open('Ocurrió un error. Por favor, vuelva a intentarlo', 'Aceptar', { duration: 5000 });
-    //         break;
-    //       default:
-    //         break;
-    //     }
-    //   })
-    // }
+    let dialogRef: MatDialogRef<ProductCreateEditComponent>;
+    if (edit == true) {
+      dialogRef = this.dialog.open(ProductCreateEditComponent, {
+        width: '350px',
+        data: {
+          data: product,
+          edit: edit
+        }
+      });
+      dialogRef.afterClosed().subscribe(res => {
+        switch (res) {
+          case true:
+            this.snackBar.open('El producto fue editado satisfactoriamente', 'Aceptar', { duration: 5000 });
+            break;
+          case false:
+            this.snackBar.open('Ocurrió un error. Por favor, vuelva a intentarlo', 'Aceptar', { duration: 5000 });
+            break;
+          default:
+            break;
+        }
+      })
+    }
+    else {
+      dialogRef = this.dialog.open(ProductCreateEditComponent, {
+        width: '350px',
+        data: {
+          data: null,
+          edit: edit
+        }
+      });
+      dialogRef.afterClosed().subscribe(res => {
+        switch (res) {
+          case true:
+            this.snackBar.open('El nuevo producto fue creado satisfactoriamente', 'Aceptar', { duration: 5000 });
+            break;
+          case false:
+            this.snackBar.open('Ocurrió un error. Por favor, vuelva a intentarlo', 'Aceptar', { duration: 5000 });
+            break;
+          default:
+            break;
+        }
+      })
+    }
   }
 }

@@ -1,1 +1,47 @@
-<p>product-config-categories works!</p>
+<div mat-dialog-title>
+  <h2 class="ms-font-rubik ms-color-2b" style="font-size:1.2em">
+      <mat-icon style="vertical-align:middle">add_circle</mat-icon>
+      Editando Categorias
+  </h2>
+  <mat-divider></mat-divider>
+</div>
+<mat-dialog-content>
+  <div style="width: 100%" *ngIf="categories$ | async else cargando">
+    <mat-form-field style="margin-bottom: 8px; display:block"
+      appearance="outline">
+        <mat-label>Ingrese nueva Categoria&nbsp;&nbsp;&nbsp;&nbsp;</mat-label>
+        <span matPrefix>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
+        <input [formControl]="categoryForm" type="text" autocomplete="off"
+            matInput placeholder="Ingrese nueva categoria">
+        <mat-error>
+            <span *ngIf="categoryForm.errors?.required">Campo requerido</span>
+            <span *ngIf="categoryForm.errors?.repeated">Este elemento ya existe.</span>
+        </mat-error>
+    </mat-form-field>
+    <button mat-raised-button style="display:block; width: 100%; margin-bottom: 16px"
+      [disabled]="categoryForm.status != 'VALID'"
+      (click)="addCategory()">
+        <mat-icon>add_circle</mat-icon>
+    </button>
+
+    <div *ngFor="let category of categories"
+      style="display:flex; flex-direction: row; justify-content: space-between;
+      margin-bottom: 8px; margin-top: 8px">
+        <span>{{category}}</span>
+        <button mat-icon-button (click)="deleteCategory(category)">
+          <mat-icon>delete</mat-icon>
+        </button>
+    </div>
+  </div>
+
+  <ng-template #cargando>
+    Cargando contenido...
+  </ng-template>
+  <mat-divider></mat-divider>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button mat-stroked-button type="button" class="w3-margin-right" mat-dialog-close>Cancelar</button>
+  <button mat-raised-button color="primary" (click)="onSubmitForm()" type="button"
+      [disabled]="!categories.length || categoryForm.pending">Guardar</button>
+</mat-dialog-actions>

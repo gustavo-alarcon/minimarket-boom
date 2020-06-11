@@ -1,6 +1,6 @@
 <div mat-dialog-title>
   <h2 class="ms-font-rubik ms-color-2b" style="font-size:1.2em">
-      <mat-icon style="vertical-align:middle">add_circle</mat-icon>
+      <mat-icon style="vertical-align:middle" (click)="deb()">add_circle</mat-icon>
       {{data.edit?'Editar Producto':'Crear Producto'}}
   </h2>
   <mat-divider></mat-divider>
@@ -12,7 +12,8 @@
       <!-- description  -->
       <mat-form-field style="margin-bottom: 8px"
         hintLabel="Máx. 40 carácteres" appearance="outline">
-          <mat-label>Descripción</mat-label>
+          <mat-label>Descripción&nbsp;&nbsp;&nbsp;&nbsp;</mat-label>
+          <span matPrefix>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
           <input #input autocomplete="off" maxlength="40"
             formControlName="description" type="text"
               matInput placeholder="Descripción del producto">
@@ -26,7 +27,8 @@
 
       <!-- sku -->
       <mat-form-field style="margin-bottom: 8px" appearance="outline">
-          <mat-label>SKU</mat-label>
+          <mat-label>SKU&nbsp;&nbsp;&nbsp;&nbsp;</mat-label>
+          <span matPrefix>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
           <input #input autocomplete="off"
             formControlName="sku" type="text"
               matInput placeholder="SKU">
@@ -40,7 +42,8 @@
       <!-- Categories -->
       <mat-form-field *ngIf="category$ | async as categories"
         style="margin-bottom: 8px; display:block" appearance="outline">
-          <mat-label>Categoria</mat-label>
+          <mat-label>Categoria&nbsp;&nbsp;&nbsp;&nbsp;</mat-label>
+          <span matPrefix>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
           <input autocomplete="off"
             formControlName="category"
             [matAutocomplete]="categoryAutocomplete"
@@ -68,7 +71,8 @@
         <!-- price  -->
         <mat-form-field style="margin-bottom: 8px; width: 48%"
           appearance="outline">
-          <mat-label>Precio (S/.)</mat-label>
+          <mat-label>Precio (S/.)&nbsp;&nbsp;&nbsp;&nbsp;</mat-label>
+          <span matPrefix>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
           <input autocomplete="off"
             formControlName="price" type="number"
               matInput placeholder="Precio del producto">
@@ -81,8 +85,9 @@
         <!-- unit  -->
         <mat-form-field style="margin-bottom: 8px; width: 48%"
           appearance="outline">
-            <mat-label>Unidad</mat-label>
-            <mat-select>
+            <mat-label>Unidad&nbsp;&nbsp;&nbsp;&nbsp;</mat-label>
+            <span matPrefix>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
+            <mat-select formControlName="unit">
               <mat-option *ngFor="let unit of units" [value]="unit">
                 {{unit}}
               </mat-option>
@@ -98,7 +103,8 @@
         <!-- realStock  -->
         <mat-form-field style="margin-bottom: 8px; width: 48%"
           appearance="outline">
-          <mat-label>Stock</mat-label>
+          <mat-label>Stock&nbsp;&nbsp;&nbsp;&nbsp;</mat-label>
+          <span matPrefix>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
           <input autocomplete="off"
             formControlName="realStock" type="number"
             matInput placeholder="Stock">
@@ -111,7 +117,8 @@
         <!-- mermaStock  -->
         <mat-form-field style="margin-bottom: 8px; width: 48%"
           appearance="outline">
-          <mat-label>Merma</mat-label>
+          <mat-label>Merma&nbsp;&nbsp;&nbsp;&nbsp;</mat-label>
+          <span matPrefix>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
           <input autocomplete="off"
             formControlName="mermaStock" type="number"
             matInput placeholder="Merma">
@@ -125,9 +132,10 @@
       <!-- sellMinimum and alertMinimum -->
       <div style="display:flex; flex-direction: row; justify-content: space-between; width: 100%"> 
         <!-- sellMinimum  -->
-        <mat-form-field style="margin-bottom: 8px; width: 48%"
+        <mat-form-field style="margin-bottom: 20px; width: 48%"
           appearance="outline">
-          <mat-label>Mínimo de bloqueo</mat-label>
+          <mat-label>Mín. bloqueo&nbsp;&nbsp;&nbsp;&nbsp;</mat-label>
+          <span matPrefix>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
           <input autocomplete="off"
             formControlName="sellMinimum" type="number"
             matInput placeholder="Mínimo de bloqueo">
@@ -135,14 +143,15 @@
               <span *ngIf="productForm.get('sellMinimum').errors?.required">Campo requerido</span>
               <span *ngIf="productForm.get('sellMinimum').errors?.min">Solo positivos</span>
               <span *ngIf="productForm.get('sellMinimum').errors?.sellMinimumExceeded">
-                El mínimo de bloqueo debe ser mayor al mínimo de alerta.</span>
+                El mínimo de bloqueo debe ser menor al mínimo de alerta.</span>
           </mat-error>
         </mat-form-field>
         
         <!-- alertMinimum  -->
-        <mat-form-field style="margin-bottom: 8px; width: 48%"
+        <mat-form-field style="margin-bottom: 20px; width: 48%"
           appearance="outline">
-          <mat-label>Mínimo de alerta</mat-label>
+          <mat-label>Mín. alerta&nbsp;&nbsp;&nbsp;&nbsp;</mat-label>
+          <span matPrefix>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
           <input autocomplete="off"
             formControlName="alertMinimum" type="number"
             matInput placeholder="Mínimo de alerta">
@@ -150,7 +159,7 @@
               <span *ngIf="productForm.get('alertMinimum').errors?.required">Campo requerido</span>
               <span *ngIf="productForm.get('alertMinimum').errors?.min">Solo positivos</span>
               <span *ngIf="productForm.get('alertMinimum').errors?.sellMinimumExceeded">
-                El mínimo de bloqueo debe ser mayor al mínimo de alerta.</span>
+                El mínimo de bloqueo debe ser menor al mínimo de alerta.</span>
           </mat-error>
         </mat-form-field>
       </div>

@@ -52,6 +52,9 @@ import { ProductConfigCategoriesComponent } from './product-config-categories/pr
     MatDialogModule,
     MatProgressBarModule,
     MatSelectModule
+  ],
+  providers: [
+    ProductCreateEditComponent
   ]
 })
 export class ProductsListModule { }

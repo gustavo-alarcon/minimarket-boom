@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { AngularFirestore, AngularFirestoreCollection, DocumentReference } from '@angular/fire/firestore';
+import { AngularFirestore, AngularFirestoreCollection, DocumentReference, AngularFirestoreDocument } from '@angular/fire/firestore';
 import { Product } from '../models/product.model';
 import { shareReplay, map, takeLast, switchMap, take } from 'rxjs/operators';
 import { GeneralConfig } from '../models/generalConfig.model';
@@ -52,6 +52,14 @@ export class DatabaseService {
         return []
       }
     }))
+  }
+
+  editCategories(categories: string[]): firebase.firestore.WriteBatch {
+    let categoriesRef: AngularFirestoreDocument<GeneralConfig>
+      = this.generalConfigDoc
+    let batch = this.afs.firestore.batch();
+    batch.set(categoriesRef.ref, { categories }, { merge: true })
+    return batch;
   }
 
   createEditProduct(edit: boolean, product: Product, oldProduct?: Product, photo?: File): Observable<firebase.firestore.WriteBatch> {
@@ -135,4 +143,5 @@ export class DatabaseService {
     let st = this.storage.ref(path);
     return st.delete();
   }
+
 }
