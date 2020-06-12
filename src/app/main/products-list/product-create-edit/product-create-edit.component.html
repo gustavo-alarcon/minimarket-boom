@@ -37,6 +37,16 @@
           </mat-error>
       </mat-form-field>
 
+      <!-- additionalDescription -->
+      <mat-form-field appearance="outline" style="width: 100%">
+        <mat-label>Descripción adicional</mat-label>
+        <textarea #addDesc 
+          style="min-height: 100px;"
+          formControlName="additionalDescription" 
+          matInput maxlength="200"></textarea>
+        <mat-hint align="end">{{addDesc.value?.length || 0}}/200</mat-hint>
+      </mat-form-field>
+
       <!-- Categories -->
       <mat-form-field *ngIf="category$ | async as categories"
         style="margin-bottom: 8px; display:block" appearance="outline">

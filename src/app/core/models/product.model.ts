@@ -5,6 +5,7 @@ export const productsCollRef = `db/distoProductos/productsList`
 export interface Product {
   id: string;
   description: string;
+  additionalDescription: string;
   sku: string;
   category: string;   
   price: number;      //Should this price be with IGV?
