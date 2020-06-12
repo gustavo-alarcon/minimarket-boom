@@ -15,6 +15,8 @@ import { CommonModule } from '@angular/common';
 import { ProductsRoutingModule } from './products-routing.module';
 import { ProductsComponent } from './products.component';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { ShoppingCartComponent } from './shopping-cart/shopping-cart.component';
+import { PurchaseComponent } from './purchase/purchase.component';
 //import { NgxPaginationModule } from 'ngx-pagination';
 //import { LazyLoadImageModule,  intersectionObserverPreset } from 'ng-lazyload-image';
 
@@ -22,7 +24,9 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 
 @NgModule({
   declarations: [
-    ProductsComponent
+    ProductsComponent,
+    ShoppingCartComponent,
+    PurchaseComponent
   ],
   imports: [
     CommonModule,
