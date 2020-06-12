@@ -1,6 +1,6 @@
 <div mat-dialog-title>
   <h2 class="ms-font-rubik ms-color-2b" style="font-size:1.2em">
-      <mat-icon style="vertical-align:middle">add_circle</mat-icon>
+      <mat-icon style="vertical-align:middle" (click)="deb()">add_circle</mat-icon>
       {{data.edit?'Editar Producto':'Crear Producto'}}
   </h2>
   <mat-divider></mat-divider>
@@ -82,7 +82,7 @@
         <mat-form-field style="margin-bottom: 8px; width: 48%"
           appearance="outline">
             <mat-label>Unidad</mat-label>
-            <mat-select>
+            <mat-select formControlName="unit">
               <mat-option *ngFor="let unit of units" [value]="unit">
                 {{unit}}
               </mat-option>
@@ -125,9 +125,9 @@
       <!-- sellMinimum and alertMinimum -->
       <div style="display:flex; flex-direction: row; justify-content: space-between; width: 100%"> 
         <!-- sellMinimum  -->
-        <mat-form-field style="margin-bottom: 8px; width: 48%"
+        <mat-form-field style="margin-bottom: 20px; width: 48%"
           appearance="outline">
-          <mat-label>Mínimo de bloqueo</mat-label>
+          <mat-label>Mín. bloqueo</mat-label>
           <input autocomplete="off"
             formControlName="sellMinimum" type="number"
             matInput placeholder="Mínimo de bloqueo">
@@ -135,14 +135,14 @@
               <span *ngIf="productForm.get('sellMinimum').errors?.required">Campo requerido</span>
               <span *ngIf="productForm.get('sellMinimum').errors?.min">Solo positivos</span>
               <span *ngIf="productForm.get('sellMinimum').errors?.sellMinimumExceeded">
-                El mínimo de bloqueo debe ser mayor al mínimo de alerta.</span>
+                El mínimo de bloqueo debe ser menor al mínimo de alerta.</span>
           </mat-error>
         </mat-form-field>
         
         <!-- alertMinimum  -->
-        <mat-form-field style="margin-bottom: 8px; width: 48%"
+        <mat-form-field style="margin-bottom: 20px; width: 48%"
           appearance="outline">
-          <mat-label>Mínimo de alerta</mat-label>
+          <mat-label>Mín. alerta</mat-label>
           <input autocomplete="off"
             formControlName="alertMinimum" type="number"
             matInput placeholder="Mínimo de alerta">
@@ -150,7 +150,7 @@
               <span *ngIf="productForm.get('alertMinimum').errors?.required">Campo requerido</span>
               <span *ngIf="productForm.get('alertMinimum').errors?.min">Solo positivos</span>
               <span *ngIf="productForm.get('alertMinimum').errors?.sellMinimumExceeded">
-                El mínimo de bloqueo debe ser mayor al mínimo de alerta.</span>
+                El mínimo de bloqueo debe ser menor al mínimo de alerta.</span>
           </mat-error>
         </mat-form-field>
       </div>

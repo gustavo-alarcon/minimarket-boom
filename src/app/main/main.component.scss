@@ -39,8 +39,6 @@
   font-weight: 900;
   font-size: 1.1em;
   padding: 28px 10px 20px;
-  border-bottom: 1px solid #E0E0E0;
-  margin-bottom: 20px;
   position: relative;
   justify-content: center;
 }
@@ -62,6 +60,7 @@
 
 .menu {
   min-height: 51vh;
+  max-width: fit-content;
 }
 
 .menu__title {

@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
-import { AngularFirestore, AngularFirestoreCollection, DocumentReference } from '@angular/fire/firestore';
+import { AngularFirestore, AngularFirestoreCollection, DocumentReference, AngularFirestoreDocument } from '@angular/fire/firestore';
 import { Product } from '../models/product.model';
-import { shareReplay, map, takeLast, switchMap, take } from 'rxjs/operators';
+import { shareReplay, map, takeLast, switchMap, take, mapTo } from 'rxjs/operators';
 import { GeneralConfig } from '../models/generalConfig.model';
 import { Observable, concat, of, interval } from 'rxjs';
 import { User } from '../models/user.model';
@@ -59,6 +59,14 @@ export class DatabaseService {
     }))
   }
 
+  editCategories(categories: string[]): firebase.firestore.WriteBatch {
+    let categoriesRef: AngularFirestoreDocument<GeneralConfig>
+      = this.generalConfigDoc
+    let batch = this.afs.firestore.batch();
+    batch.set(categoriesRef.ref, { categories }, { merge: true })
+    return batch;
+  }
+
   createEditProduct(edit: boolean, product: Product, oldProduct?: Product, photo?: File): Observable<firebase.firestore.WriteBatch> {
     let productRef: DocumentReference;
     let productData: Product;
@@ -114,6 +122,23 @@ export class DatabaseService {
     }
   }
 
+  publishProduct(published: boolean, product: Product, user: User): firebase.firestore.WriteBatch{
+    let productRef: DocumentReference = this.afs.firestore.collection(this.productsListRef).doc(product.id);
+    let batch = this.afs.firestore.batch();
+    batch.update(productRef, {published})
+    return batch;
+  }
+
+  deleteProduct(product: Product): Observable<firebase.firestore.WriteBatch> {
+    let productRef: DocumentReference = this.afs.firestore.collection(this.productsListRef).doc(product.id)
+    let batch = this.afs.firestore.batch();
+    batch.delete(productRef)
+    return this.deletePhotoProduct(product.photoPath).pipe(
+      takeLast(1),
+      mapTo(batch)
+    )
+  }
+
   uploadPhotoProduct(id: string, file: File): Observable<string | number> {
     const path = `/productsList/pictures/${id}-${file.name}`;
 
@@ -139,5 +164,23 @@ export class DatabaseService {
   deletePhotoProduct(path: string): Observable<any> {
     let st = this.storage.ref(path);
     return st.delete();
+  }
+
+  editProductPromo(productId: string, promo: boolean, promoData: Product['promoData']): firebase.firestore.WriteBatch {
+    let productRef: DocumentReference;
+    let productData: Product['promoData'];
+    let batch = this.afs.firestore.batch();
+
+    //Editting
+    productRef = this.afs.firestore.collection(this.productsListRef).doc(productId);
+    productData = promoData;
+    batch.update(productRef, {
+      promo,
+      promoData: {
+        promoPrice: promoData.promoPrice,
+        quantity: promoData.quantity
+      }
+    });
+    return batch;
   }
 }

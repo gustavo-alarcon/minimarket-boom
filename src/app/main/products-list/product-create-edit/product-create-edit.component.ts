@@ -64,6 +64,7 @@ export class ProductCreateEditComponent implements OnInit {
   }
 
   initForm() {
+    console.log(this.data);
     if (this.data.edit) {
       this.productForm = this.fb.group({
         description: this.fb.control(this.data.data.description, {
@@ -82,9 +83,9 @@ export class ProductCreateEditComponent implements OnInit {
         realStock: [this.data.data.realStock, [Validators.required, Validators.min(0)]],
         mermaStock: [this.data.data.mermaStock, [Validators.required, Validators.min(0)]],
         sellMinimum: [this.data.data.sellMinimum, 
-          [Validators.required, Validators.min(0), , this.minimumSellValidator()]],
+          [Validators.required, Validators.min(1), , this.minimumSellValidator()]],
         alertMinimum: [this.data.data.alertMinimum, 
-          [Validators.required, Validators.min(0), , this.minimumSellValidator()]],
+          [Validators.required, Validators.min(1), , this.minimumSellValidator()]],
         photoURL: [this.data.data.photoURL, Validators.required],
       })
     }
@@ -109,11 +110,13 @@ export class ProductCreateEditComponent implements OnInit {
           [Validators.required, Validators.min(0), , this.minimumSellValidator()]],
         alertMinimum: [0, 
           [Validators.required, Validators.min(0), , this.minimumSellValidator()]],
-        photoURL: [this.data.data.photoURL, Validators.required],
+        photoURL: [null, Validators.required],
       })
     }
   }
-
+  deb(){
+    console.log(this.productForm);
+  }
   initObservables() {
     this.descriptionFormatting$ = this.productForm.get('description').valueChanges.pipe(
       distinctUntilChanged(),
@@ -226,12 +229,19 @@ export class ProductCreateEditComponent implements OnInit {
 
   minimumSellValidator(){
     return (control: AbstractControl): {'sellMinimumExceeded': boolean} => {
-      if(control.parent.get('sellMinimum').value >=
-        control.parent.get('alertMinimum').value){
-        return {'sellMinimumExceeded': true}
-      } else{
+      if(control.parent){
+        if(control.parent.get('sellMinimum').value >= control.parent.get('alertMinimum').value){
+            if(control.parent.get('sellMinimum').value && control.parent.get('alertMinimum').value){
+              return {'sellMinimumExceeded': true}
+            }
+            return null
+        } else{
+          return null
+        }
+      } else {
         return null
       }
+      
     }
   }
 
