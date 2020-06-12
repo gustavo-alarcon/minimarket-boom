@@ -12,6 +12,11 @@ import { AngularFireStorage } from '@angular/fire/storage';
 })
 export class DatabaseService {
 
+  public order: {
+    product: Product,
+    quantity: number
+  }[] = []
+
   constructor(
     private afs: AngularFirestore,
     private storage: AngularFireStorage,
