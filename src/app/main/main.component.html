@@ -1,56 +1,62 @@
 <div class="animated fadeIn delay-4 slower">
   <mat-sidenav-container style="height:100vh">
       <mat-sidenav mode="over" #sideMenu [(opened)]="openedMenu">
-          <div class="user">
-              <div>
-                  <img *ngIf="null else defaultPicture" class="user__image border--primary">
-                  <ng-template #defaultPicture>
-                      <img class="user__image" src="../../assets/images/default-image.jpg">
-                  </ng-template>
-              </div>
-              <div class="user__name">
-                  Usuario de prueba
-              </div>
-          </div>
-          <div style="padding-left: 24px; padding-right: 24px; margin-bottom: 16px;">
-            <mat-divider></mat-divider>
-          </div>
-          <!-- <h2 class="menu__title font--primary">menu</h2> -->
-          <div class="menu">
-              <button mat-button class="w3-block menu__button" routerLink="products"
-                  (click)="toggleSideMenu()">
-                  <mat-icon class="menu__icon">local_offer</mat-icon>
-                  <span>Productos</span>
-              </button>
-              <button mat-button class="w3-block menu__button" routerLink="products-history"
-                  (click)="toggleSideMenu()">
-                  <span style="width: 20px;"></span>
-                  <mat-icon class="menu__icon">history</mat-icon>
-                  <span>Historial</span>
-              </button>
-              <!-- <button mat-button class="w3-block menu__button" routerLink="products-list"
-                  (click)="toggleSideMenu()">
-                  <mat-icon class="menu__icon">local_offer</mat-icon>
-                  <span>Lista de Productos</span>
-              </button> -->
-              <p class="w3-margin-bottom"></p>
-              
-              <div class="w3-center">
-                  <button mat-raised-button color="accent" (click)="login()">
-                    <mat-icon style="margin-right: 5px;">account_circle</mat-icon>
-                    Iniciar Sesión
-                  </button>
-              </div>
-          </div>
+        <div style="display: flex; flex-direction: column; height: 100%; justify-content: space-between;">
+            
+            <div>
+                <div class="user">
+                    <div>
+                        <img *ngIf="null else defaultPicture" class="user__image border--primary">
+                        <ng-template #defaultPicture>
+                            <img class="user__image" src="../../assets/images/default-image.jpg">
+                        </ng-template>
+                    </div>
+                    <div class="user__name">
+                        Usuario de prueba
+                    </div>
+                </div>
+                <div style="padding-left: 24px; padding-right: 24px; margin-bottom: 16px;">
+                    <mat-divider></mat-divider>
+                </div>
+                <!-- <h2 class="menu__title font--primary">menu</h2> -->
+                <div class="menu">
+                    <button mat-button class="w3-block menu__button" routerLink="products"
+                        (click)="toggleSideMenu()">
+                        <mat-icon class="menu__icon">local_offer</mat-icon>
+                        Productos
+                    </button>
+                    <button mat-button class="w3-block menu__button" routerLink="products-history"
+                        (click)="toggleSideMenu()">
+                        <mat-icon class="menu__icon">history</mat-icon>
+                        Historial
+                    </button>
+                    <button mat-button class="w3-block menu__button" routerLink="products-list"
+                        (click)="toggleSideMenu()">
+                        <mat-icon class="menu__icon">local_offer</mat-icon>
+                        Lista de Productos
+                    </button>
+                    <p class="w3-margin-bottom"></p>
+                    
+                    <div class="w3-center">
+                        <button mat-raised-button color="accent" (click)="login()">
+                            <mat-icon style="margin-right: 5px;">account_circle</mat-icon>
+                            Iniciar Sesión
+                        </button>
+                    </div>
+                </div>
+            </div>
 
 
-          <div class="meraki">
-              <div style="text-align: center;">Desarrollado por
-                  <a href="https://meraki-s.com" target="_blank">
-                      <img src="../../assets/images/negativo.png" class="meraki__logo" alt="meraki solutions logo">
-                  </a>
-              </div>
-          </div>
+            <div class="meraki">
+                <div style="text-align: center;">Desarrollado por
+                    <a href="https://meraki-s.com" target="_blank">
+                        <img src="../../assets/images/negativo.png" class="meraki__logo" alt="meraki solutions logo">
+                    </a>
+                </div>
+            </div>
+
+        </div>
+
       </mat-sidenav>
 
       <mat-sidenav-content cdkScrollable>
