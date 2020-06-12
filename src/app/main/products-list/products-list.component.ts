@@ -1,19 +1,21 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
+import { Observable, combineLatest } from 'rxjs';
+import { startWith, tap, map, share } from 'rxjs/operators';
 import { FormBuilder, FormControl } from '@angular/forms';
+import * as XLSX from 'xlsx';
+
 
 import { DatabaseService } from 'src/app/core/services/database.service';
 import { AuthService } from 'src/app/core/services/auth.service';
 
-import { MatDialog } from '@angular/material/dialog';
+import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatTableDataSource } from '@angular/material/table';
 import { MatPaginator } from '@angular/material/paginator';
 
 import { Product } from 'src/app/core/models/product.model';
-import { Observable, combineLatest } from 'rxjs';
-import { startWith, tap, map, share } from 'rxjs/operators';
-
-
+import { ProductCreateEditComponent } from './product-create-edit/product-create-edit.component';
+import { ProductEditPromoComponent } from './product-edit-promo/product-edit-promo.component';
 @Component({
   selector: 'app-products-list',
   templateUrl: './products-list.component.html',
@@ -28,8 +30,11 @@ export class ProductsListComponent implements OnInit {
   //Table
   productsTableDataSource = new MatTableDataSource<Product>();
   productsDisplayedColumns: string[] = [
-    'index', 'photoURL', 'description', 'category', 'price', 'unit', 'refPrice', 'refUnit', 'actions'
+    'index', 'photoURL', 'description', 'sku', 'category', 'price', 
+    'unit', 'realStock', 'sellMinimum', 'alertMinimum', 
+    'mermaStock', 'virtualStock', 'published', 'actions'
   ]
+
   productsObservable$: Observable<Product[]>
   @ViewChild('productsPaginator', { static: false }) set content(paginator1: MatPaginator) {
     this.productsTableDataSource.paginator = paginator1;
@@ -42,8 +47,7 @@ export class ProductsListComponent implements OnInit {
 
 
   //Variables
-  defaultImage = "../../../assets/images/default-image.png";
-  p1: number = 1;
+  defaultImage = "../../../assets/images/default-image.jpg";
 
   //noResult
   noResult$: Observable<string>;
@@ -100,9 +104,6 @@ export class ProductsListComponent implements OnInit {
         map(([[categoryFormValue, categories], itemsFormValue, promoFormValue]) => {
           this.productsTableDataSource.filter = categoryFormValue + '&+&' + itemsFormValue + '&+&' + promoFormValue;
           return true
-        }),
-        tap(res => {
-          this.p1 = 1
         })
       )
 
@@ -114,107 +115,141 @@ export class ProductsListComponent implements OnInit {
   }
 
   onPublish(product: Product, publish: boolean) {
-    // let prod = product;
-    // prod.published = publish;
-    // this.dbs.createEditProduct(true, prod, product).subscribe(
-    //   batch => {
-    //     batch.commit().then(
-    //       res => {
-    //         this.snackBar.open('Producto editado satisfactoriamente.', 'Aceptar');
-    //       },
-    //       err => {
-    //         this.snackBar.open('Ocurrió un error. Vuelva a intentarlo.', 'Aceptar');
-    //       }
-    //     )
-    //   },
-    //   err => {
-    //     this.snackBar.open('Ocurrió un error. Vuelva a intentarlo.', 'Aceptar');
-    //   }
-    // )
+    let prod = product;
+    prod.published = publish;
+    this.dbs.publishProduct(true, prod, null).commit().then(
+      res => {
+        this.snackBar.open('Producto editado satisfactoriamente.', 'Aceptar');
+      },
+      err => {
+        this.snackBar.open('Ocurrió un error. Vuelva a intentarlo.', 'Aceptar');
+      }
+    )
+
   }
 
   onDeleteItem(product: Product) {
-    // this.dbs.deleteProduct(product).subscribe(
-    //   batch => {
-    //     batch.commit().then(
-    //       res => {
-    //         this.snackBar.open('Producto eliminado satisfactoriamente.', 'Aceptar');
-    //       },
-    //       err => {
-    //         this.snackBar.open('Ocurrió un error. Vuelva a intentarlo.', 'Aceptar');
-    //       }
-    //     )
-    //   },
-    //   err => {
-    //     this.snackBar.open('Ocurrió un error. Vuelva a intentarlo.', 'Aceptar');
-    //   })
+    this.dbs.deleteProduct(product).subscribe(
+      batch => {
+        batch.commit().then(
+          res => {
+            this.snackBar.open('Producto eliminado satisfactoriamente.', 'Aceptar');
+          },
+          err => {
+            this.snackBar.open('Ocurrió un error. Vuelva a intentarlo.', 'Aceptar');
+          }
+        )
+      },
+      err => {
+        this.snackBar.open('Ocurrió un error. Vuelva a intentarlo.', 'Aceptar');
+      })
   }
 
   onPromo(product: Product) {
-    // let dialogRef: MatDialogRef<ProductConfigPromoComponent>;
-    // dialogRef = this.dialog.open(ProductConfigPromoComponent, {
-    //   width: '350px',
-    //   data: {
-    //     data: product,
-    //   }
-    // });
-    // dialogRef.afterClosed().subscribe(res => {
-    //   switch (res) {
-    //     case true:
-    //       this.snackBar.open('El producto fue editado satisfactoriamente', 'Aceptar', { duration: 5000 });
-    //       break;
-    //     case false:
-    //       this.snackBar.open('Ocurrió un error. Por favor, vuelva a intentarlo', 'Aceptar', { duration: 5000 });
-    //       break;
-    //     default:
-    //       break;
-    //   }
-    // })
+    let dialogRef: MatDialogRef<ProductEditPromoComponent>;
+    dialogRef = this.dialog.open(ProductEditPromoComponent, {
+      width: '350px',
+      data: {
+        data: product,
+      }
+    });
+    dialogRef.afterClosed().subscribe(res => {
+      switch (res) {
+        case true:
+          this.snackBar.open('El producto fue editado satisfactoriamente', 'Aceptar', { duration: 5000 });
+          break;
+        case false:
+          this.snackBar.open('Ocurrió un error. Por favor, vuelva a intentarlo', 'Aceptar', { duration: 5000 });
+          break;
+        default:
+          break;
+      }
+    })
   }
 
   onCreateEditItem(edit: boolean, product?: Product) {
-    // let dialogRef: MatDialogRef<ProductConfigCreateEditComponent>;
-    // if (edit == true) {
-    //   dialogRef = this.dialog.open(ProductConfigCreateEditComponent, {
-    //     width: '350px',
-    //     data: {
-    //       data: product,
-    //       edit: edit
-    //     }
-    //   });
-    //   dialogRef.afterClosed().subscribe(res => {
-    //     switch (res) {
-    //       case true:
-    //         this.snackBar.open('El producto fue editado satisfactoriamente', 'Aceptar', { duration: 5000 });
-    //         break;
-    //       case false:
-    //         this.snackBar.open('Ocurrió un error. Por favor, vuelva a intentarlo', 'Aceptar', { duration: 5000 });
-    //         break;
-    //       default:
-    //         break;
-    //     }
-    //   })
-    // }
-    // else {
-    //   dialogRef = this.dialog.open(ProductConfigCreateEditComponent, {
-    //     width: '350px',
-    //     data: {
-    //       data: null,
-    //       edit: edit
-    //     }
-    //   });
-    //   dialogRef.afterClosed().subscribe(res => {
-    //     switch (res) {
-    //       case true:
-    //         this.snackBar.open('El nuevo producto fue creado satisfactoriamente', 'Aceptar', { duration: 5000 });
-    //         break;
-    //       case false:
-    //         this.snackBar.open('Ocurrió un error. Por favor, vuelva a intentarlo', 'Aceptar', { duration: 5000 });
-    //         break;
-    //       default:
-    //         break;
-    //     }
-    //   })
-    // }
+    let dialogRef: MatDialogRef<ProductCreateEditComponent>;
+    if (edit == true) {
+      dialogRef = this.dialog.open(ProductCreateEditComponent, {
+        width: '350px',
+        data: {
+          data: product,
+          edit: edit
+        }
+      });
+      dialogRef.afterClosed().subscribe(res => {
+        switch (res) {
+          case true:
+            this.snackBar.open('El producto fue editado satisfactoriamente', 'Aceptar', { duration: 5000 });
+            break;
+          case false:
+            this.snackBar.open('Ocurrió un error. Por favor, vuelva a intentarlo', 'Aceptar', { duration: 5000 });
+            break;
+          default:
+            break;
+        }
+      })
+    }
+    else {
+      dialogRef = this.dialog.open(ProductCreateEditComponent, {
+        width: '350px',
+        data: {
+          data: null,
+          edit: edit
+        }
+      });
+      dialogRef.afterClosed().subscribe(res => {
+        switch (res) {
+          case true:
+            this.snackBar.open('El nuevo producto fue creado satisfactoriamente', 'Aceptar', { duration: 5000 });
+            break;
+          case false:
+            this.snackBar.open('Ocurrió un error. Por favor, vuelva a intentarlo', 'Aceptar', { duration: 5000 });
+            break;
+          default:
+            break;
+        }
+      })
+    }
+  }
+
+  downloadXls(): void {
+    let table_xlsx: any[] = [];
+    let headersXlsx = [
+      'Descripcion', 'SKU', 'Categoría', 'Precio', 
+      'Unidad', 'Stock Real', 'Mínimo de venta', 'Mínimio de alerta', 
+      'Stock de merma', 'Stock Virtual', 'Publicado'
+    ]
+
+    table_xlsx.push(headersXlsx);
+
+    this.productsTableDataSource.filteredData.forEach(product => {
+      const temp = [
+       product.description, 
+       product.sku, 
+       product.category, 
+       "S/." +product.price,  
+       product.unit, 
+       product.realStock, 
+       product.sellMinimum, 
+       product.alertMinimum,  
+       product.mermaStock, 
+       0, //virtualStock
+       product.published ? "Sí":"No"
+      ];
+
+      table_xlsx.push(temp);
+    })
+
+    /* generate worksheet */
+    const ws: XLSX.WorkSheet = XLSX.utils.aoa_to_sheet(table_xlsx);
+
+    /* generate workbook and add the worksheet */
+    const wb: XLSX.WorkBook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, 'Lista_de_productos');
+
+    /* save to file */
+    const name = 'Lista_de_productos' + '.xlsx';
+    XLSX.writeFile(wb, name);
   }
 }

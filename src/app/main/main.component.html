@@ -12,7 +12,10 @@
                   Usuario de prueba
               </div>
           </div>
-          <h2 class="menu__title font--primary">menu</h2>
+          <div style="padding-left: 24px; padding-right: 24px; margin-bottom: 16px;">
+            <mat-divider></mat-divider>
+          </div>
+          <!-- <h2 class="menu__title font--primary">menu</h2> -->
           <div class="menu">
               <button mat-button class="w3-block menu__button" routerLink="products"
                   (click)="toggleSideMenu()">
@@ -25,11 +28,11 @@
                   <mat-icon class="menu__icon">history</mat-icon>
                   <span>Historial</span>
               </button>
-              <button mat-button class="w3-block menu__button" routerLink="products-list"
+              <!-- <button mat-button class="w3-block menu__button" routerLink="products-list"
                   (click)="toggleSideMenu()">
                   <mat-icon class="menu__icon">local_offer</mat-icon>
                   <span>Lista de Productos</span>
-              </button>
+              </button> -->
               <p class="w3-margin-bottom"></p>
               
               <div class="w3-center">
@@ -68,7 +71,7 @@
                 src="../../assets/images/toolbar_background_large.png" 
                 alt="toolbar_background">
           </mat-toolbar>
-          <div>
+          <div style="padding-top: 64px;">
               <router-outlet></router-outlet>
           </div>
       </mat-sidenav-content>
