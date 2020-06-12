@@ -1,7 +1,5 @@
 import { User } from './user.model';
 
-export const productsCollRef = `db/distoProductos/productsList`
-
 export interface Product {
   id: string;
   description: string;

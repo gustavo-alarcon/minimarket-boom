@@ -8,7 +8,6 @@ import { Ng2ImgMaxService } from 'ng2-img-max';
 import { ProductConfigCategoriesComponent } from '../product-config-categories/product-config-categories.component';
 import { MatDialogRef, MatDialog, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { MatSlideToggleModule, MatSlideToggleChange } from '@angular/material/slide-toggle';
 import { User } from 'src/app/core/models/user.model';
 
 @Component({
