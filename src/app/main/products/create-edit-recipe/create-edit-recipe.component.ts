@@ -9,6 +9,7 @@ import { MAT_DIALOG_DATA, MatDialogRef, MatDialog } from '@angular/material/dial
 import { Recipe } from 'src/app/core/models/recipe.model';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Product } from 'src/app/core/models/product.model';
+import { User } from 'src/app/core/models/user.model';
 
 @Component({
   selector: 'app-create-edit-recipe',
@@ -19,7 +20,7 @@ export class CreateEditRecipeComponent implements OnInit {
   //Table
   inputTableDataSource = new MatTableDataSource<Recipe['inputs'][0]>();
   inputTableDisplayedColumns: string[] = [
-    'index', 'itemName', 'itemUnit', 'quantity', 'actions'
+    /*'index', */'description', /*'unit', */'quantity', 'actions'
   ]
   
   @ViewChild('inputTablePaginator', {static:false}) set matPaginator(mp: MatPaginator){
@@ -139,6 +140,58 @@ export class CreateEditRecipeComponent implements OnInit {
   onResetInputForm(){
     this.inputsForm.get('product').setValue("");
     this.inputsForm.get('quantity').setValue(0);
+    this.inputsForm.get('product').markAsUntouched()
+    this.inputsForm.get('quantity').markAsUntouched();
+  }
+
+  recipeTypeValidator(){
+    return (control: AbstractControl): {'recipeType': boolean} => {
+      if(control){
+        if(control.value){
+          if(typeof control.value == 'string'){
+            return {recipeType: true}
+          }
+        }
+      }
+      return null
+    }
+  }
+
+  deb(){
+    console.log(this.recipeForm);
+    console.log(this.inputsForm);
+  }
+
+  displayFn(input: Product) {
+    if (!input) return '';
+    return input.description;
+  }
+
+  onSubmit(user: User){
+    this.recipeForm.markAsPending();
+
+    let recipe: Recipe = {
+      id: null,
+      name: this.recipeForm.get('name').value.trim(),
+      description: this.recipeForm.get('description').value,
+      inputsId: this.inputTableDataSource.data.map(el => el.product.id),
+      inputs: this.inputTableDataSource.data,
+      videoURL: this.recipeForm.get('videoURL').value,
+      createdAt: this.data.edit ? this.data.data.createdAt : new Date(),
+      createdBy: this.data.edit ? this.data.data.createdBy : user,
+      editedAt: this.data.edit ? new Date() : null,
+      editedBy: this.data.edit ? user : null,
+    }
+
+    this.dbs.createEditRecipe(recipe, this.data.edit)
+      .commit().then(
+        res => {      
+          this.dialogRef.close(true);
+        },
+        err => {
+          this.dialogRef.close(false);
+        })
+      
   }
 
   recipeNameRepeatedValidator(dbs: DatabaseService, data: {data: Recipe, edit: boolean}){
