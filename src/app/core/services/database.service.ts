@@ -6,6 +6,7 @@ import { GeneralConfig } from '../models/generalConfig.model';
 import { Observable, concat, of, interval } from 'rxjs';
 import { User } from '../models/user.model';
 import { AngularFireStorage } from '@angular/fire/storage';
+import { Recipe } from '../models/recipe.model';
 
 @Injectable({
   providedIn: 'root'
@@ -23,6 +24,7 @@ export class DatabaseService {
   ) { }
 
   productsListRef = `db/distoProductos/productsList`;
+  recipesRef = `db/distoProductos/recipes`;
   generalConfigDoc = this.afs.collection(`db/distoProductos/config`).doc<GeneralConfig>('generalConfig');
 
   getGeneralConfigDoc(): Observable<GeneralConfig>{
@@ -182,5 +184,27 @@ export class DatabaseService {
       }
     });
     return batch;
+  }
+
+  //Products
+  createEditRecipe(recipe: Recipe, edit: boolean): firebase.firestore.WriteBatch{
+    let recipeRef: DocumentReference;
+    let recipeData: Recipe = recipe;
+    let batch = this.afs.firestore.batch();
+    if(edit){
+      recipeRef = this.afs.firestore.collection(this.recipesRef).doc(recipe.id);
+    } else{
+      recipeRef = this.afs.firestore.collection(this.recipesRef).doc();
+      recipeData.id = recipeRef.id;
+    }
+    batch.set(recipeRef, recipeData);
+    return batch;
+  }
+
+  getRecipes(): Observable<Recipe[]>{
+    return this.afs.collection<Recipe>(this.recipesRef, ref => ref.orderBy("name", "asc"))
+      .get().pipe(map((snap) => {
+        return snap.docs.map(el => <Recipe>el.data())
+      }));
   }
 }
