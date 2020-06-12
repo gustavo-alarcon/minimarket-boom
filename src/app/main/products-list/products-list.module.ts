@@ -23,6 +23,8 @@ import { Ng2ImgMaxModule } from 'ng2-img-max';
 import { LazyLoadImageModule } from 'ng-lazyload-image';
 import { ProductCreateEditComponent } from './product-create-edit/product-create-edit.component';
 import { ProductConfigCategoriesComponent } from './product-config-categories/product-config-categories.component';
+import { ProductEditPromoComponent } from './product-edit-promo/product-edit-promo.component';
+import { DatabaseService } from 'src/app/core/services/database.service';
 
 
 
@@ -31,7 +33,8 @@ import { ProductConfigCategoriesComponent } from './product-config-categories/pr
   declarations: [
     ProductsListComponent,
     ProductCreateEditComponent,
-    ProductConfigCategoriesComponent
+    ProductConfigCategoriesComponent,
+    ProductEditPromoComponent
   ],
   imports: [
     CommonModule,
@@ -54,7 +57,9 @@ import { ProductConfigCategoriesComponent } from './product-config-categories/pr
     MatSelectModule
   ],
   providers: [
-    ProductCreateEditComponent
+    ProductCreateEditComponent,
+    ProductEditPromoComponent,
+    DatabaseService
   ]
 })
 export class ProductsListModule { }

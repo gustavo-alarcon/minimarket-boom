@@ -189,10 +189,10 @@ a {
 .title {
   font-family: Raleway, sans-serif !important;
   font-weight: 800 !important;
-  font-size: 2.2em !important;
+  font-size: 24px !important;
   letter-spacing: 0.05em !important;
   width: fit-content !important;
-  border-bottom: 5px solid var(--primary-color) !important;
+  //border-bottom: 5px solid var(--primary-color) !important;
 }
 
 @media(max-width: 600px) {
@@ -212,18 +212,25 @@ a {
 
 /*Inputs*/
 
+.mat-divider{
+  border-top: 4px solid var(--primary-color) !important;
+}
+
 .mat-form-field-appearance-outline .mat-form-field-label, .mat-form-field-appearance-outline.mat-focused .mat-form-field-label {
   font-family: 'Raleway', sans-serif;
-  font-size: 14px !important
 }
-.mat-form-field-appearance-outline{
-  .mat-form-field-outline-start{
-    border-radius: 20px 0 0 20px !important;
-  };
-  .mat-form-field-outline-end{
-    border-radius: 0 20px 20px 0 !important;
+.formFieldRounded {
+  font-size: 14px !important;
+  .mat-form-field-appearance-outline{
+    .mat-form-field-outline-start{
+      border-radius: 20px 0 0 20px !important;
+    };
+    .mat-form-field-outline-end{
+      border-radius: 0 20px 20px 0 !important;
+    }
   }
 }
+
 
 .mat-form-field .mat-input-element {
   font-family: Raleway;
