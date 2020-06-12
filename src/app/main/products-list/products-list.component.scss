@@ -1,0 +1,22 @@
+.actionsContainer {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline
+}
+
+.actionsContainer .content {
+  margin: 16px;
+  line-height: 17px;
+  display: block !important;
+}
+
+.reveal {
+  display: inline-block;
+}
+
+.triangleTopLeft {
+  width: auto;
+  height: 120px;
+  position: relative;
+  border: 1px solid;
+}

@@ -18,6 +18,11 @@ const routes: Routes = [
         loadChildren: () => import('./products-history/products-history.module').then(mod => mod.ProductsHistoryModule),
         //canActivate: [AuthGuard]
       },
+      {
+        path: 'products-list',
+        loadChildren: () => import('./products-list/products-list.module').then(mod => mod.ProductsListModule),
+        //canActivate: [AuthGuard]
+      },
     ]
   }
 ]

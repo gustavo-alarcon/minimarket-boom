@@ -1,0 +1,202 @@
+<div style="height: 100%" class="w3-section w3-margin-left w3-margin-right animated fadeInUp delay-2">
+  <div style="padding: 0 3vw;">
+    <h2 class="title">LISTA DE PRODUCTOS</h2>
+    <div style="margin-top: 2em;">
+
+      <div>
+        <!-- Actions -->
+        <div class="w3-margin actionsContainer">
+          <!-- Select item's type -->
+          <button style="padding: 14px 17px; " (click)="onCreateEditItem(false)" class="content" mat-raised-button
+            color="accent">
+            <mat-icon>add</mat-icon>Crear
+          </button>
+
+          <!-- Categories -->
+          <mat-form-field *ngIf="categoryList$ | async as categories" class="content" appearance="outline">
+            <mat-label>Categoria</mat-label>
+            <mat-icon matSuffix>arrow_drop_down</mat-icon>
+            <input [formControl]="categoryForm" [matAutocomplete]="categoryAutocomplete" type="text" matInput>
+            <mat-autocomplete autoActiveFirstOption #categoryAutocomplete="matAutocomplete">
+              <mat-option [value]="''">
+                Todos
+              </mat-option>
+              <mat-option *ngFor="let category of categories" [value]="category">
+                {{category}}
+              </mat-option>
+            </mat-autocomplete>
+            <mat-error>
+              <span *ngIf="categoryForm.errors?.required">Por favor, complete el campo.</span>
+              <span *ngIf="categoryForm.errors?.invalid">Dato inválido. Complete con alguna opción válida.</span>
+            </mat-error>
+          </mat-form-field>
+
+          <ng-container *ngIf="filter$ | async as filter">
+            <mat-form-field class="content" appearance="outline">
+              <mat-label>Buscar</mat-label>
+              <mat-icon matPrefix class="w3-margin-right">search</mat-icon>
+              <input [formControl]="itemsFilterForm" matInput type="text" placeholder="Escriba..." autocomplete="off">
+              <mat-hint>Filtro de nombre</mat-hint>
+            </mat-form-field>
+
+            <mat-slide-toggle [formControl]="promoFilterForm" style="margin-bottom: 8px" color="accent">
+              Mostrar solo ofertas
+            </mat-slide-toggle>
+          </ng-container>
+
+        </div>
+
+        <!-- Table -->
+        <div *ngIf="productsObservable$ | async; else default">
+          <!-- Desktop -->
+          <div class="w3-hide-small w3-margin-top" style="border-radius: 10px 10px 10px 10px; width:fit-content">
+            <div style="overflow:auto; border-radius: 10px 10px 0px 0px">
+              <table mat-table [dataSource]="productsTableDataSource" matSort style="text-align: center !important; ">
+
+                <ng-container matColumnDef="index" sticky>
+                  <th *matHeaderCellDef style="font-size: 0.9em;padding:0px 1em; font-weight: 500; color: #828282;"
+                    class="w3-center w3-padding  ">N°</th>
+                  <td style="padding:0px 25px;" *matCellDef="let raw; let i = index">
+                    {{1 + i + (productsPaginator.pageIndex * productsPaginator.pageSize)}}
+                  </td>
+                </ng-container>
+
+                <ng-container matColumnDef="photoURL">
+                  <th *matHeaderCellDef style=" font-size: 0.9em;padding:0px 1em; font-weight: 500; color: #828282;  "
+                    class="w3-center w3-padding  ">
+                    Imagen referencial
+                  </th>
+                  <td *matCellDef="let raw" class="w3-center" style="padding: 10px">
+                    <a href="{{raw.photoURL}}" target="_blank" *ngIf="raw.photoURL; else defaultPicture">
+                      <div class="reveal">
+                        <div [className]="raw.promo?'border--secondary triangleTopLeft w3-card-4':'border--primary triangleTopLeft w3-card-4'">
+                          <div class="slogan background--secondary" *ngIf="raw['promo']"></div>
+                          <div class="promo" *ngIf="raw['promo']">OFERTA</div>
+                          <!-- <img [defaultImage]="defaultImage" [lazyLoad]="raw.photoURL" [offset]="100"
+                            style="object-fit:cover; width: 115px; height: 115px;"> -->
+                        </div>
+                      </div>
+                    </a>
+                    <ng-template #defaultPicture>
+                      <div style="height:120px;padding:6px 6px">
+                        <img src="../../../assets/images/no-image.png" style="max-width:100%; height:100%"
+                          class="w3-card-4">
+                      </div>
+                    </ng-template>
+                  </td>
+                </ng-container>
+
+                <ng-container matColumnDef="description">
+                  <th *matHeaderCellDef style=" font-size: 0.9em;padding:0px 1em; font-weight: 500; color: #828282; "
+                    class="w3-center w3-padding  ">
+                    Descripción
+                  </th>
+                  <td style="padding:0px 8px; font-weight: bold;" *matCellDef="let raw">
+                    {{raw.description}}
+                  </td>
+                </ng-container>
+
+                <ng-container matColumnDef="category">
+                  <th *matHeaderCellDef style=" font-size: 0.9em;padding:0px 1em; font-weight: 500; color: #828282; "
+                    class="w3-center w3-padding  " matTooltip="Ordenar tabla por tipo de documento"
+                    matTooltipPosition="above" mat-sort-header>
+                    Categoria
+                  </th>
+                  <td style="padding:0px 8px; font-weight: bold;" *matCellDef="let raw">
+                    {{raw.category}}
+                  </td>
+                </ng-container>
+
+                <ng-container matColumnDef="price">
+                  <th *matHeaderCellDef style=" font-size: 0.9em;padding:0px 1em; font-weight: 500; color: #828282; "
+                    class="w3-center w3-padding  ">
+                    Precio
+                  </th>
+                  <td style="padding:0px 8px; font-weight: bold;" *matCellDef="let raw">
+                    {{raw.price | currency : 'S/.'}}
+                  </td>
+                </ng-container>
+
+                <ng-container matColumnDef="unit">
+                  <th *matHeaderCellDef style=" font-size: 0.9em;padding:0px 1em; font-weight: 500; color: #828282; "
+                    class="w3-center w3-padding  ">
+                    Medida
+                  </th>
+                  <td style="padding:0px 8px; font-weight: bold;" *matCellDef="let raw">
+                    {{raw.unit}}
+                  </td>
+                </ng-container>
+
+                <ng-container matColumnDef="refPrice">
+                  <th *matHeaderCellDef style=" font-size: 0.9em;padding:0px 1em; font-weight: 500; color: #828282; "
+                    class="w3-center w3-padding  ">
+                    Precio Referencial
+                  </th>
+                  <td style="padding:0px 8px; font-weight: bold;" *matCellDef="let raw">
+                    {{raw.ref ? (raw.refPrice| currency : 'S/.') : "N.A." }}
+                  </td>
+                </ng-container>
+
+                <ng-container matColumnDef="refUnit">
+                  <th *matHeaderCellDef style=" font-size: 0.9em;padding:0px 1em; font-weight: 500; color: #828282; "
+                    class="w3-center w3-padding  ">
+                    Unidad Referencial
+                  </th>
+                  <td style="padding:0px 8px; font-weight: bold;" *matCellDef="let raw">
+                    {{raw.ref ? raw.refUnit : "N.A."}}
+                  </td>
+                </ng-container>
+
+                <ng-container matColumnDef="actions" stickyEnd>
+                  <th *matHeaderCellDef style=" font-size: 0.9em;padding:0px 1em; font-weight: 500; color: #828282; "
+                    class="w3-center w3-padding  ">Acciones</th>
+                  <td style="padding:0px 24px" *matCellDef="let raw">
+                    <mat-menu #rawMenu="matMenu">
+                      <button *ngIf="raw?.published else publish" mat-menu-item (click)="onPublish(raw, false)">
+                        Ocultar
+                      </button>
+                      <ng-template #publish>
+                        <button mat-menu-item (click)="onPublish(raw, true)">
+                          Publicar
+                        </button>
+                      </ng-template>
+                      <button mat-menu-item (click)="onPromo(raw)">
+                        Promoción
+                      </button>
+                      <button mat-menu-item (click)="onCreateEditItem(true, raw)">
+                        Editar
+                      </button>
+                      <button mat-menu-item (click)="onDeleteItem(raw)">
+                        Borrar
+                      </button>
+                    </mat-menu>
+                    <button mat-icon-button [matMenuTriggerFor]="rawMenu">
+                      <mat-icon>more_vert</mat-icon>
+                    </button>
+                  </td>
+                </ng-container>
+
+                <tr mat-header-row *matHeaderRowDef="productsDisplayedColumns; sticky: true"
+                  style="text-align-last: center;"></tr>
+                <tr mat-row *matRowDef="let row; columns: productsDisplayedColumns;"></tr>
+
+              </table>
+            </div>
+            <mat-paginator #productsPaginator style="border-radius: 0px 0px 10px 10px" [pageSizeOptions]="[5, 10, 20]"
+              showFirstLastButtons></mat-paginator>
+          </div>
+
+        </div>
+
+      </div>
+
+      <ng-template #default>
+        <div *ngIf="noResult$ | async" class="w3-container w3-center w3-margin-top w3-margin-bottom">
+          <img [src]="noResultImage" alt="no data" style="width: 100%; max-width: 300px;">
+          <p>Sin Resultados</p>
+        </div>
+      </ng-template>
+
+    </div>
+  </div>
+</div>
