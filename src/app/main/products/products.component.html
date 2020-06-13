@@ -1,40 +1,39 @@
 <div class="w3-section w3-hide-large w3-hide-medium">
-    <div class="w3-padding" *ngIf="(view$|async)==1">
+    <div class="w3-padding formFieldRounded" *ngIf="(view$|async)==1">
         <mat-form-field appearance="outline" class="w3-block">
             <mat-label>Buscar</mat-label>
-            <input matInput placeholder="Buscar Producto" autocomplete="off">
+            <input matInput [formControl]="searchForm" placeholder="Buscar Producto" autocomplete="off">
             <mat-icon matPrefix style="vertical-align: middle;margin-right: 5px;">search</mat-icon>
         </mat-form-field>
-        <div>
-            <mat-card class="product w3-margin-bottom">
+        <div *ngIf="products$ | async as products">
+            <mat-card class="product w3-margin-bottom" *ngFor="let product of products">
                 <div class="ms-flex product__container">
                     <div class="product__image">
-                        <img src="../../../assets/images/producto.png" style="width: 100%;" alt="producto">
+                        <img [src]="product.photoURL" style="width: 100%;" alt="producto">
                     </div>
                     <div class="product__descrip">
                         <div class="ms-flex product__container">
-                            <div class="product__title">Tilsit</div>
-                            <div class="product__provision">En abastecimiento</div>
+                            <div class="product__title">{{product.description | titlecase}}</div>
+                            <!--div class="product__provision">En abastecimiento</div-->
                             <button mat-icon-button color='accent'>
                                 <mat-icon>local_dining</mat-icon>
                             </button>
                         </div>
-                        <p style="margin-top: 0;">Elaborado de leche pasteurizada de vaca, posee un contenido graso que
-                            oscila entre 30 hasta
-                            el 60%. El Tilsiter es un queso con textura consistente.</p>
+                        <p class="product__paragraph">{{product.additionalDescription}}</p>
                         <div class="ms-flex product__container">
                             <div>
-                                <span style="color: #BDBDBD;">Precio por kg</span>
+                                <div class="product__etiquet">Precio por kg</div>
                                 <div class="ms-flex" style="align-items: flex-end;">
                                     <div class="product__price">
-                                        S/. 30.00
+                                        <span style="font-size: 0.65em">S/. </span>
+                                        <span>{{product.price | number: '.2'}}</span>
                                     </div>
-                                    <div class="product__percent">
+                                    <div class="product__percent" *ngIf="product.promo">
                                         -15%
                                     </div>
                                 </div>
                             </div>
-                            <button mat-mini-fab color='accent'>
+                            <button mat-mini-fab color='accent' (click)="add(product)">
                                 <mat-icon>add</mat-icon>
                             </button>
                         </div>
@@ -42,31 +41,39 @@
                 </div>
             </mat-card>
         </div>
-        <div class="fly-button">
+        <div class="fly-button" *ngIf="total>0">
             <div class="shopping-button background--secondary" (click)="shoppingCart()">
                 <mat-icon>shopping_basket</mat-icon>
-                <div class="total">S/. {{30 | number: '.2'}}</div>
+                <div class="total">S/. {{total | number: '.2'}}</div>
             </div>
         </div>
     </div>
     <div class="w3-padding" *ngIf="(view$|async)==2">
         <div class="ms-flex ms-flex--center">
-            <button mat-icon-button color="accent" (click)="back()">
-                <mat-icon>arrow_back</mat-icon>
+            <button mat-icon-button style="margin-left: -10px; margin-top: -10px;" (click)="back()">
+                <mat-icon>keyboard_backspace</mat-icon>
             </button>
-            <h2 class="title2">Lista de compras 🛒</h2>
+            <h2 class="title2 w3-margin-left">Lista de compras 🛒</h2>
         </div>
         <app-shopping-cart></app-shopping-cart>
-        <button mat-raised-button color="accent" class="w3-block" (click)="finish()"
-            style="border-radius: 20px; font-weight: bold;">
+
+        <button *ngIf="auth.user$ | async; else register" mat-raised-button color="accent" class="w3-block"
+            (click)="finish()" style=" font-weight: bold;">
             Continuar con la compra
             <mat-icon class="w3-margin-left">arrow_forward</mat-icon>
         </button>
+        <ng-template #register>
+            <button mat-raised-button color="accent" class="w3-block" (click)="login()"
+                style=" font-weight: bold;">
+                Continuar con la compra
+                <mat-icon class="w3-margin-left">arrow_forward</mat-icon>
+            </button>
+        </ng-template>
     </div>
     <div class="w3-padding" *ngIf="(view$|async)==3">
         <div class="ms-flex ms-flex--center">
-            <button mat-icon-button color="accent" (click)="shoppingCart()">
-                <mat-icon>arrow_back</mat-icon>
+            <button mat-icon-button style="margin-left: -10px; margin-top: -10px;" (click)="shoppingCart()">
+                <mat-icon>keyboard_backspace</mat-icon>
             </button>
             <h2 class="title2">Es tu primera compra 😊</h2>
         </div>
