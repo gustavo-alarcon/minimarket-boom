@@ -35,7 +35,7 @@ import { LoginDialogComponent } from './login-dialog/login-dialog.component';
     ProductsComponent,
     ShoppingCartComponent,
     PurchaseComponent,
-    LoginDialogComponent
+    LoginDialogComponent,
     CreateEditRecipeComponent
   ],
   imports: [
@@ -57,6 +57,8 @@ import { LoginDialogComponent } from './login-dialog/login-dialog.component';
     FormsModule,
     ReactiveFormsModule,
     MatProgressBarModule,
+    MatTableModule,
+    MatPaginatorModule,
     MatDatepickerModule,
     MatNativeDateModule,
     AgmCoreModule.forRoot({
@@ -67,7 +69,7 @@ import { LoginDialogComponent } from './login-dialog/login-dialog.component';
     { provide: MAT_DATE_LOCALE, useValue: 'en-GB' }
   ],
   entryComponents: [
-    LoginDialogComponent
+    LoginDialogComponent,
     CreateEditRecipeComponent
   ]
 })

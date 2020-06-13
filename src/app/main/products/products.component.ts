@@ -1,6 +1,6 @@
 import { AuthService } from 'src/app/core/services/auth.service';
 import { LoginDialogComponent } from './login-dialog/login-dialog.component';
-import { MatDialog } from '@angular/material/dialog';
+import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { map, startWith, filter, take } from 'rxjs/operators';
 import { FormControl } from '@angular/forms';
 import { DatabaseService } from 'src/app/core/services/database.service';
@@ -9,6 +9,7 @@ import { Component, OnInit } from '@angular/core';
 import { CreateEditRecipeComponent } from './create-edit-recipe/create-edit-recipe.component';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Recipe } from 'src/app/core/models/recipe.model';
+import { Product } from 'src/app/core/models/product.model';
 
 @Component({
   selector: 'app-products',
@@ -29,7 +30,8 @@ export class ProductsComponent implements OnInit {
   constructor(
     private dbs: DatabaseService,
     private dialog: MatDialog,
-    public auth: AuthService
+    public auth: AuthService,
+    private snackBar: MatSnackBar
   ) { }
 
   ngOnInit(): void {
