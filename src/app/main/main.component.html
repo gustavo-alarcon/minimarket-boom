@@ -8,7 +8,7 @@
                     <div>
                         <img *ngIf="null else defaultPicture" class="user__image border--primary">
                         <ng-template #defaultPicture>
-                            <img class="user__image" src="../../assets/images/default-image.jpg">
+                            <img class="user__image border--primary" src="../../assets/images/no-image-user.png">
                         </ng-template>
                     </div>
                     <div class="user__name">
@@ -74,12 +74,12 @@
                   </a>
               </div>
               <span style="flex: 1 1 auto;"></span>
-              <img class="w3-hide-medium w3-hide-large main__toolbar__background" 
+              <!-- <img class="w3-hide-medium w3-hide-large main__toolbar__background" 
                 src="../../assets/images/toolbar_background.png" 
                 alt="toolbar_background">
               <img class="w3-hide-small main__toolbar__background" 
                 src="../../assets/images/toolbar_background_large.png" 
-                alt="toolbar_background">
+                alt="toolbar_background"> -->
           </mat-toolbar>
           <div style="padding-top: 56px;">
               <router-outlet></router-outlet>

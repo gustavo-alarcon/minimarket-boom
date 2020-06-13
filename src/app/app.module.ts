@@ -19,6 +19,7 @@ import { LoginComponent } from './login/login.component';
 
 //Material
 import {MatSnackBarModule} from '@angular/material/snack-bar';
+import { MatButtonModule } from '@angular/material/button';
 
 @NgModule({
   declarations: [
@@ -35,6 +36,7 @@ import {MatSnackBarModule} from '@angular/material/snack-bar';
     AngularFireStorageModule,
     LazyLoadImageModule,
     MatSnackBarModule,
+    MatButtonModule
   ],
   providers: [],
   bootstrap: [AppComponent]
