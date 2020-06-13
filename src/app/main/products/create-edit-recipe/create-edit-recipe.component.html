@@ -1,0 +1,183 @@
+<div mat-dialog-title>
+  <h2 class="ms-font-rubik ms-color-2b" style="font-size:1.2em">
+      <mat-icon style="vertical-align:middle" (click)="deb()">add_circle</mat-icon>
+      {{data.edit?'Editar Receta':'Crear Receta'}}
+  </h2>
+  <mat-divider></mat-divider>
+</div>
+<mat-dialog-content>
+  <form [formGroup]="recipeForm"
+      style="display:flex; flex-direction: column;">
+
+      <!-- name  -->
+      <mat-form-field style="margin-bottom: 8px"
+        hintLabel="Máx. 40 carácteres" appearance="outline">
+          <mat-label>Nombre</mat-label>
+          <input #input autocomplete="off" maxlength="40"
+              formControlName="name" type="text"
+              matInput placeholder="Descripción del producto">
+          <ng-template *ngIf="nameFormatting$ | async"></ng-template>
+          <mat-error>
+              <span *ngIf="recipeForm.get('name').errors?.required">Campo requerido</span>
+              <span *ngIf="recipeForm.get('name').errors?.nameRepeatedValidator">Este contenido ya se encuentra repetido.</span>
+          </mat-error>
+          <mat-hint align="end">{{input.value?.length || 0}}/40</mat-hint>
+      </mat-form-field>
+
+      <!-- description -->
+      <mat-form-field appearance="outline" style="width: 100%">
+        <mat-label>Descripción</mat-label>
+        <textarea #addDesc 
+          style="min-height: 100px;"
+          formControlName="description" 
+          matInput maxlength="200"></textarea>
+        <mat-hint align="end">{{addDesc.value?.length || 0}}/200</mat-hint>
+      </mat-form-field>
+
+      <!-- videoURL  -->
+      <mat-form-field style="margin-bottom: 8px"
+        appearance="outline">
+          <mat-label>URL de video</mat-label>
+          <input #input autocomplete="off" maxlength="40"
+              formControlName="videoURL" type="text"
+              matInput placeholder="URL de video">
+          <mat-hint>*Opcional</mat-hint>
+      </mat-form-field>
+
+      <!-- product and quantity -->
+      <div *ngIf="productList$ | async as products else cargandoProductos">
+        <form [formGroup]="inputsForm" 
+          style="display:flex; flex-direction: row; justify-content: space-between; width: 100%"> 
+          <!-- product  -->
+
+          <mat-form-field 
+            style="width: 48%" appearance="outline">
+              <mat-label>Ingrediente</mat-label>
+              <input autocomplete="off"
+                formControlName="product"
+                [matAutocomplete]="productAutocomplete"
+                type="text" matInput>
+              <mat-autocomplete 
+                [displayWith]="displayFn.bind(this)"
+                autoActiveFirstOption   
+                #productAutocomplete="matAutocomplete">
+                <mat-option *ngFor="let product of products"
+                  [value]="product">
+                  {{product.description}}
+                </mat-option>
+              </mat-autocomplete>
+              <mat-error>
+                <span *ngIf="inputsForm.get('product').errors?.required">Campo requerido.</span>
+                <span *ngIf="inputsForm.get('product').errors?.recipeType">Seleccione opción.</span>
+              </mat-error>
+          </mat-form-field>
+          
+          <!-- quantity  -->
+          <mat-form-field style="width: 48%"
+            appearance="outline">
+            <mat-label>Cantidad</mat-label>
+            <input autocomplete="off"
+              formControlName="quantity" type="number"
+                matInput placeholder="Cantidad">
+            <mat-error>
+                <span *ngIf="inputsForm.get('quantity').errors?.required">Campo requerido</span>
+                <span *ngIf="inputsForm.get('quantity').errors?.min">Mayor a 0</span>
+            </mat-error>
+          </mat-form-field>
+
+        </form>
+
+        <button mat-raised-button color="primary"
+          style="display:block; margin-bottom: 16px; width: 100%"
+          [disabled]="!inputsForm.valid"
+          type="button"
+          (click)="onAddItem()">
+          <mat-icon>add</mat-icon>Añadir</button>
+
+      </div>
+
+      <ng-template #cargandoProductos>
+        Cargando lista de productos...
+      </ng-template>
+
+      <!-- Table -->
+      <div class="mat-elevation-z8" style="margin: 8px 0 16px 0;" *ngIf="!!inputTableDataSource.data.length">
+        <div style="height: auto; width: 100%; overflow: auto; ">
+            <table mat-table [dataSource]="inputTableDataSource" 
+                style="width: 100%; text-align: center !important; width: 100%;">
+            <!-- index -->
+            <!-- <ng-container matColumnDef="index" >
+                <th style="padding: 0 16px; text-align: center"
+                    mat-header-cell *matHeaderCellDef
+                    class="w3-center w3-padding w3-border-right">
+                    N°</th>
+                <td style="padding: 0 16px; text-align: center"
+                    mat-cell *matCellDef="let element; let i=index">
+                    {{1 + i + (inputTablePaginator.pageIndex * inputTablePaginator.pageSize)}}
+                </td>
+            </ng-container> -->
+            <!-- description -->
+            <ng-container matColumnDef="description" sticky>
+                <th mat-header-cell *matHeaderCellDef style="padding: 0 16px"
+                    class="w3-center w3-padding w3-border-right">
+                    Ingrediente</th>
+                <td style="padding-left: 4px !important;" mat-cell *matCellDef="let element">
+                  {{element.product.description | titlecase}} ({{element.product.unit}})
+                </td>
+            </ng-container>
+            <!-- unit -->
+            <ng-container matColumnDef="unit">
+                <th mat-header-cell *matHeaderCellDef style="padding: 0 16px"
+                    class="w3-center w3-padding w3-border-right">
+                    Medida</th>
+                <td mat-cell *matCellDef="let element">
+                  {{element.product.unit}}
+                </td>
+            </ng-container>
+            <!-- quantity -->
+            <ng-container matColumnDef="quantity">
+                <th mat-header-cell *matHeaderCellDef style="padding: 0 16px"
+                    class="w3-center w3-padding w3-border-right">
+                    Cant.</th>
+                <td mat-cell *matCellDef="let element">
+                  {{element.quantity}}
+                </td>
+            </ng-container>
+            <!-- actions -->
+            <ng-container matColumnDef="actions" endSticky>
+                <th mat-header-cell *matHeaderCellDef  style="padding: 0 0px; text-align: center"
+                    class="w3-center w3-padding w3-border-right">
+                <mat-icon>more_vert</mat-icon>
+                </th>
+                <td mat-cell *matCellDef="let element" style="padding: 0 0px; text-align: center">
+                    <button color="primary"
+                      mat-icon-button (click)="onDeleteItem(element)">
+                        <mat-icon>remove_circle</mat-icon>
+                    </button>
+                </td>
+            </ng-container>
+    
+            <tr mat-header-row *matHeaderRowDef="inputTableDisplayedColumns" style="text-align-last: center;"></tr>
+            <tr mat-row *matRowDef="let row; columns: inputTableDisplayedColumns;"></tr>
+    
+            </table>
+        </div>
+
+        <!-- <mat-paginator #inputTablePaginator [pageSizeOptions]="[5,10,25]" 
+            fixed itemsPerPageLabel="n°"style="border-radius: 0 0 20px 20px;">
+        </mat-paginator> -->
+
+      </div>
+
+      
+
+  </form>
+  <mat-divider></mat-divider>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button mat-stroked-button class="w3-margin-right" mat-dialog-close>Cancelar</button>
+  <button mat-raised-button color="accent" (click)="onSubmit(null)" type="button"
+      [disabled]="recipeForm.status != 'VALID' || !inputTableDataSource.data.length
+                  || inputTableDataSource.data.length < 2">Guardar</button>
+</mat-dialog-actions>

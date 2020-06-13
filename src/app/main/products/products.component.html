@@ -5,6 +5,8 @@
             <input matInput [formControl]="searchForm" placeholder="Buscar Producto" autocomplete="off">
             <mat-icon matPrefix style="vertical-align: middle;margin-right: 5px;">search</mat-icon>
         </mat-form-field>
+    <button mat-raised-button (click)="onCreateEditRecipe(false, null)">Receta</button>
+
         <div *ngIf="products$ | async as products">
             <mat-card class="product w3-margin-bottom" *ngFor="let product of products">
                 <div class="ms-flex product__container">

@@ -18,6 +18,9 @@ import { CommonModule } from '@angular/common';
 import { AgmCoreModule } from '@agm/core';
 import { ProductsRoutingModule } from './products-routing.module';
 import { ProductsComponent } from './products.component';
+import { CreateEditRecipeComponent } from './create-edit-recipe/create-edit-recipe.component';
+import { MatTableModule } from '@angular/material/table';
+import { MatPaginatorModule } from '@angular/material/paginator';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { ShoppingCartComponent } from './shopping-cart/shopping-cart.component';
 import { PurchaseComponent } from './purchase/purchase.component';
@@ -33,12 +36,12 @@ import { LoginDialogComponent } from './login-dialog/login-dialog.component';
     ShoppingCartComponent,
     PurchaseComponent,
     LoginDialogComponent
+    CreateEditRecipeComponent
   ],
   imports: [
     CommonModule,
     ProductsRoutingModule,
     CommonModule,
-    ProductsRoutingModule,
     MatIconModule,
     MatButtonModule,
     MatInputModule,
@@ -65,6 +68,7 @@ import { LoginDialogComponent } from './login-dialog/login-dialog.component';
   ],
   entryComponents: [
     LoginDialogComponent
+    CreateEditRecipeComponent
   ]
 })
 export class ProductsModule { }
