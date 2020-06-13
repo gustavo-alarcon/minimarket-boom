@@ -12,6 +12,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatChipsModule } from '@angular/material/chips';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule, MAT_DATE_LOCALE } from '@angular/material/core';
+import {MatCheckboxModule} from '@angular/material/checkbox';
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { AgmCoreModule } from '@agm/core';
@@ -49,6 +50,7 @@ import { LoginDialogComponent } from './login-dialog/login-dialog.component';
     MatSelectModule,
     MatCardModule,
     MatChipsModule,
+    MatCheckboxModule,
     FormsModule,
     ReactiveFormsModule,
     MatProgressBarModule,

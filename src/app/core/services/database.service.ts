@@ -25,9 +25,27 @@ export class DatabaseService {
   productsListRef = `db/distoProductos/productsList`;
   generalConfigDoc = this.afs.collection(`db/distoProductos/config`).doc<GeneralConfig>('generalConfig');
 
-  getGeneralConfigDoc(): Observable<GeneralConfig>{
+  //users
+
+  getUsers(): Observable<User[]> {
+    return this.afs.collection<User>(`/users`, ref => ref.orderBy("displayName", 'asc'))
+      .valueChanges().pipe(
+        shareReplay(1)
+      );
+  }
+
+  getUsersStatic(): Observable<User[]> {
+    return this.afs.collection<User>(`/users`, ref => ref.orderBy("displayName", 'asc'))
+      .get().pipe(map((snap) => {
+        return snap.docs.map(el => <User>el.data())
+      }));
+  }
+
+
+
+  getGeneralConfigDoc(): Observable<GeneralConfig> {
     return this.generalConfigDoc.valueChanges().pipe(shareReplay(1))
-  } 
+  }
 
   //Products list
   getProductsList(): Observable<Product[]> {
@@ -37,23 +55,23 @@ export class DatabaseService {
       }));
   }
 
-  getProductsListValueChanges(){
+  getProductsListValueChanges() {
     return this.afs.collection<Product>(this.productsListRef, ref => ref.orderBy("description", "asc"))
-    .valueChanges().pipe(
-      shareReplay(1)
-    );
+      .valueChanges().pipe(
+        shareReplay(1)
+      );
   }
 
-  getProductsListCategoriesValueChanges(): Observable<string[]>{
+  getProductsListCategoriesValueChanges(): Observable<string[]> {
     return this.getGeneralConfigDoc().pipe(map(res => {
-      if(res){
-        if(res.hasOwnProperty('categories')){
+      if (res) {
+        if (res.hasOwnProperty('categories')) {
           return res.categories
         }
-        else{
+        else {
           return []
         }
-      } else{
+      } else {
         return []
       }
     }))
@@ -94,15 +112,15 @@ export class DatabaseService {
         return concat(
           this.deletePhotoProduct(oldProduct.photoPath).pipe(takeLast(1)),
           this.uploadPhotoProduct(productRef.id, photo).pipe(takeLast(1))
-          ).pipe(
-            takeLast(1),
-            map((res: string) => {
-              productData.photoURL = res;
-              productData.photoPath = `/products/pictures/${productRef.id}-${photo.name}`;
-              batch.set(productRef, productData, { merge: true });
-              return batch
-            })
-          )
+        ).pipe(
+          takeLast(1),
+          map((res: string) => {
+            productData.photoURL = res;
+            productData.photoPath = `/products/pictures/${productRef.id}-${photo.name}`;
+            batch.set(productRef, productData, { merge: true });
+            return batch
+          })
+        )
       }
       else {
         return this.uploadPhotoProduct(productRef.id, photo).pipe(
@@ -122,10 +140,10 @@ export class DatabaseService {
     }
   }
 
-  publishProduct(published: boolean, product: Product, user: User): firebase.firestore.WriteBatch{
+  publishProduct(published: boolean, product: Product, user: User): firebase.firestore.WriteBatch {
     let productRef: DocumentReference = this.afs.firestore.collection(this.productsListRef).doc(product.id);
     let batch = this.afs.firestore.batch();
-    batch.update(productRef, {published})
+    batch.update(productRef, { published })
     return batch;
   }
 

@@ -1,3 +1,5 @@
+import { tap } from 'rxjs/operators';
+import { Observable } from 'rxjs';
 import { AuthService } from 'src/app/core/services/auth.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
@@ -9,6 +11,8 @@ import { Component, OnInit } from '@angular/core';
   styleUrls: ['./purchase.component.scss']
 })
 export class PurchaseComponent implements OnInit {
+
+  userData$: Observable<any>
 
   total: number = 0
   delivery: number = 4
@@ -61,6 +65,26 @@ export class PurchaseComponent implements OnInit {
       district: [null, [Validators.required]],
       ref: [null, [Validators.required]]
     });
+
+    this.userData$ = this.auth.user$.pipe(
+      tap(res => {
+        console.log(res);
+        
+        this.dataFormGroup.setValue({
+          email: res['email'],
+          dni: null,
+          name: res['displayName'],
+          phone: null,
+          date: null,
+          pay: null,
+          typePay: null,
+          photo: null,
+          address: null,
+          district: null,
+          ref: null
+        })
+      })
+    )
   }
 
   changeDelivery(district) {

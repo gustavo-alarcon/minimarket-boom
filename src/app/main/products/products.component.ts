@@ -1,7 +1,7 @@
 import { AuthService } from 'src/app/core/services/auth.service';
 import { LoginDialogComponent } from './login-dialog/login-dialog.component';
 import { MatDialog } from '@angular/material/dialog';
-import { map, startWith, filter } from 'rxjs/operators';
+import { map, startWith, filter, take } from 'rxjs/operators';
 import { FormControl } from '@angular/forms';
 import { DatabaseService } from 'src/app/core/services/database.service';
 import { BehaviorSubject, Observable, combineLatest } from 'rxjs';
@@ -64,7 +64,13 @@ export class ProductsComponent implements OnInit {
   }
 
   login(){
-    this.dialog.open(LoginDialogComponent)
+    this.dialog.open(LoginDialogComponent).afterClosed().pipe(
+      take(1)
+    ).subscribe(res=>{
+      if(res){
+        this.finish()
+      }
+    })
   }
 
   shoppingCart() {
