@@ -1,10 +1,9 @@
 .title2 {
     width: fit-content;
-    color: #2b2b2b;
     border-bottom: 4px solid #5da92f;
     font-weight: bold;
     font-size: 1.4em;
-    line-height: 1.5em;
+    line-height: 1.4em;
     margin-top: 0;
 }
 
@@ -21,13 +20,18 @@
         width: 35%;
     }
 
+    &__paragraph{
+        margin-top: 0;
+        min-height: 68px;
+        font-size: 0.7em;
+    }
+
     &__descrip {
         width: 60%;
-        font-size: 0.62em;
     }
 
     &__title {
-        font-size: 2em;
+        font-size: 1em;
         font-weight: bold;
     }
 
@@ -36,12 +40,17 @@
         text-decoration-line: underline;
     }
 
+    &__etiquet{
+        font-size: 0.7em;
+        color: #BDBDBD;
+    }
+
     &__price {
         background: #5da92f;
         border-radius: 20px;
         color: white;
-        font-size: 1.5em;
-        padding: 3px 12px;
+        font-size: 1em;
+        padding: 3px 10px;
         z-index: 2;
         font-weight: bold;
     }
@@ -50,7 +59,7 @@
         background: #eb5757;
         border-radius: 0px 10px 10px 0px;
         color: white;
-        padding: 2px 6px 2px 20px;
+        padding: 2px 6px 2px 16px;
         height: fit-content;
         position: relative;
         left: -15px;

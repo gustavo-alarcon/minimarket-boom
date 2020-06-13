@@ -12,16 +12,12 @@ export class ShoppingCartComponent implements OnInit {
   total: number = 0
   delivery: number = 4
 
-  products: {
-    product: Product,
-    quantity: number
-  }[] = []
-
   constructor(
     public dbs: DatabaseService
   ) { }
 
   ngOnInit(): void {
+    this.total = this.dbs.order.map(el => el['product']['price'] * el['quantity']).reduce((a, b) => a + b, 0)
   }
 
   roundNumber(number) {
@@ -56,11 +52,9 @@ export class ShoppingCartComponent implements OnInit {
     }
   }
 
-  delete(ind, item) {
-    let index = this.products.findIndex(el => el['product']['description'] == item['product']['description'])
-    this.products[index]['quantity'] = 0
+  delete(ind) {
     this.dbs.order.splice(ind, 1)
-    this.total = 4
+    this.total = this.dbs.order.map(el => el['product']['price'] * el['quantity']).reduce((a, b) => a + b, 0)
   }
 
 

@@ -1,0 +1,70 @@
+<div style="max-width: 300px;">
+    <div mat-dialog-title>
+        <div class="ms-flex">
+            <h2 class="title-login">
+                Hola, cheese lover.<br>
+                Necesitamos que te registres
+            </h2>
+            <span class="ms-fill"></span>
+            <button mat-icon-button mat-dialog-close>
+                <mat-icon>close</mat-icon>
+            </button>
+        </div>
+        <mat-divider></mat-divider>
+
+    </div>
+    <div mat-dialog-content>
+        <form [formGroup]="dataFormGroup">
+            <mat-form-field class="w3-block w3-small" appearance="outline">
+                <mat-label>Usuario</mat-label>
+                <input matInput type="text" formControlName="email" placeholder="Correo electrónico" autocomplete="off">
+                <mat-error>
+                    <span *ngIf="dataFormGroup.get('email').errors?.required">Usuario requerido</span>
+                    <span *ngIf="dataFormGroup.get('email').errors?.email">Email no válido</span>
+                    <span *ngIf="dataFormGroup.get('email').errors?.emailRepeatedValidator">Usuario ya
+                        registrado.</span>
+                </mat-error>
+            </mat-form-field>
+
+            <mat-form-field class="w3-block w3-small" appearance="outline">
+                <mat-label>Contraseña</mat-label>
+                <input matInput [type]="hidePass ? 'password' : 'text'" formControlName="pass" placeholder="***" autocomplete="off">
+                <button mat-icon-button matSuffix (click)="hidePass = !hidePass"
+                    [attr.aria-label]="'Ocultar contraseña'" [attr.aria-pressed]="hidePass">
+                    <mat-icon>{{hidePass ? 'visibility_off' : 'visibility'}}</mat-icon>
+                </button>
+                <mat-error>
+                    <span *ngIf="dataFormGroup.get('pass').errors?.required">Contraseña requerido</span>
+                    <span *ngIf="dataFormGroup.get('pass').hasError('minlength')">Mínimo 6 caracteres</span>
+                </mat-error>
+            </mat-form-field>
+        </form>
+        <div class="w3-margin-bottom">
+            <mat-checkbox class="w3-small" color="primary" [(ngModel)]="register" (click)="dataFormGroup.get('email').setValue(null)">
+                Ya estoy registrado
+            </mat-checkbox>
+        </div>
+       
+        
+        <button *ngIf="!register" mat-raised-button class="w3-block w3-margin-bottom social"
+            [disabled]="!dataFormGroup.valid" (click)="registerUser()">
+            Registrarse
+        </button>
+        <button *ngIf="register" mat-raised-button class="w3-block w3-margin-bottom social"
+            [disabled]="!dataFormGroup.valid" (click)="login()">
+            Ingresar
+        </button>
+        <div class="w3-margin-top">
+            <button mat-raised-button class="w3-block w3-margin-bottom social social--google"
+                (click)="auth.signIn('google')">
+                Ingresar con <strong>Google</strong>
+            </button>
+            <button mat-raised-button class="w3-block w3-margin-bottom social social--facebook"
+                (click)="auth.signIn('facebook')">
+                Ingresar con <strong>Facebook</strong>
+            </button>
+            <p *ngIf="auth$ | async">Ingreso</p>
+
+        </div>
+    </div>
+</div>
