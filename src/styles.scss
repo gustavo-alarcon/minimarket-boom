@@ -210,7 +210,12 @@ a {
 
 /*Inputs*/
 
-.mat-divider {
+.mat-dialog-actions {
+  padding-top: 16px !important;
+  padding-bottom: 16px !important;
+}
+
+.mat-divider{
   border-top: 4px solid var(--primary-color) !important;
 }
 

@@ -4,12 +4,19 @@
 }
 
 .main__toolbar {
-  background: linear-gradient(90deg, #5DA92F 0%, #267131 100%);
+  background: url("../../assets/images/toolbar_background_large.png") no-repeat right center, 
+              linear-gradient(90deg, #5DA92F 0%, #267131 100%); 
   box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
-  // color: #fff;
   position: fixed;
   top: 0;
   z-index: 4;
+}
+
+@media (max-width: 601px) {
+  .main__toolbar {
+    background: url("../../assets/images/toolbar_background.png") no-repeat right center, 
+                linear-gradient(90deg, #5DA92F 0%, #267131 100%); 
+  }
 }
 
 .main__toolbar__background {

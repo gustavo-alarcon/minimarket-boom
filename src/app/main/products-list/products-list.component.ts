@@ -1,6 +1,6 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
-import { Observable, combineLatest } from 'rxjs';
-import { startWith, tap, map, share } from 'rxjs/operators';
+import { Observable, combineLatest, iif, of } from 'rxjs';
+import { startWith, tap, map, share, switchMap, take } from 'rxjs/operators';
 import { FormBuilder, FormControl } from '@angular/forms';
 import * as XLSX from 'xlsx';
 
@@ -16,6 +16,7 @@ import { MatPaginator } from '@angular/material/paginator';
 import { Product } from 'src/app/core/models/product.model';
 import { ProductCreateEditComponent } from './product-create-edit/product-create-edit.component';
 import { ProductEditPromoComponent } from './product-edit-promo/product-edit-promo.component';
+import { ConfirmationDialogComponent } from '../confirmation-dialog/confirmation-dialog.component';
 @Component({
   selector: 'app-products-list',
   templateUrl: './products-list.component.html',
@@ -129,20 +130,50 @@ export class ProductsListComponent implements OnInit {
   }
 
   onDeleteItem(product: Product) {
-    this.dbs.deleteProduct(product).subscribe(
-      batch => {
-        batch.commit().then(
-          res => {
-            this.snackBar.open('Producto eliminado satisfactoriamente.', 'Aceptar');
-          },
-          err => {
-            this.snackBar.open('Ocurrió un error. Vuelva a intentarlo.', 'Aceptar');
-          }
-        )
+    let dialogRef: MatDialogRef<ConfirmationDialogComponent>;
+    dialogRef = this.dialog.open(ConfirmationDialogComponent, {
+      closeOnNavigation: true,
+      disableClose: true,
+      width: '360px',
+      maxWidth: '360px',      
+      data: {
+      warning: `El producto será borrado.`,
+      content: `¿Está seguro de borrar el producto ${product.description}?`,
+      noObservation: true,
+      observation: null,
+      title: 'Confirmar',
+      titleIcon: 'done_all'
+      }
+    })
+
+    dialogRef.afterClosed().pipe(
+      take(1),
+      switchMap((answer: {action: string, lastObservation: string}) => 
+        iif(
+          () => {return answer.action =="confirm"},
+          this.dbs.deleteProduct(product),
+          of(answer)
+          )
+      ))
+      .subscribe((answer: {action: string, lastObservation: string} | firebase.firestore.WriteBatch) => {
+        if((<Object>answer).hasOwnProperty("action")){
+          //We don't do anything, as the action was cancelled,
+        }
+        else{
+          (<firebase.firestore.WriteBatch>answer).commit().then(
+            res => {
+              this.snackBar.open('Producto eliminado satisfactoriamente.', 'Aceptar');
+            },
+            err => {
+              this.snackBar.open('Ocurrió un error. Vuelva a intentarlo.', 'Aceptar');
+            }
+          )
+        }
       },
       err => {
         this.snackBar.open('Ocurrió un error. Vuelva a intentarlo.', 'Aceptar');
       })
+
   }
 
   onPromo(product: Product) {

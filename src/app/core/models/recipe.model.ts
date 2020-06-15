@@ -10,6 +10,7 @@ export interface Recipe {
     product: Product;
     quantity: number;
   }[];
+  // inputs: string[];
   videoURL: string;
   createdBy: User;
   createdAt: Date;
