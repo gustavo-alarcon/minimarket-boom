@@ -8,7 +8,7 @@ export class ThemeService {
   private darkThemeSubject = new BehaviorSubject<boolean>(false)
   darkTheme$ = this.darkThemeSubject.asObservable()
 
-  toggleTheme(isDark: boolean): void{
-    this.darkThemeSubject.next(isDark)
+  toggleTheme(): void{
+    this.darkThemeSubject.next(!this.darkThemeSubject.value)
   }
 }

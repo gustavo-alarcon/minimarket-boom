@@ -1,5 +1,6 @@
 import { AuthService } from 'src/app/core/services/auth.service';
 import { Component, OnInit } from '@angular/core';
+import { ThemeService } from '../core/services/theme.service';
 
 @Component({
   selector: 'app-main',
@@ -11,7 +12,8 @@ export class MainComponent implements OnInit {
   openedMenu: boolean = false;
 
   constructor(
-    public auth: AuthService
+    public auth: AuthService,
+    public themeService: ThemeService
   ) { }
 
   ngOnInit(): void {

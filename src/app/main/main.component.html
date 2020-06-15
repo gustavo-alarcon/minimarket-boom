@@ -18,6 +18,12 @@
                 <div style="padding-left: 24px; padding-right: 24px; margin-bottom: 16px;">
                     <mat-divider></mat-divider>
                 </div>
+                <div class="w3-center">
+                    <mat-slide-toggle color="primary"
+                        (click)="themeService.toggleTheme()">
+                        Modo Oscuro
+                    </mat-slide-toggle>
+                </div>
                 <!-- <h2 class="menu__title font--primary">menu</h2> -->
                 <div class="menu">
                     <button mat-button class="w3-block menu__button" routerLink="products"
