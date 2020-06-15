@@ -1,4 +1,4 @@
-import { tap } from 'rxjs/operators';
+import { tap, take, switchMap } from 'rxjs/operators';
 import { Observable } from 'rxjs';
 import { DatabaseService } from './../../../core/services/database.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
@@ -7,6 +7,7 @@ import { MatDialogRef, MatDialog } from '@angular/material/dialog';
 import { CreateEditRecipeComponent } from './../create-edit-recipe/create-edit-recipe.component';
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
+import { Product } from 'src/app/core/models/product.model';
 
 @Component({
   selector: 'app-recipes',
@@ -14,9 +15,7 @@ import { ActivatedRoute } from '@angular/router';
   styleUrls: ['./recipes.component.scss']
 })
 export class RecipesComponent implements OnInit {
-  init$:Observable<any>
-
-  title:string = ''
+  init$:Observable<{title: string, recipes: Recipe[]}>
 
   constructor(
     private dbs: DatabaseService,
@@ -27,10 +26,24 @@ export class RecipesComponent implements OnInit {
 
   ngOnInit(): void {
     this.init$ = this.route.params.pipe(
-      tap(res=>{
-        this.title = res.id
-      
-      })
+      take(1),
+      switchMap(res => 
+        this.dbs.getProductRecipesValueChanges(res.id),
+        (productId, recipes) => {
+          console.log(recipes)
+          if(recipes.length){
+            let title = (<Product>recipes[0].products.find(el => el.id == <string>productId.id)).description;
+            return {
+              title,
+              recipes
+            }
+          } else {
+            return {
+              title: 'Sin recetas',
+              recipes: []
+            }
+          }
+        })
     )
   }
 

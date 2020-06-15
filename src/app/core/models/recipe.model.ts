@@ -5,12 +5,9 @@ export interface Recipe {
   id: string;
   name: string;
   description: string;
-  inputsId: string[];
-  inputs: {
-    product: Product;
-    quantity: number;
-  }[];
-  // inputs: string[];
+  productsId: string[];
+  products: Product[];
+  inputs: string[];
   videoURL: string;
   createdBy: User;
   createdAt: Date;
