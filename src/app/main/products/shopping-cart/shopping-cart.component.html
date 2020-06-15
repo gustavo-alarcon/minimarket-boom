@@ -21,6 +21,20 @@
                 </div>
 
             </div>
+            <div *ngIf="item['product']['promo'] && item['quantity']>=item['product']['promoData']['quantity']" style="margin-top: -10px;">
+                <div class="ms-flex ms-flex--center" *ngIf="item.product.promoData.quantity > 1">
+                    <div style="width: 25%;"></div>
+                    <div style="width: 45%;">
+                        <mat-hint style="font-size:0.8em">
+                            {{round(item['quantity']/item['product']['promoData']['quantity']) }}
+                            ({{item['product']['promoData']['quantity']}} {{item['product']['unit']}} x
+                            S/.{{item['product']['promoData']['promoPrice'] | number: '.2'}} )
+                        </mat-hint>
+                    </div>
+                </div>
+
+            </div>
+
 
         </div>
         <div class="ticket__separate"></div>

@@ -1,9 +1,10 @@
+import { Sale } from './../models/sale.model';
 import { Injectable } from '@angular/core';
 import { AngularFirestore, AngularFirestoreCollection, DocumentReference, AngularFirestoreDocument } from '@angular/fire/firestore';
 import { Product } from '../models/product.model';
 import { shareReplay, map, takeLast, switchMap, take, mapTo } from 'rxjs/operators';
 import { GeneralConfig } from '../models/generalConfig.model';
-import { Observable, concat, of, interval } from 'rxjs';
+import { Observable, concat, of, interval, BehaviorSubject } from 'rxjs';
 import { User } from '../models/user.model';
 import { AngularFireStorage } from '@angular/fire/storage';
 import { Recipe } from '../models/recipe.model';
@@ -17,6 +18,11 @@ export class DatabaseService {
     product: Product,
     quantity: number
   }[] = []
+
+  public view = new BehaviorSubject<number>(1);
+  public view$ = this.view.asObservable();
+
+  public total: number = 0
 
   constructor(
     private afs: AngularFirestore,
@@ -225,4 +231,30 @@ export class DatabaseService {
         return snap.docs.map(el => <Recipe>el.data())
       }));
   }
+
+  /*sales*/
+
+  uploadPhotoVoucher(id: string, file: File): Observable<string | number> {
+    const path = `/sales/vouchers/${id}-${file.name}`;
+
+    // Reference to storage bucket
+    const ref = this.storage.ref(path);
+
+    // The main task
+    let uploadingTask = this.storage.upload(path, file);
+
+    let snapshot$ = uploadingTask.percentageChanges()
+    let url$ = of('url!').pipe(
+      switchMap((res) => {
+        return <Observable<string>>ref.getDownloadURL();
+      }))
+
+    let upload$ = concat(
+      snapshot$,
+      interval(1000).pipe(take(2)),
+      url$)
+    return upload$;
+  }
+
+  
 }

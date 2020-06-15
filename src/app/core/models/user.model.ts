@@ -1,8 +1,10 @@
 export interface User {
   uid: string;
   email: string;
+  dni?:number;
   phone?: string;
   photoURL?: string;
+  realName?: string;
   displayName?: string;
   token?: string;
   lastLogin?: Date;
@@ -13,6 +15,7 @@ export interface User {
       long: number;
     };
     reference: string;
-    number: number;
+    phone: number;
   },
+  salesCount?:number
 }

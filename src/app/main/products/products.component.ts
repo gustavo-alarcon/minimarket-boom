@@ -1,14 +1,13 @@
+import { User } from 'src/app/core/models/user.model';
 import { AuthService } from 'src/app/core/services/auth.service';
 import { LoginDialogComponent } from './login-dialog/login-dialog.component';
 import { MatDialog, MatDialogRef } from '@angular/material/dialog';
-import { map, startWith, filter, take } from 'rxjs/operators';
+import { map, startWith, filter, take, tap } from 'rxjs/operators';
 import { FormControl } from '@angular/forms';
 import { DatabaseService } from 'src/app/core/services/database.service';
-import { BehaviorSubject, Observable, combineLatest } from 'rxjs';
+import { Observable, combineLatest } from 'rxjs';
 import { Component, OnInit } from '@angular/core';
-import { CreateEditRecipeComponent } from './create-edit-recipe/create-edit-recipe.component';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { Recipe } from 'src/app/core/models/recipe.model';
 import { Product } from 'src/app/core/models/product.model';
 
 @Component({
@@ -17,26 +16,28 @@ import { Product } from 'src/app/core/models/product.model';
   styleUrls: ['./products.component.scss']
 })
 export class ProductsComponent implements OnInit {
-
-  view: BehaviorSubject<number> = new BehaviorSubject(1)
-  view$: Observable<number> = this.view.asObservable();
+  firstSale: boolean = false
 
   products$: Observable<Product[]>
+  init$: Observable<User>
 
-  total: number = 0
+  name: string = ''
+
 
   searchForm: FormControl = new FormControl('')
 
   defaultImage = "../../../assets/images/default-image.jpg";
 
+  p: number = 1;
   constructor(
-    private dbs: DatabaseService,
+    public dbs: DatabaseService,
     private dialog: MatDialog,
     public auth: AuthService,
     private snackBar: MatSnackBar
   ) { }
 
   ngOnInit(): void {
+
     this.products$ = combineLatest(
       this.dbs.getProductsListValueChanges(),
       this.searchForm.valueChanges.pipe(
@@ -45,12 +46,36 @@ export class ProductsComponent implements OnInit {
         map(value => value.toLowerCase())
       )
     ).pipe(
-      map(([products,search])=>{
-        return products.filter(el=>search?el.description.toLowerCase().includes(search):true)
+      map(([products, search]) => {
+        let publish = products.filter(el => el.published)
+        if (this.dbs.order.length == 0 && localStorage.getItem('order')) {
+          let number = Number(localStorage.getItem('length'))
+          for (let index = 0; index < number; index++) {
+            this.dbs.order[index] = {
+              product: products.filter(el => el.id == localStorage.getItem('order' + index))[0],
+              quantity: Number(localStorage.getItem('order' + index + 'q'))
+            }
+
+          }
+
+          this.dbs.total = this.dbs.order.map(el => this.giveProductPrice(el)).reduce((a, b) => a + b, 0)
+        }
+        return publish.filter(el => search ? el.description.toLowerCase().includes(search) : true)
       })
     )
-    
-    this.total = this.dbs.order.map(el => el['product']['price'] * el['quantity']).reduce((a, b) => a + b, 0)
+
+    this.init$ = this.auth.user$.pipe(
+      tap(res => {
+        if (res['salesCount']) {
+          this.firstSale = false
+          this.name = res.realName.split(' ')[0]
+        } else {
+          this.firstSale = true
+        }
+      })
+    )
+
+    this.dbs.total = this.dbs.order.map(el => this.giveProductPrice(el)).reduce((a, b) => a + b, 0)
   }
 
   add(item) {
@@ -66,30 +91,64 @@ export class ProductsComponent implements OnInit {
       this.dbs.order[index]['quantity']++
     }
 
-    this.total = this.dbs.order.map(el => el['product']['price'] * el['quantity']).reduce((a, b) => a + b, 0)
+    this.dbs.total = this.dbs.order.map(el => this.giveProductPrice(el)).reduce((a, b) => a + b, 0)
   }
 
-  login(){
-    this.dialog.open(LoginDialogComponent).afterClosed().pipe(
-      take(1)
-    ).subscribe(res=>{
-      if(res){
-        this.finish()
-      }
+  getdiscount(item: Product) {
+    let promo = item.price - item.promoData.promoPrice
+    let discount = (promo / item.price) * 100
+    return Math.round(discount)
+  }
+
+  login() {
+    this.dialog.open(LoginDialogComponent)
+    localStorage.setItem('order', 'true')
+    localStorage.setItem('length', this.dbs.order.length.toString())
+    this.dbs.order.forEach((el, i) => {
+      localStorage.setItem('order' + i, el.product.id)
+      localStorage.setItem('order' + i + 'q', el.quantity.toString())
     })
   }
 
+  stopBuy() {
+    let stop = 3
+    let quantity = this.dbs.order.map(el => {
+      if (el.product.unit == '1/2 KG') {
+        return el.quantity * 0.5
+      } else {
+        return el.quantity
+      }
+    }).reduce((a, b) => a + b, 0)
+    return quantity >= stop
+  }
+
+  giveProductPrice(item) {
+    if (item.product.promo) {
+      let promTotalQuantity = Math.floor(item.quantity / item.product.promoData.quantity);
+      let promTotalPrice = promTotalQuantity * item.product.promoData.promoPrice;
+      let noPromTotalQuantity = item.quantity % item.product.promoData.quantity;
+      let noPromTotalPrice = noPromTotalQuantity * item.product.price;
+      return Number((promTotalPrice + noPromTotalPrice).toFixed(1));
+    }
+    else {
+      return Number((item.quantity * item.product.price).toFixed(1));
+    }
+  }
+
   shoppingCart() {
-    this.view.next(2)
+    this.dbs.view.next(2)
+
   }
 
   back() {
-    this.view.next(1)
-    this.total = this.dbs.order.map(el => el['product']['price'] * el['quantity']).reduce((a, b) => a + b, 0)
+    this.dbs.view.next(1)
+    this.dbs.total = this.dbs.order.map(el => this.giveProductPrice(el)).reduce((a, b) => a + b, 0)
   }
 
   finish() {
-    this.view.next(3)
+    this.dbs.view.next(3)
+    localStorage.clear()
   }
+
 
 }

@@ -12,7 +12,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatChipsModule } from '@angular/material/chips';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule, MAT_DATE_LOCALE } from '@angular/material/core';
-import {MatCheckboxModule} from '@angular/material/checkbox';
+import { MatCheckboxModule } from '@angular/material/checkbox';
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { AgmCoreModule } from '@agm/core';
@@ -21,16 +21,16 @@ import { ProductsComponent } from './products.component';
 import { CreateEditRecipeComponent } from './create-edit-recipe/create-edit-recipe.component';
 import { MatTableModule } from '@angular/material/table';
 import { MatPaginatorModule } from '@angular/material/paginator';
-import {MatExpansionModule} from '@angular/material/expansion';
+import { MatExpansionModule } from '@angular/material/expansion';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { ShoppingCartComponent } from './shopping-cart/shopping-cart.component';
 import { PurchaseComponent } from './purchase/purchase.component';
 import { LoginDialogComponent } from './login-dialog/login-dialog.component';
 import { RecipesComponent } from './recipes/recipes.component';
-//import { NgxPaginationModule } from 'ngx-pagination';
 import { LazyLoadImageModule } from 'ng-lazyload-image';
-
-
+import { NgxPaginationModule } from 'ngx-pagination';
+import { Ng2ImgMaxModule } from 'ng2-img-max';
+import { SaleDialogComponent } from './sale-dialog/sale-dialog.component';
 
 @NgModule({
   declarations: [
@@ -39,7 +39,8 @@ import { LazyLoadImageModule } from 'ng-lazyload-image';
     PurchaseComponent,
     LoginDialogComponent,
     CreateEditRecipeComponent,
-    RecipesComponent
+    RecipesComponent,
+    SaleDialogComponent
   ],
   imports: [
     CommonModule,
@@ -69,13 +70,16 @@ import { LazyLoadImageModule } from 'ng-lazyload-image';
       apiKey: 'AIzaSyA2tVXwzAQc5Ppj8-oTEuYBCFyJp39Hz7s'
     }),
     LazyLoadImageModule.forRoot(),
+    NgxPaginationModule,
+    Ng2ImgMaxModule
   ],
   providers: [
     { provide: MAT_DATE_LOCALE, useValue: 'en-GB' }
   ],
   entryComponents: [
     LoginDialogComponent,
-    CreateEditRecipeComponent
+    CreateEditRecipeComponent,
+    SaleDialogComponent
   ]
 })
 export class ProductsModule { }

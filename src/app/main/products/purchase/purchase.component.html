@@ -1,72 +1,61 @@
-<div *ngIf="userData$ | async">
-    <form [formGroup]="dataFormGroup" style="display:flex; flex-direction: column;">
-        <!-- description  -->
-    
-        <mat-form-field class="w3-block" appearance="outline">
-            <mat-label>Correo</mat-label>
-            <input autocomplete="off" formControlName="email" type="email" matInput placeholder="tucorreo@ejemplo.com">
-            <mat-error>Campo requerido</mat-error>
-        </mat-form-field>
-        <mat-form-field class="w3-block" appearance="outline">
-            <mat-label>DNI</mat-label>
-            <input autocomplete="off" formControlName="dni" type="tel" matInput placeholder="DNI / Carnet de extranjeria">
-            <mat-error>Campo requerido</mat-error>
-        </mat-form-field>
-        <mat-form-field class="w3-block" appearance="outline">
-            <mat-label>Nombre</mat-label>
-            <input autocomplete="off" formControlName="name" type="text" matInput placeholder="Nombre">
-            <mat-error>Campo requerido</mat-error>
-        </mat-form-field>
-        <mat-form-field class="w3-block" appearance="outline">
-            <mat-label>Celular</mat-label>
-            <input autocomplete="off" formControlName="phone" type="tel" matInput placeholder="Celular">
-            <mat-error>Campo requerido</mat-error>
-        </mat-form-field>
-        <mat-form-field class="w3-block" appearance="outline">
-            <mat-label>Fecha de entrega</mat-label>
-            <input matInput [matDatepicker]="dateInit" [min]="now" formControlName="date" placeholder="Fecha de entrega"
-                autocomplete="off">
-            <mat-datepicker-toggle matSuffix [for]="dateInit"></mat-datepicker-toggle>
-            <mat-datepicker #dateInit disabled="false"></mat-datepicker>
-        </mat-form-field>
-        <mat-form-field class="w3-block" appearance="outline">
-            <mat-label>Opciones de pago</mat-label>
-            <mat-select formControlName="pay" placeholder='Seleccionar'>
-                <mat-option *ngFor="let type of payType" [value]="type">
-                    {{type}}
-                </mat-option>
-            </mat-select>
-        </mat-form-field>
-    
-        <mat-form-field class="w3-block" appearance="outline">
-            <mat-select formControlName="typePay" placeholder='Boleta/Factura'>
-                <mat-option *ngFor="let type of payType" [value]="type">
-                    {{type}}
-                </mat-option>
-            </mat-select>
-        </mat-form-field>
-        <mat-form-field class="w3-block" appearance="outline">
-            <mat-label>Dirección</mat-label>
-            <input autocomplete="off" formControlName="address" type="text" matInput placeholder="Dirección de entrega">
-            <mat-error>Campo requerido</mat-error>
-        </mat-form-field>
-    
-        <mat-form-field class="w3-block" appearance="outline">
-            <mat-select [compareWith]="compareObjects" formControlName="district" placeholder="Distrito">
-                <mat-option *ngFor="let district of districts" [value]="district" (click)="changeDelivery(district)">
-                    {{district['name']}}
-                </mat-option>
-            </mat-select>
-            <mat-hint>El precio de delivery dependerá del distrito de destino</mat-hint>
-        </mat-form-field>
-    
-        <mat-form-field class="w3-block" appearance="outline">
-            <mat-label>Referencia</mat-label>
-            <input autocomplete="off" formControlName="ref" type="text" matInput placeholder="Referencia">
-            <mat-error>Campo requerido</mat-error>
-        </mat-form-field>
-    </form>
-    
+<form *ngIf="userData$ | async" [formGroup]="dataFormGroup" style="display:flex; flex-direction: column;">
+    <!-- description  -->
+
+    <mat-form-field class="w3-block" appearance="outline">
+        <mat-label>Correo</mat-label>
+        <input autocomplete="off" formControlName="email" type="email" matInput placeholder="tucorreo@ejemplo.com">
+    </mat-form-field>
+    <mat-form-field class="w3-block" appearance="outline">
+        <mat-label>DNI</mat-label>
+        <input autocomplete="off" formControlName="dni" type="tel" matInput placeholder="DNI / Carnet de extranjeria">
+        <mat-error *ngIf="dataFormGroup.get('dni').hasError('required')">Campo requerido</mat-error>
+        <mat-error *ngIf="dataFormGroup.get('dni').hasError('minlength')">
+            Número inválido
+        </mat-error>
+    </mat-form-field>
+    <mat-form-field class="w3-block" style="margin-bottom: 8px;" appearance="outline">
+        <mat-label>Nombre</mat-label>
+        <input autocomplete="off" formControlName="name" type="text" matInput placeholder="Nombre">
+        <mat-error>Campo requerido</mat-error>
+        <mat-hint  *ngIf="name">Si, el nombre que figura con tu correo no es el indicado, puedes cambiarlo aquí. (Solo en la primera compra)</mat-hint>
+    </mat-form-field>
+    <mat-form-field class="w3-block" appearance="outline">
+        <mat-label>Celular</mat-label>
+        <input autocomplete="off" formControlName="phone" type="tel" matInput placeholder="Celular">
+        <mat-error *ngIf="dataFormGroup.get('phone').hasError('required')">Campo requerido</mat-error>
+        <mat-error *ngIf="dataFormGroup.get('phone').hasError('minlength')">
+            Número inválido
+        </mat-error>
+    </mat-form-field>
+    <mat-form-field style="margin-bottom: 8px;" class="w3-block" appearance="outline">
+        <mat-label>Fecha de entrega</mat-label>
+        <input matInput [matDatepicker]="dateInit" [min]="now" formControlName="date" placeholder="Fecha de entrega"
+            autocomplete="off">
+        <mat-datepicker-toggle matSuffix [for]="dateInit"></mat-datepicker-toggle>
+        <mat-datepicker #dateInit disabled="false"></mat-datepicker>
+        <mat-error>Campo requerido</mat-error>
+        <mat-hint >* Requerido (4 días bloqueados)</mat-hint>
+    </mat-form-field>
+    <mat-form-field class="w3-block" appearance="outline">
+        <mat-label>Dirección</mat-label>
+        <input autocomplete="off" formControlName="address" type="text" matInput placeholder="Dirección de entrega">
+        <mat-error>Campo requerido</mat-error>
+    </mat-form-field>
+
+    <mat-form-field style="margin-bottom: 8px;" class="w3-block" appearance="outline">
+        <mat-select [compareWith]="compareObjects" formControlName="district" placeholder="Distrito">
+            <mat-option *ngFor="let district of districts" [value]="district" (click)="changeDelivery(district)">
+                {{district['name']}}
+            </mat-option>
+        </mat-select>
+        <mat-hint >El precio de delivery dependerá del distrito de destino</mat-hint>
+    </mat-form-field>
+
+    <mat-form-field class="w3-block" appearance="outline">
+        <mat-label>Referencia</mat-label>
+        <input autocomplete="off" formControlName="ref" type="text" matInput placeholder="Referencia">
+        <mat-error>Campo requerido</mat-error>
+    </mat-form-field>
     <div class="w3-margin-bottom">
         <div style="display: flex; flex-wrap: wrap;justify-content: space-between;">
             <div style="width: 80%;">Especifica tu dirección en el mapa (Opcional)</div>
@@ -79,9 +68,65 @@
             (mapClick)="mapClicked($event)">
             <agm-marker [latitude]="latitud" [longitude]="longitud"></agm-marker>
         </agm-map>
-    
+
     </div>
-    <button mat-raised-button color="accent" [disabled]="!dataFormGroup.valid" class="w3-block" style=" font-weight: bold;">
+    <mat-form-field class="w3-block" appearance="outline">
+        <mat-label>Opciones de pago</mat-label>
+        <mat-select formControlName="pay" placeholder='Seleccionar'>
+            <mat-option *ngFor="let type of payType" [value]="type">
+                {{type.name}}
+            </mat-option>
+        </mat-select>
+    </mat-form-field>
+    <div class="w3-margin-bottom account" *ngIf="dataFormGroup.get('pay').value">
+        {{dataFormGroup.get('pay').value['account']}}
+    </div>
+    <div class="pay ms-flex">
+        <div class="pay__total">
+            Total a pagar
+        </div>
+        <div class="ticket__total">
+            S/. {{total + delivery | number: '.2'}}
+        </div>
+    </div>
+    <mat-form-field class="w3-block" appearance="outline">
+        <mat-select formControlName="typePay" placeholder='Boleta/Factura'>
+            <mat-option *ngFor="let type of documents" [value]="type">
+                {{type}}
+            </mat-option>
+        </mat-select>
+    </mat-form-field>
+    <div class="w3-margin-bottom">
+        <div *ngIf="dataFormGroup.get('photoURL').value!=null">
+            <img class="voucher" style="object-fit: cover;" [src]="dataFormGroup.get('photoURL').value"
+                alt="fotografía" (click)="showPhoto=true">
+                <div style="text-align: center; border: 1px solid silver;" *ngIf="showPhoto">
+                    <div class="ms-flex w3-block">
+                        <span class="ms-fill"></span>
+                        <button mat-icon-button (click)="showPhoto=false">
+                            <mat-icon>close</mat-icon>
+                        </button>
+                    </div>
+                    <img style="width:80%;" [src]="dataFormGroup.get('photoURL').value"
+                    alt="fotografía grande">
+                </div>
+            <a style="color: #5da92f;" (click)="photoURL.click()">Cambiar imagen</a>
+        </div>
+
+        <div class="voucher" (click)="photoURL.click()" *ngIf="dataFormGroup.get('photoURL').value==null">
+            Agregar foto de voucher de pago
+        </div>
+
+        <mat-progress-bar *ngIf="photos?.resizing$.photoURL | async" style="width:100%" mode="indeterminate">
+        </mat-progress-bar>
+        <span *ngIf="photos.resizing$.photoURL | async" class="w3-small ms-color-11 ms-font-montserrat"
+            style="width:100%">*comprimiendo</span>
+        <input style="display: none" #photoURL type="file" accept='image/*'
+            (change)="addNewPhoto('photoURL', photoURL.files)" />
+    </div>
+    <mat-progress-bar mode="indeterminate" *ngIf="loading$ | async"></mat-progress-bar>
+    <button mat-raised-button color="accent" type="button" (click)="save()" [disabled]="!dataFormGroup.valid" class="w3-block"
+        style=" font-weight: bold;">
         Finalizar Compra
     </button>
-</div>
+</form>
