@@ -124,7 +124,7 @@ export class DatabaseService {
           takeLast(1),
           map((res: string) => {
             productData.photoURL = res;
-            productData.photoPath = `/products/pictures/${productRef.id}-${photo.name}`;
+            productData.photoPath = `/productsList/pictures/${productRef.id}-${photo.name}`;
             batch.set(productRef, productData, { merge: true });
             return batch
           })
@@ -257,4 +257,8 @@ export class DatabaseService {
   }
 
   
+  getProductRecipesValueChanges(productId: string): Observable<Recipe[]>{
+    return this.afs.collection<Recipe>(this.recipesRef, 
+      ref => ref.where("productsId", "array-contains", productId)).valueChanges()
+  }
 }

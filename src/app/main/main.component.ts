@@ -1,5 +1,8 @@
 import { AuthService } from 'src/app/core/services/auth.service';
 import { Component, OnInit } from '@angular/core';
+import { ThemeService } from '../core/services/theme.service';
+import { MatDialog } from '@angular/material/dialog';
+import { LoginDialogComponent } from './login-dialog/login-dialog.component';
 
 @Component({
   selector: 'app-main',
@@ -11,7 +14,10 @@ export class MainComponent implements OnInit {
   openedMenu: boolean = false;
 
   constructor(
-    public auth: AuthService
+    public auth: AuthService,
+    public themeService: ThemeService,
+    private dialog: MatDialog,
+
   ) { }
 
   ngOnInit(): void {
@@ -22,18 +28,11 @@ export class MainComponent implements OnInit {
   }
 
   login(){
-    console.log('iniciando sesion')
+    this.dialog.open(LoginDialogComponent)
   }
 
   logout(){
-    console.log('cerrando sesion')
+    this.auth.logout();
   }
 
-  toggleLight(){
-    console.log('light style')
-  }
-
-  toggleDark(){
-    console.log('dark style')
-  }
 }

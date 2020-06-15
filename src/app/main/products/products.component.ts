@@ -1,6 +1,5 @@
 import { User } from 'src/app/core/models/user.model';
 import { AuthService } from 'src/app/core/services/auth.service';
-import { LoginDialogComponent } from './login-dialog/login-dialog.component';
 import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { map, startWith, filter, take, tap } from 'rxjs/operators';
 import { FormControl } from '@angular/forms';
@@ -9,6 +8,7 @@ import { Observable, combineLatest } from 'rxjs';
 import { Component, OnInit } from '@angular/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Product } from 'src/app/core/models/product.model';
+import { LoginDialogComponent } from '../login-dialog/login-dialog.component';
 
 @Component({
   selector: 'app-products',

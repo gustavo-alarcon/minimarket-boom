@@ -25,7 +25,6 @@ import { MatExpansionModule } from '@angular/material/expansion';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { ShoppingCartComponent } from './shopping-cart/shopping-cart.component';
 import { PurchaseComponent } from './purchase/purchase.component';
-import { LoginDialogComponent } from './login-dialog/login-dialog.component';
 import { RecipesComponent } from './recipes/recipes.component';
 import { LazyLoadImageModule } from 'ng-lazyload-image';
 import { NgxPaginationModule } from 'ngx-pagination';
@@ -37,7 +36,6 @@ import { SaleDialogComponent } from './sale-dialog/sale-dialog.component';
     ProductsComponent,
     ShoppingCartComponent,
     PurchaseComponent,
-    LoginDialogComponent,
     CreateEditRecipeComponent,
     RecipesComponent,
     SaleDialogComponent
