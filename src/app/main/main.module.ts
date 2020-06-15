@@ -14,14 +14,18 @@ import {MatDividerModule} from '@angular/material/divider';
 import {MatDialogModule} from '@angular/material/dialog';
 import { ConfirmationDialogComponent } from './confirmation-dialog/confirmation-dialog.component';
 import { MatFormFieldModule } from '@angular/material/form-field';
-import { ReactiveFormsModule } from '@angular/forms';
+import { ReactiveFormsModule, FormsModule } from '@angular/forms';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
+import { LoginDialogComponent } from './login-dialog/login-dialog.component';
+import { MatCheckboxModule } from '@angular/material/checkbox';
+import { MatInputModule } from '@angular/material/input';
 
 
 @NgModule({
   declarations: [
     MainComponent,
-    ConfirmationDialogComponent
+    ConfirmationDialogComponent,
+    LoginDialogComponent
   ],
   imports: [
     CommonModule,
@@ -36,10 +40,14 @@ import { MatSlideToggleModule } from '@angular/material/slide-toggle';
     MatDialogModule,
     MatFormFieldModule,
     ReactiveFormsModule,
-    MatSlideToggleModule
+    MatSlideToggleModule,
+    FormsModule,
+    MatCheckboxModule,
+    MatInputModule,
   ],
   entryComponents: [
-    ConfirmationDialogComponent
+    ConfirmationDialogComponent,
+    LoginDialogComponent
   ]
 })
 export class MainModule { }

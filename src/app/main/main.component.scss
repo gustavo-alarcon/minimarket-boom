@@ -39,7 +39,7 @@
   object-fit: contain;
 }
 
-.user {
+.login {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
@@ -50,9 +50,27 @@
   justify-content: center;
 }
 
+.user {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  font-weight: 900;
+  font-size: 1.1em;
+  padding: 28px 40px 20px;
+  position: relative;
+  justify-content: left;
+}
+
 .user__name {
   width: 60%;
-  text-align: center;
+  text-align: left;
+  font-size: x-large;
+}
+.user__surname {
+  width: 60%;
+  text-align: left;
+  font-size: small;
+  font-weight: normal;
 }
 
 .user__image {

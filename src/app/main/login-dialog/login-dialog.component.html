@@ -21,8 +21,7 @@
                 <mat-error>
                     <span *ngIf="dataFormGroup.get('email').errors?.required">Usuario requerido</span>
                     <span *ngIf="dataFormGroup.get('email').errors?.email">Email no válido</span>
-                    <span *ngIf="dataFormGroup.get('email').errors?.emailRepeatedValidator">Usuario ya
-                        registrado.</span>
+                    <span *ngIf="dataFormGroup.get('email').errors?.emailRepeatedValidator">Usuario ya registrado.</span>
                 </mat-error>
             </mat-form-field>
 

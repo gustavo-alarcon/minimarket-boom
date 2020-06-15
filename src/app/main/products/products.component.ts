@@ -1,5 +1,4 @@
 import { AuthService } from 'src/app/core/services/auth.service';
-import { LoginDialogComponent } from './login-dialog/login-dialog.component';
 import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { map, startWith, filter, take } from 'rxjs/operators';
 import { FormControl } from '@angular/forms';
@@ -10,6 +9,7 @@ import { CreateEditRecipeComponent } from './create-edit-recipe/create-edit-reci
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Recipe } from 'src/app/core/models/recipe.model';
 import { Product } from 'src/app/core/models/product.model';
+import { LoginDialogComponent } from '../login-dialog/login-dialog.component';
 
 @Component({
   selector: 'app-products',

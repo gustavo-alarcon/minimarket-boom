@@ -25,7 +25,6 @@ import {MatExpansionModule} from '@angular/material/expansion';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { ShoppingCartComponent } from './shopping-cart/shopping-cart.component';
 import { PurchaseComponent } from './purchase/purchase.component';
-import { LoginDialogComponent } from './login-dialog/login-dialog.component';
 import { RecipesComponent } from './recipes/recipes.component';
 //import { NgxPaginationModule } from 'ngx-pagination';
 import { LazyLoadImageModule } from 'ng-lazyload-image';
@@ -37,7 +36,6 @@ import { LazyLoadImageModule } from 'ng-lazyload-image';
     ProductsComponent,
     ShoppingCartComponent,
     PurchaseComponent,
-    LoginDialogComponent,
     CreateEditRecipeComponent,
     RecipesComponent
   ],
@@ -74,7 +72,6 @@ import { LazyLoadImageModule } from 'ng-lazyload-image';
     { provide: MAT_DATE_LOCALE, useValue: 'en-GB' }
   ],
   entryComponents: [
-    LoginDialogComponent,
     CreateEditRecipeComponent
   ]
 })
