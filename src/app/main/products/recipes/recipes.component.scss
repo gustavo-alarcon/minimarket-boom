@@ -35,6 +35,7 @@
 
 ul {
     list-style: none;
+    padding-inline-start: 0;
 }
 
 ul li::before {
@@ -44,6 +45,5 @@ ul li::before {
     font-size: 2.5em;
     display: inline-block;
     width: 0.5em;
-    margin-left: -1em;
     vertical-align: middle;
 }

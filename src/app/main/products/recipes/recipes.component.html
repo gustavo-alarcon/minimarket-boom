@@ -17,33 +17,34 @@
         </button>
     </div>
     <div class="w3-padding w3-margin-top">
-        <mat-expansion-panel *ngFor="let recipe of init.recipes"
-            class="w3-margin-bottom">
+        <mat-expansion-panel *ngFor="let recipe of init.recipes" class="w3-margin-bottom">
             <mat-expansion-panel-header>
                 <mat-panel-title>
-                    Steak pimienta con queso
+                    {{recipe.name}}
                 </mat-panel-title>
                 <mat-panel-description style="justify-content: flex-end;">
                     <button mat-icon-button (click)="onCreateEditRecipe(true, recipe)">
                         <mat-icon>edit</mat-icon>
                     </button>
-                  
+
                 </mat-panel-description>
             </mat-expansion-panel-header>
             <div>Descripción</div>
-            <p style="font-size: 0.75em;line-height: 1.3em;">Lorem ipsum dolor sit amet consectetur adipisicing elit.
-                Error,
-                ipsa voluptas
-                provident, maxime tempora
-                tempore nemo deserunt iste aliquid qui vel totam. Porro dolorum fugit ut maxime. Dolores, temporibus
-                odit!
+            <p style="font-size: 0.75em;line-height: 1.3em;">
+                {{recipe.description}}
             </p>
-            <div>Ingredientes</div>
-            <ul style="font-size: 0.75em;line-height: 1.3em;">
-                <li>Medio molde de queso</li>
-                <li>Pimienta</li>
-                <li>Carne de res</li>
-            </ul>
+            <div class="ms-flex">
+                <div style="width: 41%;">
+                    <div>Ingredientes</div>
+                    <ul style="font-size: 0.75em;line-height: 1.3em;">
+                        <li *ngFor="let item of recipe.inputs">{{item}}</li>
+                    </ul>
+                </div>
+                <div>
+                    <iframe style="height: 100px;width: 160px;" [src]="recipe.videroURL">
+                    </iframe>
+                </div>
+            </div>
 
         </mat-expansion-panel>
     </div>
