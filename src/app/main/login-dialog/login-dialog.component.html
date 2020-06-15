@@ -40,7 +40,7 @@
             </mat-form-field>
         </form>
         <div class="w3-margin-bottom">
-            <mat-checkbox class="w3-small" color="primary" [formControl]="registerForm" (click)="dataFormGroup.get('email').setValue(null)">
+            <mat-checkbox class="w3-small" color="primary" [formControl]="registerForm" (click)="reset()">
                 Ya estoy registrado
             </mat-checkbox>
         </div>

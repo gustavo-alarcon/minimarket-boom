@@ -100,4 +100,12 @@ export class LoginDialogComponent implements OnInit {
       }
     }
   }
+
+  reset(){
+    this.dataFormGroup.reset()
+    Object.keys(this.dataFormGroup.controls).forEach(key => {
+      this.dataFormGroup.controls[key].setErrors(null)
+    });
+
+  }
 }

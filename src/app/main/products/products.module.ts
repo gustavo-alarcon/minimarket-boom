@@ -75,7 +75,6 @@ import { SaleDialogComponent } from './sale-dialog/sale-dialog.component';
     { provide: MAT_DATE_LOCALE, useValue: 'en-GB' }
   ],
   entryComponents: [
-    LoginDialogComponent,
     CreateEditRecipeComponent,
     SaleDialogComponent
   ]
