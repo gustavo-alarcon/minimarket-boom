@@ -15,10 +15,10 @@
                     </div>
                     <div>
                         <div class="user__name">
-                            {{user.displayName.split(" ")[0]}}
+                            {{user.displayName?.split(" ")[0]}}
                         </div>
                         <div class="user__surname">
-                            {{user.displayName.split(" ").slice(1, 3).join(" ")}}
+                            {{user.displayName?.split(" ").slice(1, 3).join(" ")}}
                         </div>
                     </div>
                 </div>
