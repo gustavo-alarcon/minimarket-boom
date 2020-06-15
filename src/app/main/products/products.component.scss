@@ -10,19 +10,22 @@
 .product {
     border-radius: 20px;
     box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+    padding: 5px 12px 12px 12px;
+    height: 205px;
 
     &__container {
         justify-content: space-between;
         align-items: center;
+        height: 100%;
     }
 
     &__image {
         width: 35%;
     }
 
-    &__paragraph{
+    &__paragraph {
         margin-top: 0;
-        min-height: 68px;
+        min-height: 60px;
         font-size: 0.7em;
     }
 
@@ -36,13 +39,16 @@
     }
 
     &__provision {
+        margin-bottom: 7px;
         color: #eb5757;
         text-decoration-line: underline;
+        font-size: 0.7em;
+        margin-top: -9px;
     }
 
-    &__etiquet{
+    &__etiquet {
         font-size: 0.7em;
-        color: #BDBDBD;
+        color: #bdbdbd;
     }
 
     &__price {
@@ -66,6 +72,16 @@
         bottom: 0;
         font-weight: bold;
         font-size: 8.5px;
+    }
+
+    &__promo {
+        background: #267131;
+        border-radius: 20px;
+        color: white;
+        font-size: 0.7em;
+        margin-top: 5px;
+        padding: 3px;
+        font-weight: bold;
     }
 }
 
