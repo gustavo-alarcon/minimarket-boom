@@ -1,4 +1,4 @@
-import { Sale } from './../models/sale.model';
+import { Sale, saleStatusOptions } from './../models/sale.model';
 import { Injectable } from '@angular/core';
 import { AngularFirestore, AngularFirestoreCollection, DocumentReference, AngularFirestoreDocument } from '@angular/fire/firestore';
 import { Product } from '../models/product.model';
@@ -260,5 +260,10 @@ export class DatabaseService {
   getProductRecipesValueChanges(productId: string): Observable<Recipe[]>{
     return this.afs.collection<Recipe>(this.recipesRef, 
       ref => ref.where("productsId", "array-contains", productId)).valueChanges()
+  }
+
+  getSalesUser(user:string): Observable<Sale[]>{
+    return this.afs.collection<Sale>(`/db/distoProductos/sales`, 
+      ref => ref.where("user", "==", user)).valueChanges()
   }
 }
