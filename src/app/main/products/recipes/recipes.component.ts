@@ -8,6 +8,8 @@ import { CreateEditRecipeComponent } from './../create-edit-recipe/create-edit-r
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { Product } from 'src/app/core/models/product.model';
+import { DomSanitizer } from '@angular/platform-browser';
+
 
 @Component({
   selector: 'app-recipes',
@@ -21,7 +23,8 @@ export class RecipesComponent implements OnInit {
     private dbs: DatabaseService,
     private dialog: MatDialog,
     private snackBar: MatSnackBar,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
+    public sanitizer: DomSanitizer
   ) { }
 
   ngOnInit(): void {
@@ -92,4 +95,5 @@ export class RecipesComponent implements OnInit {
       })
     }
   }
+
 }

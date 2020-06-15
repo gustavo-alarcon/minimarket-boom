@@ -41,7 +41,9 @@
                     </ul>
                 </div>
                 <div>
-                    <iframe style="height: 100px;width: 160px;" [src]="recipe.videroURL" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen>
+                    <iframe style="height: 100px;width: 160px;" 
+                        [src]="sanitizer.bypassSecurityTrustResourceUrl(recipe.videoURL)" frameborder="0" 
+                        allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen>
                     </iframe>
                 </div>
             </div>
