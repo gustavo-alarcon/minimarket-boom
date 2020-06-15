@@ -119,6 +119,12 @@ export class ProductsComponent implements OnInit {
         return el.quantity
       }
     }).reduce((a, b) => a + b, 0)
+/*
+    if (quantity == stop) {
+      this.snackBar.open('Ha llegado al límite máximo de peso por pedido', 'Cerrar', {
+        duration: 3000
+      })
+    }*/
     return quantity >= stop
   }
 
