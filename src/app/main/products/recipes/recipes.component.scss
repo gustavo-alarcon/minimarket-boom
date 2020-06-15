@@ -1,0 +1,49 @@
+.title-div {
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.15) 0%, rgba(255, 255, 255, 0) 100%),
+        url(../../../../assets/images/recipes-title.png);
+    min-height: 150px;
+    background-size: cover;
+    box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+
+    &__recipe {
+        color: white;
+        text-transform: uppercase;
+        padding-right: 25px;
+        font-weight: 900;
+        letter-spacing: 0.05em;
+        font-size: 3em;
+        line-height: 1em;
+        font-family: Poppins;
+        text-align: right;
+        text-shadow: 1px 0 0 #5da92f, -1px 0 0 #5da92f, 0 1px 0 #5da92f, 0 -1px 0 #5da92f, 1px 1px #5da92f,
+            -1px -1px 0 #5da92f, 1px -1px 0 #5da92f, -1px 1px 0 #5da92f;
+    }
+
+    &__product {
+        width: fit-content;
+        margin-top: 10px;
+        background: #5da92f;
+        color: white;
+        font-family: Poppins;
+        font-weight: bold;
+        font-size: 2em;
+        line-height: 1.3em;
+        padding: 0 35px;
+        text-shadow: 0px 4px 4px rgba(255, 255, 255, 0.25);
+    }
+}
+
+ul {
+    list-style: none;
+}
+
+ul li::before {
+    content: "\2022";
+    color: #fcd652;
+    font-weight: bold;
+    font-size: 2.5em;
+    display: inline-block;
+    width: 0.5em;
+    margin-left: -1em;
+    vertical-align: middle;
+}

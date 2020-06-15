@@ -1,9 +1,8 @@
-
 // Custom Theming for Angular Material
-@import './assets/css/animate.css';
-@import './assets/css/w3.css';
+@import "./assets/css/animate.css";
+@import "./assets/css/w3.css";
 // For more information: https://material.angular.io/guide/theming
-@import '~@angular/material/theming';
+@import "~@angular/material/theming";
 // Plus imports for other components in your app.
 
 // Include the common styles for Angular Material. We include this here so that you only
@@ -15,71 +14,70 @@
 // (imported above). For each palette, you can optionally specify a default, lighter, and darker
 // hue. Available color palettes: https://material.io/design/color/
 $mat-disto-productos-primary-palette: (
-  50 : #ecf5e6,
-  100 : #cee5c1,
-  200 : #aed497,
-  300 : #8ec36d,
-  400 : #75b64e,
-  500 : #5da92f,
-  600 : #55a22a,
-  700 : #4b9823,
-  800 : #418f1d,
-  900 : #307e12,
-  A100 : #c5ffb3,
-  A200 : #9eff80,
-  A400 : #77ff4d,
-  A700 : #64ff33,
+  50: #ecf5e6,
+  100: #cee5c1,
+  200: #aed497,
+  300: #8ec36d,
+  400: #75b64e,
+  500: #5da92f,
+  600: #55a22a,
+  700: #4b9823,
+  800: #418f1d,
+  900: #307e12,
+  A100: #c5ffb3,
+  A200: #9eff80,
+  A400: #77ff4d,
+  A700: #64ff33,
   contrast: (
-      50 : #000000,
-      100 : #000000,
-      200 : #000000,
-      300 : #000000,
-      400 : #000000,
-      500 : #ffffff,
-      600 : #ffffff,
-      700 : #ffffff,
-      800 : #ffffff,
-      900 : #ffffff,
-      A100 : #000000,
-      A200 : #000000,
-      A400 : #000000,
-      A700 : #000000,
-  )
+    50: #000000,
+    100: #000000,
+    200: #000000,
+    300: #000000,
+    400: #000000,
+    500: #ffffff,
+    600: #ffffff,
+    700: #ffffff,
+    800: #ffffff,
+    900: #ffffff,
+    A100: #000000,
+    A200: #000000,
+    A400: #000000,
+    A700: #000000,
+  ),
 );
 
 $mat-disto-productos-accent-palette: (
-  50 : #fffaea,
-  100 : #fef3cb,
-  200 : #feeba9,
-  300 : #fde286,
-  400 : #fcdc6c,
-  500 : #fcd652,
-  600 : #fcd14b,
-  700 : #fbcc41,
-  800 : #fbc638,
-  900 : #fabc28,
-  A100 : #ffffff,
-  A200 : #ffffff,
-  A400 : #fff0d0,
-  A700 : #ffe8b7,
+  50: #fffaea,
+  100: #fef3cb,
+  200: #feeba9,
+  300: #fde286,
+  400: #fcdc6c,
+  500: #fcd652,
+  600: #fcd14b,
+  700: #fbcc41,
+  800: #fbc638,
+  900: #fabc28,
+  A100: #ffffff,
+  A200: #ffffff,
+  A400: #fff0d0,
+  A700: #ffe8b7,
   contrast: (
-      50 : #000000,
-      100 : #000000,
-      200 : #000000,
-      300 : #000000,
-      400 : #000000,
-      500 : #000000,
-      600 : #000000,
-      700 : #000000,
-      800 : #000000,
-      900 : #000000,
-      A100 : #000000,
-      A200 : #000000,
-      A400 : #000000,
-      A700 : #000000,
-  )
+    50: #000000,
+    100: #000000,
+    200: #000000,
+    300: #000000,
+    400: #000000,
+    500: #000000,
+    600: #000000,
+    700: #000000,
+    800: #000000,
+    900: #000000,
+    A100: #000000,
+    A200: #000000,
+    A400: #000000,
+    A700: #000000,
+  ),
 );
-
 
 $disto-productos-primary: mat-palette($mat-disto-productos-primary-palette);
 $disto-productos-accent: mat-palette($mat-disto-productos-accent-palette);
@@ -97,21 +95,21 @@ $disto-productos-dark-theme: mat-dark-theme($disto-productos-primary, $disto-pro
 @include angular-material-theme($disto-productos-light-theme);
 
 /* You can add global styles to this file, and also import other style files */
-.dark-theme{
+.dark-theme {
   @include angular-material-theme($disto-productos-dark-theme);
-  .meraki__logo{
-    filter: invert(1)
+  .meraki__logo {
+    filter: invert(1);
   }
 }
 
-
-html, body { 
-  height: 100%; 
+html,
+body {
+  height: 100%;
 }
 
-body { 
-  margin: 0; 
-  font-family: Raleway, sans-serif; 
+body {
+  margin: 0;
+  font-family: Raleway, sans-serif;
 }
 
 a {
@@ -122,7 +120,7 @@ a {
   --primary-color: #5da92f;
   --accent-color: #fcd652;
   --warn-color: #ef5350;
-  --forth-color: #418f1d,;
+  --forth-color: #418f1d;
 }
 
 .ms-flex {
@@ -195,7 +193,7 @@ a {
   //border-bottom: 5px solid var(--primary-color) !important;
 }
 
-@media(max-width: 600px) {
+@media (max-width: 600px) {
   .title {
     font-size: 1.5em;
   }
@@ -206,31 +204,31 @@ a {
   letter-spacing: 0.05em !important;
   font-weight: 900 !important;
   text-transform: uppercase !important;
-  font-family: 'Raleway', sans-serif !important;
+  font-family: "Raleway", sans-serif !important;
   color: #828282 !important;
 }
 
 /*Inputs*/
 
-.mat-divider{
+.mat-divider {
   border-top: 4px solid var(--primary-color) !important;
 }
 
-.mat-form-field-appearance-outline .mat-form-field-label, .mat-form-field-appearance-outline.mat-focused .mat-form-field-label {
-  font-family: 'Raleway', sans-serif;
+.mat-form-field-appearance-outline .mat-form-field-label,
+.mat-form-field-appearance-outline.mat-focused .mat-form-field-label {
+  font-family: "Raleway", sans-serif;
 }
 .formFieldRounded {
   font-size: 14px !important;
-  .mat-form-field-appearance-outline{
-    .mat-form-field-outline-start{
+  .mat-form-field-appearance-outline {
+    .mat-form-field-outline-start {
       border-radius: 20px 0 0 20px !important;
-    };
-    .mat-form-field-outline-end{
+    }
+    .mat-form-field-outline-end {
       border-radius: 0 20px 20px 0 !important;
     }
   }
 }
-
 
 .mat-form-field .mat-input-element {
   font-family: Raleway;
@@ -253,23 +251,23 @@ a {
 }
 
 .mat-select-panel .mat-option {
-  font-family: 'Raleway', sans-serif;
+  font-family: "Raleway", sans-serif;
 }
 
 .mat-select-value-text {
-  font-family: 'Raleway', sans-serif;
+  font-family: "Raleway", sans-serif;
 }
 
 .mat-optgroup-label {
-  font-family: 'Raleway', sans-serif;
+  font-family: "Raleway", sans-serif;
 }
 
-.mat-slide-toggle-content{
-  font-family: 'Raleway', sans-serif;
+.mat-slide-toggle-content {
+  font-family: "Raleway", sans-serif;
 }
 
 img.ng-lazyloaded {
-  animation: fadein .5s;
+  animation: fadein 0.5s;
 }
 
 @keyframes fadein {
@@ -281,21 +279,36 @@ img.ng-lazyloaded {
   }
 }
 
-.mat-button, .mat-raised-button, .mat-stroked-button, .mat-flat-button {
-  font-family: 'Raleway', sans-serif;
+.mat-button,
+.mat-raised-button,
+.mat-stroked-button,
+.mat-flat-button {
+  font-family: "Raleway", sans-serif;
   border-radius: 20px !important;
 }
 
-.mat-button{
+.mat-button {
   font-size: 1em;
   letter-spacing: 0.05em;
 }
 
-.mat-card{
-  font-family: 'Raleway', sans-serif;
-  color: #4F4F4F;
+.mat-card {
+  font-family: "Raleway", sans-serif;
+  color: #4f4f4f;
 }
 
+/*panel*/
+.mat-expansion-panel-header-title {
+  font-family: Poppins;
+  color: #585656;
+  display: flex;
+  align-items: center;
+}
+
+.mat-expansion-panel-body {
+  font-family: "Raleway", sans-serif;
+  color: #4f4f4f;
+}
 
 /*ticket*/
 
@@ -347,7 +360,7 @@ img.ng-lazyloaded {
 }
 
 .ticket__separate {
-  border-top: 2px solid #4F4F4F;
+  border-top: 2px solid #4f4f4f;
   height: 3px;
   width: 100%;
   margin: 10px 0;
@@ -372,12 +385,13 @@ img.ng-lazyloaded {
 
 /*tabs*/
 
-.mat-tab-label,.mat-tab-link, .mat-expansion-panel-header {
+.mat-tab-label,
+.mat-tab-link,
+.mat-expansion-panel-header {
   background-color: transparent;
   font-family: Raleway;
   font-weight: 700;
 }
-
 
 /*tables*/
 
@@ -391,8 +405,9 @@ img.ng-lazyloaded {
   font-weight: 500;
 }
 
-.ms-table__th, .ms-table__td {
-  font-family: 'Raleway', sans-serif;
+.ms-table__th,
+.ms-table__td {
+  font-family: "Raleway", sans-serif;
   letter-spacing: 0.05em;
 }
 
@@ -410,7 +425,7 @@ img.ng-lazyloaded {
 }
 
 .ms-table__td.mat-cell:last-of-type {
-  padding-right: 0 !important
+  padding-right: 0 !important;
 }
 
 .ms-table__td.mat-cell {
@@ -429,7 +444,7 @@ img.ng-lazyloaded {
   font-weight: 900;
   padding: 3px 10px;
   letter-spacing: 0.05em;
-  color: #FFFFFF;
+  color: #ffffff;
 }
 
 .subtotal--big {
@@ -439,8 +454,8 @@ img.ng-lazyloaded {
 /*scroll bar*/
 
 .mat-drawer-inner-container::-webkit-scrollbar {
-  width: 8px;     /* Tamaño del scroll en vertical */
-  height: 8px;    /* Tamaño del scroll en horizontal */
+  width: 8px; /* Tamaño del scroll en vertical */
+  height: 8px; /* Tamaño del scroll en horizontal */
 }
 
 .mat-drawer-inner-container::-webkit-scrollbar-thumb {
@@ -463,5 +478,5 @@ img.ng-lazyloaded {
 
 .mat-drawer-inner-container::-webkit-scrollbar-track:hover,
 .mat-drawer-inner-container::-webkit-scrollbar-track:active {
-background: #d4d4d4;
+  background: #d4d4d4;
 }

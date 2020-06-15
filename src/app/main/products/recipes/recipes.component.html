@@ -1,0 +1,49 @@
+<div *ngIf="init$ | async " class="w3-hide-large w3-hide-medium">
+    <div class="title-div">
+        <div>
+            <button mat-icon-button routerLink="/main/products">
+                <mat-icon>keyboard_backspace</mat-icon>
+            </button>
+        </div>
+        <div class="title-div__recipe">Recetas</div>
+        <div class="w3-margin-bottom ms-flex" style="justify-content: flex-end;">
+            <div class="title-div__product">{{title | titlecase}}</div>
+        </div>
+
+    </div>
+    <div style="padding-left: 20px; margin-top: -28px;">
+        <button mat-fab color='accent' (click)="onCreateEditRecipe(false, null)">
+            <mat-icon>add</mat-icon>
+        </button>
+    </div>
+    <div class="w3-padding w3-margin-top">
+        <mat-expansion-panel class="w3-margin-bottom">
+            <mat-expansion-panel-header>
+                <mat-panel-title>
+                    Steak pimienta con queso
+                </mat-panel-title>
+                <mat-panel-description style="justify-content: flex-end;">
+                    <button mat-icon-button (click)="onCreateEditRecipe(false, null)">
+                        <mat-icon>edit</mat-icon>
+                    </button>
+                  
+                </mat-panel-description>
+            </mat-expansion-panel-header>
+            <div>Descripción</div>
+            <p style="font-size: 0.75em;line-height: 1.3em;">Lorem ipsum dolor sit amet consectetur adipisicing elit.
+                Error,
+                ipsa voluptas
+                provident, maxime tempora
+                tempore nemo deserunt iste aliquid qui vel totam. Porro dolorum fugit ut maxime. Dolores, temporibus
+                odit!
+            </p>
+            <div>Ingredientes</div>
+            <ul style="font-size: 0.75em;line-height: 1.3em;">
+                <li>Medio molde de queso</li>
+                <li>Pimienta</li>
+                <li>Carne de res</li>
+            </ul>
+
+        </mat-expansion-panel>
+    </div>
+</div>

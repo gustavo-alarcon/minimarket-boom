@@ -1,3 +1,4 @@
+import { RecipesComponent } from './recipes/recipes.component';
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Routes, RouterModule } from '@angular/router';
@@ -8,6 +9,10 @@ const routes: Routes = [
     path: '',
     component: ProductsComponent,
   },
+  {
+    path: 'recetas/:id',
+    component: RecipesComponent,
+  }
 ]
 
 @NgModule({

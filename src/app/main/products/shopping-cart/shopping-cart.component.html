@@ -1,5 +1,5 @@
-<div style="min-height: 51vh;">
-    <div style="margin: 15px 0; color: #828282;">
+<div class="w3-margin-bottom" style="min-height: 51vh;">
+    <div class="ticket__div">
         <div style="display: flex; flex-wrap: wrap; margin-bottom: 16px;">
             <div style="width: 25%;">Cant.</div>
             <div style="width: 45%;">Descripción</div>
@@ -24,20 +24,20 @@
 
         </div>
         <div class="ticket__separate"></div>
-        <div style="display: flex; flex-wrap: wrap; ">
+        <div class="ms-flex">
             <div style="width: 70%; text-align: right;padding: 0 20px;">SubTotal</div>
             <div style="width: 30%;">S/. {{total * 0.82 | number: '.2'}}</div>
         </div>
-        <div style="display: flex; flex-wrap: wrap; ">
+        <div class="ms-flex">
             <div style="width: 70%; text-align: right;padding: 0 20px;">IGV</div>
             <div style="width: 30%;">S/. {{total * 0.18 | number: '.2'}}</div>
         </div>
-        <div style="display: flex; flex-wrap: wrap; ">
+        <div class="ms-flex">
             <div style="width: 70%; text-align: right;padding: 0 20px;">Total</div>
             <div style="width: 30%;">S/. {{total | number: '.2'}}</div>
         </div>
         <div class="ticket__separate"></div>
-        <div style="display: flex; flex-wrap: wrap; ">
+        <div class="ms-flex">
             <div style="width: 70%; text-align: right;padding: 0 20px;">Delivery</div>
             <div style="width: 30%;">S/. {{delivery | number: '.2'}}</div>
         </div>
