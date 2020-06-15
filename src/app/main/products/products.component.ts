@@ -92,6 +92,12 @@ export class ProductsComponent implements OnInit {
     }
 
     this.dbs.total = this.dbs.order.map(el => this.giveProductPrice(el)).reduce((a, b) => a + b, 0)
+
+    if(this.stopBuy()){
+      this.snackBar.open('Ha llegado al límite máximo de peso por pedido', 'Cerrar', {
+        duration: 3000
+      })
+    }
   }
 
   getdiscount(item: Product) {
