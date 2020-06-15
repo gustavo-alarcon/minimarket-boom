@@ -141,7 +141,7 @@ export class ProductsListComponent implements OnInit {
       content: `¿Está seguro de borrar el producto ${product.description}?`,
       noObservation: true,
       observation: null,
-      title: 'Confirmar',
+      title: 'Borrar',
       titleIcon: 'done_all'
       }
     })
