@@ -1,10 +1,10 @@
 import { DatabaseService } from 'src/app/core/services/database.service';
-import { FormBuilder, FormGroup, Validators, AbstractControl } from '@angular/forms';
+import { FormBuilder, FormGroup, Validators, AbstractControl, FormControl } from '@angular/forms';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { map } from 'rxjs/operators';
+import { map, startWith, tap, debounceTime, take, switchMap } from 'rxjs/operators';
 import { MatDialogRef } from '@angular/material/dialog';
 import { AuthService } from 'src/app/core/services/auth.service';
-import { Observable, of } from 'rxjs';
+import { Observable, of, combineLatest } from 'rxjs';
 import { Component, OnInit } from '@angular/core';
 
 @Component({
@@ -19,6 +19,9 @@ export class LoginDialogComponent implements OnInit {
   hidePass: boolean = true;
 
   register: boolean = false
+
+  registerForm = new FormControl(false)
+  register$: Observable<boolean>
 
   constructor(
     public auth: AuthService,
@@ -44,6 +47,14 @@ export class LoginDialogComponent implements OnInit {
         }
       })
     )
+
+    this.register$ = this.registerForm.valueChanges.pipe(
+      startWith(false),
+      tap(res => {
+        this.register = res
+      })
+    )
+
   }
 
   login(): void {

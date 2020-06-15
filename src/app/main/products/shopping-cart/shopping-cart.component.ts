@@ -17,44 +17,33 @@ export class ShoppingCartComponent implements OnInit {
   ) { }
 
   ngOnInit(): void {
-    this.total = this.dbs.order.map(el => el['product']['price'] * el['quantity']).reduce((a, b) => a + b, 0)
+    this.total = this.dbs.order.map(el =>  this.giveProductPrice(el)).reduce((a, b) => a + b, 0)
   }
 
   roundNumber(number) {
     return Number(parseFloat(number).toFixed(1));
   }
 
+  round(number) {
+    return Math.floor(number)
+  }
+
   giveProductPrice(item) {
-    if (item.product.ref) {
-      if (!item.product.promo) {
-        return this.roundNumber(item.quantity * item.product.refPrice)
-      }
-      else {
-        let promRefTotalQuantity = Math.floor(item.quantity / item.product.promoData.quantity);
-        let promRefTotalPrice = promRefTotalQuantity * item.product.promoData.promoPrice;
-        let noPromRefTotalQuantity = item.quantity % item.product.promoData.quantity;
-        let noPromRefTotalPrice = noPromRefTotalQuantity * item.product.refPrice;
-        let noPromNoRefTotalPrice = noPromRefTotalPrice / item.product.price;
-        return this.roundNumber(promRefTotalPrice + noPromRefTotalPrice);
-      }
+    if (item.product.promo) {
+      let promTotalQuantity = Math.floor(item.quantity / item.product.promoData.quantity);
+      let promTotalPrice = promTotalQuantity * item.product.promoData.promoPrice;
+      let noPromTotalQuantity = item.quantity % item.product.promoData.quantity;
+      let noPromTotalPrice = noPromTotalQuantity * item.product.price;
+      return this.roundNumber(promTotalPrice + noPromTotalPrice);
     }
     else {
-      if (item.product.promo) {
-        let promTotalQuantity = Math.floor(item.quantity / item.product.promoData.quantity);
-        let promTotalPrice = promTotalQuantity * item.product.promoData.promoPrice;
-        let noPromTotalQuantity = item.quantity % item.product.promoData.quantity;
-        let noPromTotalPrice = noPromTotalQuantity * item.product.price;
-        return this.roundNumber(promTotalPrice + noPromTotalPrice);
-      }
-      else {
-        return this.roundNumber(item.quantity * item.product.price)
-      }
+      return this.roundNumber(item.quantity * item.product.price)
     }
   }
 
   delete(ind) {
     this.dbs.order.splice(ind, 1)
-    this.total = this.dbs.order.map(el => el['product']['price'] * el['quantity']).reduce((a, b) => a + b, 0)
+    this.total = this.dbs.order.map(el => this.giveProductPrice(el)).reduce((a, b) => a + b, 0)
   }
 
 
