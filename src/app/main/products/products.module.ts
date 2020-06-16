@@ -1,3 +1,4 @@
+import { ProductDivComponent } from './../product-div/product-div.component';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatCardModule } from '@angular/material/card';
 import { MatSelectModule } from '@angular/material/select';
@@ -38,7 +39,8 @@ import { SaleDialogComponent } from './sale-dialog/sale-dialog.component';
     PurchaseComponent,
     CreateEditRecipeComponent,
     RecipesComponent,
-    SaleDialogComponent
+    SaleDialogComponent,
+    ProductDivComponent
   ],
   imports: [
     CommonModule,
