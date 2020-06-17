@@ -8,6 +8,7 @@ import { Observable, concat, of, interval, BehaviorSubject } from 'rxjs';
 import { User } from '../models/user.model';
 import { AngularFireStorage } from '@angular/fire/storage';
 import { Recipe } from '../models/recipe.model';
+import { Unit } from '../models/unit.model';
 
 @Injectable({
   providedIn: 'root'
@@ -85,11 +86,34 @@ export class DatabaseService {
     }))
   }
 
+  getProductsListUnitsValueChanges(): Observable<Unit[]> {
+    return this.getGeneralConfigDoc().pipe(map(res => {
+      if (res) {
+        if (res.hasOwnProperty('units')) {
+          return res.units
+        }
+        else {
+          return []
+        }
+      } else {
+        return []
+      }
+    }), shareReplay(1))
+  }
+
   editCategories(categories: string[]): firebase.firestore.WriteBatch {
     let categoriesRef: AngularFirestoreDocument<GeneralConfig>
       = this.generalConfigDoc
     let batch = this.afs.firestore.batch();
     batch.set(categoriesRef.ref, { categories }, { merge: true })
+    return batch;
+  }
+
+  editUnits(units: Unit[]): firebase.firestore.WriteBatch {
+    let unitsRef: AngularFirestoreDocument<GeneralConfig>
+      = this.generalConfigDoc
+    let batch = this.afs.firestore.batch();
+    batch.set(unitsRef.ref, { units }, { merge: true })
     return batch;
   }
 

@@ -9,6 +9,8 @@ import { ProductConfigCategoriesComponent } from '../product-config-categories/p
 import { MatDialogRef, MatDialog, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { User } from 'src/app/core/models/user.model';
+import { Unit } from 'src/app/core/models/unit.model';
+import { ProductConfigUnitsComponent } from '../product-config-units/product-config-units.component';
 
 @Component({
   selector: 'app-product-create-edit',
@@ -22,11 +24,11 @@ export class ProductCreateEditComponent implements OnInit {
   skuFormatting$: Observable<string>
   refState$: Observable<boolean>
   category$: Observable<string[]>
-  unit$: Observable<string[]>
+  units$: Observable<Unit[]>
   unitRef$: Observable<string[]>
 
   //variables
-  units: Product['unit'][]=["KG", "1/2 KG"]
+  units: Unit[];
 
   noImage = '../../../../assets/images/no-image.png';
 
@@ -151,10 +153,23 @@ export class ProductCreateEditComponent implements OnInit {
         }
         return filter;
       }))
+
+    this.units$ = this.dbs.getProductsListUnitsValueChanges().pipe(
+      take(1),
+      tap(unit => {
+      if(this.data.edit){
+        let selectedUnit = unit.find(el => el.description == this.data.data.unit.description);
+        this.productForm.get('unit').setValue(selectedUnit)
+      }
+    }));
   }
 
   onAddCategory() {
     this.dialog.open(ProductConfigCategoriesComponent);
+  }
+
+  onAddUnit() {
+    this.dialog.open(ProductConfigUnitsComponent);
   }
 
   //Photo

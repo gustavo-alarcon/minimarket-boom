@@ -138,13 +138,33 @@
                   </td>
                 </ng-container>
 
-                <ng-container matColumnDef="unit">
+                <ng-container matColumnDef="unitDescription">
                   <th *matHeaderCellDef style=" font-size: 0.9em;padding:0px 1em; font-weight: 500; color: #828282; "
                     class="w3-center w3-padding  ">
-                    Medida
+                    Descripción de Unidad
                   </th>
                   <td style="padding:0px 8px; font-weight: bold;" *matCellDef="let raw">
-                    {{raw.unit}}
+                    {{raw.unit.description}}
+                  </td>
+                </ng-container>
+
+                <ng-container matColumnDef="unitAbbreviation">
+                  <th *matHeaderCellDef style=" font-size: 0.9em;padding:0px 1em; font-weight: 500; color: #828282; "
+                    class="w3-center w3-padding  ">
+                    Abreviación
+                  </th>
+                  <td style="padding:0px 8px; font-weight: bold;" *matCellDef="let raw">
+                    {{raw.unit.abbreviation}}
+                  </td>
+                </ng-container>
+
+                <ng-container matColumnDef="unitWeight">
+                  <th *matHeaderCellDef style=" font-size: 0.9em;padding:0px 1em; font-weight: 500; color: #828282; "
+                    class="w3-center w3-padding  ">
+                    Peso (KG)
+                  </th>
+                  <td style="padding:0px 8px; font-weight: bold;" *matCellDef="let raw">
+                    {{raw.unit.weight}}KG
                   </td>
                 </ng-container>
 

@@ -32,7 +32,7 @@ export class ProductsListComponent implements OnInit {
   productsTableDataSource = new MatTableDataSource<Product>();
   productsDisplayedColumns: string[] = [
     'index', 'photoURL', 'description', 'sku', 'category', 'price', 
-    'unit', 'realStock', 'sellMinimum', 'alertMinimum', 
+    'unitDescription', 'unitAbbreviation', 'unitWeight', 'realStock', 'sellMinimum', 'alertMinimum', 
     'mermaStock', 'virtualStock', 'published', 'actions'
   ]
 
@@ -248,7 +248,7 @@ export class ProductsListComponent implements OnInit {
     let table_xlsx: any[] = [];
     let headersXlsx = [
       'Descripcion', 'SKU', 'Categoría', 'Precio', 
-      'Unidad', 'Stock Real', 'Mínimo de venta', 'Mínimio de alerta', 
+      'Descripción de Unidad', 'Abreviación', 'Peso (KG)', 'Stock Real', 'Mínimo de venta', 'Mínimio de alerta', 
       'Stock de merma', 'Stock Virtual', 'Publicado'
     ]
 
@@ -259,8 +259,10 @@ export class ProductsListComponent implements OnInit {
        product.description, 
        product.sku, 
        product.category, 
-       "S/." +product.price,  
-       product.unit, 
+       "S/." +product.price,
+       product.unit.description,
+       product.unit.abbreviation,
+       product.unit.weight, 
        product.realStock, 
        product.sellMinimum, 
        product.alertMinimum,  
