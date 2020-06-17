@@ -5,69 +5,20 @@
             <input matInput [formControl]="searchForm" placeholder="Buscar Producto" autocomplete="off">
             <mat-icon matPrefix style="vertical-align: middle;margin-right: 5px;">search</mat-icon>
         </mat-form-field>
-
         <div *ngIf="products$ | async as products">
-            <mat-card class="product w3-margin-bottom" *ngFor="let product of products| paginate: { itemsPerPage: 10, currentPage: p }">
-                <div class="ms-flex product__container">
-                    <div class="product__image-div">
-                        <img [defaultImage]="defaultImage" [lazyLoad]="product.photoURL" [offset]="100"
-                            class="product__image">
-                    </div>
-                    <div class="product__descrip">
-                        <div class="ms-flex product__container">
-                            <div class="product__title">{{product.description | titlecase}}</div>
-                            <button mat-icon-button color='accent' [routerLink]="['recetas', product.id]">
-                                <mat-icon>local_dining</mat-icon>
-                            </button>
-                        </div>
-                        <div *ngIf="product.realStock <= product.sellMinimum" class="product__provision">En
-                            abastecimiento</div>
-                        <p class="product__paragraph">{{product.additionalDescription}}</p>
-                        <div class="ms-flex product__container">
-                            <div>
-                                <div class="product__etiquet">Precio por {{product.unit}}</div>
-                                <div class="ms-flex" style="align-items: flex-end;">
-                                    <div *ngIf="!product.promo || product.promoData.quantity > 1"
-                                        class="product__price">
-                                        <span style="font-size: 0.65em">S/. </span>
-                                        <span>{{product.price | number: '.2'}}</span>
-                                    </div>
-                                    <div *ngIf="product.promo && product.promoData.quantity == 1"
-                                        class="product__price">
-                                        <span style="font-size: 0.65em">S/. </span>
-                                        <span>{{product.promoData.promoPrice | number: '.2'}}</span>
-                                    </div>
-                                    <div class="product__percent"
-                                        *ngIf="product.promo && product.promoData.quantity == 1">
-                                        -{{getdiscount(product)}}%
-                                    </div>
-                                </div>
-                            </div>
-                            <button *ngIf="product.realStock > product.sellMinimum" mat-mini-fab color='accent' [disabled]="stopBuy()"
-                                (click)="add(product)">
-                                <mat-icon>add</mat-icon>
-                            </button>
-                        </div>
-                        <div *ngIf="product.promo && product.promoData.quantity > 1" class="w3-center product__promo">
-                            OFERTA: {{product.promoData.quantity}} ({{product.unit}}) x S/.
-                            {{product.promoData.promoPrice | number: '.2'}}
-                        </div>
-                        <div *ngIf="product.promo && product.promoData.quantity == 1"
-                            style="color: #eb5757;font-size: 0.7em;">
-                            Antes S/. {{product.price | number: '.2'}}
-                        </div>
-                    </div>
-                </div>
-            </mat-card>
+            <app-product-div [product]="product" [buttonAdd]="true" *ngFor="let product of products| paginate: { itemsPerPage: 10, currentPage: p }"></app-product-div>
+           
             <div style="display: flex; width: 100%; justify-content: flex-end;" *ngIf="products$ | async ">
                 <pagination-controls (pageChange)="p = $event" previousLabel="" nextLabel="" maxSize="6">
                 </pagination-controls>
             </div>
         </div>
         <div class="fly-button" *ngIf="dbs.total>0">
-            <div class="shopping-button background--secondary" (click)="shoppingCart()">
-                <mat-icon>shopping_basket</mat-icon>
-                <div class="total">S/. {{dbs.total | number: '.2'}}</div>
+            <div class="shopping-button" (click)="shoppingCart()">
+                <span class="shopping-button__icon">🛒</span> 
+                <div class="shopping-button__total">
+                    <span style="font-size: 0.7em">S/. </span>
+                    {{dbs.total | number: '.2'}}</div>
             </div>
         </div>
     </div>
@@ -101,7 +52,7 @@
             <h2 *ngIf="!firstSale" class="title2">Hola, {{name}} 😊</h2>
         </div>
         <p *ngIf="firstSale">Hola cheese lover, gracias por tu preferencia. Comencemos anotando tus datos</p>
-        <p *ngIf="!firstSale">Gracias por volver a comprar nuestos productos</p>
+        <p *ngIf="!firstSale">Gracias por volver a comprar nuestros productos</p>
         <app-purchase></app-purchase>
     </div>
 </div>

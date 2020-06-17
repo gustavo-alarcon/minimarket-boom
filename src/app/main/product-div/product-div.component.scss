@@ -1,0 +1,84 @@
+.product {
+    border-radius: 20px;
+    box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+    padding: 5px 12px 12px 12px;
+    height: 215px;
+
+    &__container {
+        justify-content: space-between;
+        align-items: center;
+        height: 100%;
+    }
+
+    &__image-div {
+        width: 35%;
+    }
+
+    &__image {
+        width: 100%;
+        max-height: 110px;
+        object-fit: cover;
+    }
+
+    &__paragraph {
+        margin-top: 0;
+        min-height: 60px;
+        font-size: 0.7em;
+    }
+
+    &__descrip {
+        width: 60%;
+    }
+
+    &__title {
+        font-size: 1em;
+        font-weight: bold;
+    }
+
+    &__provision {
+        margin-bottom: 7px;
+        color: #eb5757;
+        text-decoration-line: underline;
+        font-size: 0.7em;
+        margin-top: -9px;
+    }
+
+    &__etiquet {
+        font-size: 0.7em;
+        color: #bdbdbd;
+        max-width: 35vw;
+    }
+
+    &__price {
+        background: #5da92f;
+        border-radius: 20px;
+        color: white;
+        font-size: 1em;
+        padding: 3px 10px;
+        z-index: 2;
+        font-weight: bold;
+    }
+
+    &__percent {
+        background: #eb5757;
+        border-radius: 0px 10px 10px 0px;
+        color: white;
+        padding: 2px 6px 2px 16px;
+        height: fit-content;
+        position: relative;
+        left: -15px;
+        bottom: 0;
+        font-weight: bold;
+        font-size: 8.5px;
+    }
+
+    &__promo {
+        background: #267131;
+        border-radius: 20px;
+        color: white;
+        font-size: 0.7em;
+        margin-top: 5px;
+        padding: 3px;
+        font-weight: bold;
+    }
+}
