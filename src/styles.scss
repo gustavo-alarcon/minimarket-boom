@@ -441,6 +441,15 @@ img.ng-lazyloaded {
   background: transparent;
 }
 
+/*mat-stepper*/
+.mat-stepper-horizontal.ms-stepper{
+  background-color: transparent;
+  font-family: Raleway;
+}
+
+.mat-stepper-horizontal.ms-stepper .mat-horizontal-content-container{
+  padding: 0;
+}
 /*sales*/
 
 .subtotal {

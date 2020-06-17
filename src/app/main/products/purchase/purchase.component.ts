@@ -33,6 +33,9 @@ export class PurchaseComponent implements OnInit {
   delivery: number = 4
 
   dataFormGroup: FormGroup;
+  firstFormGroup: FormGroup;
+  secondFormGroup: FormGroup;
+  payFormGroup: FormGroup;
 
   payType: Array<any> = [{ name: 'Yape', account: 'Número: 987880986' }, { name: 'BCP', account: 'Cuenta: 215-56894578-69-73' }, { name: 'Interbank', account: 'Cuenta: 215-56894578-69-73' }]
   documents: Array<string> = ['Boleta', 'Factura']
@@ -64,14 +67,14 @@ export class PurchaseComponent implements OnInit {
       photoURL: Observable<boolean>
     },
     data: {
-      photoURL: File
+      photoURL: File[]
     }
   } = {
       resizing$: {
         photoURL: new BehaviorSubject<boolean>(false)
       },
       data: {
-        photoURL: null
+        photoURL: []
       }
     }
 
@@ -89,6 +92,28 @@ export class PurchaseComponent implements OnInit {
   ngOnInit(): void {
     let date = new Date()
     this.now = new Date(date.getTime() + (345600000))
+
+    this.firstFormGroup = this.fb.group({
+      email: [null, [Validators.required, Validators.email]],
+      dni: [null, [Validators.required, Validators.minLength(8)]],
+      name: [null, [Validators.required]],
+      lastname1: [null, [Validators.required]],
+      lastname2: [null, [Validators.required]],
+      phone: [null, [Validators.required, Validators.minLength(6)]],
+    });
+
+    this.secondFormGroup = this.fb.group({
+      date: [null, [Validators.required]],
+      address: [null, [Validators.required]],
+      district: [null, [Validators.required]],
+      ref: [null, [Validators.required]]
+    });
+
+    this.payFormGroup = this.fb.group({
+      pay: [null, [Validators.required]],
+      typePay: [null, [Validators.required]],
+      photoURL: [null, [Validators.required]]
+    });
 
     this.userData$ = this.auth.user$.pipe(
       tap(res => {
@@ -255,7 +280,7 @@ export class PurchaseComponent implements OnInit {
     if (this.user.salesCount) {
       userCorrelative = this.user.salesCount + 1
     }
-
+/*
     this.dbs.uploadPhotoVoucher(saleRef.id, this.photos.data.photoURL).pipe(
       takeLast(1),
     ).subscribe((res: string) => {
@@ -277,7 +302,7 @@ export class PurchaseComponent implements OnInit {
 
           transaction.update(saleCount, { salesRCounter: newCorr });
 
-          newSale.correlative = 'R' + ("0000" + newCorr).slice(-5);
+          newSale.correlative = 'R' + ("000" + newCorr).slice(-4);
 
           transaction.set(saleRef, newSale);
           //user
@@ -315,7 +340,7 @@ export class PurchaseComponent implements OnInit {
       }).catch(function (error) {
         console.log("Transaction failed: ", error);
       });
-    })
+    })*/
 
   }
 

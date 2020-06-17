@@ -14,9 +14,11 @@
             </div>
         </div>
         <div class="fly-button" *ngIf="dbs.total>0">
-            <div class="shopping-button background--secondary" (click)="shoppingCart()">
-                <mat-icon>shopping_basket</mat-icon>
-                <div class="total">S/. {{dbs.total | number: '.2'}}</div>
+            <div class="shopping-button" (click)="shoppingCart()">
+                <span class="shopping-button__icon">🛒</span> 
+                <div class="shopping-button__total">
+                    <span style="font-size: 0.7em">S/. </span>
+                    {{dbs.total | number: '.2'}}</div>
             </div>
         </div>
     </div>
@@ -50,7 +52,7 @@
             <h2 *ngIf="!firstSale" class="title2">Hola, {{name}} 😊</h2>
         </div>
         <p *ngIf="firstSale">Hola cheese lover, gracias por tu preferencia. Comencemos anotando tus datos</p>
-        <p *ngIf="!firstSale">Gracias por volver a comprar nuestos productos</p>
+        <p *ngIf="!firstSale">Gracias por volver a comprar nuestros productos</p>
         <app-purchase></app-purchase>
     </div>
 </div>
