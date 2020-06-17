@@ -46,13 +46,7 @@ export class ProductDivComponent implements OnInit {
 
   stopBuy() {
     let stop = 3
-    let quantity = this.dbs.order.map(el => {
-      if (el.product.unit == '1/2 KG') {
-        return el.quantity * 0.5
-      } else {
-        return el.quantity
-      }
-    }).reduce((a, b) => a + b, 0)
+    let quantity = this.dbs.order.map(el => el.quantity * el.product.unit.weight).reduce((a, b) => a + b, 0)
 
     return quantity >= stop
   }

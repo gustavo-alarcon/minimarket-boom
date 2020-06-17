@@ -78,27 +78,7 @@ export class ProductsComponent implements OnInit {
     this.dbs.total = this.dbs.order.map(el => this.giveProductPrice(el)).reduce((a, b) => a + b, 0)
   }
 
-  add(item) {
-    let index = this.dbs.order.findIndex(el => el['product']['id'] == item['id'])
-
-    if (index == -1) {
-      let newproduct = {
-        product: item,
-        quantity: 1
-      }
-      this.dbs.order.push(newproduct)
-    } else {
-      this.dbs.order[index]['quantity']++
-    }
-
-    this.dbs.total = this.dbs.order.map(el => this.giveProductPrice(el)).reduce((a, b) => a + b, 0)
-
-    if(this.stopBuy()){
-      this.snackBar.open('Ha llegado al límite máximo de peso por pedido', 'Cerrar', {
-        duration: 3000
-      })
-    }
-  }
+  
 
   getdiscount(item: Product) {
     let promo = item.price - item.promoData.promoPrice
@@ -116,23 +96,7 @@ export class ProductsComponent implements OnInit {
     })
   }
 
-  stopBuy() {
-    let stop = 3
-    let quantity = this.dbs.order.map(el => {
-      if (el.product.unit == '1/2 KG') {
-        return el.quantity * 0.5
-      } else {
-        return el.quantity
-      }
-    }).reduce((a, b) => a + b, 0)
-/*
-    if (quantity == stop) {
-      this.snackBar.open('Ha llegado al límite máximo de peso por pedido', 'Cerrar', {
-        duration: 3000
-      })
-    }*/
-    return quantity >= stop
-  }
+  
 
   giveProductPrice(item) {
     if (item.product.promo) {

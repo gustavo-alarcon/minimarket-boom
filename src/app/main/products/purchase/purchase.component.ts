@@ -243,7 +243,7 @@ export class PurchaseComponent implements OnInit {
 
     const saleCount = this.af.firestore.collection(`/db/distoProductos/config/`).doc('generalConfig');
     const saleRef = this.af.firestore.collection(`/db/distoProductos/sales`).doc();
-
+/*
     let order: SaleRequestedProducts[] = this.dbs.order.map(el => {
       return { id: el.product.id, quantity: el.quantity }
     })
@@ -280,7 +280,7 @@ export class PurchaseComponent implements OnInit {
     if (this.user.salesCount) {
       userCorrelative = this.user.salesCount + 1
     }
-/*
+
     this.dbs.uploadPhotoVoucher(saleRef.id, this.photos.data.photoURL).pipe(
       takeLast(1),
     ).subscribe((res: string) => {
