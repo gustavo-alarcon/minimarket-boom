@@ -1,3 +1,4 @@
+import { ProductDivComponent } from './../product-div/product-div.component';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatCardModule } from '@angular/material/card';
 import { MatSelectModule } from '@angular/material/select';
@@ -30,6 +31,7 @@ import { LazyLoadImageModule } from 'ng-lazyload-image';
 import { NgxPaginationModule } from 'ngx-pagination';
 import { Ng2ImgMaxModule } from 'ng2-img-max';
 import { SaleDialogComponent } from './sale-dialog/sale-dialog.component';
+import {MatStepperModule} from '@angular/material/stepper';
 
 @NgModule({
   declarations: [
@@ -38,7 +40,8 @@ import { SaleDialogComponent } from './sale-dialog/sale-dialog.component';
     PurchaseComponent,
     CreateEditRecipeComponent,
     RecipesComponent,
-    SaleDialogComponent
+    SaleDialogComponent,
+    ProductDivComponent
   ],
   imports: [
     CommonModule,
@@ -69,7 +72,8 @@ import { SaleDialogComponent } from './sale-dialog/sale-dialog.component';
     }),
     LazyLoadImageModule.forRoot(),
     NgxPaginationModule,
-    Ng2ImgMaxModule
+    Ng2ImgMaxModule,
+    MatStepperModule
   ],
   providers: [
     { provide: MAT_DATE_LOCALE, useValue: 'en-GB' }
