@@ -130,7 +130,7 @@
     </button>
 </form-->
 
-<mat-horizontal-stepper linear #stepper class="ms-stepper">
+<mat-horizontal-stepper *ngIf="userData$ | async" linear #stepper class="ms-stepper">
     <mat-step [stepControl]="firstFormGroup">
         <h2 class="subtitle">Datos personales 📝</h2>
         <form [formGroup]="firstFormGroup">
@@ -265,23 +265,22 @@
                 <div *ngIf="payFormGroup.get('photoURL').value!=null">
                     <img class="voucher" style="object-fit: cover;" [src]="payFormGroup.get('photoURL').value"
                         alt="fotografía" (click)="showPhoto=true">
-                        <div style="text-align: center; border: 1px solid silver;" *ngIf="showPhoto">
-                            <div class="ms-flex w3-block">
-                                <span class="ms-fill"></span>
-                                <button mat-icon-button (click)="showPhoto=false">
-                                    <mat-icon>close</mat-icon>
-                                </button>
-                            </div>
-                            <img style="width:80%;" [src]="payFormGroup.get('photoURL').value"
-                            alt="fotografía grande">
+                    <div style="text-align: center; border: 1px solid silver;" *ngIf="showPhoto">
+                        <div class="ms-flex w3-block">
+                            <span class="ms-fill"></span>
+                            <button mat-icon-button (click)="showPhoto=false">
+                                <mat-icon>close</mat-icon>
+                            </button>
                         </div>
+                        <img style="width:80%;" [src]="payFormGroup.get('photoURL').value" alt="fotografía grande">
+                    </div>
                     <a style="color: #5da92f;" (click)="photoURL.click()">Cambiar imagen</a>
                 </div>
-        
+
                 <div class="voucher" (click)="photoURL.click()" *ngIf="payFormGroup.get('photoURL').value==null">
                     Agregar foto de voucher de pago
                 </div>
-        
+
                 <mat-progress-bar *ngIf="photos?.resizing$.photoURL | async" style="width:100%" mode="indeterminate">
                 </mat-progress-bar>
                 <span *ngIf="photos.resizing$.photoURL | async" class="w3-small ms-color-11 ms-font-montserrat"

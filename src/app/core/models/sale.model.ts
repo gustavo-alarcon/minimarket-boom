@@ -101,7 +101,7 @@ export interface Sale {
 
   createdAt: Date,
   createdBy: User,
-
+  userId:string,
   editedAt?: Date,
   editedBy?: User
 }
