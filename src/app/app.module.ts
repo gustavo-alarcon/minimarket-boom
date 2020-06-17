@@ -18,8 +18,10 @@ import { AppComponent } from './app.component';
 import { LoginComponent } from './login/login.component';
 
 //Material
-import {MatSnackBarModule} from '@angular/material/snack-bar';
+import {MatSnackBarModule, MAT_SNACK_BAR_DEFAULT_OPTIONS} from '@angular/material/snack-bar';
 import { MatButtonModule } from '@angular/material/button';
+import { MAT_DATE_LOCALE as MAT_DATE_LOCALESAT } from 'saturn-datepicker';
+import { MAT_DATE_LOCALE } from '@angular/material/core';
 
 @NgModule({
   declarations: [
@@ -38,7 +40,11 @@ import { MatButtonModule } from '@angular/material/button';
     MatSnackBarModule,
     MatButtonModule
   ],
-  providers: [],
+  providers: [
+    { provide: MAT_SNACK_BAR_DEFAULT_OPTIONS, useValue: { duration: 5000 } },
+    // { provide: MAT_DATE_LOCALE, useValue: 'en-GB'},
+    // { provide: MAT_DATE_LOCALESAT, useValue: 'en-GB'}
+  ],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
