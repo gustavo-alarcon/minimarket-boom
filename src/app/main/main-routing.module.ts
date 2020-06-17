@@ -23,6 +23,11 @@ const routes: Routes = [
         loadChildren: () => import('./products-list/products-list.module').then(mod => mod.ProductsListModule),
         //canActivate: [AuthGuard]
       },
+      {
+        path: 'logistics',
+        loadChildren: () => import('./logistics/logistics.module').then(mod => mod.LogisticsModule),
+        //canActivate: [AuthGuard]
+      },
     ]
   }
 ]

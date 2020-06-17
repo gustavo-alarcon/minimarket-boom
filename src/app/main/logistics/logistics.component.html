@@ -1,0 +1,17 @@
+<div style="height: 100%; padding: 24px 16px" 
+  class="w3-section w3-margin-left w3-margin-right animated fadeInUp delay-2">
+  <div style="padding: 0 3vw;">
+    <h2 class="title"><mat-icon>assignment</mat-icon>Logística</h2>
+    <mat-divider></mat-divider>
+    <div style="margin-top: 1em;">
+
+      <nav mat-tab-nav-bar>
+        <a mat-tab-link *ngFor="let link of links" (click)="activeLink = link"
+          [active]="activeLink['name'] == link['name']" [routerLink]="link['route']"> {{link['name']}} </a>
+      </nav>
+      <mat-progress-bar mode="indeterminate" *ngIf="loading$ | async"></mat-progress-bar>
+      <router-outlet></router-outlet>
+
+    </div>
+  </div>
+</div>

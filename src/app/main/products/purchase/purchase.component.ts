@@ -220,7 +220,7 @@ export class PurchaseComponent implements OnInit {
     const saleRef = this.af.firestore.collection(`/db/distoProductos/sales`).doc();
 
     let order: SaleRequestedProducts[] = this.dbs.order.map(el => {
-      return { id: el.product.id, quantity: el.quantity }
+      return { product: el.product, quantity: el.quantity }
     })
     let newSale: Sale = {
       id: saleRef.id,
@@ -237,14 +237,17 @@ export class PurchaseComponent implements OnInit {
         },
         phone: this.dataFormGroup.get('phone').value
       },
-      deliveryDate: this.dataFormGroup.get('date').value,
+      requestDate: this.dataFormGroup.get('date').value,
       createdAt: new Date(),
-      user: this.user.uid,
+      createdBy: this.user,
       requestedProducts: order,
       status: 'Solicitado',
       total: this.total,
       deliveryPrice: this.delivery,
-      voucherPhoto: ''
+      voucher: [{
+        voucherPhoto: '',
+        voucherPath: ''
+      }]
     }
 
 
