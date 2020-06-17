@@ -1,4 +1,5 @@
 import { User } from './user.model';
+import { Unit } from './unit.model';
 
 export interface Product {
   id: string;
@@ -7,7 +8,7 @@ export interface Product {
   sku: string;
   category: string;   
   price: number;      //Should this price be with IGV?
-  unit: "KG" | "1/2 KG";       //KG or 1/2 KG
+  unit: Unit;       
   realStock: number;  //Real stock will be amounted here after accepting a product in the log sect
                       //To check the virtual we will use another collection
   mermaStock: number;

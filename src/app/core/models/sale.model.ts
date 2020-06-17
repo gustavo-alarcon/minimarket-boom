@@ -15,6 +15,11 @@ type FilterFlags<Base, Condition, Data> =
     Base extends Condition ? Data : never
 ;
 
+export interface SaleRequestedProducts {
+  product: Product;       
+  quantity: number;
+}
+
 export interface Sale {
   id: string;
   correlative: string;
@@ -33,10 +38,7 @@ export interface Sale {
 
   status: saleStatusOptions[keyof saleStatusOptions]
 
-  requestedProducts: {
-    product: Product;       
-    quantity: number;
-  };
+  requestedProducts: SaleRequestedProducts[];
 
   deliveryPrice: number;
 

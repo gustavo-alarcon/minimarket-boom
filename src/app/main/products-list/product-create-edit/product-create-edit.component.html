@@ -89,12 +89,17 @@
         </mat-form-field>
         
         <!-- unit  -->
-        <mat-form-field style="margin-bottom: 8px; width: 48%"
+        <mat-form-field *ngIf="units$ | async as units"
+          style="margin-bottom: 8px; width: 48%"
           appearance="outline">
             <mat-label>Unidad</mat-label>
             <mat-select formControlName="unit">
+              <mat-option (click)="onAddUnit()"
+                [value]="">
+                <mat-icon>add_circle_outline</mat-icon>Añadir
+              </mat-option>
               <mat-option *ngFor="let unit of units" [value]="unit">
-                {{unit}}
+                {{unit.abbreviation}}
               </mat-option>
             </mat-select>
             <mat-error>
