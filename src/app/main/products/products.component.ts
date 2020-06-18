@@ -68,7 +68,7 @@ export class ProductsComponent implements OnInit {
       tap(res => {
         if (res['salesCount']) {
           this.firstSale = false
-          this.name = res.realName.split(' ')[0]
+          this.name = res.name.split(' ')[0]
         } else {
           this.firstSale = true
         }

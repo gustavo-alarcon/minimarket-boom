@@ -267,7 +267,7 @@ export class PurchaseComponent implements OnInit {
       userId: this.user.uid,
       requestedProducts: this.dbs.order,
       status: 'Solicitado',
-      //total: this.total,
+      total: this.total,
       deliveryPrice: this.delivery,
       voucher: [],
       voucherChecked: false

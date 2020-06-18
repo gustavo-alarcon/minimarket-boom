@@ -1,4 +1,3 @@
-import { Product } from './../../core/models/product.model';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { DatabaseService } from 'src/app/core/services/database.service';
 import { Product } from 'src/app/core/models/product.model';
