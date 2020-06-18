@@ -110,7 +110,12 @@ export class ProductsListComponent implements OnInit {
 
     this.productsObservable$ = this.dbs.getProductsListValueChanges().pipe(
       tap(res => {
-        this.productsTableDataSource.data = [...res]
+        this.productsTableDataSource.data = res.map(el => {
+          el['virtualStock$'] = this.dbs.getVirtualStock(el).pipe(
+            map(prod => prod.reduce((a,b)=> a+b.quantity, 0))
+          );
+          return el
+        })
       })
     )
   }

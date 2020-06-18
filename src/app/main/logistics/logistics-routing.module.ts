@@ -9,6 +9,11 @@ const routes: Routes = [
     component: LogisticsComponent,
     children: [
       {
+        path: '', 
+        redirectTo: 'fabric', 
+        pathMatch: 'full'
+      },
+      {
         path: 'fabric',
         loadChildren: () => import('./logistics-fabric/logistics-fabric.module').then(mod => mod.LogisticsFabricModule)
       },
