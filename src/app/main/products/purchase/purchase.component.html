@@ -131,7 +131,7 @@
 </form-->
 
 <mat-horizontal-stepper *ngIf="userData$ | async" linear #stepper class="ms-stepper">
-    <mat-step [stepControl]="firstFormGroup">
+    <mat-step label="📝" [stepControl]="firstFormGroup">
         <h2 class="subtitle">Datos personales 📝</h2>
         <form [formGroup]="firstFormGroup">
             <mat-form-field class="w3-block" appearance="outline">
@@ -174,11 +174,14 @@
                 </mat-error>
             </mat-form-field>
         </form>
-        <div>
-            <button mat-button matStepperNext>Next</button>
+        <div class="ms-flex">
+            <span class="ms-fill"></span>
+            <button mat-button matStepperNext class="font--primary">
+                 Siguiente <mat-icon color="primary">east</mat-icon>
+            </button>
         </div>
     </mat-step>
-    <mat-step [stepControl]="secondFormGroup">
+    <mat-step label="📦" [stepControl]="secondFormGroup">
         <h2 class="subtitle">Datos de envío 📦</h2>
         <form [formGroup]="secondFormGroup">
             <mat-form-field style="margin-bottom: 8px;" class="w3-block" appearance="outline">
@@ -226,13 +229,18 @@
                 </agm-map>
 
             </div>
-            <div>
-                <button mat-button matStepperPrevious>Back</button>
-                <button mat-button matStepperNext>Next</button>
+            <div class="ms-flex">
+                <button mat-button matStepperPrevious class="font--primary">
+                    <mat-icon color="primary">keyboard_backspace</mat-icon> Anterior
+                </button>
+                <span class="ms-fill"></span>
+                <button mat-button matStepperNext class="font--primary">
+                     Siguiente <mat-icon color="primary">east</mat-icon>
+                </button>
             </div>
         </form>
     </mat-step>
-    <mat-step>
+    <mat-step label="💳">
         <h2 class="subtitle">Pago 💳</h2>
         <form [formGroup]="payFormGroup">
             <mat-form-field class="w3-block" appearance="outline">
@@ -262,22 +270,21 @@
                 </mat-select>
             </mat-form-field>
             <div class="w3-margin-bottom">
-                <div *ngIf="payFormGroup.get('photoURL').value!=null">
-                    <img class="voucher" style="object-fit: cover;" [src]="payFormGroup.get('photoURL').value"
-                        alt="fotografía" (click)="showPhoto=true">
-                    <div style="text-align: center; border: 1px solid silver;" *ngIf="showPhoto">
+                <div class="w3-margin-bottom" *ngFor="let image of photosList">
+                    <img class="voucher" style="object-fit: cover;" [src]="image.img" alt="fotografía"
+                        (click)="image.show=true">
+                    <div style="text-align: center; border: 1px solid silver;" *ngIf="image.show">
                         <div class="ms-flex w3-block">
                             <span class="ms-fill"></span>
-                            <button mat-icon-button (click)="showPhoto=false">
+                            <button mat-icon-button (click)="image.show=false">
                                 <mat-icon>close</mat-icon>
                             </button>
                         </div>
-                        <img style="width:80%;" [src]="payFormGroup.get('photoURL').value" alt="fotografía grande">
+                        <img style="width:80%;" [src]="image.img" alt="fotografía grande">
                     </div>
-                    <a style="color: #5da92f;" (click)="photoURL.click()">Cambiar imagen</a>
                 </div>
 
-                <div class="voucher" (click)="photoURL.click()" *ngIf="payFormGroup.get('photoURL').value==null">
+                <div class="voucher" (click)="photoURL.click()" >
                     Agregar foto de voucher de pago
                 </div>
 
@@ -289,9 +296,16 @@
                     (change)="addNewPhoto('photoURL', photoURL.files)" />
             </div>
         </form>
-        <div>
-            <button mat-button matStepperPrevious>Back</button>
-            <button mat-button (click)="stepper.reset()">Reset</button>
+        <div class="ms-flex">
+            <button mat-button matStepperPrevious class="font--primary">
+                <mat-icon color="primary">keyboard_backspace</mat-icon> Anterior
+            </button>
+            <span class="ms-fill"></span>
         </div>
+        <mat-progress-bar mode="indeterminate" *ngIf="loading$ | async"></mat-progress-bar>
+        <button mat-raised-button color="accent" type="button" (click)="save()" [disabled]="!payFormGroup.valid"
+            class="w3-block" style=" font-weight: bold;">
+            Finalizar Compra
+        </button>
     </mat-step>
 </mat-horizontal-stepper>
