@@ -1,7 +1,7 @@
 <div mat-dialog-title>
   <h2 class="ms-font-rubik ms-color-2b" style="font-size:1.2em">
       <mat-icon (click)="deb()" style="vertical-align:middle">add_circle</mat-icon>
-      Solicitud #FCORREGIR
+      Solicitud #F{{correlative$ | async}}
   </h2>
   <mat-divider></mat-divider>
 </div>
@@ -16,7 +16,7 @@
           type="text" autocomplete="off"
           matInput placeholder="Seleccione el producto"
           [matAutocomplete]="auto">
-        <mat-autocomplete 
+        <mat-autocomplete
           #auto="matAutocomplete" autoActiveFirstOption 
           [displayWith]="displayFn.bind(this)">
           <mat-option *ngFor="let product of products" [value]="product">
@@ -62,7 +62,8 @@
       <sat-datepicker-toggle matSuffix [for]="picker"></sat-datepicker-toggle>
     </mat-form-field>
 
-    <button mat-raised-button color="accent"
+    <button *ngIf="selectedProducts$ | async as selProds"
+      mat-raised-button color="accent"
       style="display:block; width: 100%; margin-bottom: 16px"
       [disabled]="requestFormGroup.status != 'VALID'"
       (click)="onAddProduct()">
@@ -70,19 +71,20 @@
     </button>
     <mat-divider></mat-divider>
 
-    <div *ngFor="let product of selectedProducts"
-      class="inputsContainer">
-      <div class="bullet">
-          {{product.productDescription}}
-      </div>
-      <div>
-        <button type="button"
-          mat-icon-button color="primary"
-          (click)="onDeleteProduct(product.id)">
-          <mat-icon>remove_circle</mat-icon>
-        </button>
-      </div>
-    </div>
+    <table *ngIf="selectedProducts$ | async as selProds else cargando">
+      <tr *ngFor="let product of selProds">
+        <td>{{product.productDescription}}</td>
+        <td>{{product.unitPrice | currency:'S/.'}}</td>
+        <td>{{product.quantity}}{{product.unit.abbreviation}}</td>
+        <td>{{product.desiredDate | date:'d/MM/yy'}}</td>
+        <td>
+          <mat-icon class="removeIcon"
+            (click)="onDeleteProduct(product.id)">
+            remove_circle
+          </mat-icon>
+        </td>
+      </tr>
+    </table>
 
   </form>
 
@@ -96,5 +98,5 @@
   <button mat-raised-button color="accent" 
       style="display: block; width: 100%;"
       (click)="onSubmitForm(null)" type="button"
-      [disabled]="!selectedProducts.length">Guardar</button>
+      [disabled]="!selectedProducts.value.length || requestFormGroup.pending">Guardar</button>
 </mat-dialog-actions>

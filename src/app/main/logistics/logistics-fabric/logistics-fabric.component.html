@@ -28,15 +28,19 @@
   </mat-form-field>
 
   <mat-form-field color="primary" class="content w3-small" appearance="outline">
-    <mat-label>Buscar</mat-label>
+    <mat-label>Buscar Correlativo</mat-label>
     <mat-icon matPrefix class="w3-margin-right">search</mat-icon>
     <input [formControl]="searchFormControl" matInput 
-      type="text" placeholder="Escriba..." autocomplete="off">
-    <mat-hint>Filtro de nombre</mat-hint>
+      type="number" placeholder="Escriba..." autocomplete="off">
+    <mat-hint>Filtro de correlativo</mat-hint>
   </mat-form-field>
 
 </div>
 
-<div>
+<div *ngIf="filter$ | async as buyList">
+  <p *ngFor="let buy of buyList"
+    (click)="onCreateEditRequest(true, buy)">
+    {{buy.correlative}}
+  </p>
 
 </div>
