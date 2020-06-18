@@ -10,6 +10,7 @@ import { AngularFireStorage } from '@angular/fire/storage';
 import { Recipe } from '../models/recipe.model';
 import { Unit } from '../models/unit.model';
 import { Buy, BuyRequestedProduct } from '../models/buy.model';
+import * as firebase from 'firebase'
 
 @Injectable({
   providedIn: 'root'
@@ -34,7 +35,8 @@ export class DatabaseService {
   productsListRef = `db/distoProductos/productsList`;
   recipesRef = `db/distoProductos/recipes`;
   buysRef=`db/distoProductos/buys`;
-  generalConfigDoc = this.afs.collection(`db/distoProductos/config`).doc<GeneralConfig>('generalConfig');
+  configRef = `db/distoProductos/config`;
+  generalConfigDoc = this.afs.collection(this.configRef).doc<GeneralConfig>('generalConfig');
 
   //users
 
@@ -294,41 +296,11 @@ export class DatabaseService {
   }
 
   //Logistics
-  createEditBuyRequest(request: Buy, requestedProducts: BuyRequestedProduct[], edit: boolean): 
-  firebase.firestore.WriteBatch{
-
-    let buyRef: DocumentReference = this.afs.firestore.collection(this.buysRef).doc();
-    let buyData: Buy = request;
-    buyData.id = buyRef.id;
-
-    let requestedProductRef: DocumentReference;
-    let requestedProductData: BuyRequestedProduct;
-
-    let batch = this.afs.firestore.batch();
-
-    batch.set(buyRef, buyData);
-
-    requestedProducts.forEach(product => {
-      requestedProductRef = this.afs.firestore.collection(
-        this.buysRef +`/${buyRef.id}/buyRequestedProducts`).doc(product.id)
-      requestedProductData = product;
-      requestedProductData.buyId = buyRef.id;
-      batch.set(requestedProductRef, requestedProductData);
-    })
-    // if(edit){
-    //   recipeRef = this.afs.firestore.collection(this.recipesRef).doc(recipe.id);
-    // } else{
-    //   recipeRef = this.afs.firestore.collection(this.recipesRef).doc();
-    //   recipeData.id = recipeRef.id;
-    // }
-    return batch;
-  }
-
   getBuysCorrelativeValueChanges(): Observable<number> {
     return this.getGeneralConfigDoc().pipe(map(res => {
       if (res) {
         if (res.hasOwnProperty('buysCounter')) {
-          return res.buysCounter
+          return res.buysCounter + 1
         }
         else {
           return 0
@@ -338,4 +310,95 @@ export class DatabaseService {
       }
     }), shareReplay(1))
   }
+
+  getBuyRequests(date: {begin: Date, end: Date}): Observable<Buy[]>{
+    return this.afs.collection<Buy>(this.buysRef, 
+      ref => ref.where("requestedDate", "<=", date.end).where("requestedDate", ">=", date.begin))
+      .valueChanges().pipe(map(res => res.sort((a,b) => b.correlative - a.correlative)));
+  }
+
+  createEditBuyRequest(request: Buy, requestedProducts: BuyRequestedProduct[], edit: boolean, oldBuyRequest: Buy):
+  Promise<void>{
+
+    let configRef: DocumentReference = this.afs.firestore.collection(this.configRef).doc('generalConfig');
+
+    let buyRef: DocumentReference = !edit ? this.afs.firestore.collection(this.buysRef).doc() : 
+                                    this.afs.firestore.collection(this.buysRef).doc(oldBuyRequest.id);
+
+    let buyData: Buy = request;
+    buyData.id = buyRef.id;
+
+    let requestedProductRef: DocumentReference;
+    let requestedProductData: BuyRequestedProduct;
+
+    let batch = this.afs.firestore.batch()
+
+    if(edit){
+      //adding docs for requested products
+      requestedProducts.forEach(product => {
+        requestedProductRef = this.afs.firestore.collection(
+          this.buysRef +`/${buyRef.id}/buyRequestedProducts`).doc(product.id)
+        requestedProductData = product;
+        requestedProductData.buyId = buyRef.id;
+        batch.set(requestedProductRef, requestedProductData);
+      })
+      //deleting deleted products
+      let deletedProducts = oldBuyRequest.requestedProducts.filter(el => 
+        !request.requestedProducts.find(el2 => el2 == el)
+        )
+      deletedProducts.forEach(productId => {
+        requestedProductRef = this.afs.firestore.collection(
+          this.buysRef +`/${buyRef.id}/buyRequestedProducts`).doc(productId)
+        batch.delete(requestedProductRef);
+      })
+      //buy data
+      batch.set(buyRef, buyData);
+
+      return batch.commit()    
+
+    } else{
+      return this.afs.firestore.runTransaction((transaction) => {
+        // This code may get re-run multiple times if there are conflicts.
+        return transaction.get(configRef).then((sfDoc) => {
+
+            //adding docs for requested products
+            requestedProducts.forEach(product => {
+              requestedProductRef = this.afs.firestore.collection(
+                this.buysRef +`/${buyRef.id}/buyRequestedProducts`).doc(product.id)
+              requestedProductData = product;
+              requestedProductData.buyId = buyRef.id;
+              transaction.set(requestedProductRef, requestedProductData);
+            })
+
+            //counter
+            if (!sfDoc.exists) {
+                transaction.set(configRef, {buysCounter: 0}, {merge: true});
+            } else{
+              let config = <GeneralConfig>sfDoc.data()
+
+              if(!config.hasOwnProperty("buysCounter")){
+                transaction.set(configRef, {buysCounter: 0}, {merge: true});
+                buyData.correlative = 0;
+                transaction.set(buyRef, buyData);
+              } else {
+                transaction.update(configRef, {buysCounter: config.buysCounter+1})
+                buyData.correlative = config.buysCounter+1;
+                transaction.set(buyRef, buyData);
+              }
+            }
+        });
+      });
+    }
+  }
+
+  getBuyRequestedProducts(request: Buy): Observable<BuyRequestedProduct[]> {
+    return this.afs.collection<BuyRequestedProduct>(this.buysRef +`/${request.id}/buyRequestedProducts`, 
+      ref => ref.orderBy("productDescription")).valueChanges();
+  }
+
+  getVirtualStock(product: Product): Observable<BuyRequestedProduct[]>{
+    return this.afs.collectionGroup<BuyRequestedProduct>('buyRequestedProducts', 
+      ref => ref.where("id", "==", product.id).where("validated", "==", false)).valueChanges()
+  }
+
 }

@@ -15,8 +15,11 @@ export interface Buy {
   validated: boolean;       //True only when all products are validated
   validatedDate: Date;
 
-  requestedDate: Date;
+  requestedDate: Date;      //When the request was submitted
   requestedBy: User;   
+
+  editedDate: Date;
+  editedBy: User;
 }
 
 export const buysProductsCollRef = `db/distoProductos/buys/`+`buyId`+`/buyRequestedProducts/`
@@ -30,7 +33,7 @@ export interface BuyRequestedProduct {               //How many products should 
   unitPrice: number; 
   quantity: number;
   
-  desiredDate: Date;
+  desiredDate: Date;      //When we want this product
   validated: boolean;     
   validationData: {       //null when it is not validated
     mermaStock:  number;  //realStock = quantity - mermaStock - returned
@@ -40,6 +43,6 @@ export interface BuyRequestedProduct {               //How many products should 
   validatedBy: string;
   validatedDate: Date;
 
-  requestedDate: Date;
+  requestedDate: Date;      //When the request was submitted
   requestedBy: User
 }
