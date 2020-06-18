@@ -9,6 +9,7 @@ import { User } from '../models/user.model';
 import { AngularFireStorage } from '@angular/fire/storage';
 import { Recipe } from '../models/recipe.model';
 import { Unit } from '../models/unit.model';
+import { Buy, BuyRequestedProduct } from '../models/buy.model';
 
 @Injectable({
   providedIn: 'root'
@@ -32,6 +33,7 @@ export class DatabaseService {
 
   productsListRef = `db/distoProductos/productsList`;
   recipesRef = `db/distoProductos/recipes`;
+  buysRef=`db/distoProductos/buys`;
   generalConfigDoc = this.afs.collection(`db/distoProductos/config`).doc<GeneralConfig>('generalConfig');
 
   //users
@@ -289,5 +291,36 @@ export class DatabaseService {
   getSalesUser(user:string): Observable<Sale[]>{
     return this.afs.collection<Sale>(`/db/distoProductos/sales`, 
       ref => ref.where("user", "==", user)).valueChanges()
+  }
+
+  //Logistics
+  createEditBuyRequest(request: Buy, requestedProducts: BuyRequestedProduct[], edit: boolean): 
+  firebase.firestore.WriteBatch{
+
+    let buyRef: DocumentReference = this.afs.firestore.collection(this.buysRef).doc();
+    let buyData: Buy = request;
+    buyData.id = buyRef.id;
+
+    let requestedProductRef: DocumentReference;
+    let requestedProductData: BuyRequestedProduct;
+
+    let batch = this.afs.firestore.batch();
+
+    batch.set(buyRef, buyData);
+
+    requestedProducts.forEach(product => {
+      requestedProductRef = this.afs.firestore.collection(
+        this.buysRef +`/${buyRef.id}/buyRequestedProducts`).doc(product.id)
+      requestedProductData = product;
+      requestedProductData.buyId = buyRef.id;
+      batch.set(requestedProductRef, requestedProductData);
+    })
+    // if(edit){
+    //   recipeRef = this.afs.firestore.collection(this.recipesRef).doc(recipe.id);
+    // } else{
+    //   recipeRef = this.afs.firestore.collection(this.recipesRef).doc();
+    //   recipeData.id = recipeRef.id;
+    // }
+    return batch;
   }
 }

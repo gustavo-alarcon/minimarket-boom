@@ -99,6 +99,8 @@ export interface Sale {
     cancelledBy: User,
   }
 
+  total: number;
+
   createdAt: Date,
   createdBy: User,
   userId:string,

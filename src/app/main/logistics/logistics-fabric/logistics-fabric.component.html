@@ -1,0 +1,42 @@
+<!-- Actions -->
+<div class="w3-margin actionsContainer formFieldRounded">
+  <!-- Select item's type -->
+  <button mat-raised-button 
+      style="height: 45px;"
+      (click)="onCreateEditRequest(false, null)" 
+      color="accent">
+    <mat-icon>add</mat-icon>Crear
+  </button>
+
+  <mat-form-field class="content w3-small" appearance="outline">
+    <mat-icon matPrefix></mat-icon>
+    <input readonly matInput placeholder="FECHA / PERIODO" 
+      [formControl]="dateFormControl" [satDatepicker]="picker">
+    <sat-datepicker #picker [rangeMode]="true"></sat-datepicker>
+    <sat-datepicker-toggle matSuffix [for]="picker"></sat-datepicker-toggle>
+  </mat-form-field>
+
+  <mat-form-field color="primary" class="content w3-small" appearance="outline">
+    <mat-icon matPrefix></mat-icon>
+    <mat-label>Estado</mat-label>
+    <mat-select [formControl]="statusFormControl">
+      <mat-option *ngFor="let status of statusOptions"
+        [value]="status">
+          {{status}}
+      </mat-option>
+    </mat-select>
+  </mat-form-field>
+
+  <mat-form-field color="primary" class="content w3-small" appearance="outline">
+    <mat-label>Buscar</mat-label>
+    <mat-icon matPrefix class="w3-margin-right">search</mat-icon>
+    <input [formControl]="searchFormControl" matInput 
+      type="text" placeholder="Escriba..." autocomplete="off">
+    <mat-hint>Filtro de nombre</mat-hint>
+  </mat-form-field>
+
+</div>
+
+<div>
+
+</div>

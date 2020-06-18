@@ -1,27 +1,35 @@
+import { Product } from './product.model'
+import { Unit } from './unit.model'
+import { User } from './user.model'
 
 export const buysCollRef = `db/distoProductos/buys`
 
-export interface Buys {
+export interface Buy {
   id: string;
   correlative: number;      //Should start with F
-  requestedProductsId: string[];    //We will contain only the id
+  requestedProducts: string[];    //We will contain only the id
 
-  totalAmount: number;
-  totalPrice: number;     //From where am I going to get this?
+  totalAmount: number;     //in KG
+  totalPrice: number;     
    
   validated: boolean;       //True only when all products are validated
   validatedDate: Date;
 
   requestedDate: Date;
-  requestedBy: string;   
+  requestedBy: User;   
 }
 
-export const buysProductsCollRef = `db/distoProductos/buys/`+`buyId`+`/requetedProducts/`
+export const buysProductsCollRef = `db/distoProductos/buys/`+`buyId`+`/buyRequestedProducts/`
 //We should include this on small documents
 export interface BuyRequestedProduct {               //How many products should there be
   id: string;             //Should be same as product id
   buyId: string;          //Indicates the id of the buy request
+
+  productDescription: string;
+  unit: Unit;
+  unitPrice: number; 
   quantity: number;
+  
   desiredDate: Date;
   validated: boolean;     
   validationData: {       //null when it is not validated
@@ -31,5 +39,7 @@ export interface BuyRequestedProduct {               //How many products should 
   }
   validatedBy: string;
   validatedDate: Date;
-  unitPrice: number; 
+
+  requestedDate: Date;
+  requestedBy: User
 }
