@@ -35,6 +35,7 @@ export class DatabaseService {
   productsListRef = `db/distoProductos/productsList`;
   recipesRef = `db/distoProductos/recipes`;
   buysRef=`db/distoProductos/buys`;
+  salesRef=`db/distoProductos/sales`;
   configRef = `db/distoProductos/config`;
   generalConfigDoc = this.afs.collection(this.configRef).doc<GeneralConfig>('generalConfig');
 
@@ -399,6 +400,13 @@ export class DatabaseService {
   getVirtualStock(product: Product): Observable<BuyRequestedProduct[]>{
     return this.afs.collectionGroup<BuyRequestedProduct>('buyRequestedProducts', 
       ref => ref.where("id", "==", product.id).where("validated", "==", false)).valueChanges()
+  }
+
+  //Sales
+  getSales(date: {begin: Date, end: Date}): Observable<Sale[]>{
+    return this.afs.collection<Sale>(this.salesRef, 
+      ref => ref.where("createdAt", "<=", date.end).where("createdAt", ">=", date.begin))
+      .valueChanges();
   }
 
 }

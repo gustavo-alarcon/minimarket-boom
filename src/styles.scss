@@ -236,6 +236,19 @@ a {
   }
 }
 
+.actionsContainer {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+}
+
+.actionsContainer .content {
+  margin: 16px;
+  line-height: 17px;
+  //display: block !important;
+}
+
 .mat-form-field .mat-input-element {
   font-family: Raleway;
 }

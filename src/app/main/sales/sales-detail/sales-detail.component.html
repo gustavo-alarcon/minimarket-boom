@@ -1,0 +1,225 @@
+<div class="ticket ticket--big">
+  <h3 class="ticket__subtitle">
+      <div class="ms-flex ms-flex--center">
+          <span>CARRITO DE COMPRAS #{{sale.correlative | number:'3.0-3'}}</span>
+          <span class="ms-fill"></span>
+          <span>
+              <button *ngIf="sale.status == 'Solicitado'" (click)="onCancelSale()" mat-raised-button color="warn"
+                  type="button">
+                  Cancelar Pedido
+              </button>
+          </span>
+      </div>
+  </h3>
+  <mat-divider></mat-divider>
+  <div class="w3-margin-top">
+      <table [formGroup]="productForm" class="table-sale">
+          <tr>
+              <th class="table-sale__th">Cant.</th>
+              <th class="table-sale__th">Descripción</th>
+              <th class="table-sale__th">Precio</th>
+          </tr>
+          <tr formArrayName="productList"
+              *ngFor="let item of productForm.get('productList')['controls']; let i = index">
+
+              <div [formGroupName]="i" style="display:contents">
+                  <!-- Quantity -->
+                  <td class="table-sale__td table-sale__td--space">
+                      <input autocomplete="off" class="table-sale__input--thin" formControlName="quantity" type="number" max=99
+                          min=0 required>
+                      ({{item.get('product').value['ref'] ? item.get('product').value['refUnit']:item.get('product').value['unit']}})
+                  </td>
+                  <!-- Description -->
+                  <td class="table-sale__td table-sale__td--space">
+                      <!-- span *ngIf="!item.get('ref') && !item.get('promo')" -->
+                      <span *ngIf="!item.get('product').value.ref && !item.get('product').value.promo">
+                          {{item.get('product').value.description}}
+                      </span>
+                      <!-- We have ref, but no promo -->
+                      <div *ngIf="item.get('product').value.ref && !item.get('product').value.promo"
+                          class="table-sale__colum">
+                          <p>
+                              {{item.get('product').value.description}}
+                          </p>
+                          <div class="table-sale__descrip">
+                              <div>
+                                  Precio real:
+                              </div>
+                              <div>
+                                  {{item.get('product').value.price | currency: 'S/. '}}/{{item.get('product').value.unit}}
+                              </div>
+                          </div>
+                          <div class="table-sale__descrip">
+                              <div>
+                                  Peso real:
+                              </div>
+                              <div>
+                                  <input autocomplete="off" class="table-sale__input--width" formControlName="noRefQuantity"
+                                      type="number" min=0 required>
+                                  {{item.get('product').value.unit}}
+                              </div>
+                          </div>
+                      </div>
+
+                      <!-- We have promo, but no ref-->
+                      <div *ngIf="!item.get('product').value.ref && item.get('product').value.promo" class="table-sale__colum">
+                          <p>
+                              {{item.get('product').value.description}}
+                          </p>
+                          <div class="table-sale__descrip">
+                              <div>
+                                  OFERTA:
+                              </div>
+                              <div>
+                                  {{item.get('product').value.promoData.quantity}}{{(item.get('product').value.unit)}}
+                                  X
+                                  {{item.get('product').value.promoData.promoPrice | currency: 'S/. '}}
+                              </div>
+                          </div>
+                          <div class="table-sale__descrip">
+                              <div>
+                                  Cantidad de Ofertas:
+                              </div>
+                              <div>
+                                  {{onFloor(item.get('quantity').value, item.get('product').value.promoData.quantity)}}
+                              </div>
+                          </div>
+                          <ng-container
+                              *ngIf="item.get('quantity').value % item.get('product').value.promoData.quantity">
+                              <div class="table-sale__descrip">
+                                  <div>
+                                      Precio sin oferta:
+                                  </div>
+                                  <div>
+                                      {{item.get('product').value.price | currency: 'S/. '}}/{{item.get('product').value.unit}}
+                                  </div>
+                              </div>
+                              <div class="table-sale__descrip">
+                                  <div>
+                                      Cantidad sin oferta:
+                                  </div>
+                                  <div>
+                                      {{item.get('quantity').value % item.get('product').value.promoData.quantity}}
+                                      {{item.get('product').value.unit}}
+                                  </div>
+                              </div>
+                              <div class="table-sale__descrip">
+                                  <div>
+                                      Precio Adicional:
+                                  </div>
+                                  <div>
+                                      {{(item.get('quantity').value % item.get('product').value.promoData.quantity)
+                                  *item.get('product').value.price | currency:'S/. '}}
+                                  </div>
+                              </div>
+                          </ng-container>
+
+                      </div>
+
+                      <!-- We have promo and ref-->
+                      <div *ngIf="item.get('product').value.ref && item.get('product').value.promo" class="table-sale__colum">
+                          <p>
+                              {{item.get('product').value.description}}
+                          </p>
+                          <div class="table-sale__descrip">
+                              <div>
+                                  OFERTA:
+                              </div>
+                              <div>
+                                  {{item.get('product').value.promoData.quantity}}{{(item.get('product').value.refUnit)}}
+                                  X
+                                  {{item.get('product').value.promoData.promoPrice | currency: 'S/. '}}
+                              </div>
+                          </div>
+                          <div class="table-sale__descrip">
+                              <div>
+                                  Cantidad de Ofertas:
+                              </div>
+                              <div>
+                                  {{onFloor(item.get('quantity').value, item.get('product').value.promoData.quantity)}}
+                              </div>
+                          </div>
+                          <ng-container
+                              *ngIf="item.get('quantity').value % item.get('product').value.promoData.quantity">
+                              <div class="table-sale__descrip">
+                                  <div>
+                                      Cantidad ref. sin oferta:
+                                  </div>
+                                  <div>
+                                      {{item.get('quantity').value % item.get('product').value.promoData.quantity}}
+                                      {{item.get('product').value.refUnit}}
+                                  </div>
+                              </div>
+                              <div class="table-sale__descrip">
+                                  <div>
+                                      Peso real sin oferta:
+                                  </div>
+                                  <div>
+                                      <input autocomplete="off" class="table-sale__input--width" formControlName="noRefQuantity"
+                                          type="number" min=0 required>
+                                      {{item.get('product').value.unit}}
+                                  </div>
+                              </div>
+                              <div class="table-sale__descrip">
+                                  <div>
+                                      Precio real sin oferta:
+                                  </div>
+                                  <div>
+                                      {{item.get('product').value.price | currency: 'S/. '}}/{{item.get('product').value.unit}}
+                                  </div>
+                              </div>
+                              <div class="table-sale__descrip">
+                                  <div>
+                                      Precio adicional:
+                                  </div>
+                                  <div>
+                                      {{(item.get('quantity').value % item.get('promoQuantity').value ? 
+                                  item.get('noRefQuantity').value * item.get('product').value.price : 0) | currency: 'S/. '}}
+                                  </div>
+                              </div>
+                          </ng-container>
+                      </div>
+                  </td>
+                  <!-- price -->
+                  <td class="w3-right-align table-sale__td table-sale__td--space">
+                      {{item.get('price').value | currency: 'S/. '}}
+                      <!-- S/. <input autocomplete="off" style="width: 54px"
+                          formControlName="price" type="number"required min=0> -->
+                  </td>
+              </div>
+          </tr>
+          <tr>
+              <td class="table-sale__td table-sale__td--border"></td>
+              <td class="w3-right-align table-sale__td table-sale__td--border">
+                  Total
+              </td>
+              <td class="w3-right-align table-sale__td table-sale__td--border table-sale__td--space">
+                  <ng-container *ngIf="individualPrice$ | async"></ng-container>
+                  <ng-container *ngIf="totalPrice$ | async">
+                      {{this.productForm.get('totalPrice').value | currency:'S/. '}}
+                  </ng-container>
+              </td>
+          </tr>
+          <tr>
+              <td class="table-sale__td table-sale__td--border"></td>
+              <td class="w3-right-align table-sale__td table-sale__td--border">
+                  Delivery
+              </td>
+              <td class="w3-right-align table-sale__td table-sale__td--border table-sale__td--space">
+                  S/. <input autocomplete="off" class="table-sale__input--width" formControlName="deliveryPrice" type="number"
+                      required min=0>
+              </td>
+          </tr>
+      </table>
+  </div>
+  <div class="total-div">
+      <div class="ticket__total">
+          {{productForm.get('totalPrice').value + productForm.get('deliveryPrice').value | currency:'S/. '}}
+      </div>
+  </div>
+
+  <button *ngIf="sale.status == 'Solicitado'" class="w3-block w3-margin-top" mat-raised-button color="warn"
+      (click)="onSubmitForm()" type="button" [disabled]="productForm.status != 'VALID'">Confirmar</button>
+
+
+</div>
