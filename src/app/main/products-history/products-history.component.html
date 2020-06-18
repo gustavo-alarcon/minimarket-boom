@@ -1,1 +1,31 @@
-<p>products-history works!</p>
+<div class="w3-section w3-hide-large w3-hide-medium">
+    <div class="w3-padding formFieldRounded">
+        <h2 class="title2">Historial de compras 📋</h2>
+        <mat-form-field appearance="outline" class="w3-margin-top w3-margin-bottom w3-block">
+            <input matInput placeholder="FECHA / PERIODO" [satDatepicker]="picker">
+            <sat-datepicker #picker [rangeMode]="true"></sat-datepicker>
+            <sat-datepicker-toggle matSuffix [for]="picker"></sat-datepicker-toggle>
+        </mat-form-field>
+        <div>
+            <mat-card class="product w3-margin-bottom">
+                <div class="ms-flex ms-flex--center">
+                    <div>
+                        <div class="corr">#E1345</div>
+                        <div>01-Jun-2020</div>
+                        <div>01-Jun-2020</div>
+                    </div>
+                    <span class="ms-fill"></span>
+                    <div style="width: 65%;">
+                        <div class="ms-flex" style="margin-bottom: 8px;" >
+                            <div class="status">En atención</div>
+                            <span class="ms-fill"></span>
+                            <div class="check"></div>
+                        </div>
+                        <div class="total">S/.106.00</div>
+                    </div>
+                </div>
+            </mat-card>
+        </div>
+    </div>
+
+</div>

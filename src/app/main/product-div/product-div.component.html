@@ -33,13 +33,13 @@
                 </div>
                 <div *ngIf="buttonAdd">
                     <button *ngIf="product.realStock > product.sellMinimum" mat-mini-fab color='accent'
-                        [disabled]="stopBuy()" (click)="add(product)">
+                        [disabled]="!stopBuy(product)" (click)="add(product)">
                         <mat-icon>add</mat-icon>
                     </button>
                 </div>
             </div>
             <div *ngIf="product.promo && product.promoData.quantity > 1" class="w3-center product__promo">
-                OFERTA: {{product.promoData.quantity}} ({{product.unit.description}}) x S/.
+                OFERTA: {{product.promoData.quantity}} x S/.
                 {{product.promoData.promoPrice | number: '.2'}}
             </div>
             <div *ngIf="product.promo && product.promoData.quantity == 1" style="color: #eb5757;font-size: 0.7em;">

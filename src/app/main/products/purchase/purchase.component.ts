@@ -1,4 +1,3 @@
-import { Router } from '@angular/router';
 import { SaleDialogComponent } from './../sale-dialog/sale-dialog.component';
 import { MatDialog } from '@angular/material/dialog';
 import { User } from 'src/app/core/models/user.model';
@@ -7,7 +6,7 @@ import { Sale, SaleRequestedProducts } from './../../../core/models/sale.model';
 import { Ng2ImgMaxService } from 'ng2-img-max';
 import { DatabaseService } from 'src/app/core/services/database.service';
 import { tap, take, takeLast } from 'rxjs/operators';
-import { Observable, BehaviorSubject } from 'rxjs';
+import { Observable, BehaviorSubject, forkJoin } from 'rxjs';
 import { AuthService } from 'src/app/core/services/auth.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
@@ -27,17 +26,22 @@ export class PurchaseComponent implements OnInit {
   userData$: Observable<any>
   user: User = null
 
-
   name: boolean = false
   total: number = 0
   delivery: number = 4
 
-  dataFormGroup: FormGroup;
   firstFormGroup: FormGroup;
   secondFormGroup: FormGroup;
   payFormGroup: FormGroup;
 
-  payType: Array<any> = [{ name: 'Yape', account: 'Número: 987880986' }, { name: 'BCP', account: 'Cuenta: 215-56894578-69-73' }, { name: 'Interbank', account: 'Cuenta: 215-56894578-69-73' }]
+  photosList: Array<any> = []
+
+  payType: Array<any> = [
+    { name: 'Yape', account: '987880986', image: '../../../../assets/images/logo-yape-min.png' },
+    { name: 'BCP', account: '215-56894578-69-73', image: '../../../../assets/images/bcp-logo.png' },
+    { name: 'Interbank', account: '215-56894578-69-73', image: '../../../../assets/images/logo_Interbank.png' }
+  ]
+
   documents: Array<string> = ['Boleta', 'Factura']
   districts: Array<any> = [{
     name: 'Cercado',
@@ -66,16 +70,12 @@ export class PurchaseComponent implements OnInit {
     resizing$: {
       photoURL: Observable<boolean>
     },
-    data: {
-      photoURL: File[]
-    }
+    data: File[]
   } = {
       resizing$: {
         photoURL: new BehaviorSubject<boolean>(false)
       },
-      data: {
-        photoURL: []
-      }
+      data: []
     }
 
   constructor(
@@ -85,29 +85,12 @@ export class PurchaseComponent implements OnInit {
     private ng2ImgMax: Ng2ImgMaxService,
     private dialog: MatDialog,
     private dbs: DatabaseService,
-    private af: AngularFirestore,
-    private router: Router
+    private af: AngularFirestore
   ) { }
 
   ngOnInit(): void {
     let date = new Date()
     this.now = new Date(date.getTime() + (345600000))
-
-    this.firstFormGroup = this.fb.group({
-      email: [null, [Validators.required, Validators.email]],
-      dni: [null, [Validators.required, Validators.minLength(8)]],
-      name: [null, [Validators.required]],
-      lastname1: [null, [Validators.required]],
-      lastname2: [null, [Validators.required]],
-      phone: [null, [Validators.required, Validators.minLength(6)]],
-    });
-
-    this.secondFormGroup = this.fb.group({
-      date: [null, [Validators.required]],
-      address: [null, [Validators.required]],
-      district: [null, [Validators.required]],
-      ref: [null, [Validators.required]]
-    });
 
     this.payFormGroup = this.fb.group({
       pay: [null, [Validators.required]],
@@ -120,41 +103,44 @@ export class PurchaseComponent implements OnInit {
         this.user = res
 
         if (res['salesCount'] > 0) {
-          this.dataFormGroup = this.fb.group({
+
+          this.firstFormGroup = this.fb.group({
             email: [res['email'], [Validators.required, Validators.email]],
             dni: [res['dni'], [Validators.required, Validators.minLength(8)]],
-            name: [res['realName'], [Validators.required]],
+            name: [res['name'], [Validators.required]],
+            lastname1: [res['lastName1'], [Validators.required]],
+            lastname2: [res['lastName2'], [Validators.required]],
             phone: [res.contact.phone, [Validators.required, Validators.minLength(6)]],
+          });
+
+          this.secondFormGroup = this.fb.group({
             date: [null, [Validators.required]],
-            pay: [null, [Validators.required]],
-            typePay: [null, [Validators.required]],
-            photoURL: [null, [Validators.required]],
             address: [res.contact.address, [Validators.required]],
             district: [res.contact.district, [Validators.required]],
             ref: [res.contact.reference, [Validators.required]]
           });
-          this.dataFormGroup.get('email').disable()
-          this.dataFormGroup.get('dni').disable()
-          this.dataFormGroup.get('name').disable()
+
           this.latitud = res.contact.coord.lat
           this.longitud = res.contact.coord.lng
         } else {
           this.firstSale = true
-          this.dataFormGroup = this.fb.group({
+
+          this.firstFormGroup = this.fb.group({
             email: [res['email'], [Validators.required, Validators.email]],
             dni: [null, [Validators.required, Validators.minLength(8)]],
             name: [res['displayName'], [Validators.required]],
+            lastname1: [null, [Validators.required]],
+            lastname2: [null, [Validators.required]],
             phone: [null, [Validators.required, Validators.minLength(6)]],
+          });
+
+          this.secondFormGroup = this.fb.group({
             date: [null, [Validators.required]],
-            pay: [null, [Validators.required]],
-            typePay: [null, [Validators.required]],
-            photoURL: [null, [Validators.required]],
             address: [null, [Validators.required]],
             district: [null, [Validators.required]],
             ref: [null, [Validators.required]]
           });
 
-          this.dataFormGroup.get('email').disable()
           if (res['displayName']) {
             this.name = true
           }
@@ -172,6 +158,18 @@ export class PurchaseComponent implements OnInit {
 
   roundNumber(number) {
     return Number(parseFloat(number).toFixed(1));
+  }
+
+  eliminatedphoto(ind) {
+    this.photosList.splice(ind, 1)
+    this.photos.data.splice(ind, 1)
+
+    if (this.photosList.length == 0) {
+      this.payFormGroup.get('photoURL').setValue(null);
+    }
+
+    console.log(this.photos.data);
+
   }
 
   giveProductPrice(item) {
@@ -209,7 +207,7 @@ export class PurchaseComponent implements OnInit {
   }
 
   addNewPhoto(formControlName: string, image: File[]) {
-    this.dataFormGroup.get(formControlName).setValue(null);
+    this.payFormGroup.get(formControlName).setValue(null);
     if (image.length === 0)
       return;
     let reader = new FileReader();
@@ -219,18 +217,21 @@ export class PurchaseComponent implements OnInit {
       .pipe(
         take(1)
       ).subscribe(result => {
-        this.photos.data[formControlName] = new File([result], formControlName + result.name.match(/\..*$/));
+        this.photos.data.push(new File([result], formControlName + this.photosList.length + result.name.match(/\..*$/)))
         reader.readAsDataURL(image[0]);
         reader.onload = (_event) => {
-
-          this.dataFormGroup.get(formControlName).setValue(reader.result);
+          this.photosList.push({
+            img: reader.result,
+            show: false
+          })
+          this.payFormGroup.get(formControlName).setValue(reader.result);
           this.photos.resizing$[formControlName].next(false);
         }
       },
         error => {
           this.photos.resizing$[formControlName].next(false);
           this.snackbar.open('Por favor, elija una imagen en formato JPG, o PNG', 'Aceptar');
-          this.dataFormGroup.get(formControlName).setValue(null);
+          this.payFormGroup.get(formControlName).setValue(null);
 
         }
       );
@@ -238,38 +239,38 @@ export class PurchaseComponent implements OnInit {
 
   save() {
     this.loading.next(true)
-    this.dataFormGroup.markAsPending();
-    this.dataFormGroup.disable()
+
+    this.payFormGroup.markAsPending();
+    this.payFormGroup.disable()
 
     const saleCount = this.af.firestore.collection(`/db/distoProductos/config/`).doc('generalConfig');
     const saleRef = this.af.firestore.collection(`/db/distoProductos/sales`).doc();
-/*
-    let order: SaleRequestedProducts[] = this.dbs.order.map(el => {
-      return { id: el.product.id, quantity: el.quantity }
-    })
+
     let newSale: Sale = {
       id: saleRef.id,
       correlative: '',
-      document: this.dataFormGroup.get('typePay').value,
-      payType: this.dataFormGroup.get('pay').value,
+      document: this.payFormGroup.get('typePay').value,
+      payType: this.payFormGroup.get('pay').value,
       location: {
-        address: this.dataFormGroup.get('address').value,
-        district: this.dataFormGroup.get('district').value,
-        reference: this.dataFormGroup.get('ref').value,
+        address: this.secondFormGroup.get('address').value,
+        district: this.secondFormGroup.get('district').value,
+        reference: this.secondFormGroup.get('ref').value,
         coord: {
           lat: this.latitud,
           lng: this.longitud
         },
-        phone: this.dataFormGroup.get('phone').value
+        phone: this.firstFormGroup.get('phone').value
       },
-      deliveryDate: this.dataFormGroup.get('date').value,
+      requestDate: this.secondFormGroup.get('date').value,
       createdAt: new Date(),
-      user: this.user.uid,
-      requestedProducts: order,
+      createdBy: null,
+      userId: this.user.uid,
+      requestedProducts: this.dbs.order,
       status: 'Solicitado',
-      total: this.total,
+      //total: this.total,
       deliveryPrice: this.delivery,
-      voucherPhoto: ''
+      voucher: [],
+      voucherChecked: false
     }
 
 
@@ -281,11 +282,19 @@ export class PurchaseComponent implements OnInit {
       userCorrelative = this.user.salesCount + 1
     }
 
-    this.dbs.uploadPhotoVoucher(saleRef.id, this.photos.data.photoURL).pipe(
+    let photos = [...this.photos.data.map(el => this.dbs.uploadPhotoVoucher(saleRef.id, el))]
+
+
+    forkJoin(photos).pipe(
       takeLast(1),
-    ).subscribe((res: string) => {
-      newSale.voucherPhoto = res;
-      newSale.voucherPath = `/sales/vouchers/${saleRef.id}-${this.photos.data.photoURL.name}`;
+    ).subscribe((res: string[]) => {
+      newSale.voucher = [...this.photos.data.map((el, i) => {
+        return {
+          voucherPhoto: res[i],
+          voucherPath: `/sales/vouchers/${saleRef.id}-${el.name}`
+        }
+      })]
+
       return this.af.firestore.runTransaction((transaction) => {
         // This code may get re-run multiple times if there are conflicts.
         return transaction.get(saleCount).then((sfDoc) => {
@@ -310,13 +319,18 @@ export class PurchaseComponent implements OnInit {
           if (this.firstSale) {
             transaction.update(ref, {
               contact: newSale.location,
-              realName: this.dataFormGroup.value['name'],
-              dni: this.dataFormGroup.value['dni'],
+              name: this.firstFormGroup.value['name'],
+              lastName1: this.firstFormGroup.value['lastname1'],
+              lastName2: this.firstFormGroup.value['lastname2'],
+              dni: this.firstFormGroup.value['dni'],
               salesCount: userCorrelative
             })
           } else {
             transaction.update(ref, {
               contact: newSale.location,
+              name: this.firstFormGroup.value['name'],
+              lastName1: this.firstFormGroup.value['lastname1'],
+              lastName2: this.firstFormGroup.value['lastname2'],
               salesCount: userCorrelative
             })
           }
@@ -327,11 +341,12 @@ export class PurchaseComponent implements OnInit {
       }).then(() => {
         this.dialog.open(SaleDialogComponent, {
           data: {
-            name: this.dataFormGroup.value['name'],
+            name: this.firstFormGroup.value['name'],
             number: newSale.correlative,
             email: this.user.email
           }
         })
+
         this.dbs.order = []
         this.dbs.total = 0
         this.dbs.view.next(1)
@@ -340,7 +355,7 @@ export class PurchaseComponent implements OnInit {
       }).catch(function (error) {
         console.log("Transaction failed: ", error);
       });
-    })*/
+    })
 
   }
 

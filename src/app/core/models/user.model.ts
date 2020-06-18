@@ -4,7 +4,9 @@ export interface User {
   dni?:number;
   phone?: string;
   photoURL?: string;
-  realName?: string;
+  name?: string;
+  lastName1?: string;
+  lastName2?: string;
   displayName?: string;
   token?: string;
   lastLogin?: Date;

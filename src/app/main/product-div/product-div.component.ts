@@ -1,3 +1,4 @@
+import { Product } from './../../core/models/product.model';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { DatabaseService } from 'src/app/core/services/database.service';
 import { Product } from 'src/app/core/models/product.model';
@@ -11,7 +12,7 @@ import { Component, OnInit, CUSTOM_ELEMENTS_SCHEMA, Input } from '@angular/core'
 export class ProductDivComponent implements OnInit {
 
   @Input() product: Product
-  @Input() buttonAdd:boolean = false
+  @Input() buttonAdd: boolean = false
   defaultImage = "../../../assets/images/default-image.jpg";
 
   constructor(
@@ -37,18 +38,22 @@ export class ProductDivComponent implements OnInit {
 
     this.dbs.total = this.dbs.order.map(el => this.giveProductPrice(el)).reduce((a, b) => a + b, 0)
 
-    if(this.stopBuy()){
+    let stop = 3
+    let quantity = this.dbs.order.map(el => el.quantity * el.product.unit.weight).reduce((a, b) => a + b, 0)
+
+    if (quantity >= stop) {
       this.snackBar.open('Ha llegado al límite máximo de peso por pedido', 'Cerrar', {
         duration: 3000
       })
     }
   }
 
-  stopBuy() {
+  stopBuy(item: Product) {
+    let prod = item.unit.weight
     let stop = 3
     let quantity = this.dbs.order.map(el => el.quantity * el.product.unit.weight).reduce((a, b) => a + b, 0)
 
-    return quantity >= stop
+    return stop - quantity >= prod
   }
 
   giveProductPrice(item) {
