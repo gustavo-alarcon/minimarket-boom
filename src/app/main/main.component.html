@@ -12,12 +12,12 @@
                                 <img class="user__image border--primary" src="../../assets/images/no-image-user.png">
                             </ng-template>
                         </div>
-                        <div *ngIf="user.realName;else noName">
+                        <div *ngIf="user.name;else noName">
                             <div class="user__name">
-                                {{user.realName.split(" ")[0]}}
+                                {{user.name.split(" ")[0]}}
                             </div>
                             <div class="user__surname">
-                                {{user.realName.split(" ").slice(1, 3).join(" ")}}
+                                {{user.lastName1}}
                             </div>
                         </div>
                         <ng-template #noName>

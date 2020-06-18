@@ -132,7 +132,7 @@
 
 <mat-horizontal-stepper *ngIf="userData$ | async" linear #stepper class="ms-stepper">
     <mat-step label="📝" [stepControl]="firstFormGroup">
-        <h2 class="subtitle">Datos personales 📝</h2>
+        <h2 class="subtitle">Datos personales</h2>
         <form [formGroup]="firstFormGroup">
             <mat-form-field class="w3-block" appearance="outline">
                 <mat-label>Correo</mat-label>
@@ -177,12 +177,12 @@
         <div class="ms-flex">
             <span class="ms-fill"></span>
             <button mat-button matStepperNext class="font--primary">
-                 Siguiente <mat-icon color="primary">east</mat-icon>
+                Siguiente <mat-icon color="primary">east</mat-icon>
             </button>
         </div>
     </mat-step>
     <mat-step label="📦" [stepControl]="secondFormGroup">
-        <h2 class="subtitle">Datos de envío 📦</h2>
+        <h2 class="subtitle">Datos de envío</h2>
         <form [formGroup]="secondFormGroup">
             <mat-form-field style="margin-bottom: 8px;" class="w3-block" appearance="outline">
                 <mat-label>Fecha de entrega</mat-label>
@@ -235,24 +235,27 @@
                 </button>
                 <span class="ms-fill"></span>
                 <button mat-button matStepperNext class="font--primary">
-                     Siguiente <mat-icon color="primary">east</mat-icon>
+                    Siguiente <mat-icon color="primary">east</mat-icon>
                 </button>
             </div>
         </form>
     </mat-step>
     <mat-step label="💳">
-        <h2 class="subtitle">Pago 💳</h2>
+        <h2 class="subtitle">Pago</h2>
         <form [formGroup]="payFormGroup">
             <mat-form-field class="w3-block" appearance="outline">
                 <mat-label>Opciones de pago</mat-label>
                 <mat-select formControlName="pay" placeholder='Seleccionar'>
                     <mat-option *ngFor="let type of payType" [value]="type">
-                        {{type.name}}
+                        <img class="example-option-img" aria-hidden [src]="type.image" height="25">
+                        <span>{{type.name}}</span>
                     </mat-option>
                 </mat-select>
             </mat-form-field>
-            <div class="w3-margin-bottom account" *ngIf="payFormGroup.get('pay').value">
-                {{payFormGroup.get('pay').value['account']}}
+            <div class="w3-margin-bottom account" *ngIf="payFormGroup.get('pay').value as pay">
+                <img class="example-option-img" height="30" aria-hidden [src]="pay['image']" alt="image:account">
+                <span>{{pay['account']}}</span>
+
             </div>
             <div class="pay ms-flex">
                 <div class="pay__total">
@@ -270,9 +273,21 @@
                 </mat-select>
             </mat-form-field>
             <div class="w3-margin-bottom">
-                <div class="w3-margin-bottom" *ngFor="let image of photosList">
-                    <img class="voucher" style="object-fit: cover;" [src]="image.img" alt="fotografía"
-                        (click)="image.show=true">
+                <div class="w3-margin-bottom" style="position: relative;"
+                    *ngFor="let image of photosList; let ind = index">
+                    <img class="voucher" style="object-fit: cover;" [src]="image.img" alt="fotografía">
+                    <div class="ms-flex w3-block" style="position: absolute; top: 0;">
+                        <span class="ms-fill"></span>
+                        <button type="button" *ngIf="!image.show" mat-icon-button (click)="image.show=true">
+                            <mat-icon>zoom_in</mat-icon>
+                        </button>
+                        <button type="button" *ngIf="image.show" mat-icon-button (click)="image.show=false">
+                            <mat-icon>zoom_out</mat-icon>
+                        </button>
+                        <button type="button" mat-icon-button (click)="eliminatedphoto(ind)">
+                            <mat-icon>close</mat-icon>
+                        </button>
+                    </div>
                     <div style="text-align: center; border: 1px solid silver;" *ngIf="image.show">
                         <div class="ms-flex w3-block">
                             <span class="ms-fill"></span>
@@ -284,7 +299,7 @@
                     </div>
                 </div>
 
-                <div class="voucher" (click)="photoURL.click()" >
+                <div class="voucher" (click)="photoURL.click()">
                     Agregar foto de voucher de pago
                 </div>
 

@@ -36,7 +36,12 @@ export class PurchaseComponent implements OnInit {
 
   photosList: Array<any> = []
 
-  payType: Array<any> = [{ name: 'Yape', account: 'Número: 987880986' }, { name: 'BCP', account: 'Cuenta: 215-56894578-69-73' }, { name: 'Interbank', account: 'Cuenta: 215-56894578-69-73' }]
+  payType: Array<any> = [
+    { name: 'Yape', account: '987880986', image: '../../../../assets/images/logo-yape-min.png' },
+    { name: 'BCP', account: '215-56894578-69-73', image: '../../../../assets/images/bcp-logo.png' },
+    { name: 'Interbank', account: '215-56894578-69-73', image: '../../../../assets/images/logo_Interbank.png' }
+  ]
+
   documents: Array<string> = ['Boleta', 'Factura']
   districts: Array<any> = [{
     name: 'Cercado',
@@ -65,16 +70,12 @@ export class PurchaseComponent implements OnInit {
     resizing$: {
       photoURL: Observable<boolean>
     },
-    data: {
-      photoURL: File[]
-    }
+    data: File[]
   } = {
       resizing$: {
         photoURL: new BehaviorSubject<boolean>(false)
       },
-      data: {
-        photoURL: []
-      }
+      data: []
     }
 
   constructor(
@@ -159,6 +160,18 @@ export class PurchaseComponent implements OnInit {
     return Number(parseFloat(number).toFixed(1));
   }
 
+  eliminatedphoto(ind) {
+    this.photosList.splice(ind, 1)
+    this.photos.data.splice(ind, 1)
+
+    if (this.photosList.length == 0) {
+      this.payFormGroup.get('photoURL').setValue(null);
+    }
+
+    console.log(this.photos.data);
+
+  }
+
   giveProductPrice(item) {
     if (item.product.promo) {
       let promTotalQuantity = Math.floor(item.quantity / item.product.promoData.quantity);
@@ -204,7 +217,7 @@ export class PurchaseComponent implements OnInit {
       .pipe(
         take(1)
       ).subscribe(result => {
-        this.photos.data[formControlName].push(new File([result], formControlName + this.photosList.length + result.name.match(/\..*$/)))
+        this.photos.data.push(new File([result], formControlName + this.photosList.length + result.name.match(/\..*$/)))
         reader.readAsDataURL(image[0]);
         reader.onload = (_event) => {
           this.photosList.push({
@@ -269,13 +282,13 @@ export class PurchaseComponent implements OnInit {
       userCorrelative = this.user.salesCount + 1
     }
 
-    let photos = [...this.photos.data.photoURL.map(el => this.dbs.uploadPhotoVoucher(saleRef.id, el))]
+    let photos = [...this.photos.data.map(el => this.dbs.uploadPhotoVoucher(saleRef.id, el))]
 
 
     forkJoin(photos).pipe(
       takeLast(1),
     ).subscribe((res: string[]) => {
-      newSale.voucher = [...this.photos.data.photoURL.map((el, i) => {
+      newSale.voucher = [...this.photos.data.map((el, i) => {
         return {
           voucherPhoto: res[i],
           voucherPath: `/sales/vouchers/${saleRef.id}-${el.name}`

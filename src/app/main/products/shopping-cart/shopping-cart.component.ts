@@ -1,3 +1,4 @@
+import { Unit } from './../../../core/models/unit.model';
 import { Product } from './../../../core/models/product.model';
 import { DatabaseService } from './../../../core/services/database.service';
 import { Component, OnInit } from '@angular/core';
@@ -18,6 +19,18 @@ export class ShoppingCartComponent implements OnInit {
 
   ngOnInit(): void {
     this.total = this.dbs.order.map(el =>  this.giveProductPrice(el)).reduce((a, b) => a + b, 0)
+  }
+
+  getUnit(quantity:number, unit:Unit){
+    if(unit.weight == 1){
+      if(quantity>1){
+        return unit.description + 's'
+      }else{
+        return unit.description
+      }
+    }else{
+      return '('+unit.description+')'
+    }
   }
 
   roundNumber(number) {
@@ -43,6 +56,11 @@ export class ShoppingCartComponent implements OnInit {
 
   delete(ind) {
     this.dbs.order.splice(ind, 1)
+    if(this.dbs.order.length == 0){
+      this.dbs.view.next(1)
+    }
+    this.dbs.total = this.dbs.order.map(el => this.giveProductPrice(el)).reduce((a, b) => a + b, 0)
+    
     this.total = this.dbs.order.map(el => this.giveProductPrice(el)).reduce((a, b) => a + b, 0)
   }
 
