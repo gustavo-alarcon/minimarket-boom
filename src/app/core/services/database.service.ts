@@ -323,4 +323,19 @@ export class DatabaseService {
     // }
     return batch;
   }
+
+  getBuysCorrelativeValueChanges(): Observable<number> {
+    return this.getGeneralConfigDoc().pipe(map(res => {
+      if (res) {
+        if (res.hasOwnProperty('buysCounter')) {
+          return res.buysCounter
+        }
+        else {
+          return 0
+        }
+      } else {
+        return 0
+      }
+    }), shareReplay(1))
+  }
 }

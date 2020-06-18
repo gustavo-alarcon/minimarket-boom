@@ -16,6 +16,7 @@ import { Buy, BuyRequestedProduct } from 'src/app/core/models/buy.model';
   styleUrls: ['./request-create-edit.component.scss']
 })
 export class RequestCreateEditComponent implements OnInit {
+  correlative$: Observable<number>
   selectedProducts: {
     id: string,
     productDescription: string,
@@ -50,6 +51,8 @@ export class RequestCreateEditComponent implements OnInit {
   }
 
   initObservables(){
+    this.correlative$ = this.dbs.getBuysCorrelativeValueChanges();
+
     this.products$ = combineLatest(
       this.requestFormGroup.get('product').valueChanges.pipe(startWith("")),
       this.dbs.getProductsListValueChanges()).pipe(
