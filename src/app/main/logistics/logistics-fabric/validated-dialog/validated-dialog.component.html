@@ -57,7 +57,7 @@
     </mat-dialog-content>
 
     <mat-dialog-actions>
-        <button mat-raised-button color="accent" class="w3-block" type="button" (click)="save()"
+        <button mat-raised-button color="accent" class="w3-block" type="button" (click)="data.edit?edit():save()"
             [disabled]="getStock()<0">Guardar</button>
     </mat-dialog-actions>
 </div>

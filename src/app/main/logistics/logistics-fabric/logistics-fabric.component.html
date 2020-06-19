@@ -106,9 +106,16 @@
           </th>
           <td mat-cell *matCellDef="let element" class="ms-table__td w3-center">
             <button *ngIf="!element['validated']" mat-raised-button color="accent" class="buttonNoRounded"
-              (click)="validated(element,buy,false)">Validar</button>
-            <button *ngIf="element['validated']" (click)="validated(element,buy,true)" mat-raised-button color="primary"
-              class="buttonNoRounded">Correcto</button>
+              (click)="validated(element,buy,false)" style="width: 110px;">Validar</button>
+            <div *ngIf="element['validated']">
+              <button (click)="validated(element,buy,true)" mat-raised-button color="primary"
+                class="buttonNoRounded">Correcto</button>
+              <button mat-icon-button matTooltip="Deshacer validación" matTooltipPosition="top">
+                <mat-icon>undo</mat-icon>
+              </button>
+            </div>
+
+
           </td>
         </ng-container>
         <tr mat-header-row *matHeaderRowDef="displayedColumns; sticky: true"></tr>

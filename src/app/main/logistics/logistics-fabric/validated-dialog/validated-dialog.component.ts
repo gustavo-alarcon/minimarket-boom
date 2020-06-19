@@ -99,6 +99,17 @@ export class ValidatedDialogComponent implements OnInit {
     return increase - decrease
   }
 
+  edit(){
+    console.log('edit');
+    /*
+    this.loading.next(true)
+    this.validatedFormGroup.markAsPending();
+    this.validatedFormGroup.disable()
+    const requestRef = this.af.firestore.collection(`/db/distoProductos/buys`).doc(this.data.item.buyId);
+    const requestProductRef = this.af.firestore.collection(`/db/distoProductos/buys/${this.data.item.buyId}/buyRequestedProducts`).doc(this.data.item.id);
+    const batch = this.af.firestore.batch()*/
+  }
+
   save() {
     this.loading.next(true)
     this.validatedFormGroup.markAsPending();
@@ -121,16 +132,20 @@ export class ValidatedDialogComponent implements OnInit {
           observations: this.validatedFormGroup.value['observations']
         }
       })
-      /*
+    
       if (this.validatedFormGroup.value['returned'] > 0) {
-        batch.update(requestRef, {
-          returned: true,
-          returnedData: {
-            returned: this.validatedFormGroup.value['returned'],
-            observations: this.validatedFormGroup.value['observations']
-          }
-        })
-      }*/
+        if(this.data.buy.returnedQuantity){
+          batch.update(requestRef, {
+            returnedQuantity: this.validatedFormGroup.value['returned'] + this.data.buy.returnedQuantity
+          })
+        }else{
+          batch.update(requestRef, {
+            returned: true,
+            returnedQuantity: this.validatedFormGroup.value['returned'] 
+          })
+        }
+      }
+      
       batch.commit().then(() => {
         this.validatedAll$.subscribe(res => {
           const ref = this.af.firestore.collection(`/db/distoProductos/productsList`).doc(this.data.item.id);

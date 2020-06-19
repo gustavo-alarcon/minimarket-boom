@@ -16,10 +16,8 @@ export interface Buy {
   validatedDate: Date;
   
   returned?:boolean;
-  returnedData?:{
-    returned: number;
-    observations: string;
-  }
+  returnedQuantity?:number;
+  
 
   requestedDate: Date;      //When the request was submitted
   requestedBy: User;   

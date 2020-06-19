@@ -15,12 +15,11 @@ import { RequestCreateEditComponent } from './request-create-edit/request-create
 import { MatDialogModule } from '@angular/material/dialog';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
-import { MatNativeDateModule } from '@angular/material/core';
 import { MatExpansionModule } from '@angular/material/expansion';
 import { MatTableModule } from '@angular/material/table';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { ValidatedDialogComponent } from './validated-dialog/validated-dialog.component';
-
+import {MatTooltipModule} from '@angular/material/tooltip';
 
 @NgModule({
   declarations: [
@@ -45,7 +44,8 @@ import { ValidatedDialogComponent } from './validated-dialog/validated-dialog.co
     MatAutocompleteModule,
     MatExpansionModule,
     MatTableModule,
-    MatProgressBarModule 
+    MatProgressBarModule,
+    MatTooltipModule 
   ],
   entryComponents: [
     RequestCreateEditComponent,
