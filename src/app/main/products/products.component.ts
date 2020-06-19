@@ -22,7 +22,7 @@ export class ProductsComponent implements OnInit {
   init$: Observable<User>
 
   name: string = ''
-
+  delivery:number = 4
 
   searchForm: FormControl = new FormControl('')
 
@@ -69,6 +69,7 @@ export class ProductsComponent implements OnInit {
         if (res['salesCount']) {
           this.firstSale = false
           this.name = res.name.split(' ')[0]
+          this.delivery = res.contact.district.delivery
         } else {
           this.firstSale = true
         }

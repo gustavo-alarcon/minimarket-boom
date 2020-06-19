@@ -1,7 +1,8 @@
+import { Observable } from 'rxjs';
 import { Unit } from './../../../core/models/unit.model';
 import { Product } from './../../../core/models/product.model';
 import { DatabaseService } from './../../../core/services/database.service';
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Input } from '@angular/core';
 
 @Component({
   selector: 'app-shopping-cart',
@@ -10,15 +11,17 @@ import { Component, OnInit } from '@angular/core';
 })
 export class ShoppingCartComponent implements OnInit {
 
+  @Input() delivery:number = 4
+
+  delivery$:Observable<number>
   total: number = 0
-  delivery: number = 4
 
   constructor(
     public dbs: DatabaseService
   ) { }
 
   ngOnInit(): void {
-    this.total = this.dbs.order.map(el =>  this.giveProductPrice(el)).reduce((a, b) => a + b, 0)
+    this.total = this.dbs.total
   }
 
   getUnit(quantity:number, unit:Unit){
@@ -61,7 +64,6 @@ export class ShoppingCartComponent implements OnInit {
     }
     this.dbs.total = this.dbs.order.map(el => this.giveProductPrice(el)).reduce((a, b) => a + b, 0)
     
-    this.total = this.dbs.order.map(el => this.giveProductPrice(el)).reduce((a, b) => a + b, 0)
   }
 
 

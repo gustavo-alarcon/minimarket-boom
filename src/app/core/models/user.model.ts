@@ -1,7 +1,7 @@
 export interface User {
   uid: string;
   email: string;
-  dni?:number;
+  dni?: number;
   phone?: string;
   photoURL?: string;
   name?: string;
@@ -12,6 +12,10 @@ export interface User {
   lastLogin?: Date;
   contact?: {
     address: string;
+    district: {
+      delivery: number;
+      name: string;
+    };
     coord: {
       lat: number;
       long: number;
@@ -19,5 +23,5 @@ export interface User {
     reference: string;
     phone: number;
   },
-  salesCount?:number
+  salesCount?: number
 }
