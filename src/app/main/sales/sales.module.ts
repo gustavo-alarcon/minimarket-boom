@@ -1,5 +1,5 @@
 import { NgModule } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { CommonModule, DatePipe } from '@angular/common';
 import { SalesComponent } from './sales.component';
 import { SalesRoutingModule } from './sales-routing.module';
 import { MatButtonModule } from '@angular/material/button';
@@ -48,6 +48,9 @@ import {MatSlideToggleModule} from '@angular/material/slide-toggle';
     MatAutocompleteModule,
     MatCheckboxModule,
     MatSlideToggleModule
+  ],
+  providers: [
+    DatePipe
   ]
 })
 export class SalesModule { }

@@ -1,10 +1,13 @@
 import { Component, OnInit, Input } from '@angular/core';
 import { BehaviorSubject, Observable, combineLatest } from 'rxjs';
-import { Sale, saleStatusOptions } from 'src/app/core/models/sale.model';
+import { Sale, saleStatusOptions, SaleRequestedProducts } from 'src/app/core/models/sale.model';
 import { shareReplay, startWith, switchMap, map } from 'rxjs/operators';
 import { FormControl } from '@angular/forms';
 import { DatabaseService } from 'src/app/core/services/database.service';
 import { MatDialog } from '@angular/material/dialog';
+import * as XLSX from 'xlsx';
+import { DatePipe } from '@angular/common';
+
 
 @Component({
   selector: 'app-sales-master',
@@ -30,7 +33,9 @@ export class SalesMasterComponent implements OnInit {
 
   constructor(
     private dbs: DatabaseService,
-    private dialog: MatDialog
+    private dialog: MatDialog,
+    public datePipe: DatePipe
+
   ) { }
 
 
@@ -119,48 +124,71 @@ export class SalesMasterComponent implements OnInit {
 
   downloadXls(sales: Sale[]): void {
     console.log(sales);
-  //   let table_xlsx: any[] = [];
-  //   let headersXlsx = [
-  //     'Correlativo', 'Usuario', 'Estado', 'Teléfono', 'Dirección', 
-  //     'Distrito', 'Referencia', 'Sub-Total', 'Delivery', 'Total', 'Tipo de pago',
-  //     'Fecha de Solicitud', 'Fecha de Envio Deseada', 'Fecha de Confirmación/Cancelación', 'Fecha de Despacho', 
-  //     'Fecha de Entrega']
+    let table_xlsx: any[] = [];
+    let headersXlsx = [
+      'Correlativo', 
+      'Usuario', 
+      'Estado', 
+      'Teléfono', 
+      'Dirección', 
+      'Distrito', 
+      'Referencia', 
+      'Sub-Total', 
+      'Delivery', 
+      'Total', 
+      'Tipo de pago',
+      'Fecha de Solicitud', 
+      'Fecha de Envio Deseada', 
+      'Fecha de Atención',
+      'Fecha de Confirmación de Solicitud', 
+      'Fecha Asignada',
+      'Fecha de Confirmación de Comprobante',
+      'Fecha de Confirmación de Delivery', 
+      'Fecha de Asignación de Conductor', 
+      'Fecha de Entrega',
+      'Fecha de Cancelación']
 
-  //   table_xlsx.push(headersXlsx);
+    table_xlsx.push(headersXlsx);
 
-  //   sales.forEach(sale => {
-  //     const temp = [
-  //       sale.correlative.toString().padStart(6, "0"),
-  //       sale.createdBy.displayName,
-  //       sale.status,
-  //       sale.location.number,
-  //       sale.location.address,
-  //       sale.location.district,
-  //       sale.location.reference,
-  //       (sale.status == 'Solicitado' || sale.status == 'Cancelado') ? sale.total : sale.totalConfirmedPrice,
-  //       (sale.status == 'Solicitado' || sale.status == 'Cancelado') ? sale.deliveryPrice : sale.deliveryConfirmedPrice,
-  //       (sale.status == 'Solicitado' || sale.status == 'Cancelado') ? (sale.deliveryPrice + sale.total) : (sale.deliveryConfirmedPrice + sale.totalConfirmedPrice),
-  //       sale.payType,
-  //       sale.createdAt,
-  //       sale.deliveryDate,
-  //       (sale.status == 'Solicitado') ? "N.A." : (sale.status == 'Cancelado') ? sale.cancelledAt : sale.confirmedAt,
-  //       (sale.status == 'Solicitado' || sale.status == 'Cancelado' || sale.status == 'Confirmado') ? "N.A." : sale.dispatchedAt,
-  //       (sale.status == 'Solicitado' || sale.status == 'Cancelado' || sale.status == 'Confirmado' || sale.status == 'En reparto') ? "N.A." : sale.deliveryFinishedDate,
-  //     ];
+    sales.forEach(sale => {
+      const temp = [
+        sale.correlative.toString().padStart(6, "0"),
+        "Quedar con Melanie",
+        //sale.createdBy.displayName,
+        sale.status,
+        sale.location.phone,
+        sale.location.address,
+        sale.location.district,
+        sale.location.reference,
+        "S/."+this.giveTotalPrice(sale).toFixed(2),
+        "S/."+sale.deliveryPrice.toFixed(2),
+        (this.giveTotalPrice(sale)+sale.deliveryPrice).toFixed(2),
+        sale.payType,
+        sale.createdAt ? this.getXlsDate(sale.createdAt) : "---",
+        sale.requestDate ? this.getXlsDate(sale.requestDate) : "---",
+        sale.attendedData ? this.getXlsDate(sale.attendedData.attendedAt) : "---",
+        sale.confirmedRequestData ? this.getXlsDate(sale.confirmedRequestData.confirmedAt) : "---",
+        sale.confirmedRequestData ? this.getXlsDate(sale.confirmedRequestData.assignedDate) : "---",
+        sale.confirmedDocumentData ? this.getXlsDate(sale.confirmedDocumentData.confirmedBy) : "---",
+        sale.confirmedDeliveryData ? this.getXlsDate(sale.confirmedDeliveryData.confirmedAt) : "---",
+        sale.driverAssignedData ? this.getXlsDate(sale.driverAssignedData.assignedAt) : "---",
+        sale.finishedData ? this.getXlsDate(sale.finishedData.finishedAt) : "---",
+        sale.cancelledData ? this.getXlsDate(sale.cancelledData.cancelledAt) : "---",
+      ];
 
-  //     table_xlsx.push(temp);
-  //   })
+      table_xlsx.push(temp);
+    })
 
-  //   /* generate worksheet */
-  //   const ws: XLSX.WorkSheet = XLSX.utils.aoa_to_sheet(table_xlsx);
+    /* generate worksheet */
+    const ws: XLSX.WorkSheet = XLSX.utils.aoa_to_sheet(table_xlsx);
 
-  //   /* generate workbook and add the worksheet */
-  //   const wb: XLSX.WorkBook = XLSX.utils.book_new();
-  //   XLSX.utils.book_append_sheet(wb, ws, 'Relacion_de_Ventas');
+    /* generate workbook and add the worksheet */
+    const wb: XLSX.WorkBook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, 'Relacion_de_Ventas');
 
-  //   /* save to file */
-  //   const name = 'Relacion_de_Ventas' + '.xlsx';
-  //   XLSX.writeFile(wb, name);
+    /* save to file */
+    const name = 'Relacion_de_Ventas' + '.xlsx';
+    XLSX.writeFile(wb, name);
   }
 
 
@@ -181,6 +209,39 @@ export class SalesMasterComponent implements OnInit {
     const toDate = new Date(toYear, toMonth, 1);
   
     return { from: actualFromDate, to: toDate };
+  }
+
+  getCorrelative(corr: number){
+    return corr.toString().padStart(6, '0')
+  }
+
+  getXlsDate(date){
+    let dateObj = new Date(1970);
+    dateObj.setSeconds(date['seconds'])
+    console.log(date);
+    return this.datePipe.transform(dateObj, 'dd/MM/yyyy');
+  }
+
+  givePrice(item: SaleRequestedProducts): number {
+    let amount = item['quantity']
+    let price = item['product']['price']
+    if(item.product.promo){
+      let promo = item['product']['promoData']['quantity']
+      let pricePromo = item['product']['promoData']['promoPrice']
+  
+      if (amount >= promo) {
+        let wp = amount % promo
+        let op = Math.floor(amount / promo)
+        return wp * price + op * pricePromo
+      } else {
+        return amount * price
+      }
+    } else {
+      return amount * price
+    }
+  }
+  giveTotalPrice(sale: Sale): number{
+    return sale.requestedProducts.reduce((a,b) => a + this.givePrice(b), 0)
   }
 }
 

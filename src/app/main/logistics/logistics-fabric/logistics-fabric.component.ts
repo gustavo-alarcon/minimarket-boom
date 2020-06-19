@@ -100,7 +100,7 @@ export class LogisticsFabricComponent implements OnInit {
     let dialogRef: MatDialogRef<RequestCreateEditComponent>;
     if (edit == true) {
       dialogRef = this.dialog.open(RequestCreateEditComponent, {
-        width: '350px',
+        minWidth: '400px',
         autoFocus: false,
         data: {
           data: request,
@@ -122,7 +122,7 @@ export class LogisticsFabricComponent implements OnInit {
     }
     else {
       dialogRef = this.dialog.open(RequestCreateEditComponent, {
-        width: '350px',
+        minWidth: '400px',
         data: {
           data: null,
           edit: edit

@@ -1,6 +1,7 @@
 <div *ngIf="sales$ | async as sales else noSales">
   <!-- Actions form -->
-  <div class="actionsContainer formFieldRounded">
+  <div class="actionsContainer formFieldRounded"
+    style="margin-right: 16px;">
       <mat-form-field style="margin: 16px 16px 16px 0"
         class="content" appearance="outline">
           <input readonly matInput placeholder="FECHA / PERIODO" [formControl]="date" [satDatepicker]="picker">
@@ -31,10 +32,11 @@
   <ng-container *ngIf="salesFiltered$ | async as salesFiltered">
       <ng-container *ngIf="salesFiltered.length else noSales">
 
-          <div matRipple class="list-container"
-              *ngFor="let el of salesFiltered | paginate: { itemsPerPage: 10, currentPage: p }"
-              (click)="onSelectDetail(el)">
+        <!-- <div *ngFor="let sale of salesFiltered | paginate: { itemsPerPage: 10, currentPage: p }"
+            class="list-parent-container "
+            [class.shadow-color]="(detailSubject | async)?.id == sale.id">
 
+          <div matRipple class="list-container background-color" (click)="onSelectDetail(sale)">
                 <div class="general">
                     <div style="font-size: 24px;">
                         <b>#R1347</b>
@@ -89,6 +91,68 @@
                     </button>
                 </div>
           </div>
+        </div> -->
+
+        <div *ngFor="let sale of salesFiltered | paginate: { itemsPerPage: 10, currentPage: p }"
+            class="list-parent-container "
+            [class.shadow-color]="(detailSubject | async)?.id == sale.id">
+
+          <div matRipple class="list-container background-color" (click)="onSelectDetail(sale)">
+                <div class="general">
+                    <div style="font-size: 24px;">
+                        <b>#{{sale.correlativeType}}{{getCorrelative(sale.correlative)}}</b>
+                    </div>
+                    <div>
+                        <mat-icon color="primary">assignment_turned_in</mat-icon>
+                        Paola Ruiz
+                    </div>
+                    <div>
+                        <mat-icon style="font-size:20px;"
+                            color="primary">assignment_turned_in</mat-icon>
+                        01/06/2020
+                    </div>
+                    <div>
+                        <mat-icon style="font-size:20px;"
+                            color="primary">directions_bike</mat-icon>
+                        21/10/2020
+                    </div>
+                </div>
+                <div class="client">
+                    <mat-icon>group</mat-icon>
+                    <b>Nombre Prueba</b>
+                </div>
+                <div class="document">
+                    <b>Factura FE001-00003</b>
+                </div>
+                <div class="driver">
+                    <div class="driver_header">
+                        <mat-icon>directions_bike</mat-icon>
+                        <span>José Romero</span>
+                        <mat-icon>phone_in_talk</mat-icon>
+                    </div>
+                    <div class="driver_row">
+                        <span>Asignado</span>
+                        <b>14:21</b>
+                    </div>
+                    <div class="driver_row">
+                        <span>En curso</span>
+                        <b>16:12</b>
+                    </div>
+                </div>
+                <div class="status">
+                    <button style="height: 100%; width:100%;" color="accent" 
+                        mat-raised-button type=button>
+                        <b>Pedido</b>
+                    </button>
+                </div>
+                <div class="price">
+                    <button style="height: 100%; width:100%;" color="primary"
+                         mat-raised-button type=button>
+                        <b>{{(giveTotalPrice(sale) + sale.deliveryPrice) | currency:'S/.'}}</b>
+                    </button>
+                </div>
+          </div>
+        </div>
 
           <div style="display:flex; flex-direction: row; justify-content: center;">
               <pagination-controls (pageChange)="p = $event" previousLabel="" nextLabel="" maxSize="6">

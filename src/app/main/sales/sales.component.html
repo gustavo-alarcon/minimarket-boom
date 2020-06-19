@@ -1,7 +1,7 @@
-<div style="height: 100%; padding: 24px 16px" 
-  class="w3-section w3-margin-left w3-margin-right animated fadeInUp delay-2">
+<div class="w3-section w3-margin-left w3-margin-right animated fadeInUp delay-2
+    componente-container">
   <div style="padding: 0 3vw;">
-    <div style="display: flex; flex-direction: row; justify-content: space-between;">
+    <div style="display: flex; flex-direction: row; justify-content: space-between; align-items: flex-end;">
       <h2 class="title">
         <div class="containerMobile">
           <button style="vertical-align: text-bottom;"
@@ -13,9 +13,11 @@
         </div>
         <mat-icon>assignment</mat-icon>
         Ventas</h2>
-      <div>
-        <button color="accent" mat-raised-button><b>Tendencias</b></button>
-        <button color="primary" class="w3-large" mat-raised-button>S/. 2450.00</button>
+      <div style="display: flex; flex-direction: row; flex-wrap: nowrap; align-items: center;">
+        <div>
+          <button color="accent" mat-raised-button><b>Tendencias</b></button>
+        </div>
+        <div color="primary" class="totalPrice">S/. 2450.00</div>
       </div>
     </div>
     <mat-divider></mat-divider>
@@ -23,11 +25,15 @@
 
       <div class="containerDesktop">
         <app-sales-master
+          style="width: 700px;"
           [detailSubject]="detailSubject">
         </app-sales-master>
 
-        <ng-container *ngIf="detail$ | async as detail">
-          <app-sales-detail class="animated fadeIn "
+        <div *ngIf="detail$ | async as detail"
+          class="shadow-color"
+          style="padding: 32px; border-radius: 10px;">
+          <app-sales-detail class="animated fadeIn"
+            style="width: 420px"
             [sale]="detail"
             [detailSubject]="detailSubject">
           </app-sales-detail>
@@ -38,7 +44,7 @@
             [sale]="detail"
             [detailSubject]="detailSubject">
           </app-sale-confirmed-detail> -->
-        </ng-container>
+        </div>
         
       </div>
 
