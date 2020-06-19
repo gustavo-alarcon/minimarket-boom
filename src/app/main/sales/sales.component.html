@@ -22,19 +22,17 @@
     <div style="margin-top: 1em;">
 
       <div class="containerDesktop">
-        <app-sales-master style="width:100%;"
+        <app-sales-master
           [detailSubject]="detailSubject">
         </app-sales-master>
 
         <ng-container *ngIf="detail$ | async as detail">
-          <!-- <app-sale-detail class="animated fadeIn "
-            style="width:700px; margin-left: 32px"
-            *ngIf="detail.status == 'Solicitado'"
+          <app-sales-detail class="animated fadeIn "
             [sale]="detail"
             [detailSubject]="detailSubject">
-          </app-sale-detail>
+          </app-sales-detail>
 
-          <app-sale-confirmed-detail class="animated fadeIn "
+          <!-- <app-sale-confirmed-detail class="animated fadeIn "
             style="width:700px; margin-left: 32px"
             *ngIf="detail.status == 'Confirmado' || detail.status == 'En reparto' || detail.status == 'Entregado'"
             [sale]="detail"
@@ -52,14 +50,13 @@
         </ng-template>
 
         <ng-container *ngIf="detail$ | async as detail else master">
-          <!-- <app-sale-detail class="animated fadeIn "
+          <app-sales-detail class="animated fadeIn "
               style="width:100%; min-width:300px"
-              *ngIf="detail.status == 'Solicitado'"
               [sale]="detail"
               [detailSubject]="detailSubject">
-          </app-sale-detail>
+          </app-sales-detail>
 
-          <app-sale-confirmed-detail class="animated fadeIn "
+          <!-- <app-sale-confirmed-detail class="animated fadeIn "
               style="width:100%; min-width:300px"
               *ngIf="detail.status == 'Confirmado' || detail.status == 'En reparto' || detail.status == 'Entregado'"
               [sale]="detail"

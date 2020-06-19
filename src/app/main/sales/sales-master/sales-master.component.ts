@@ -106,16 +106,16 @@ export class SalesMasterComponent implements OnInit {
     }
   }
 
-  getTotalPrice(sales: Sale[]): number {
-    if (sales) {
-      return sales.reduce((acc, curr) => {
-          return curr.deliveryPrice + curr.total + acc
-        }, 0)
-    }
-    else {
-      return 0;
-    }
-  }
+  // getTotalPrice(sales: Sale[]): number {
+  //   if (sales) {
+  //     return sales.reduce((acc, curr) => {
+  //         return curr.deliveryPrice + curr.total + acc
+  //       }, 0)
+  //   }
+  //   else {
+  //     return 0;
+  //   }
+  // }
 
   downloadXls(sales: Sale[]): void {
     console.log(sales);

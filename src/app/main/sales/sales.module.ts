@@ -16,6 +16,10 @@ import { SalesDetailComponent } from './sales-detail/sales-detail.component';
 import { MatRippleModule } from '@angular/material/core';
 import { NgxPaginationModule } from 'ngx-pagination';
 import {MatCardModule} from '@angular/material/card';
+import { MatAutocompleteModule } from '@angular/material/autocomplete';
+import { MatCheckboxModule } from '@angular/material/checkbox';
+import {MatSlideToggleModule} from '@angular/material/slide-toggle';
+
 
 
 
@@ -40,7 +44,10 @@ import {MatCardModule} from '@angular/material/card';
     SatNativeDateModule,
     MatRippleModule,
     NgxPaginationModule,
-    MatCardModule
+    MatCardModule,
+    MatAutocompleteModule,
+    MatCheckboxModule,
+    MatSlideToggleModule
   ]
 })
 export class SalesModule { }

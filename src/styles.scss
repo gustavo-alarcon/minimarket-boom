@@ -120,7 +120,7 @@ a {
   --primary-color: #5da92f;
   --accent-color: #fcd652;
   --warn-color: #ef5350;
-  --forth-color: #418f1d;
+  --forth-color: #267131;
 }
 
 .ms-flex {
@@ -190,6 +190,10 @@ a {
   font-size: 24px !important;
   letter-spacing: 0.05em !important;
   width: fit-content !important;
+  vertical-align: middle;
+  mat-icon {
+    vertical-align: middle;
+  }
   //border-bottom: 5px solid var(--primary-color) !important;
 }
 
@@ -219,6 +223,22 @@ a {
   border-top: 4px solid var(--primary-color) !important;
 }
 
+.bigCheckbox {
+  .mat-checkbox .mat-checkbox-frame {
+    transform: scale(2);
+    border-radius: 6.25px;
+    box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25) !important;
+
+  }
+  
+  .mat-checkbox-checked .mat-checkbox-background {
+    transform: scale(2);
+    border-radius: 6.25px;
+    box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25) !important;
+  }
+}
+
+
 .mat-form-field-appearance-outline .mat-form-field-label,
 .mat-form-field-appearance-outline.mat-focused .mat-form-field-label {
   font-family: "Raleway", sans-serif;
@@ -233,6 +253,10 @@ a {
     .mat-form-field-outline-end {
       border-radius: 0 20px 20px 0 !important;
     }
+  }
+  button {
+    font-weight: bold;
+    height: 45px;
   }
 }
 

@@ -1,15 +1,17 @@
 .containerDesktop{
-  display: contents;
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
 }
 .containerMobile{
   display: none;
 }
 
-// @media(max-width: 1024px) {
-//   .containerDesktop{
-//     display: none
-//   }
-//   .containerMobile{
-//     display: contents;
-//   }
-// }
+@media(max-width: 993px) {
+  .containerDesktop{
+    display: none
+  }
+  .containerMobile{
+    display: contents;
+  }
+}

@@ -1,10 +1,11 @@
 import { Component, OnInit, Input } from '@angular/core';
-import { FormGroup, FormBuilder, FormArray, Validators } from '@angular/forms';
+import { FormGroup, FormBuilder, FormArray, Validators, FormControl } from '@angular/forms';
 import { Observable, BehaviorSubject, merge, combineLatest } from 'rxjs';
 import { Sale, SaleRequestedProducts } from 'src/app/core/models/sale.model';
 import { DatabaseService } from 'src/app/core/services/database.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { startWith, map, tap } from 'rxjs/operators';
+import { Product } from 'src/app/core/models/product.model';
 
 @Component({
   selector: 'app-sales-detail',
@@ -13,6 +14,9 @@ import { startWith, map, tap } from 'rxjs/operators';
 })
 export class SalesDetailComponent implements OnInit {
   productForm: FormGroup;
+  searchProductControl: FormControl;
+
+  products$: Observable<Product[]>
   totalPrice$: Observable<number[]>
   individualPrice$: Observable<any>
 
@@ -27,12 +31,12 @@ export class SalesDetailComponent implements OnInit {
   ) { }
 
   ngOnInit() {
-    
     this.initForm()
     this.initObservables()
   }
 
   initForm(){
+    this.searchProductControl = new FormControl("")
     this.productForm = this.fb.group({
       deliveryPrice: [this.sale.deliveryPrice, Validators.required],
       totalPrice: [0, Validators.required],
@@ -55,6 +59,19 @@ export class SalesDetailComponent implements OnInit {
   }
 
   initObservables(){
+    //Search Product
+    this.products$ = combineLatest(
+      this.searchProductControl.valueChanges.pipe(startWith("")),
+      this.dbs.getProductsListValueChanges()).pipe(
+        map(([formValue, products])=> {
+          console.log(products)
+          if(typeof formValue === 'string'){
+            return products.filter(el => el.description.match(new RegExp(formValue, 'ig')))
+          } else {
+            return []
+          }
+        })
+      )
     //Changing individual price when changing quantities
     this.individualPrice$ = merge(...(<FormArray>this.productForm.get('productList')).controls
       .map((control, index) => {
@@ -87,42 +104,22 @@ export class SalesDetailComponent implements OnInit {
       .pipe(
         tap((res: {product: SaleRequestedProducts, quantity: number, noRefQuantity: number, 
                     promo: boolean, ref: boolean, index: number}) => {
-          if(res.ref){
-            //ref and promo
-            if(res.promo){
-              let promRefTotalQuantity = Math.floor(res.quantity/res.product.product.promoData.quantity);
-              let promRefTotalPrice = promRefTotalQuantity * res.product.product.promoData.promoPrice;
-              let noPromNoRefTotalQuantity = res.quantity % res.product.product.promoData.quantity ? 
-                                              res.noRefQuantity : 0;
-              let noPromNoRefTotalPrice = noPromNoRefTotalQuantity * res.product.product.price;
-              
-              //updating Price
-              (<FormArray>this.productForm.get('productList')).controls[res.index].get('price')
-              .setValue(promRefTotalPrice + noPromNoRefTotalPrice)
-            }
-            //ref no promo
-            else{
-              (<FormArray>this.productForm.get('productList')).controls[res.index].get('price')
-              .setValue(res.quantity ?  res.noRefQuantity * res.product.product.price : 0)
-            }
+
+          //with promo
+          if(res.promo){
+            let promTotalQuantity = Math.floor(res.quantity/res.product.product.promoData.quantity);
+            let promTotalPrice = promTotalQuantity * res.product.product.promoData.promoPrice;
+            let noPromTotalQuantity = res.quantity % res.product.product.promoData.quantity;
+            let noPromTotalPrice = noPromTotalQuantity * res.product.product.price;
+            
+            //updating Price
+            (<FormArray>this.productForm.get('productList')).controls[res.index].get('price')
+            .setValue(promTotalPrice + noPromTotalPrice)
           }
+          //no promo
           else{
-            //no ref, promo
-            if(res.promo){
-              let promTotalQuantity = Math.floor(res.quantity/res.product.product.promoData.quantity);
-              let promTotalPrice = promTotalQuantity * res.product.product.promoData.promoPrice;
-              let noPromTotalQuantity = res.quantity % res.product.product.promoData.quantity;
-              let noPromTotalPrice = noPromTotalQuantity * res.product.product.price;
-              
-              //updating Price
-              (<FormArray>this.productForm.get('productList')).controls[res.index].get('price')
-              .setValue(promTotalPrice + noPromTotalPrice)
-            }
-            //no ref no promo
-            else{
-              (<FormArray>this.productForm.get('productList')).controls[res.index].get('price')
-              .setValue(res.quantity * res.product.product.price)
-            }
+            (<FormArray>this.productForm.get('productList')).controls[res.index].get('price')
+            .setValue(res.quantity * res.product.product.price)
           }
         })
       );
@@ -131,7 +128,7 @@ export class SalesDetailComponent implements OnInit {
     this.totalPrice$ = combineLatest(...(<FormArray>this.productForm.get('productList')).controls
       .map((control, index) => (
         (<FormGroup>control).get('price').valueChanges.pipe(startWith(
-          this.sale.totalConfirmedPrice?this.sale.confirmedProductList[index]['price']:this.giveProductPrice(this.sale.productList[index])
+          this.giveProductPrice(this.sale.requestedProducts[index])
           )))))
       .pipe(
         tap((priceList: number[]) => {
@@ -147,7 +144,8 @@ export class SalesDetailComponent implements OnInit {
   }
 
   onSubmitForm(){
-    this.productForm.markAsPending();
+    console.log('submitting')
+    /*this.productForm.markAsPending();
     let sale: Sale = {...this.sale}
     sale.deliveryConfirmedPrice = this.productForm.get('deliveryPrice').value;
     sale.totalConfirmedPrice = this.productForm.get('totalPrice').value;
@@ -161,7 +159,7 @@ export class SalesDetailComponent implements OnInit {
       });
     });
 
-    /*this.dbs.onSaveSale(sale, 'Confirmar').subscribe(
+    this.dbs.onSaveSale(sale, 'Confirmar').subscribe(
       batch => {
         batch.commit().then(
           res => {
@@ -181,20 +179,6 @@ export class SalesDetailComponent implements OnInit {
 
   }
 
-  getNoRefQuantity(item: SaleRequestedProducts): number{
-    //only ref, no promo
-    if(!item.product.promo){
-      return Math.floor(this.giveProductPrice(item)/Number(item.product.price)*100.0)/100.0
-    }
-    //ref with promo
-    else{
-      let noPromRefTotalQuantity = item.quantity % item.product.promoData.quantity;
-      let noPromRefTotalPrice = noPromRefTotalQuantity * item.product.refPrice;
-      let noPromNoRefTotalPrice = Math.floor(noPromRefTotalPrice / item.product.price*100.0)/100.0;
-      return noPromNoRefTotalPrice;
-    }
-  }
-
   giveProductPrice(item: SaleRequestedProducts){
     if(item.product.promo){
       let promTotalQuantity = Math.floor(item.quantity/item.product.promoData.quantity);
@@ -209,10 +193,11 @@ export class SalesDetailComponent implements OnInit {
   }
 
   onCancelSale(){
-    this.productForm.markAsPending();
+    console.log('cancelling')
+    /*this.productForm.markAsPending();
     let sale: Sale = {...this.sale}
 
-    /*this.dbs.onSaveSale(sale, 'Cancelar').subscribe(
+    this.dbs.onSaveSale(sale, 'Cancelar').subscribe(
       batch => {
         batch.commit().then(
           res => {
@@ -245,8 +230,17 @@ export class SalesDetailComponent implements OnInit {
       return amount * price
     }
   }
+
+  displayFn(input: Product) {
+    if (!input) return '';
+    return input.description;
+  }
+  
   onFloor(el: number, el2: number): number{
     return Math.floor(el/el2);
   }
 
+  getCorrelative(corr: number){
+    return corr.toString().padStart(6, '0')
+  }
 }
