@@ -77,7 +77,7 @@ export class RequestCreateEditComponent implements OnInit {
       )
 
     this.selectedProducts$ = !this.data.edit ? this.selectedProducts.asObservable() :
-        this.dbs.getBuyRequestedProducts(this.data.data).pipe(
+        this.dbs.getBuyRequestedProducts(this.data.data.id).pipe(
           take(1),
           switchMap(prodList => {
             //We need to convert timestamps to Date

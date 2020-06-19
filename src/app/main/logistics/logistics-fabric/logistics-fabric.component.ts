@@ -78,15 +78,12 @@ export class LogisticsFabricComponent implements OnInit {
       }),
       switchMap((res) => {
         return this.dbs.getBuyRequests(res).pipe(
-          map((buy,i) => {
+          map((buy, i) => {
             return buy.map(el => {
               return {
                 ...el,
-                products: this.dbs.getBuyRequestedProducts(el),
-                validated$: this.dbs.getBuyRequestedProducts(el).pipe(
-                  map(prod => prod.reduce((a, b) => a && b.validated, true))
-                ),
-                onevalidated$: this.dbs.getBuyRequestedProducts(el).pipe(
+                products: this.dbs.getBuyRequestedProducts(el.id),
+                onevalidated$: this.dbs.getBuyRequestedProducts(el.id).pipe(
                   map(prod => prod.reduce((a, b) => a || b.validated, false))
                 )
               }
@@ -176,11 +173,12 @@ export class LogisticsFabricComponent implements OnInit {
     }
   }
 
-  validated(item: BuyRequestedProduct, edit: boolean) {
+  validated(product: BuyRequestedProduct, buy: Buy, isedit: boolean) {
     this.dialog.open(ValidatedDialogComponent, {
       data: {
-        item: item,
-        edit: edit
+        item: product,
+        edit: isedit,
+        buy: buy
       }
     })
   }

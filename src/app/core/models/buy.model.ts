@@ -14,6 +14,12 @@ export interface Buy {
    
   validated: boolean;       //True only when all products are validated
   validatedDate: Date;
+  
+  returned?:boolean;
+  returnedData?:{
+    returned: number;
+    observations: string;
+  }
 
   requestedDate: Date;      //When the request was submitted
   requestedBy: User;   
@@ -42,6 +48,12 @@ export interface BuyRequestedProduct {               //How many products should 
   }
   validatedBy: string;
   validatedDate: Date;
+
+  returned?:boolean;
+  returnedData?:{
+    returned: number;
+    observations: string;
+  }
 
   requestedDate: Date;      //When the request was submitted
   requestedBy: User

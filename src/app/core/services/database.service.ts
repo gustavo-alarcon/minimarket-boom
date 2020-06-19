@@ -391,8 +391,8 @@ export class DatabaseService {
     }
   }
 
-  getBuyRequestedProducts(request: Buy): Observable<BuyRequestedProduct[]> {
-    return this.afs.collection<BuyRequestedProduct>(this.buysRef +`/${request.id}/buyRequestedProducts`, 
+  getBuyRequestedProducts(request: string): Observable<BuyRequestedProduct[]> {
+    return this.afs.collection<BuyRequestedProduct>(this.buysRef +`/${request}/buyRequestedProducts`, 
       ref => ref.orderBy("productDescription")).valueChanges();
   }
 

@@ -1,3 +1,4 @@
+import { ShoppingCartComponent } from './../shopping-cart/shopping-cart.component';
 import { ProductDivComponent } from './../product-div/product-div.component';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatCardModule } from '@angular/material/card';
@@ -24,7 +25,6 @@ import { MatTableModule } from '@angular/material/table';
 import { MatPaginatorModule } from '@angular/material/paginator';
 import { MatExpansionModule } from '@angular/material/expansion';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { ShoppingCartComponent } from './shopping-cart/shopping-cart.component';
 import { PurchaseComponent } from './purchase/purchase.component';
 import { RecipesComponent } from './recipes/recipes.component';
 import { LazyLoadImageModule } from 'ng-lazyload-image';
