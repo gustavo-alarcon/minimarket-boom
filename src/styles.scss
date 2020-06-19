@@ -285,6 +285,8 @@ img.ng-lazyloaded {
   }
 }
 
+/*BUTTONS*/
+
 .mat-button,
 .mat-raised-button,
 .mat-stroked-button,
@@ -293,27 +295,24 @@ img.ng-lazyloaded {
   border-radius: 20px !important;
 }
 
-.mat-button {
-  font-size: 1em;
-  letter-spacing: 0.05em;
+.mat-raised-button.buttonNoRounded{
+  border-radius: 5px !important;
+  font-weight: 900;
 }
 
 .mat-card {
   font-family: "Raleway", sans-serif;
-  color: #4f4f4f;
 }
 
 /*panel*/
 .mat-expansion-panel-header-title {
   font-family: Poppins;
-  color: #585656;
   display: flex;
   align-items: center;
 }
 
 .mat-expansion-panel-body {
   font-family: "Raleway", sans-serif;
-  color: #4f4f4f;
 }
 
 /*ticket*/
@@ -407,24 +406,18 @@ img.ng-lazyloaded {
 }
 
 .ms-table__th {
-  color: #828282;
-  font-weight: 500;
+  font-weight: 900;
 }
 
 .ms-table__th,
 .ms-table__td {
   font-family: "Raleway", sans-serif;
-  letter-spacing: 0.05em;
 }
 
 .ms-table__td {
-  color: #2b2b2b;
-  font-weight: 900;
+  font-weight: 500;
 }
 
-.ms-table__td.mat-cell {
-  padding: 0.5em 0 0.5em 1em;
-}
 
 .ms-table__td.mat-cell:first-of-type {
   padding-left: 0 !important;

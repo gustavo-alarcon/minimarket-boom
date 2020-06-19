@@ -10,3 +10,31 @@
   line-height: 17px;
   //display: block !important;
 }
+
+.thin {
+  font-weight: 500;
+}
+
+.panel-icons {
+  justify-content: space-between;
+  align-items: center;
+}
+
+.toggleUp {
+  border-radius: 50%;
+  width: 27px;
+  height: 27px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 0 10px;
+
+  &__accent{
+    background-color: #fdd651;
+  }
+
+  &__green{
+    background-color: #5DA92F;
+    color: white;
+  }
+}

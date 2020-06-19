@@ -92,20 +92,55 @@ export class LoginDialogComponent implements OnInit {
   emailRepeatedValidator() {
     return (control: AbstractControl) => {
       const value = control.value.toLowerCase();
-      if(this.register){
-        return of(null)
-      }else{
-        return this.dbs.getUsersStatic().pipe(
-          map(res => !!res.find(el => el.email.toLowerCase() == value) ? { emailRepeatedValidator: true } : null))
-      }
+      return this.dbs.getUsersStatic().pipe(
+        map(res => {
+          if (this.register) {
+            return res.find(el => el.email.toLowerCase() == value) ? null : { emailRepeatedValidator: true }
+          } else {
+            return res.find(el => el.email.toLowerCase() == value) ? { emailRepeatedValidator: true } : null
+          }
+
+        }))
+
     }
   }
 
-  reset(){
-    this.dataFormGroup.reset()
-    Object.keys(this.dataFormGroup.controls).forEach(key => {
-      this.dataFormGroup.controls[key].setErrors(null)
+  reset() {
+    this.dataFormGroup = this.fb.group({
+      email: [null, [Validators.required, Validators.email], [this.emailRepeatedValidator()]],
+      pass: [null, [Validators.required, Validators.minLength(6)]]
     });
 
+
+  }
+
+  passwordReset() {
+    if (this.dataFormGroup.get('email').value) {
+      if (this.dataFormGroup.get('email').valid) {
+        console.log('email');
+        this.auth.resetPassword(this.dataFormGroup.get('email').value).then(() => {
+          // Email sent.
+
+          this.snackbar.open(
+            'Se envió un correo para restaurar su contraseña',
+            'Cerrar',
+            { duration: 6000, }
+          );
+        }).catch((error) => {
+          this.snackbar.open(
+            'Ocurrió un error. Por favor, vuelva a intentarlo.',
+            'Cerrar',
+            { duration: 6000, }
+          );
+        });
+
+      } else {
+        this.snackbar.open('Escribe un correo válido', 'Cerrar', {
+          duration: 6000
+        });
+      }
+    } else {
+      //this.dataFormGroup.get('email').setErrors()
+    }
   }
 }

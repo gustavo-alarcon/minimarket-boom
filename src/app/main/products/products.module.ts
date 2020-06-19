@@ -31,7 +31,7 @@ import { LazyLoadImageModule } from 'ng-lazyload-image';
 import { NgxPaginationModule } from 'ngx-pagination';
 import { Ng2ImgMaxModule } from 'ng2-img-max';
 import { SaleDialogComponent } from './sale-dialog/sale-dialog.component';
-import {MatStepperModule} from '@angular/material/stepper';
+import { MatStepperModule } from '@angular/material/stepper';
 
 @NgModule({
   declarations: [

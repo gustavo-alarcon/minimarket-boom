@@ -33,7 +33,6 @@ export class RecipesComponent implements OnInit {
       switchMap(res => 
         this.dbs.getProductRecipesValueChanges(res.id),
         (productId, recipes) => {
-          console.log(recipes)
           if(recipes.length){
             let title = (<Product>recipes[0].products.find(el => el.id == <string>productId.id)).description;
             return {

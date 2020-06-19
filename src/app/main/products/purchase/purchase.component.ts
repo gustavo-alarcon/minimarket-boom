@@ -168,8 +168,6 @@ export class PurchaseComponent implements OnInit {
       this.payFormGroup.get('photoURL').setValue(null);
     }
 
-    console.log(this.photos.data);
-
   }
 
   giveProductPrice(item) {
@@ -248,7 +246,8 @@ export class PurchaseComponent implements OnInit {
 
     let newSale: Sale = {
       id: saleRef.id,
-      correlative: '',
+      correlative: 0,
+      correlativeType:'R',
       document: this.payFormGroup.get('typePay').value,
       payType: this.payFormGroup.get('pay').value,
       location: {
@@ -311,7 +310,7 @@ export class PurchaseComponent implements OnInit {
 
           transaction.update(saleCount, { salesRCounter: newCorr });
 
-          newSale.correlative = 'R' + ("000" + newCorr).slice(-4);
+          newSale.correlative = newCorr
 
           transaction.set(saleRef, newSale);
           //user

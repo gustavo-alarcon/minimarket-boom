@@ -6,22 +6,24 @@
             <sat-datepicker #picker [rangeMode]="true"></sat-datepicker>
             <sat-datepicker-toggle matSuffix [for]="picker"></sat-datepicker-toggle>
         </mat-form-field>
-        <div>
-            <mat-card class="product w3-margin-bottom">
+        <div *ngIf="init$ | async as sales">
+            <mat-card *ngFor="let sale of sales" class="card-record  w3-margin-bottom">
                 <div class="ms-flex ms-flex--center">
                     <div>
-                        <div class="corr">#E1345</div>
-                        <div>01-Jun-2020</div>
-                        <div>01-Jun-2020</div>
+                        <div class="corr">#{{sale.correlativeType}}{{("000"+sale.correlative).slice(-4)}}</div>
+                        <div class="dates">
+                            <div>{{sale['requestDate'].toMillis() | date: 'dd-MMM-yyyy' }}</div>
+                            <div>01-Jun-2020</div>
+                        </div>
                     </div>
                     <span class="ms-fill"></span>
-                    <div style="width: 65%;">
-                        <div class="ms-flex" style="margin-bottom: 8px;" >
-                            <div class="status">En atención</div>
+                    <div style="width: 60%;">
+                        <div class="ms-flex" style="margin-bottom: 8px;">
+                            <div class="status">{{sale.status}}</div>
                             <span class="ms-fill"></span>
                             <div class="check"></div>
                         </div>
-                        <div class="total">S/.106.00</div>
+                        <div class="total">{{sale.total}}</div>
                     </div>
                 </div>
             </mat-card>

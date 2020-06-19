@@ -7,6 +7,7 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { MatIconModule } from '@angular/material/icon';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { SatDatepickerModule, SatNativeDateModule } from 'saturn-datepicker';
+import { MAT_DATE_LOCALE as MAT_DATE_LOCALESAT } from 'saturn-datepicker';
 import { MatSelectModule } from '@angular/material/select';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
@@ -15,14 +16,17 @@ import { MatDialogModule } from '@angular/material/dialog';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatNativeDateModule } from '@angular/material/core';
-
-
+import { MatExpansionModule } from '@angular/material/expansion';
+import { MatTableModule } from '@angular/material/table';
+import { MatProgressBarModule } from '@angular/material/progress-bar';
+import { ValidatedDialogComponent } from './validated-dialog/validated-dialog.component';
 
 
 @NgModule({
   declarations: [
     LogisticsFabricComponent, 
-    RequestCreateEditComponent
+    RequestCreateEditComponent, 
+    ValidatedDialogComponent
   ],
   imports: [
     CommonModule,
@@ -39,9 +43,16 @@ import { MatNativeDateModule } from '@angular/material/core';
     MatDividerModule,
     MatDialogModule,
     MatAutocompleteModule,
+    MatExpansionModule,
+    MatTableModule,
+    MatProgressBarModule 
   ],
   entryComponents: [
-    RequestCreateEditComponent
+    RequestCreateEditComponent,
+    ValidatedDialogComponent
+  ],
+  providers: [
+    { provide: MAT_DATE_LOCALESAT, useValue: 'en-GB' }
   ]
 })
 export class LogisticsFabricModule { }
