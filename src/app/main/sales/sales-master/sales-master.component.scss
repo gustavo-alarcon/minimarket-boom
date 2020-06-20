@@ -1,0 +1,127 @@
+.list-parent-container {
+  padding: 16px;
+  margin: 16px 0;
+  border-radius: 10px 0px 0px 10px;
+}
+
+.list-container {
+  width: 100%;
+  border: 1px solid #e6d7d7;
+  box-sizing: border-box;
+  box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+  border-radius: 20px;
+  padding: 10px;
+  font-size: 14px;
+  height: 127px;
+
+  display: grid;
+  gap: 4px;
+  grid-template-columns: 1fr 1fr 1fr;
+  grid-template-rows: 1fr 1fr 1fr;
+  grid-template-areas: 
+    "general client document" 
+    "general driver status" 
+    "general driver price";
+  justify-items: center;
+}
+
+.list-container .mat-icon {
+  vertical-align: middle;
+}
+
+.list-container .client {
+  grid-area: client;
+  opacity: 0.8;
+}
+
+.list-container .document {
+  grid-area: document;
+  opacity: 0.8;
+}
+
+.list-container .general {
+  grid-area: general;
+  align-items: flex-start;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  white-space: nowrap;
+}
+
+.list-container .driver {
+  grid-area: driver;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  white-space: nowrap;
+  padding: 8px;
+  width: 100%;
+  background: var(--accent-color);
+  box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+  border-radius: 10px;
+  color: black;
+}
+
+.list-container .driver .driver_header{
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  font-weight: bold;
+  justify-content: space-around;
+  width: 100%;
+}
+
+.list-container .driver .driver_row{
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  justify-content: space-evenly;
+  width: 100%;
+}
+
+
+.list-container .status {
+  grid-area: status;
+  width: 75%;
+  height: 92%;
+}
+
+.list-container .price {
+  grid-area: price;
+  width: 75%;
+  height: 92%;
+}
+
+
+@media(max-width: 615px) {
+  .personal-data-container {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    grid-template-rows: 1fr 1fr 1fr;
+    width: 100%;
+    grid-template-areas: "element1 element2 element2" "element1 element3 element3" "element1 element4 element4";
+    justify-items: center;
+  }
+  .sale-data-container {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    grid-template-rows: 1fr 1fr 1fr;
+    grid-gap: 10px;
+    width: 100%;
+    grid-template-areas: "element1 element2 element2" "element4 element3 element3" ". element5 .";
+    justify-items: center;
+  }
+  .personal-data-sub-container {
+    display: contents
+  }
+  .list-container {
+    padding: 10px;
+  }
+  .buttonContainer {
+    flex-direction: column;
+  }
+  .marginTotal {
+    margin: 15px auto 5px;
+  }
+}

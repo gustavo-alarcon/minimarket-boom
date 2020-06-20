@@ -24,7 +24,7 @@ export interface SaleRequestedProducts {
 export interface Sale {
   id: string;
   correlative: number;
-  correlativeType:string;
+  correlativeType: string;
   payType?:string,
   document?:string,             //tipo de comprobante
   location: {

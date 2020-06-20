@@ -42,8 +42,8 @@ import { MAT_DATE_LOCALE } from '@angular/material/core';
   ],
   providers: [
     { provide: MAT_SNACK_BAR_DEFAULT_OPTIONS, useValue: { duration: 5000 } },
-    // { provide: MAT_DATE_LOCALE, useValue: 'en-GB'},
-    // { provide: MAT_DATE_LOCALESAT, useValue: 'en-GB'}
+    { provide: MAT_DATE_LOCALE, useValue: 'en-GB'},
+    { provide: MAT_DATE_LOCALESAT, useValue: 'en-GB'}
   ],
   bootstrap: [AppComponent]
 })
