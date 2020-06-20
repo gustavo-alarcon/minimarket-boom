@@ -1,5 +1,5 @@
-import { ShoppingCartComponent } from './../shopping-cart/shopping-cart.component';
-import { ProductDivComponent } from './../product-div/product-div.component';
+import { ProductDivModule } from './../product-div/product-div.module';
+import { ShoppingCartModule } from './../shopping-cart/shopping-cart.module';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatCardModule } from '@angular/material/card';
 import { MatSelectModule } from '@angular/material/select';
@@ -36,16 +36,16 @@ import { MatStepperModule } from '@angular/material/stepper';
 @NgModule({
   declarations: [
     ProductsComponent,
-    ShoppingCartComponent,
     PurchaseComponent,
     CreateEditRecipeComponent,
     RecipesComponent,
-    SaleDialogComponent,
-    ProductDivComponent
+    SaleDialogComponent
   ],
   imports: [
     CommonModule,
     ProductsRoutingModule,
+    ProductDivModule,
+    ShoppingCartModule,
     CommonModule,
     MatIconModule,
     MatButtonModule,

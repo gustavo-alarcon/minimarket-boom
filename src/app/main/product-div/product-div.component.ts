@@ -1,3 +1,4 @@
+import { Router } from '@angular/router';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { DatabaseService } from 'src/app/core/services/database.service';
 import { Product } from 'src/app/core/models/product.model';
@@ -16,6 +17,7 @@ export class ProductDivComponent implements OnInit {
 
   constructor(
     public dbs: DatabaseService,
+    private router: Router,
     private snackBar: MatSnackBar
   ) { }
 
@@ -72,6 +74,10 @@ export class ProductDivComponent implements OnInit {
     let promo = item.price - item.promoData.promoPrice
     let discount = (promo / item.price) * 100
     return Math.round(discount)
+  }
+
+  navigate(name) {
+    this.router.navigate(['/main/products/recetas',name]);
   }
 
 }
