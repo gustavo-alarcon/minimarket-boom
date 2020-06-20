@@ -26,6 +26,8 @@ interface SelProd {
 })
 
 export class RequestCreateEditComponent implements OnInit {
+  dateLimit = new Date(Date.now() + 8.64e+7)
+
   correlative$: Observable<string>;
 
   selectedProducts: BehaviorSubject<SelProd[]> = new BehaviorSubject([]);

@@ -25,7 +25,11 @@ export interface Sale {
   id: string;
   correlative: number;
   correlativeType: string;
-  payType?:string,
+  payType?: string | {
+    account: string;
+    image: string;
+    name: string;
+  },
   document?:string,             //tipo de comprobante
   location: {
     address: string,
@@ -50,6 +54,7 @@ export interface Sale {
     voucherPath:string
   }[]
 
+  userId:string;
   requestDate: Date,            //Fecha deseada por cliente
   
   voucherChecked: boolean,      //done by admin. needed to confirmedDelivery
@@ -101,7 +106,6 @@ export interface Sale {
     cancelledBy: User,
   }
 
-  userId:string;
   createdAt: Date,
   createdBy: User,
 

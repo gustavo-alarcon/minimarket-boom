@@ -10,6 +10,8 @@ import { Sale, SaleRequestedProducts } from 'src/app/core/models/sale.model';
 export class SalesComponent implements OnInit {
   detailSubject: BehaviorSubject<Sale> = new BehaviorSubject(null)
   detail$: Observable<Sale> = this.detailSubject.asObservable();
+
+  totalPriceSubj: BehaviorSubject<number> = new BehaviorSubject(0)
   constructor() { }
 
   ngOnInit(): void {
