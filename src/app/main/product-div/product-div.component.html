@@ -7,7 +7,7 @@
             <div class="ms-flex product__container">
                 <div class="product__title">{{product.description | titlecase}}</div>
                 <button mat-icon-button style="border: 1px dashed #565656; font-size: 1.3em;"
-                    [routerLink]="['recetas', product.id]">
+                (click)="navigate(product.id)">
                     🍴
                 </button>
             </div>

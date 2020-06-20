@@ -38,6 +38,25 @@ export class DatabaseService {
   configRef = `db/distoProductos/config`;
   generalConfigDoc = this.afs.collection(this.configRef).doc<GeneralConfig>('generalConfig');
 
+  getCurrentMonthOfViewDate(): { from: Date, to: Date } {
+    const date = new Date();
+    const fromMonth = date.getMonth();
+    const fromYear = date.getFullYear();
+
+    const actualFromDate = new Date(fromYear, fromMonth, 1);
+
+    const toMonth = (fromMonth + 1) % 12;
+    let toYear = fromYear;
+
+    if (fromMonth + 1 >= 12) {
+      toYear++;
+    }
+
+    const toDate = new Date(toYear, toMonth, 1);
+
+    return { from: actualFromDate, to: toDate };
+  }
+
   //users
 
   getUsers(): Observable<User[]> {
@@ -292,7 +311,7 @@ export class DatabaseService {
 
   getSalesUser(user:string): Observable<Sale[]>{
     return this.afs.collection<Sale>(`/db/distoProductos/sales`, 
-      ref => ref.where("user", "==", user)).valueChanges()
+      ref => ref.where("userId", "==", user)).valueChanges()
   }
 
   //Logistics
@@ -391,8 +410,8 @@ export class DatabaseService {
     }
   }
 
-  getBuyRequestedProducts(request: Buy): Observable<BuyRequestedProduct[]> {
-    return this.afs.collection<BuyRequestedProduct>(this.buysRef +`/${request.id}/buyRequestedProducts`, 
+  getBuyRequestedProducts(request: string): Observable<BuyRequestedProduct[]> {
+    return this.afs.collection<BuyRequestedProduct>(this.buysRef +`/${request}/buyRequestedProducts`, 
       ref => ref.orderBy("productDescription")).valueChanges();
   }
 

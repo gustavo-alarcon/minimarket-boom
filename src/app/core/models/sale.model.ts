@@ -1,14 +1,15 @@
 import { User } from 'src/app/core/models/user.model';
 import { Product } from './product.model';
 export class saleStatusOptions {
-  requested: 'Solicitado';
-  attended: 'Atendido';
-  confirmedRequest: 'Solicitud Confirmada';        //can be confirmed only when voucher is valid
-  confirmedDocument: 'Número de Comprobante Confirmado';
-  confirmedDelivery: 'Delivery Confirmado';
-  driverAssigned: 'Conductor Asignado';
-  finished: 'Entregado';
-  cancelled: 'Anulado'
+  requested= 'Solicitado';
+  attended= 'Atendido';
+  confirmedRequest= 'Solicitud Confirmada';        //can be confirmed only when voucher is valid
+  confirmedDocument= 'Número de Comprobante Confirmado';
+  confirmedDelivery= 'Delivery Confirmado';
+  driverAssigned= 'Conductor Asignado';
+  finished= 'Entregado';
+  cancelled= 'Anulado'
+
 }
 
 type FilterFlags<Base, Condition, Data> = 
@@ -22,7 +23,8 @@ export interface SaleRequestedProducts {
 
 export interface Sale {
   id: string;
-  correlative: string;
+  correlative: number;
+  correlativeType:string;
   payType?:string,
   document?:string,             //tipo de comprobante
   location: {
@@ -41,6 +43,7 @@ export interface Sale {
   requestedProducts: SaleRequestedProducts[];
 
   deliveryPrice: number;
+  total: number;
 
   voucher: {
     voucherPhoto:string,
@@ -50,7 +53,6 @@ export interface Sale {
   requestDate: Date,            //Fecha deseada por cliente
   
   voucherChecked: boolean,      //done by admin. needed to confirmedDelivery
-
 
   attendedData?: {             //Can go only when Atendido or more
     attendedBy: User,
@@ -99,11 +101,10 @@ export interface Sale {
     cancelledBy: User,
   }
 
-  total: number;
-
+  userId:string;
   createdAt: Date,
   createdBy: User,
-  userId:string,
+
   editedAt?: Date,
   editedBy?: User
 }

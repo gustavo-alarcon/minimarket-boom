@@ -1,7 +1,8 @@
-import { Unit } from './../../../core/models/unit.model';
-import { Product } from './../../../core/models/product.model';
-import { DatabaseService } from './../../../core/services/database.service';
-import { Component, OnInit } from '@angular/core';
+import { Product } from 'src/app/core/models/product.model';
+import { Unit } from 'src/app/core/models/unit.model';
+import { DatabaseService } from 'src/app/core/services/database.service';
+import { Observable } from 'rxjs';
+import { Component, OnInit, Input } from '@angular/core';
 
 @Component({
   selector: 'app-shopping-cart',
@@ -10,26 +11,34 @@ import { Component, OnInit } from '@angular/core';
 })
 export class ShoppingCartComponent implements OnInit {
 
+  @Input() delivery: number = 4
+  @Input() order: {
+    product: Product,
+    quantity: number
+  }[] = []
+  @Input() modified: boolean
+
+
+  delivery$: Observable<number>
   total: number = 0
-  delivery: number = 4
 
   constructor(
     public dbs: DatabaseService
   ) { }
 
   ngOnInit(): void {
-    this.total = this.dbs.order.map(el =>  this.giveProductPrice(el)).reduce((a, b) => a + b, 0)
+    this.total = this.order.map(el => this.giveProductPrice(el)).reduce((a, b) => a + b, 0)
   }
 
-  getUnit(quantity:number, unit:Unit){
-    if(unit.weight == 1){
-      if(quantity>1){
+  getUnit(quantity: number, unit: Unit) {
+    if (unit.weight == 1) {
+      if (quantity > 1) {
         return unit.description + 's'
-      }else{
+      } else {
         return unit.description
       }
-    }else{
-      return '('+unit.description+')'
+    } else {
+      return '(' + unit.description + ')'
     }
   }
 
@@ -55,13 +64,14 @@ export class ShoppingCartComponent implements OnInit {
   }
 
   delete(ind) {
-    this.dbs.order.splice(ind, 1)
-    if(this.dbs.order.length == 0){
+    this.order.splice(ind, 1)
+    this.total = this.order.map(el => this.giveProductPrice(el)).reduce((a, b) => a + b, 0)
+    if (this.order.length == 0) {
       this.dbs.view.next(1)
+      this.dbs.total = this.total
     }
-    this.dbs.total = this.dbs.order.map(el => this.giveProductPrice(el)).reduce((a, b) => a + b, 0)
-    
-    this.total = this.dbs.order.map(el => this.giveProductPrice(el)).reduce((a, b) => a + b, 0)
+
+
   }
 
 

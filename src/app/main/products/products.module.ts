@@ -1,4 +1,5 @@
-import { ProductDivComponent } from './../product-div/product-div.component';
+import { ProductDivModule } from './../product-div/product-div.module';
+import { ShoppingCartModule } from './../shopping-cart/shopping-cart.module';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatCardModule } from '@angular/material/card';
 import { MatSelectModule } from '@angular/material/select';
@@ -24,28 +25,27 @@ import { MatTableModule } from '@angular/material/table';
 import { MatPaginatorModule } from '@angular/material/paginator';
 import { MatExpansionModule } from '@angular/material/expansion';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { ShoppingCartComponent } from './shopping-cart/shopping-cart.component';
 import { PurchaseComponent } from './purchase/purchase.component';
 import { RecipesComponent } from './recipes/recipes.component';
 import { LazyLoadImageModule } from 'ng-lazyload-image';
 import { NgxPaginationModule } from 'ngx-pagination';
 import { Ng2ImgMaxModule } from 'ng2-img-max';
 import { SaleDialogComponent } from './sale-dialog/sale-dialog.component';
-import {MatStepperModule} from '@angular/material/stepper';
+import { MatStepperModule } from '@angular/material/stepper';
 
 @NgModule({
   declarations: [
     ProductsComponent,
-    ShoppingCartComponent,
     PurchaseComponent,
     CreateEditRecipeComponent,
     RecipesComponent,
-    SaleDialogComponent,
-    ProductDivComponent
+    SaleDialogComponent
   ],
   imports: [
     CommonModule,
     ProductsRoutingModule,
+    ProductDivModule,
+    ShoppingCartModule,
     CommonModule,
     MatIconModule,
     MatButtonModule,

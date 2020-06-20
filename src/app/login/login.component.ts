@@ -6,7 +6,7 @@ import { Component, OnInit } from '@angular/core';
 })
 export class LoginComponent implements OnInit {
 
-  image: string = '../../assets/images/logo-login.png'
+  image: string = '../../assets/images/Disto_Logo1.png'
 
   constructor() { }
 

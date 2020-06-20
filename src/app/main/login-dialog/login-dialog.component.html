@@ -21,7 +21,12 @@
                 <mat-error>
                     <span *ngIf="dataFormGroup.get('email').errors?.required">Usuario requerido</span>
                     <span *ngIf="dataFormGroup.get('email').errors?.email">Email no válido</span>
-                    <span *ngIf="dataFormGroup.get('email').errors?.emailRepeatedValidator">Usuario ya registrado.</span>
+                    <span
+                        *ngIf="dataFormGroup.get('email').hasError('emailRepeatedValidator') && !register">Usuario
+                        ya registrado.</span>
+                    <span
+                        *ngIf="dataFormGroup.get('email').hasError('emailRepeatedValidator') && register">Usuario
+                        no registrado.</span>
                 </mat-error>
             </mat-form-field>
 
@@ -38,18 +43,22 @@
                     <span *ngIf="dataFormGroup.get('pass').hasError('minlength')">Mínimo 6 caracteres</span>
                 </mat-error>
             </mat-form-field>
+            <div *ngIf="register" class="ms-flex w3-small">
+                <span class="ms-fill"></span>
+                <span class="password font--primary" (click)="passwordReset()"> Olvidé mi contraseña</span>
+            </div>
         </form>
         <div class="w3-margin-bottom">
-            <mat-checkbox class="w3-small" color="primary" [formControl]="registerForm" (click)="reset()">
+            <mat-checkbox class="w3-small" color="primary" [(ngModel)]="register" (click)="reset()">
                 Ya estoy registrado
             </mat-checkbox>
         </div>
 
-        <button *ngIf="!(register$ | async)" mat-raised-button class="w3-block w3-margin-bottom social social--register"
+        <button *ngIf="!register" mat-raised-button class="w3-block w3-margin-bottom social social--register"
             [disabled]="!dataFormGroup.valid" (click)="registerUser()">
             Registrarse
         </button>
-        <button *ngIf="register$ | async" mat-raised-button class="w3-block w3-margin-bottom social--register"
+        <button *ngIf="register" mat-raised-button class="w3-block w3-margin-bottom social--register"
             [disabled]="!dataFormGroup.valid" (click)="login()">
             Ingresar
         </button>

@@ -122,6 +122,7 @@ export class PurchaseComponent implements OnInit {
 
           this.latitud = res.contact.coord.lat
           this.longitud = res.contact.coord.lng
+          this.changeDelivery(res.contact.district)
         } else {
           this.firstSale = true
 
@@ -149,7 +150,7 @@ export class PurchaseComponent implements OnInit {
       })
     )
 
-    this.total = this.dbs.order.map(el => this.giveProductPrice(el)).reduce((a, b) => a + b, 0)
+    this.total = this.dbs.total
   }
 
   changeDelivery(district) {
@@ -168,21 +169,6 @@ export class PurchaseComponent implements OnInit {
       this.payFormGroup.get('photoURL').setValue(null);
     }
 
-    console.log(this.photos.data);
-
-  }
-
-  giveProductPrice(item) {
-    if (item.product.promo) {
-      let promTotalQuantity = Math.floor(item.quantity / item.product.promoData.quantity);
-      let promTotalPrice = promTotalQuantity * item.product.promoData.promoPrice;
-      let noPromTotalQuantity = item.quantity % item.product.promoData.quantity;
-      let noPromTotalPrice = noPromTotalQuantity * item.product.price;
-      return this.roundNumber(promTotalPrice + noPromTotalPrice);
-    }
-    else {
-      return this.roundNumber(item.quantity * item.product.price)
-    }
   }
 
   compareObjects(o1: any, o2: any): boolean {
@@ -248,7 +234,8 @@ export class PurchaseComponent implements OnInit {
 
     let newSale: Sale = {
       id: saleRef.id,
-      correlative: '',
+      correlative: 0,
+      correlativeType: 'R',
       document: this.payFormGroup.get('typePay').value,
       payType: this.payFormGroup.get('pay').value,
       location: {
@@ -311,7 +298,7 @@ export class PurchaseComponent implements OnInit {
 
           transaction.update(saleCount, { salesRCounter: newCorr });
 
-          newSale.correlative = 'R' + ("000" + newCorr).slice(-4);
+          newSale.correlative = newCorr
 
           transaction.set(saleRef, newSale);
           //user
@@ -338,19 +325,34 @@ export class PurchaseComponent implements OnInit {
 
 
         });
+
+
       }).then(() => {
-        this.dialog.open(SaleDialogComponent, {
-          data: {
-            name: this.firstFormGroup.value['name'],
-            number: newSale.correlative,
-            email: this.user.email
-          }
+        this.dbs.order.forEach((order, ind) => {
+          const ref = this.af.firestore.collection(`/db/distoProductos/productsList`).doc(order.product.id);
+          this.af.firestore.runTransaction((transaction) => {
+            // This code may get re-run multiple times if there are conflicts.
+            return transaction.get(ref).then((prodDoc) => {
+              let newStock = prodDoc.data().realStock - order.quantity;
+              transaction.update(ref, { realStock: newStock });
+            });
+          }).then(() => {
+            if (ind == this.dbs.order.length - 1) {
+              this.dialog.open(SaleDialogComponent, {
+                data: {
+                  name: this.firstFormGroup.value['name'],
+                  number: newSale.correlative,
+                  email: this.user.email
+                }
+              })
+
+              this.dbs.order = []
+              this.dbs.total = 0
+              this.dbs.view.next(1)
+            }
+
+          })
         })
-
-        this.dbs.order = []
-        this.dbs.total = 0
-        this.dbs.view.next(1)
-
         //this.loading.next(3)
       }).catch(function (error) {
         console.log("Transaction failed: ", error);

@@ -1,0 +1,63 @@
+<div style="max-width: 350px;">
+    <div mat-dialog-title>
+        <div class="ms-flex">
+            <h2 class="title-login">
+                {{data.item.productDescription | titlecase}} {{getUnit(data.item.unit,true)}} -
+                {{data.item.quantity}}
+                {{getUnit(data.item.unit,false)}}
+            </h2>
+            <span class="ms-fill"></span>
+            <button mat-icon-button mat-dialog-close>
+                <mat-icon>close</mat-icon>
+            </button>
+        </div>
+        <mat-divider></mat-divider>
+    </div>
+    <mat-dialog-content>
+        <mat-progress-bar mode="indeterminate" *ngIf="loading$ | async"></mat-progress-bar>
+        <form [formGroup]="validatedFormGroup" style="width: 100%">
+
+            <mat-form-field class="w3-block w3-small" appearance="outline">
+                <mat-label>Cantidad de merma</mat-label>
+                <input formControlName="mermaStock" #quantity type="number" autocomplete="off" matInput
+                    placeholder="Cantidad de merma">
+                <mat-hint style="color:red" *ngIf="mermQuantity$ | async">
+                    Número Inválido
+                </mat-hint>
+            </mat-form-field>
+
+            <mat-form-field class="w3-block w3-small" appearance="outline">
+                <mat-label>Cantidad en devolución</mat-label>
+                <input formControlName="returned" #unitPrice type="number" autocomplete="off" matInput
+                    placeholder="Cantidad en devolución">
+                <mat-hint style="color:red" *ngIf="retQuantity$ | async">
+                    Número Inválido
+                </mat-hint>
+            </mat-form-field>
+
+            <mat-form-field class="w3-block w3-small" appearance="outline">
+                <mat-label>Observaciones de devolución</mat-label>
+                <textarea style="min-height: 100px;" placeholder="Observaciones" formControlName="observations" matInput
+                    maxlength="150"></textarea>
+            </mat-form-field>
+
+        </form>
+
+        <div>
+            <p *ngIf="validatedFormGroup.get('mermaStock').value">Ingresarán
+                <strong>{{validatedFormGroup.get('mermaStock').value}} {{getUnit(data.item.unit,false)}}</strong> al
+                <strong>almacén de merma</strong></p>
+            <p *ngIf="validatedFormGroup.get('returned').value">Se devolverán
+                <strong>{{validatedFormGroup.get('returned').value}} {{getUnit(data.item.unit,false)}}</strong> al
+                <strong>proveedor</strong></p>
+            <p>Ingresarán <strong>{{getStock()}} {{getUnit(data.item.unit,false)}}</strong> al <strong>almacén
+                    regular</strong></p>
+        </div>
+
+    </mat-dialog-content>
+
+    <mat-dialog-actions>
+        <button mat-raised-button color="accent" class="w3-block" type="button" (click)="data.edit?edit():save()"
+            [disabled]="getStock()<0">Guardar</button>
+    </mat-dialog-actions>
+</div>

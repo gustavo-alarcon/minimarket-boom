@@ -1,16 +1,19 @@
 .login-parent {
-  background: url("../../assets/images/background-login.png"); 
+  background: url("../../assets/images/Disto_1440x1024_pattern.png");
+  background-size: contain;
+  background-position: center;
+  padding: 2vh 2%;
+  height: 100vh;
 }
 
 .login-container {
-  height: 96vh;
-  width: 96%;
-  border: 4px solid #5CA82F;
+  height: 100%;
+  width: 100%;
+  border: 4px solid #5ca82f;
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  margin: 2vh 2%;
   padding: 16px;
 }
 
@@ -20,30 +23,21 @@
 }
 
 .title__login {
+  font-family: Montserrat;
   font-style: normal;
-  font-weight: bold;
+  font-weight: 600;
   margin-top: 0 !important;
-  font-size: 24px;
-  line-height: 28px;
-  display: flex;
-  align-items: center;
+  font-size: 22px;
+  line-height: 30px;
+  max-width: 350px;
   text-align: center;
-  color: var(--primary-color);
 }
 
-.delicioso{
-  position: relative;
-  display: inline-block;
-  z-index:0;
-}
-.delicioso:before {
-  content: '';
-  position: absolute;
-  z-index: -1;
-  left: 0;
-  right: 0;
-  bottom: -5px;
-  height: 0;
-  border: 5px solid var(--accent-color);
-  border-radius : 10px;
+@media (max-width: 601px) {
+  .login-parent {
+    background: url("../../assets/images/Disto_360x640_pattern.png");
+    background-size: contain;
+    background-position: center;
+  }
+
 }

@@ -61,6 +61,10 @@ export class AuthService {
     return this.afAuth.createUserWithEmailAndPassword(data.email, data.pass);
   }
 
+  resetPassword(email:string){
+    return this.afAuth.sendPasswordResetEmail(email)
+  }
+
   signIn(type: string): Promise<void | firebase.auth.UserCredential> {
     let provider = null;
 
