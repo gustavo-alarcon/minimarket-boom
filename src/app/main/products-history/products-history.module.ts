@@ -1,3 +1,4 @@
+import { ShoppingCartModule } from './../shopping-cart/shopping-cart.module';
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ProductsHistoryRoutingModule } from './products-history-routing.module';
@@ -25,6 +26,7 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
   imports: [
     CommonModule,
     ProductsHistoryRoutingModule,
+    ShoppingCartModule,
     MatIconModule,
     MatProgressBarModule,
     MatButtonModule,

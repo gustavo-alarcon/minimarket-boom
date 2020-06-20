@@ -1,5 +1,5 @@
 <div class="w3-section w3-hide-large w3-hide-medium">
-    <div class="w3-padding formFieldRounded">
+    <div class="w3-padding formFieldRounded" *ngIf="(view$ | async)==1">
         <h2 class="title2">Historial de compras 📋</h2>
         <mat-form-field appearance="outline" class="w3-margin-top w3-margin-bottom w3-block">
             <input matInput placeholder="FECHA / PERIODO" [satDatepicker]="picker">
@@ -7,7 +7,7 @@
             <sat-datepicker-toggle matSuffix [for]="picker"></sat-datepicker-toggle>
         </mat-form-field>
         <div *ngIf="init$ | async as sales">
-            <mat-card *ngFor="let sale of sales" class="card-record  w3-margin-bottom">
+            <mat-card *ngFor="let sale of sales" class="card-record  w3-margin-bottom" (click)="showList(sale)">
                 <div class="ms-flex ms-flex--center">
                     <div>
                         <div class="corr">#{{sale.correlativeType}}{{("000"+sale.correlative).slice(-4)}}</div>
@@ -23,11 +23,22 @@
                             <span class="ms-fill"></span>
                             <div class="check"></div>
                         </div>
-                        <div class="total">{{sale.total}}</div>
+                        <div class="total">S/. {{(sale.total + sale.deliveryPrice) | number: '.2'}}</div>
                     </div>
                 </div>
             </mat-card>
         </div>
+        
+    </div>
+    <div class="w3-padding" *ngIf="(view$|async)==2">
+        <div class="ms-flex ms-flex--center">
+            <button mat-icon-button style="margin-left: -10px; margin-top: -10px;" (click)="back()">
+                <mat-icon>keyboard_backspace</mat-icon>
+            </button>
+            <h2 class="title2 w3-margin-left">Lista de compras 🛒</h2>
+        </div>
+        <app-shopping-cart [delivery]="chooseSale.deliveryPrice" [order]="chooseSale.requestedProducts" [modified]="false"></app-shopping-cart>
+
     </div>
 
 </div>

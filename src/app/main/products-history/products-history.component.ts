@@ -1,5 +1,5 @@
 import { switchMap, map } from 'rxjs/operators';
-import { Observable, combineLatest } from 'rxjs';
+import { Observable, combineLatest, BehaviorSubject } from 'rxjs';
 import { Sale } from './../../core/models/sale.model';
 import { DatabaseService } from 'src/app/core/services/database.service';
 import { AuthService } from 'src/app/core/services/auth.service';
@@ -17,6 +17,11 @@ export class ProductsHistoryComponent implements OnInit {
 
   init$: Observable<Sale[]>
 
+  chooseSale:Sale
+
+  view = new BehaviorSubject<number>(1);
+  view$ = this.view.asObservable();
+
   constructor(
     private dbs: DatabaseService,
     private auth: AuthService
@@ -28,6 +33,16 @@ export class ProductsHistoryComponent implements OnInit {
         return this.dbs.getSalesUser(user.uid)
       })
     )
+  }
+
+  showList(item: Sale){
+    this.chooseSale = item
+    this.view.next(2)
+    
+  }
+
+  back() {
+    this.view.next(1)
   }
 
 }
