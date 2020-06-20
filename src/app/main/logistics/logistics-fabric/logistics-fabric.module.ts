@@ -1,4 +1,3 @@
-import { DatePPipe } from './../../date-p.pipe';
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { LogisticsFabricRoutingModule } from './logistics-fabric-routing.module';
@@ -22,6 +21,7 @@ import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { ValidatedDialogComponent } from './validated-dialog/validated-dialog.component';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { NgxPaginationModule } from 'ngx-pagination';
+import { DatePPipe } from './date-p.pipe';
 
 @NgModule({
   declarations: [

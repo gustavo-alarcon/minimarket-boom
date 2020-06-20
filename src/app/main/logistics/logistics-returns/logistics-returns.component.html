@@ -1,1 +1,130 @@
-<p>logistics-returns works!</p>
+<!-- Actions -->
+<div class="w3-margin actionsContainer formFieldRounded">
+    <!-- Select item's type -->
+    <mat-form-field class="content w3-small" appearance="outline">
+      <mat-icon matPrefix></mat-icon>
+      <input readonly matInput placeholder="FECHA / PERIODO" [formControl]="dateFormControl" [satDatepicker]="picker">
+      <sat-datepicker #picker [rangeMode]="true"></sat-datepicker>
+      <sat-datepicker-toggle matSuffix [for]="picker"></sat-datepicker-toggle>
+    </mat-form-field>
+  
+    <mat-form-field color="primary" class="content w3-small" appearance="outline">
+      <mat-icon matPrefix></mat-icon>
+      <mat-label>Estado</mat-label>
+      <mat-select [formControl]="statusFormControl">
+        <mat-option *ngFor="let status of statusOptions" [value]="status">
+          {{status}}
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
+  
+    <mat-form-field color="primary" class="content w3-small" appearance="outline">
+      <mat-label>Buscar Correlativo</mat-label>
+      <mat-icon matPrefix class="w3-margin-right">search</mat-icon>
+      <input [formControl]="searchFormControl" matInput type="number" placeholder="Escriba..." autocomplete="off">
+      <mat-hint>Filtro de correlativo</mat-hint>
+    </mat-form-field>
+  
+  </div>
+  <mat-progress-bar mode='indeterminate' *ngIf="loading$ | async"></mat-progress-bar>
+  
+  <div *ngIf="filter$ | async as buyList">
+    <mat-expansion-panel *ngFor="let buy of buyList| paginate: { itemsPerPage: 10, currentPage: p }; let ind = index "
+      (opened)="panelOpenState[ind] = true" (closed)="panelOpenState[ind] = false" class="w3-margin-bottom" hideToggle>
+      <mat-expansion-panel-header>
+        <div class="ms-flex w3-block" style="justify-content: space-between; align-items: center;">
+          <div>#F{{("000"+(buy.correlative+1)).slice(-4)}}</div>
+          <div class="thin">{{buy.totalAmount}} KG</div>
+          <div class="thin">S/. {{buy.totalPrice | number: '.2'}}</div>
+          <div class="thin">{{buy['requestedDate'].toMillis() | dateP }}</div>
+          <div class="ms-flex panel-icons">
+            <button mat-icon-button>
+              <mat-icon>print</mat-icon>
+            </button>
+            <span [ngClass]="buy['validated']? 'toggleUp toggleUp__green':'toggleUp toggleUp__accent'">
+              <mat-icon *ngIf="panelOpenState[ind]">keyboard_arrow_up</mat-icon>
+              <mat-icon *ngIf="!panelOpenState[ind]">keyboard_arrow_down</mat-icon>
+            </span>
+          </div>
+        </div>
+  
+      </mat-expansion-panel-header>
+      <mat-progress-bar mode='indeterminate' *ngIf="!(buy['products'] | async)"></mat-progress-bar>
+      <div *ngIf="buy['products'] | async as products">
+        <table mat-table [dataSource]="products" matSort class="ms-table">
+          <ng-container matColumnDef="name">
+            <th *matHeaderCellDef class="w3-center ms-table__th">
+              Producto
+            </th>
+            <td mat-cell *matCellDef="let element;" class="w3-center ms-table__td">
+              {{element['productDescription'] | titlecase}}
+            </td>
+          </ng-container>
+  
+          <ng-container matColumnDef="amount">
+            <th *matHeaderCellDef class="w3-center ms-table__th">Cantidad
+            </th>
+            <td mat-cell *matCellDef="let element" class="ms-table__td w3-center">
+              {{element['quantity']}} {{element['unit']['abbreviation']}}
+            </td>
+          </ng-container>
+  
+          <ng-container matColumnDef="date">
+            <th *matHeaderCellDef class="w3-center ms-table__th">Fecha
+            </th>
+            <td mat-cell *matCellDef="let element" class="ms-table__td w3-center">
+              {{element['desiredDate'].toMillis() | dateP}}
+            </td>
+          </ng-container>
+  
+          <ng-container matColumnDef="unitPrice">
+            <th *matHeaderCellDef class="w3-center ms-table__th">Precio U.C.
+            </th>
+            <td mat-cell *matCellDef="let element" class="ms-table__td w3-center">
+              S/. {{element['unitPrice'] | number: '.2'}}
+            </td>
+          </ng-container>
+  
+          <ng-container matColumnDef="totalPrice">
+            <th *matHeaderCellDef class="w3-center ms-table__th">
+              Precio T.
+            </th>
+            <td mat-cell *matCellDef="let element" class="ms-table__td w3-center">
+              S/. {{(element['unitPrice'] * element['quantity']) | number: '.2'}}
+            </td>
+          </ng-container>
+          <ng-container matColumnDef="validate">
+            <th *matHeaderCellDef class="w3-center ms-table__th">
+            </th>
+            <td mat-cell *matCellDef="let element; let i = index" class="ms-table__td w3-center">
+  
+              <button *ngIf="!element['validated']" mat-raised-button color="accent" class="buttonNoRounded"
+                (click)="validated(element,false)" style="width: 110px;">Validar</button>
+  
+              <div *ngIf="element['validated']" class="ms-flex ms-flex--center" style="justify-content: center;">
+  
+                <button (click)="validated(element,true)" mat-raised-button color="primary" style="margin-right: 8px;"
+                  class="buttonNoRounded" [disabled]="isloading(ind,i)">Correcto</button>
+  
+                <button *ngIf="!isloading(ind,i)" (click)="undoValidated(element,ind,i)" mat-icon-button
+                  matTooltip="Deshacer validación">
+                  <mat-icon>undo</mat-icon>
+                </button>
+  
+                <div *ngIf="isloading(ind,i)" class="lds-dual-ring"></div>
+                
+              </div>
+            </td>
+          </ng-container>
+          <tr mat-header-row *matHeaderRowDef="displayedColumns; sticky: true"></tr>
+          <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+  
+        </table>
+      </div>
+  
+    </mat-expansion-panel>
+    <div class="ms-flex" style="justify-content: center;" *ngIf="buyList.length > 6">
+      <pagination-controls [responsive]="true" (pageChange)="p = $event" previousLabel="" nextLabel="" maxSize="6">
+      </pagination-controls>
+    </div>
+  </div>
