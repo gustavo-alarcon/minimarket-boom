@@ -182,7 +182,7 @@ export class LogisticsFabricComponent implements OnInit {
     }
   }
 
-  validated(product: BuyRequestedProduct,isedit: boolean) {
+  validated(product: BuyRequestedProduct, isedit: boolean) {
     this.dialog.open(ValidatedDialogComponent, {
       data: {
         item: product,
@@ -190,6 +190,7 @@ export class LogisticsFabricComponent implements OnInit {
       }
     })
   }
+
 
   isloading(buyind, ind) {
     let cod = 'F' + buyind + ind
@@ -208,7 +209,7 @@ export class LogisticsFabricComponent implements OnInit {
         let prodFilter = products.map(el => {
           let count = 0
           if (el.id == product.id) {
-            el.returned = false  
+            el.returned = false
           }
           if (el.validationData && el.id != product.id) {
             count = el.validationData.returned
@@ -219,7 +220,7 @@ export class LogisticsFabricComponent implements OnInit {
           }
         })
         return {
-          returned:prodFilter.reduce((a, b) => a || b.returned, false),
+          returned: prodFilter.reduce((a, b) => a || b.returned, false),
           returnedQuantity: prodFilter.reduce((a, b) => a + b.returnedQuantity, 0)
         }
       }),
@@ -252,7 +253,7 @@ export class LogisticsFabricComponent implements OnInit {
             returned: false
           })
 
-          
+
 
         });
       }).then(() => {

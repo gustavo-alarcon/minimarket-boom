@@ -157,6 +157,7 @@ export class ValidatedDialogComponent implements OnInit {
             validatedDate: new Date(),
             validationData: this.validatedFormGroup.value,
             returned: this.validatedFormGroup.value['returned'] > 0,
+            returnedQuantity: this.validatedFormGroup.value['returned']
           })
   
           transaction.update(requestRef, {
@@ -228,13 +229,14 @@ export class ValidatedDialogComponent implements OnInit {
             validatedDate: new Date(),
             validationData: this.validatedFormGroup.value,
             returned: this.validatedFormGroup.value['returned'] > 0,
-            returnValidated: false
+            returnedQuantity: this.validatedFormGroup.value['returned'],
+            returnedValidated: false
           })
 
           transaction.update(requestRef, {
             returned: res.returnedQuantity > 0,
             returnedQuantity: res.returnedQuantity,
-            returnValidated: false,
+            returnedValidated: false,
             validated: res.validated,
             validatedDate: res.validated ? new Date() : null,
             editedDate: res.validated ? new Date() : null,

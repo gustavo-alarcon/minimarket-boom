@@ -1,3 +1,4 @@
+import { ValidatedReturnDialogComponent } from './validated-return-dialog/validated-return-dialog.component';
 import { startWith, map, switchMap, tap, take } from 'rxjs/operators';
 import { DatabaseService } from 'src/app/core/services/database.service';
 import { AngularFirestore } from '@angular/fire/firestore';
@@ -36,7 +37,7 @@ export class LogisticsReturnsComponent implements OnInit {
   searchFormControl: FormControl;
 
   dataSource = new MatTableDataSource();
-  displayedColumns: string[] = ['name', 'amount', 'date', 'unitPrice', 'totalPrice', 'validate'];
+  displayedColumns: string[] = ['name', 'amount', 'date', 'unitPrice', 'totalPrice', 'observations', 'validate'];
 
   p: number = 1;
 
@@ -86,12 +87,17 @@ export class LogisticsReturnsComponent implements OnInit {
       switchMap((res) => {
         return this.dbs.getBuyRequests(res).pipe(
           map((buy, i) => {
-            return buy.map(el => {
+            return buy.filter(el => el.returned).map(el => {
               return {
                 ...el,
-                products: this.dbs.getBuyRequestedProducts(el.id),
+                products: this.dbs.getBuyRequestedProducts(el.id).pipe(
+                  map(prod => prod.filter(el => el.returned))
+                ),
+                total$: this.dbs.getBuyRequestedProducts(el.id).pipe(
+                  map(prod => prod.filter(el => el.returned).reduce((a, b) => a + (b.unitPrice * b.returnedQuantity), 0))
+                ),
                 onevalidated$: this.dbs.getBuyRequestedProducts(el.id).pipe(
-                  map(prod => prod.reduce((a, b) => a || b.validated, false))
+                  map(prod => prod.filter(el => el.returned).reduce((a, b) => a || b.returnedValidated, false))
                 )
               }
             })
@@ -113,12 +119,12 @@ export class LogisticsReturnsComponent implements OnInit {
             case 'Pendiente':
               return !search ? buyReq.validated == false : (
                 buyReq.correlative.toString().padStart(6).includes(String(search)) &&
-                buyReq.validated == false
+                buyReq.returnedValidated == false
               )
             case 'Validado':
               return !search ? buyReq.validated == true : (
                 buyReq.correlative.toString().padStart(6).includes(String(search)) &&
-                buyReq.validated == true
+                buyReq.returnedValidated == true
               )
           }
         })
@@ -133,98 +139,14 @@ export class LogisticsReturnsComponent implements OnInit {
     )
   }
 
-  validated(product: BuyRequestedProduct,isedit: boolean) {
-    /*
-    this.dialog.open(ValidatedDialogComponent, {
+  validated(product: BuyRequestedProduct) {
+
+    this.dialog.open(ValidatedReturnDialogComponent, {
       data: {
-        item: product,
-        edit: isedit
+        item: product
       }
-    })*/
-  }
-
-  isloading(buyind, ind) {
-    let cod = 'F' + buyind + ind
-    return cod == this.loadingUndo
-  }
-
-  undoValidated(product: BuyRequestedProduct, buyind, ind) {
-    this.loadingUndo = 'F' + buyind + ind
-    const requestRef = this.af.firestore.collection(`/db/distoProductos/buys`).doc(product.buyId);
-    const requestProductRef = this.af.firestore.collection(`/db/distoProductos/buys/${product.buyId}/buyRequestedProducts`).doc(product.id);
-    const productRef = this.af.firestore.collection(`/db/distoProductos/productsList`).doc(product.id);
-    let quantity = product.quantity - (product.validationData.mermaStock + product.validationData.returned)
-
-    let returnAll$ = this.dbs.getBuyRequestedProducts(product.buyId).pipe(
-      map(products => {
-        let prodFilter = products.map(el => {
-          let count = 0
-          if (el.id == product.id) {
-            el.returned = false  
-          }
-          if (el.validationData && el.id != product.id) {
-            count = el.validationData.returned
-          }
-          return {
-            ...el,
-            returnedQuantity: count
-          }
-        })
-        return {
-          returned:prodFilter.reduce((a, b) => a || b.returned, false),
-          returnedQuantity: prodFilter.reduce((a, b) => a + b.returnedQuantity, 0)
-        }
-      }),
-      take(1)
-    )
-
-    returnAll$.subscribe(res => {
-      this.af.firestore.runTransaction((transaction) => {
-        return transaction.get(productRef).then((prodDoc) => {
-          let newStock = prodDoc.data().realStock - quantity;
-          let newMerma = prodDoc.data().mermaStock - product.validationData.mermaStock;
-
-          transaction.update(productRef, {
-            realStock: newStock,
-            mermaStock: newMerma
-          });
-
-          transaction.update(requestRef, {
-            validated: false,
-            validatedDate: null,
-            returned: res.returned,
-            returnedQuantity: res.returnedQuantity
-          })
-
-          transaction.update(requestProductRef, {
-            validated: false,
-            validatedBy: null,
-            validatedDate: null,
-            validationData: null,
-            returned: false
-          })
-
-          
-
-        });
-      }).then(() => {
-        this.loadingUndo = 'F'
-        this.snackBar.open(
-          'Cambios guardados',
-          'Cerrar',
-          { duration: 6000, }
-        );
-
-      }).catch(function (error) {
-        console.log("Transaction failed: ", error);
-        this.snackBar.open(
-          'Ocurrió un problema',
-          'Cerrar',
-          { duration: 6000, }
-        );
-      });
     })
-
   }
+
 
 }

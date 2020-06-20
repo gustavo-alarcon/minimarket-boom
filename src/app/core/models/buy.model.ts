@@ -50,6 +50,7 @@ export interface BuyRequestedProduct {               //How many products should 
 
   returned?: boolean;
   returnedDate?: Date;
+  returnedQuantity?: number;
   returnedValidated?: boolean;
 
   requestedDate: Date;      //When the request was submitted

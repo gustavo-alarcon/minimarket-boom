@@ -40,7 +40,8 @@
         <div>#F{{("000"+(buy.correlative+1)).slice(-4)}}</div>
         <div class="thin">{{buy.totalAmount}} KG</div>
         <div class="thin">S/. {{buy.totalPrice | number: '.2'}}</div>
-        <div class="thin">{{buy['requestedDate'].toMillis() | dateP }}</div>
+        <div class="thin">{{(buy.validated ? buy['validatedDate'].toMillis() :buy['requestedDate'].toMillis()) | dateP }}
+        </div>
         <div class="ms-flex panel-icons">
           <button mat-icon-button>
             <mat-icon>print</mat-icon>
@@ -81,7 +82,7 @@
           <th *matHeaderCellDef class="w3-center ms-table__th">Fecha
           </th>
           <td mat-cell *matCellDef="let element" class="ms-table__td w3-center">
-            {{element['desiredDate'].toMillis() | dateP}}
+            {{(element.validated? element['validatedDate'].toMillis() : element['desiredDate'].toMillis()) | dateP}}
           </td>
         </ng-container>
 
@@ -120,7 +121,7 @@
               </button>
 
               <div *ngIf="isloading(ind,i)" class="lds-dual-ring"></div>
-              
+
             </div>
           </td>
         </ng-container>

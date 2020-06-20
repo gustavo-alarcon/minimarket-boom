@@ -20,12 +20,14 @@ import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { NgxPaginationModule } from 'ngx-pagination';
 import { DatePPipe } from './date-p.pipe';
+import { ValidatedReturnDialogComponent } from './validated-return-dialog/validated-return-dialog.component';
 
 
 @NgModule({
   declarations: [
     LogisticsReturnsComponent,
-    DatePPipe
+    DatePPipe,
+    ValidatedReturnDialogComponent
   ],
   imports: [
     CommonModule,
