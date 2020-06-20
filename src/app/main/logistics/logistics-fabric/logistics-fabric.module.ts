@@ -1,3 +1,4 @@
+import { DatePPipe } from './../../date-p.pipe';
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { LogisticsFabricRoutingModule } from './logistics-fabric-routing.module';
@@ -19,13 +20,15 @@ import { MatExpansionModule } from '@angular/material/expansion';
 import { MatTableModule } from '@angular/material/table';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { ValidatedDialogComponent } from './validated-dialog/validated-dialog.component';
-import {MatTooltipModule} from '@angular/material/tooltip';
+import { MatTooltipModule } from '@angular/material/tooltip';
+import { NgxPaginationModule } from 'ngx-pagination';
 
 @NgModule({
   declarations: [
-    LogisticsFabricComponent, 
-    RequestCreateEditComponent, 
-    ValidatedDialogComponent
+    LogisticsFabricComponent,
+    RequestCreateEditComponent,
+    ValidatedDialogComponent,
+    DatePPipe
   ],
   imports: [
     CommonModule,
@@ -36,7 +39,7 @@ import {MatTooltipModule} from '@angular/material/tooltip';
     MatButtonModule,
     MatIconModule,
     MatDatepickerModule,
-    SatDatepickerModule, 
+    SatDatepickerModule,
     SatNativeDateModule,
     MatSelectModule,
     MatDividerModule,
@@ -45,7 +48,8 @@ import {MatTooltipModule} from '@angular/material/tooltip';
     MatExpansionModule,
     MatTableModule,
     MatProgressBarModule,
-    MatTooltipModule 
+    MatTooltipModule,
+    NgxPaginationModule 
   ],
   entryComponents: [
     RequestCreateEditComponent,

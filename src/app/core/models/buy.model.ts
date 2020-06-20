@@ -10,23 +10,24 @@ export interface Buy {
   requestedProducts: string[];    //We will contain only the id
 
   totalAmount: number;     //in KG
-  totalPrice: number;     
-   
+  totalPrice: number;
+
   validated: boolean;       //True only when all products are validated
   validatedDate: Date;
-  
-  returned?:boolean;
-  returnedQuantity?:number;
-  
+
+  returned?: boolean;
+  returnedQuantity?: number;
+  returnedDate?: Date;
+  returnedValidated?: boolean;
 
   requestedDate: Date;      //When the request was submitted
-  requestedBy: User;   
+  requestedBy: User;
 
   editedDate: Date;
   editedBy: User;
 }
 
-export const buysProductsCollRef = `db/distoProductos/buys/`+`buyId`+`/buyRequestedProducts/`
+export const buysProductsCollRef = `db/distoProductos/buys/` + `buyId` + `/buyRequestedProducts/`
 //We should include this on small documents
 export interface BuyRequestedProduct {               //How many products should there be
   id: string;             //Should be same as product id
@@ -34,24 +35,22 @@ export interface BuyRequestedProduct {               //How many products should 
 
   productDescription: string;
   unit: Unit;
-  unitPrice: number; 
+  unitPrice: number;
   quantity: number;
-  
+
   desiredDate: Date;      //When we want this product
-  validated: boolean;     
+  validated: boolean;
   validationData: {       //null when it is not validated
-    mermaStock:  number;  //realStock = quantity - mermaStock - returned
+    mermaStock: number;  //realStock = quantity - mermaStock - returned
     returned: number;
     observations: string;
   }
   validatedBy: string;
   validatedDate: Date;
 
-  returned?:boolean;
-  returnedData?:{
-    returned: number;
-    observations: string;
-  }
+  returned?: boolean;
+  returnedDate?: Date;
+  returnedValidated?: boolean;
 
   requestedDate: Date;      //When the request was submitted
   requestedBy: User

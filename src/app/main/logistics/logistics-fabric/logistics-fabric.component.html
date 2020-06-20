@@ -33,14 +33,14 @@
 <mat-progress-bar mode='indeterminate' *ngIf="loading$ | async"></mat-progress-bar>
 
 <div *ngIf="filter$ | async as buyList">
-  <mat-expansion-panel *ngFor="let buy of buyList; let ind = index" (opened)="panelOpenState[ind] = true"
-    (closed)="panelOpenState[ind] = false" class="w3-margin-bottom" hideToggle>
+  <mat-expansion-panel *ngFor="let buy of buyList| paginate: { itemsPerPage: 10, currentPage: p }; let ind = index "
+    (opened)="panelOpenState[ind] = true" (closed)="panelOpenState[ind] = false" class="w3-margin-bottom" hideToggle>
     <mat-expansion-panel-header>
       <div class="ms-flex w3-block" style="justify-content: space-between; align-items: center;">
         <div>#F{{("000"+(buy.correlative+1)).slice(-4)}}</div>
         <div class="thin">{{buy.totalAmount}} KG</div>
         <div class="thin">S/. {{buy.totalPrice | number: '.2'}}</div>
-        <div class="thin">{{buy['requestedDate'].toMillis() | date: 'dd-MMM-yyyy' }}</div>
+        <div class="thin">{{buy['requestedDate'].toMillis() | dateP }}</div>
         <div class="ms-flex panel-icons">
           <button mat-icon-button>
             <mat-icon>print</mat-icon>
@@ -81,7 +81,7 @@
           <th *matHeaderCellDef class="w3-center ms-table__th">Fecha
           </th>
           <td mat-cell *matCellDef="let element" class="ms-table__td w3-center">
-            {{element['desiredDate'].toMillis() | date: 'dd-MMM-yyyy'}}
+            {{element['desiredDate'].toMillis() | dateP}}
           </td>
         </ng-container>
 
@@ -104,18 +104,24 @@
         <ng-container matColumnDef="validate">
           <th *matHeaderCellDef class="w3-center ms-table__th">
           </th>
-          <td mat-cell *matCellDef="let element" class="ms-table__td w3-center">
+          <td mat-cell *matCellDef="let element; let i = index" class="ms-table__td w3-center">
+
             <button *ngIf="!element['validated']" mat-raised-button color="accent" class="buttonNoRounded"
-              (click)="validated(element,buy,false)" style="width: 110px;">Validar</button>
-            <div *ngIf="element['validated']">
-              <button (click)="validated(element,buy,true)" mat-raised-button color="primary"
-                class="buttonNoRounded">Correcto</button>
-              <button mat-icon-button matTooltip="Deshacer validación" matTooltipPosition="top">
+              (click)="validated(element,false)" style="width: 110px;">Validar</button>
+
+            <div *ngIf="element['validated']" class="ms-flex ms-flex--center" style="justify-content: center;">
+
+              <button (click)="validated(element,true)" mat-raised-button color="primary" style="margin-right: 8px;"
+                class="buttonNoRounded" [disabled]="isloading(ind,i)">Correcto</button>
+
+              <button *ngIf="!isloading(ind,i)" (click)="undoValidated(element,ind,i)" mat-icon-button
+                matTooltip="Deshacer validación">
                 <mat-icon>undo</mat-icon>
               </button>
+
+              <div *ngIf="isloading(ind,i)" class="lds-dual-ring"></div>
+              
             </div>
-
-
           </td>
         </ng-container>
         <tr mat-header-row *matHeaderRowDef="displayedColumns; sticky: true"></tr>
@@ -125,4 +131,8 @@
     </div>
 
   </mat-expansion-panel>
+  <div class="ms-flex" style="justify-content: center;" *ngIf="buyList.length > 6">
+    <pagination-controls [responsive]="true" (pageChange)="p = $event" previousLabel="" nextLabel="" maxSize="6">
+    </pagination-controls>
+  </div>
 </div>

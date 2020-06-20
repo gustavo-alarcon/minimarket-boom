@@ -9,7 +9,7 @@
                             <img *ngIf="user.photoURL else defaultPicture" [src]="user.photoURL"
                                 class="user__image border--primary">
                             <ng-template #defaultPicture>
-                                <img class="user__image border--primary" src="../../assets/images/Disto_user.png">
+                                <img class="user__image border--primary" src="../../assets/images/profile.png">
                             </ng-template>
                         </div>
                         <div *ngIf="user.name;else noName">
