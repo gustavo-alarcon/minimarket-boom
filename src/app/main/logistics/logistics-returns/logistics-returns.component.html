@@ -75,10 +75,7 @@
           <th *matHeaderCellDef class="w3-center ms-table__th">Fecha
           </th>
           <td mat-cell *matCellDef="let element" class="ms-table__td w3-center">
-            <span *ngIf="element['returnedDate']">
-              <span
-                *ngIf="element['returnedDate'].length">{{element['returnedDate'][element['returnedDate'].length-1]['date'].toMillis() | dateP}}</span>
-            </span>
+            <span *ngIf="element['dateReturn']">{{element['dateReturn'].toMillis() | dateP}}</span>
             <span *ngIf="!element['returnedDate']">---</span>
           </td>
         </ng-container>

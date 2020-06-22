@@ -83,7 +83,13 @@ export class ValidatedReturnDialogComponent implements OnInit {
 
 
   deleteDate(item, ind) {
-    let newDate = [...this.data.item.returnedDate].splice(ind, 1)
+    let newDate
+    if (this.data.item.returnedDate.length == 1) {
+      newDate = []
+    } else {
+      newDate = [...this.data.item.returnedDate].splice(ind, 1)
+    }
+
     this.returnStock(item, newDate)
 
 
@@ -91,7 +97,7 @@ export class ValidatedReturnDialogComponent implements OnInit {
 
   returnStock(item, array) {
     console.log(array);
-    
+
     this.loading.next(true)
     this.validatedFormGroup.markAsPending();
     this.validatedFormGroup.disable()
@@ -111,11 +117,12 @@ export class ValidatedReturnDialogComponent implements OnInit {
 
         transaction.update(requestProductRef, {
           validated: false,
-          validatedStatus: 'pendiente',
+          validatedStatus: array.length == 0 ? 'por validar' : 'pendiente',
           validatedDate: null,
           returnedQuantity: this.data.item.returnedQuantity + item.quantity + item.merma,
           returnedValidated: false,
-          returnedDate: array
+          returnedDate: array,
+          dateReturn: new Date()
         })
 
         transaction.update(requestRef, {
@@ -126,7 +133,7 @@ export class ValidatedReturnDialogComponent implements OnInit {
           returnedValidated: false,
           returnedDate: null,
           status: 'pendiente',
-          returnedStatus: 'pendiente'
+          returnedStatus: array.length == 0 ? 'por validar' : 'pendiente'
         })
 
       });
@@ -220,7 +227,8 @@ export class ValidatedReturnDialogComponent implements OnInit {
             validatedDate: this.validatedFormGroup.get('returned').value == 0 ? new Date() : null,
             returnedQuantity: this.validatedFormGroup.get('returned').value,
             returnedValidated: this.validatedFormGroup.get('returned').value == 0,
-            returnedDate: records
+            returnedDate: records,
+            dateReturn: new Date()
           })
 
           transaction.update(requestRef, {

@@ -251,6 +251,7 @@ export class PurchaseComponent implements OnInit {
       requestDate: this.secondFormGroup.get('date').value,
       createdAt: new Date(),
       createdBy: null,
+      userId:this.user.uid,
       user:this.user,
       requestedProducts: this.dbs.order,
       status: 'Solicitado',
