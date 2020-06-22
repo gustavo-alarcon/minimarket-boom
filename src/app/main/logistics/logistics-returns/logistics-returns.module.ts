@@ -1,3 +1,4 @@
+import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { LogisticsReturnsRoutingModule } from './logistics-returns-routing.module';
@@ -48,7 +49,8 @@ import { ValidatedReturnDialogComponent } from './validated-return-dialog/valida
     MatTableModule,
     MatProgressBarModule,
     MatTooltipModule,
-    NgxPaginationModule 
+    NgxPaginationModule,
+    MatSnackBarModule 
   ],
   providers: [
     { provide: MAT_DATE_LOCALESAT, useValue: 'en-GB' }

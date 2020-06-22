@@ -1,3 +1,4 @@
+import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { LogisticsFabricRoutingModule } from './logistics-fabric-routing.module';
@@ -51,7 +52,8 @@ import { UndoDialogComponent } from './undo-dialog/undo-dialog.component';
     MatTableModule,
     MatProgressBarModule,
     MatTooltipModule,
-    NgxPaginationModule 
+    NgxPaginationModule,
+    MatSnackBarModule 
   ],
   entryComponents: [
     RequestCreateEditComponent,
