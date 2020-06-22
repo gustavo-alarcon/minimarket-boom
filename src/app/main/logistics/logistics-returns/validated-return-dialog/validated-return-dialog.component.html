@@ -48,9 +48,9 @@
             <p *ngIf="validatedFormGroup.get('mermaStock').value">Ingresarán
                 <strong>{{validatedFormGroup.get('mermaStock').value}} {{getUnit(data.item.unit,false)}}</strong> al
                 <strong>almacén de merma</strong></p>
-            <p *ngIf="validatedFormGroup.get('returned').value">Se devolverán
+            <p *ngIf="validatedFormGroup.get('returned').value">Ingresarán
                 <strong>{{validatedFormGroup.get('returned').value}} {{getUnit(data.item.unit,false)}}</strong> al
-                <strong>proveedor</strong></p>
+                <strong>almacén regular</strong></p>
         </div>
 
     </mat-dialog-content>

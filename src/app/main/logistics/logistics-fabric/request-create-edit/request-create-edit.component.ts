@@ -177,6 +177,7 @@ export class RequestCreateEditComponent implements OnInit {
       quantity: el.quantity,
       desiredDate: el.desiredDate,
       validated: false,
+      validatedStatus:'por validar',
       validationData: null,
       validatedBy: null,
       validatedDate: null,

@@ -2,7 +2,7 @@
     <div class="w3-padding formFieldRounded" *ngIf="(view$ | async)==1">
         <h2 class="title2">Historial de compras 📋</h2>
         <mat-form-field appearance="outline" class="w3-margin-top w3-margin-bottom w3-block">
-            <input matInput placeholder="FECHA / PERIODO" [satDatepicker]="picker">
+            <input matInput placeholder="FECHA / PERIODO" [formControl]="dateForm"  [satDatepicker]="picker">
             <sat-datepicker #picker [rangeMode]="true"></sat-datepicker>
             <sat-datepicker-toggle matSuffix [for]="picker"></sat-datepicker-toggle>
         </mat-form-field>
@@ -12,8 +12,7 @@
                     <div>
                         <div class="corr">#{{sale.correlativeType}}{{("000"+sale.correlative).slice(-4)}}</div>
                         <div class="dates">
-                            <div>{{sale['requestDate'].toMillis() | date: 'dd-MMM-yyyy' }}</div>
-                            <div>01-Jun-2020</div>
+                            <div>🛍️ {{sale['requestDate'].toMillis() | date: 'dd-MMM-yyyy' }}</div>
                         </div>
                     </div>
                     <span class="ms-fill"></span>

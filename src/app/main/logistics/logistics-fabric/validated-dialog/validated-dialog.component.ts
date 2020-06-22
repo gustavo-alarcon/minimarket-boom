@@ -37,7 +37,7 @@ export class ValidatedDialogComponent implements OnInit {
   ) { }
 
   ngOnInit(): void {
-    
+
     if (this.data.edit) {
       this.validatedFormGroup = this.fb.group({
         mermaStock: this.data.item.validationData.mermaStock,
@@ -131,11 +131,11 @@ export class ValidatedDialogComponent implements OnInit {
           let count = 0
           if (el.id == this.data.item.id) {
             count = this.validatedFormGroup.get('returned').value
-          }else{
+          } else {
             if (el.validationData) {
               count = el.validationData.returned
             }
-          } 
+          }
           return count
         })
         return {
@@ -143,7 +143,7 @@ export class ValidatedDialogComponent implements OnInit {
         }
       }),
       take(1)
-    ).subscribe(res=>{
+    ).subscribe(res => {
       this.af.firestore.runTransaction((transaction) => {
         return transaction.get(ref).then((prodDoc) => {
           let newStock = prodDoc.data().realStock + difSt;
@@ -152,18 +152,18 @@ export class ValidatedDialogComponent implements OnInit {
             realStock: newStock,
             mermaStock: newMerma
           });
-  
+
           transaction.update(requestProductRef, {
             validatedDate: new Date(),
             validationData: this.validatedFormGroup.value,
             returned: this.validatedFormGroup.value['returned'] > 0,
             returnedQuantity: this.validatedFormGroup.value['returned']
           })
-  
+
           transaction.update(requestRef, {
             returnedQuantity: res
           })
-  
+
         });
       }).then(() => {
         this.loading.next(false)
@@ -173,10 +173,10 @@ export class ValidatedDialogComponent implements OnInit {
           'Cerrar',
           { duration: 6000, }
         );
-  
+
       })
     })
-    
+
   }
 
   save() {
@@ -223,25 +223,45 @@ export class ValidatedDialogComponent implements OnInit {
             mermaStock: newMerma
           })
 
-          transaction.update(requestProductRef, {
-            validated: true,
-            validatedBy: user,
-            validatedDate: new Date(),
-            validationData: this.validatedFormGroup.value,
-            returned: this.validatedFormGroup.value['returned'] > 0,
-            returnedQuantity: this.validatedFormGroup.value['returned'],
-            returnedValidated: false
-          })
+          if (this.validatedFormGroup.value['returned'] == 0) {
+            transaction.update(requestProductRef, {
+              validated: true,
+              validatedBy: user,
+              validatedDate: new Date(),
+              validationData: this.validatedFormGroup.value,
+              validatedStatus: 'validado',
+              returned: false,
+              returnedQuantity: 0,
+              returnedValidated: false
+            })
 
-          transaction.update(requestRef, {
-            returned: res.returnedQuantity > 0,
-            returnedQuantity: res.returnedQuantity,
-            returnedValidated: false,
-            validated: res.validated,
-            validatedDate: res.validated ? new Date() : null,
-            editedDate: res.validated ? new Date() : null,
-            editedBy: res.validated ? user : null,
-          })
+            transaction.update(requestRef, {
+              validated: res.validated,
+              validatedDate: res.validated ? new Date() : null,
+              editedDate: res.validated ? new Date() : null,
+              editedBy: res.validated ? user : null,
+            })
+          } else {
+            transaction.update(requestProductRef, {
+              validationData: this.validatedFormGroup.value,
+              validatedStatus: 'pendiente',
+              returned: true,
+              returnedQuantity: this.validatedFormGroup.value['returned'],
+              returnedValidated: false,
+              returnedStatus: 'por validar',
+            })
+
+            transaction.update(requestRef, {
+              returned: res.returnedQuantity > 0,
+              returnedQuantity: res.returnedQuantity,
+              returnedValidated: false,
+              status:'pendiente',
+              editedDate: res.validated ? new Date() : null,
+              editedBy: res.validated ? user : null,
+            })
+          }
+
+
 
         });
       }).then(() => {
