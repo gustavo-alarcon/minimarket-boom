@@ -119,10 +119,13 @@
                 </div>
                 <div class="client">
                     <mat-icon>group</mat-icon>
-                    <b>Nombre Prueba</b>
+                    <b *ngIf="sale.requestingUser$ | async as userName else noUser">{{userName}}</b>
+                    <ng-template #noUser>
+                        <b>Sin Nombre</b>
+                    </ng-template>
                 </div>
                 <div class="document">
-                    <b>Factura FE001-00003</b>
+                    <b>Agregar factura</b>
                 </div>
                 <div class="driver">
                     <div class="driver_header">

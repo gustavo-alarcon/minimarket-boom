@@ -60,6 +60,22 @@ export class DatabaseService {
 
   //users
 
+  getUserDisplayName(userId: string): Observable<string>{
+    return this.afs.collection(`/users`).doc(userId)
+    .valueChanges().pipe(
+      take<User>(1),
+      map((user) => {
+        if(user.name && user.lastName1){
+          return user.name.split(" ")[0] +" "+ user.lastName1.split(" ")[0]
+        } 
+        if(user.displayName){
+          return user.displayName.split(" ").slice(0,2).join(" ")
+        }
+        return "Sin nombre"
+      })
+    );
+  }
+
   getUsers(): Observable<User[]> {
     return this.afs.collection<User>(`/users`, ref => ref.orderBy("displayName", 'asc'))
       .valueChanges().pipe(
@@ -73,8 +89,6 @@ export class DatabaseService {
         return snap.docs.map(el => <User>el.data())
       }));
   }
-
-
 
   getGeneralConfigDoc(): Observable<GeneralConfig> {
     return this.generalConfigDoc.valueChanges().pipe(shareReplay(1))
@@ -392,13 +406,13 @@ export class DatabaseService {
 
             //counter
             if (!sfDoc.exists) {
-                transaction.set(configRef, {buysCounter: 0}, {merge: true});
+                transaction.set(configRef, {buysCounter: 1}, {merge: true});
             } else{
               let config = <GeneralConfig>sfDoc.data()
 
               if(!config.hasOwnProperty("buysCounter")){
-                transaction.set(configRef, {buysCounter: 0}, {merge: true});
-                buyData.correlative = 0;
+                transaction.set(configRef, {buysCounter: 1}, {merge: true});
+                buyData.correlative = 1;
                 transaction.set(buyRef, buyData);
               } else {
                 transaction.update(configRef, {buysCounter: config.buysCounter+1})
