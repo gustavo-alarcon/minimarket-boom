@@ -119,7 +119,7 @@
                 </div>
                 <div class="client">
                     <mat-icon>group</mat-icon>
-                    <b *ngIf="sale.requestingUser$ | async as userName else noUser">{{userName}}</b>
+                    <b *ngIf="sale.requestingUser$ | async as userName else noUser"> {{userName}}</b>
                     <ng-template #noUser>
                         <b>Sin Nombre</b>
                     </ng-template>
