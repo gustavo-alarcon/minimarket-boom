@@ -63,31 +63,46 @@
                         ({{item.get('product').value['unit']['abbreviation']}})
                     </td>
                     <!-- Description -->
-                    <td class="table-sale__td table-sale__td--space" style="overflow: auto;">
+                    <td class="table-sale__td table-sale__td--space" style="overflow: auto;" >
 
                         <!-- Normal -->
                         <span *ngIf="!item.get('product').value.promo">
                             {{item.get('product').value.description}} 
+                            <mat-icon 
+                                matTooltip="{{item.get('product').value.price | currency: 'S/. '}} por {{item.get('product').value.unit.abbreviation}}">
+                                info
+                            </mat-icon>
                         </span>
                         <!-- We have promo-->
                         <div *ngIf="item.get('product').value.promo" class="table-sale__colum">
                             <p>
                                 {{item.get('product').value.description}} 
+                                <mat-icon style="cursor: pointer; font-size:medium; width:auto"
+                                    matTooltip="Precio: {{item.get('product').value.price | currency: 'S/. '}} por {{item.get('product').value.unit.abbreviation}}">
+                                    info
+                                </mat-icon>
+                                <mat-icon style="cursor: pointer; font-size:medium; width:auto"
+                                    matTooltip="Oferta ({{onFloor(item.get('quantity').value, item.get('product').value.promoData.quantity)}}): 
+                                    {{item.get('product').value.promoData.quantity}} {{(item.get('product').value.unit.abbreviation)}}
+                                    X
+                                    {{item.get('product').value.promoData.promoPrice | currency: 'S/. '}}">
+                                    new_releases
+                                </mat-icon>
                             </p>
-                            <div class="table-sale__descrip">
+                            <!-- <div class="table-sale__descrip">
                                 {{item.get('product').value.price | currency: 'S/. '}}/{{item.get('product').value.unit.abbreviation}}
-                            </div>
-                            <div class="table-sale__descrip">
-                                <!-- <div>
+                            </div> -->
+                            <!-- <div class="table-sale__descrip">
+                                <<div>
                                     Oferta:
-                                </div> -->
+                                </div> 
                                 <div>
                                     {{onFloor(item.get('quantity').value, item.get('product').value.promoData.quantity)}}
                                     ({{item.get('product').value.promoData.quantity}}{{(item.get('product').value.unit.abbreviation)}}
                                     X
                                     {{item.get('product').value.promoData.promoPrice | currency: 'S/. '}})
                                 </div>
-                            </div>
+                            </div> -->
                             <!-- <ng-container
                                 *ngIf="item.get('quantity').value % item.get('product').value.promoData.quantity">
                                 <div class="table-sale__descrip">

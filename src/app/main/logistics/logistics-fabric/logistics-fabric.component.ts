@@ -44,16 +44,7 @@ export class LogisticsFabricComponent implements OnInit {
   p: number = 1;
 
   data_xls: any = []
-  headersXlsx: string[] = [
-    'Producto',
-    'Cantidad',
-    'Fecha',
-    'Precio U.C.',
-    'Precio T.',
-    'Merma',
-    'Lista de ventas',
-    'Usuario'
-  ]
+
 
   constructor(
     private dialog: MatDialog,
@@ -228,21 +219,38 @@ export class LogisticsFabricComponent implements OnInit {
   downloadXls(ind): void {
     console.log(this.data_xls[ind]);
 
-    /*
+    let data: {corr: number, products: BuyRequestedProduct[]} = this.data_xls[ind];
     let table_xlsx: any[] = [];
 
-    table_xlsx.push(this.headersXlsx);
+    let headersXlsx: string[] = [
+      'Producto',
+      'Cantidad',
+      'Precio U.C.',
+      'Precio T.',
+      'Validado',
+      'Merma',
+      'Retornado',
+      'Stock',
+      'Observaciones',
+      'Fecha de solicitud',
+      'Fecha deseada',
+    ]
 
-    this.data_xls[ind].forEach(element => {
+    table_xlsx.push(headersXlsx);
+
+    data.products.forEach(el => {
       const temp = [
-        this.datePipe.transform(element['createdAt'].toMillis(), 'dd/MM/yyyy'),
-        this.datePipe.transform(element['createdAt'].toMillis(), 'hh:mm'),
-        element['documentType'],
-        element['documentSerial'] + '-' + element['documentCorrelative'],
-        element['customerId'] ? element['customerName'] : 'Sin nombre',
-        element['total'],
-        element['orderList'].map(el => el['name']).join('-'),
-        element['createdBy']['displayName']
+        el.productDescription,
+        el.quantity,
+        "S/."+el.unitPrice.toFixed(2),
+        "S/."+(el.quantity*el.unitPrice).toFixed(2),
+        el.validated ? this.getXlsDate(el.validatedDate) : "---",
+        el.validationData ? el.validationData.mermaStock : "---",
+        el.validationData ? el.validationData.returned : "---",
+        el.validationData ? (el.quantity - el.validationData.returned - el.validationData.mermaStock) : "---",
+        el.validationData ? el.validationData.observations : "---",
+        el.requestedDate ? this.getXlsDate(el.requestedDate) : "---",
+        el.desiredDate ? this.getXlsDate(el.desiredDate) : "---",
       ];
       table_xlsx.push(temp);
     })
@@ -252,8 +260,13 @@ export class LogisticsFabricComponent implements OnInit {
     const wb: XLSX.WorkBook = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(wb, ws, 'Solicitudes de Fábrica');
 
-    const name = 'Solicitud.xlsx'
-    XLSX.writeFile(wb, name);*/
+    const name = `Solicitud.xlsx`
+    XLSX.writeFile(wb, name);
   }
 
+  getXlsDate(date){
+    let dateObj = new Date(1970);
+    dateObj.setSeconds(date['seconds'])
+    return this.datePipe.transform(dateObj, 'dd/MM/yyyy');
+  }
 }

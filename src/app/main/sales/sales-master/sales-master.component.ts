@@ -63,6 +63,10 @@ export class SalesMasterComponent implements OnInit {
         let endDate = date.end;
         endDate.setHours(23, 59, 59);
         return this.dbs.getSales({begin: date.begin, end: endDate})
+      }),
+      map(sales => {
+        sales.forEach(el => el['requestingUser$'] = this.dbs.getUserDisplayName(el.userId));
+        return sales
       })
     );
 
@@ -134,7 +138,7 @@ export class SalesMasterComponent implements OnInit {
     let table_xlsx: any[] = [];
     let headersXlsx = [
       'Correlativo', 
-      'Usuario', 
+      //'Usuario', 
       'Estado', 
       'Teléfono', 
       'Dirección', 
@@ -160,12 +164,12 @@ export class SalesMasterComponent implements OnInit {
     sales.forEach(sale => {
       const temp = [
         sale.correlative.toString().padStart(6, "0"),
-        "Quedar con Melanie",
+        //"Quedar con Melanie",
         //sale.createdBy.displayName,
         sale.status,
         sale.location.phone,
         sale.location.address,
-        sale.location.district,
+        sale.location.district['name'],
         sale.location.reference,
         "S/."+this.giveTotalPrice(sale).toFixed(2),
         "S/."+sale.deliveryPrice.toFixed(2),
@@ -219,7 +223,12 @@ export class SalesMasterComponent implements OnInit {
   }
 
   getCorrelative(corr: number){
-    return corr.toString().padStart(6, '0')
+    return corr.toString().padStart(4, '0')
+  }
+
+  getUser(userId): Observable<string>{
+    console.log("now")
+    return this.dbs.getUserDisplayName(userId)
   }
 
   getXlsDate(date){

@@ -1,4 +1,4 @@
-<div style="max-width: 300px;">
+<div style="max-width: 300px; position: relative">
     <div mat-dialog-title>
         <div class="ms-flex">
             <h2 class="title-login">
@@ -74,5 +74,8 @@
             <p *ngIf="auth$ | async">Ingreso</p>
 
         </div>
+    </div>
+    <div mat-dialog-actions align=end>
+        <span style="color: grey">V1.0.2a</span>
     </div>
 </div>

@@ -12,7 +12,7 @@ export class LogisticsComponent implements OnInit {
   loading$: Observable<boolean>
 
   links = [
-    { name: 'Fabrica', route: 'fabric' },
+    { name: 'Fábrica', route: 'fabric' },
     { name: 'Disponibilidad', route: 'availability' },
     { name: 'Devoluciones', route: 'returns' }
   ];
