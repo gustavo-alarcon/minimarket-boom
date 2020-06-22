@@ -1,6 +1,5 @@
 import { UndoDialogComponent } from './undo-dialog/undo-dialog.component';
 import { DatePipe } from '@angular/common';
-import { AngularFirestore } from '@angular/fire/firestore';
 import { BuyRequestedProduct } from './../../../core/models/buy.model';
 import { MatTableDataSource } from '@angular/material/table';
 import { Component, OnInit } from '@angular/core';
@@ -195,21 +194,29 @@ export class LogisticsFabricComponent implements OnInit {
     }
   }
 
-  validated(product: BuyRequestedProduct, isedit: boolean) {
+  validated(product: BuyRequestedProduct, isedit: boolean, ind) {
     this.dialog.open(ValidatedDialogComponent, {
       data: {
         item: product,
         edit: isedit
       }
+    }).afterClosed().pipe(
+      take(1)
+    ).subscribe(() => {
+      this.panelOpenState[ind] = false
     })
   }
 
 
-  undoValidated(product: BuyRequestedProduct) {
+  undoValidated(product: BuyRequestedProduct,ind) {
     this.dialog.open(UndoDialogComponent, {
       data: {
         item: product
       }
+    }).afterClosed().pipe(
+      take(1)
+    ).subscribe(() => {
+      this.panelOpenState[ind] = false
     })
 
 
@@ -217,9 +224,10 @@ export class LogisticsFabricComponent implements OnInit {
 
 
   downloadXls(ind): void {
-    console.log(this.data_xls[ind]);
 
-    let data: {corr: number, products: BuyRequestedProduct[]} = this.data_xls[ind];
+
+    let data: { corr: number, products: BuyRequestedProduct[] } = this.data_xls[ind];
+    let corr = ("#F000" + data.corr).slice(-4)
     let table_xlsx: any[] = [];
 
     let headersXlsx: string[] = [
@@ -242,8 +250,8 @@ export class LogisticsFabricComponent implements OnInit {
       const temp = [
         el.productDescription,
         el.quantity,
-        "S/."+el.unitPrice.toFixed(2),
-        "S/."+(el.quantity*el.unitPrice).toFixed(2),
+        "S/." + el.unitPrice.toFixed(2),
+        "S/." + (el.quantity * el.unitPrice).toFixed(2),
         el.validated ? this.getXlsDate(el.validatedDate) : "---",
         el.validationData ? el.validationData.mermaStock : "---",
         el.validationData ? el.validationData.returned : "---",
@@ -260,11 +268,11 @@ export class LogisticsFabricComponent implements OnInit {
     const wb: XLSX.WorkBook = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(wb, ws, 'Solicitudes de Fábrica');
 
-    const name = `Solicitud.xlsx`
+    const name = `Solicitud ${corr}.xlsx`
     XLSX.writeFile(wb, name);
   }
 
-  getXlsDate(date){
+  getXlsDate(date) {
     let dateObj = new Date(1970);
     dateObj.setSeconds(date['seconds'])
     return this.datePipe.transform(dateObj, 'dd/MM/yyyy');

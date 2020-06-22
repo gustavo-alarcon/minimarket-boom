@@ -1,10 +1,15 @@
 <div style="max-width: 320px;">
     <div mat-dialog-title>
-        <h2 class="title-dialog">
-            Deshacer validación
-        </h2>
+        <div class="ms-flex">
+            <h2 class="title-login">
+                Deshacer
+            </h2>
+            <span class="ms-fill"></span>
+            <button mat-icon-button mat-dialog-close>
+                <mat-icon>close</mat-icon>
+            </button>
+        </div>
         <mat-divider></mat-divider>
-        <mat-progress-bar *ngIf="loading$ | async" mode="indeterminate"></mat-progress-bar>
     </div>
 
     <div mat-dialog-content>
@@ -12,9 +17,9 @@
         <p>Se borrará todos los cambios realizados anteriormente</p>
     </div>
 
-    <div class="contain">
-        <button mat-raised-button mat-dialog-close  >Cerrar</button>
-        <button class="w3-margin-left" mat-raised-button color='accent'
+    <div class="w3-block" mat-dialog-actions>
+        <div class="ms-fill"></div>
+        <button class="buttonNoRounded" mat-raised-button color='accent'
             [disabled]="loading$ | async" (click)="undoValidated(data.item)">Deshacer</button>
     </div>
 </div>

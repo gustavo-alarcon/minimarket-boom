@@ -8,8 +8,8 @@
     <div style="margin-top: 1em;">
 
       <nav mat-tab-nav-bar>
-        <a mat-tab-link *ngFor="let link of links" (click)="activeLink = link"
-          [active]="activeLink['name'] == link['name']" [routerLink]="link['route']"> {{link['name']}} </a>
+        <a mat-tab-link *ngFor="let link of links" [routerLink]="link['route']"
+        routerLinkActive #rla="routerLinkActive" [active]="rla.isActive"> {{link['name']}} </a>
       </nav>
       <mat-progress-bar mode="indeterminate" *ngIf="loading$ | async"></mat-progress-bar>
       <router-outlet></router-outlet>

@@ -23,7 +23,8 @@ export interface Buy {
 
   requestedDate: Date;      //When the request was submitted
   requestedBy: User;
-
+  returnedStatus?: string;
+  
   editedDate: Date;
   editedBy: User;
 }
