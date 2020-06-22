@@ -326,7 +326,7 @@ export class DatabaseService {
 
   getSalesUser(user:string): Observable<Sale[]>{
     return this.afs.collection<Sale>(`/db/distoProductos/sales`, 
-      ref => ref.where("userId", "==", user)).valueChanges()
+      ref => ref.where("user.id", "==", user)).valueChanges()
   }
 
   //Logistics

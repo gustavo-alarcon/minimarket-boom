@@ -1,23 +1,23 @@
 import { User } from 'src/app/core/models/user.model';
 import { Product } from './product.model';
 export class saleStatusOptions {
-  requested= 'Solicitado';
-  attended= 'Atendido';
-  confirmedRequest= 'Solicitud Confirmada';        //can be confirmed only when voucher is valid
-  confirmedDocument= 'Número de Comprobante Confirmado';
-  confirmedDelivery= 'Delivery Confirmado';
-  driverAssigned= 'Conductor Asignado';
-  finished= 'Entregado';
-  cancelled= 'Anulado'
+  requested = 'Solicitado';
+  attended = 'Atendido';
+  confirmedRequest = 'Solicitud Confirmada';        //can be confirmed only when voucher is valid
+  confirmedDocument = 'Número de Comprobante Confirmado';
+  confirmedDelivery = 'Delivery Confirmado';
+  driverAssigned = 'Conductor Asignado';
+  finished = 'Entregado';
+  cancelled = 'Anulado'
 
 }
 
-type FilterFlags<Base, Condition, Data> = 
-    Base extends Condition ? Data : never
-;
+type FilterFlags<Base, Condition, Data> =
+  Base extends Condition ? Data : never
+  ;
 
 export interface SaleRequestedProducts {
-  product: Product;       
+  product: Product;
   quantity: number;
 }
 
@@ -30,7 +30,7 @@ export interface Sale {
     image: string;
     name: string;
   },
-  document?:string,             //tipo de comprobante
+  document?: string,             //tipo de comprobante
   location: {
     address: string,
     district: any,
@@ -39,7 +39,7 @@ export interface Sale {
       lng: number,
     },
     reference: string,
-    phone:number
+    phone: number
   },
 
   status: saleStatusOptions[keyof saleStatusOptions]
@@ -50,13 +50,14 @@ export interface Sale {
   total: number;
 
   voucher: {
-    voucherPhoto:string,
-    voucherPath:string
+    voucherPhoto: string,
+    voucherPath: string
   }[]
 
-  userId:string;
+  userId?: string;
+  user: User;
   requestDate: Date,            //Fecha deseada por cliente
-  
+
   voucherChecked: boolean,      //done by admin. needed to confirmedDelivery
 
   attendedData?: {             //Can go only when Atendido or more
@@ -74,7 +75,7 @@ export interface Sale {
 
   confirmedDocumentData?: {    //This refers to when we give
     documentNumber: string,   //the n° comprobante
-    
+
     confirmedBy: User,
     confirmedAt: Date,
   }
