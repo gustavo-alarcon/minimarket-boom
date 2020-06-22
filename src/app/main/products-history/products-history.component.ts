@@ -13,10 +13,10 @@ import { Component, OnInit } from '@angular/core';
 })
 export class ProductsHistoryComponent implements OnInit {
 
-  dateForm: FormControl 
+  dateForm: FormControl
   init$: Observable<Sale[]>
 
-  chooseSale:Sale
+  chooseSale: Sale
 
   view = new BehaviorSubject<number>(1);
   view$ = this.view.asObservable();
@@ -37,9 +37,9 @@ export class ProductsHistoryComponent implements OnInit {
       begin: beginDate,
       end: endDate
     })
-    
+
     this.init$ = this.auth.user$.pipe(
-      switchMap(user=>{
+      switchMap(user => {
         return combineLatest(
           this.dbs.getSalesUser(user.uid),
           this.dateForm.valueChanges.pipe(
@@ -51,20 +51,26 @@ export class ProductsHistoryComponent implements OnInit {
             })
           )
         ).pipe(
-          map(([products, date])=>{
-            console.log(date);
-            
-            return products
+          map(([products, date]) => {
+            return products.filter(el => {
+              return this.getFilterTime(el['createdAt'], date)
+            })
           })
         )
       })
     )
   }
 
-  showList(item: Sale){
+  getFilterTime(el, time) {
+    let date = el.toMillis()
+    let begin = time.begin.getTime()
+    let end = time.end.getTime()
+    return date >= begin && date <= end
+  }
+  showList(item: Sale) {
     this.chooseSale = item
     this.view.next(2)
-    
+
   }
 
   back() {

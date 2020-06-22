@@ -39,12 +39,9 @@ export class ValidatedReturnDialogComponent implements OnInit {
   ngOnInit(): void {
 
     this.validatedFormGroup = this.fb.group({
-      inicial: this.data.item.returnedQuantity,
       mermaStock: 0,
       returned: 0
     })
-
-    this.validatedFormGroup.get('inicial').disable()
 
     this.retQuantity$ = this.validatedFormGroup.get('returned').valueChanges.pipe(
       map(ret => {
@@ -96,18 +93,24 @@ export class ValidatedReturnDialogComponent implements OnInit {
       this.auth.user$,
       this.dbs.getBuyRequestedProducts(this.data.item.buyId).pipe(
         map(products => {
-          let prodFilter = products.filter(el => el.returned).map(el => {  
-            let discount = this.validatedFormGroup.get('returned').value +  this.validatedFormGroup.get('mermaStock').value   
+
+          let prodv = products.map(el => {
             if (el.id == this.data.item.id) {
-              el.returnedValidated = this.data.item.validationData.returned == discount
-              el.returnedQuantity = el.returnedQuantity - discount
+              el.validated = this.validatedFormGroup.get('returned').value == 0
             }
-           
+            return el
+          })
+
+          let prodFilter = products.filter(el => el.returned).map(el => {
+            if (el.id == this.data.item.id) {
+              el.returnedValidated = this.validatedFormGroup.get('returned').value == 0
+            }
+
             return el
           })
           return {
-            validated: prodFilter.reduce((a, b) => a && b.returnedValidated, true),
-            returnedQuantity: prodFilter.reduce((a, b) => a + b.returnedQuantity, 0)
+            validated: prodv.reduce((a, b) => a && b.validated, true),
+            returnedValidated: prodFilter.reduce((a, b) => a && b.returnedValidated, true),
           }
         })
       )
@@ -115,25 +118,45 @@ export class ValidatedReturnDialogComponent implements OnInit {
       const ref = this.af.firestore.collection(`/db/distoProductos/productsList`).doc(this.data.item.id);
       this.af.firestore.runTransaction((transaction) => {
         return transaction.get(ref).then((prodDoc) => {
-          let newStock = prodDoc.data().realStock + this.validatedFormGroup.value['returned'];
+          let newStock = prodDoc.data().realStock + this.getStock();
           let newMerma = prodDoc.data().mermaStock + this.validatedFormGroup.value['mermaStock'];
-          let discount = this.validatedFormGroup.get('returned').value +  this.validatedFormGroup.get('mermaStock').value 
-
+          let discount = this.getStock() + this.validatedFormGroup.get('mermaStock').value
+          let records = []
           transaction.update(ref, {
             mermaStock: newMerma,
             realStock: newStock
           })
 
+          if (this.data.item.returnedDate) {
+            records = this.data.item.returnedDate
+            records.push({
+              date: new Date(),
+              quantity: discount
+            })
+          } else {
+            records.push({
+              date: new Date(),
+              quantity: discount
+            })
+          }
+
           transaction.update(requestProductRef, {
-            returnedQuantity: this.data.item.returnedQuantity - discount,
-            returnedValidated: this.data.item.returnedQuantity == discount,
-            returnedDate: this.data.item.returnedQuantity == discount ? new Date() : null
+            validated: this.validatedFormGroup.get('returned').value == 0,
+            validatedStatus: this.validatedFormGroup.get('returned').value == 0 ? 'validado' : 'pendiente',
+            validatedDate: this.validatedFormGroup.get('returned').value == 0 ? new Date() : null,
+            returnedQuantity: this.validatedFormGroup.get('returned').value,
+            returnedValidated: this.validatedFormGroup.get('returned').value == 0,
+            returnedDate: records
           })
 
           transaction.update(requestRef, {
-            returnedQuantity: res.returnedQuantity,
-            returnedValidated: res.validated,
-            returnedDate: res.validated ? new Date() : null
+            validated: res.validated,
+            validatedDate: res.validated ? new Date() : null,
+            editedDate: res.validated ? new Date() : null,
+            editedBy: res.validated ? user : null,
+            returnedValidated: res.returnedValidated,
+            returnedDate: res.returnedValidated ? new Date() : null,
+            status: res.validated ? 'validado' : 'pendiente'
           })
 
         });

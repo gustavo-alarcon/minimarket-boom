@@ -20,13 +20,15 @@ import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { LoginDialogComponent } from './login-dialog/login-dialog.component';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatInputModule } from '@angular/material/input';
+import { PasswordMessageComponent } from './login-dialog/password-message/password-message.component';
 
 
 @NgModule({
   declarations: [
     MainComponent,
     ConfirmationDialogComponent,
-    LoginDialogComponent
+    LoginDialogComponent,
+    PasswordMessageComponent
   ],
   imports: [
     CommonModule,

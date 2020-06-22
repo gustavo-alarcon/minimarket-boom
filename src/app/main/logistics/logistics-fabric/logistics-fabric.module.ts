@@ -22,13 +22,15 @@ import { ValidatedDialogComponent } from './validated-dialog/validated-dialog.co
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { NgxPaginationModule } from 'ngx-pagination';
 import { DatePPipe } from './date-p.pipe';
+import { UndoDialogComponent } from './undo-dialog/undo-dialog.component';
 
 @NgModule({
   declarations: [
     LogisticsFabricComponent,
     RequestCreateEditComponent,
     ValidatedDialogComponent,
-    DatePPipe
+    DatePPipe,
+    UndoDialogComponent
   ],
   imports: [
     CommonModule,
@@ -53,7 +55,8 @@ import { DatePPipe } from './date-p.pipe';
   ],
   entryComponents: [
     RequestCreateEditComponent,
-    ValidatedDialogComponent
+    ValidatedDialogComponent,
+    UndoDialogComponent
   ],
   providers: [
     { provide: MAT_DATE_LOCALESAT, useValue: 'en-GB' }
