@@ -45,7 +45,7 @@ export class ValidatedDialogComponent implements OnInit {
         observations: this.data.item.validationData.observations
       })
 
-      if (this.data.item.returned) {
+      if (this.data.item.returnedStatus == 'pendiente') {
         if (this.data.item.returnedValidated) {
           this.validatedFormGroup.disable()
         }
@@ -97,14 +97,16 @@ export class ValidatedDialogComponent implements OnInit {
   }
 
   edit() {
+
     const merStatic = this.data.item.validationData.mermaStock
     const returnStatic = this.data.item.validationData.returned
 
     let mermChange = this.validatedFormGroup.get('mermaStock').value
     let returnChange = this.validatedFormGroup.get('returned').value
+    let observ = this.validatedFormGroup.get('observations').value
 
     const stockStatic = this.data.item.quantity - (merStatic + returnStatic)
-    if (merStatic != mermChange || returnStatic != returnChange) {
+    if (merStatic != mermChange || returnStatic != returnChange || observ) {
       let newMerm = mermChange - merStatic
       let newReturn = returnChange - returnStatic
       let newStock = this.getStock() - stockStatic
@@ -130,16 +132,21 @@ export class ValidatedDialogComponent implements OnInit {
         let prodFilter = products.map(el => {
           let count = 0
           if (el.id == this.data.item.id) {
+            el.validated = this.validatedFormGroup.value['returned'] == 0
             count = this.validatedFormGroup.get('returned').value
           } else {
             if (el.validationData) {
               count = el.validationData.returned
             }
           }
-          return count
+          return {
+            ...el,
+            count: count
+          }
         })
         return {
-          returnedQuantity: prodFilter.reduce((a, b) => a + b, 0)
+          validated: prodFilter.reduce((a, b) => a && b.validated, true),
+          returnedQuantity: prodFilter.reduce((a, b) => a + b.count, 0)
         }
       }),
       take(1)
@@ -161,7 +168,13 @@ export class ValidatedDialogComponent implements OnInit {
           })
 
           transaction.update(requestRef, {
-            returnedQuantity: res
+            returned: res.returnedQuantity > 0,
+            returnedQuantity: res.returnedQuantity,
+            returnedValidated: false,
+            validated: res.validated,
+            validatedDate: res.validated ? new Date() : null,
+            editedDate: res.validated ? new Date() : null,
+            status: res.validated ? 'validado' : 'pendiente'
           })
 
         });
@@ -193,7 +206,7 @@ export class ValidatedDialogComponent implements OnInit {
           let prodFilter = products.map(el => {
             let count = 0
             if (el.id == this.data.item.id) {
-              el.validated = true
+              el.validated = this.validatedFormGroup.value['returned'] == 0
               count = this.validatedFormGroup.get('returned').value
             }
 
@@ -240,6 +253,7 @@ export class ValidatedDialogComponent implements OnInit {
               validatedDate: res.validated ? new Date() : null,
               editedDate: res.validated ? new Date() : null,
               editedBy: res.validated ? user : null,
+              status: res.validated ? 'validado' : 'pendiente'
             })
           } else {
             transaction.update(requestProductRef, {
@@ -255,7 +269,7 @@ export class ValidatedDialogComponent implements OnInit {
               returned: res.returnedQuantity > 0,
               returnedQuantity: res.returnedQuantity,
               returnedValidated: false,
-              status:'pendiente',
+              status: 'pendiente',
               editedDate: res.validated ? new Date() : null,
               editedBy: res.validated ? user : null,
             })

@@ -1,3 +1,4 @@
+import { UndoDialogComponent } from './undo-dialog/undo-dialog.component';
 import { DatePipe } from '@angular/common';
 import { AngularFirestore } from '@angular/fire/firestore';
 import { BuyRequestedProduct } from './../../../core/models/buy.model';
@@ -57,7 +58,6 @@ export class LogisticsFabricComponent implements OnInit {
   constructor(
     private dialog: MatDialog,
     private snackBar: MatSnackBar,
-    private af: AngularFirestore,
     private dbs: DatabaseService,
     public datePipe: DatePipe
   ) { }
@@ -100,20 +100,25 @@ export class LogisticsFabricComponent implements OnInit {
       }),
       switchMap((res) => {
         return this.dbs.getBuyRequests(res).pipe(
-          map((buy, i) => {
-            return buy.map(el => {
+          map(buy => {
+            return buy.map((el, i) => {
               return {
                 ...el,
                 products: this.dbs.getBuyRequestedProducts(el.id).pipe(
-                  tap(res=> {
-                    this.data_xls.push({
+                  tap(res => {
+                    this.data_xls[i] = {
                       corr: el.correlative,
                       products: res
-                    })
+                    }
                   })
                 ),
                 onevalidated$: this.dbs.getBuyRequestedProducts(el.id).pipe(
-                  map(prod => prod.reduce((a, b) => a || b.validated, false))
+                  map(prod => {
+                    return {
+                      load: true,
+                      edit: prod.reduce((a, b) => a || (b.validatedStatus == 'pendiente' || b.validatedStatus == 'validado'), false)
+                    }
+                  })
                 )
               }
             })
@@ -209,86 +214,13 @@ export class LogisticsFabricComponent implements OnInit {
   }
 
 
-  isloading(buyind, ind) {
-    let cod = 'F' + buyind + ind
-    return cod == this.loadingUndo
-  }
+  undoValidated(product: BuyRequestedProduct) {
+    this.dialog.open(UndoDialogComponent, {
+      data: {
+        item: product
+      }
+    })
 
-  undoValidated(product: BuyRequestedProduct, buyind, ind) {
-    this.loadingUndo = 'F' + buyind + ind
-    const requestRef = this.af.firestore.collection(`/db/distoProductos/buys`).doc(product.buyId);
-    const requestProductRef = this.af.firestore.collection(`/db/distoProductos/buys/${product.buyId}/buyRequestedProducts`).doc(product.id);
-    const productRef = this.af.firestore.collection(`/db/distoProductos/productsList`).doc(product.id);
-    let quantity = product.quantity - (product.validationData.mermaStock + product.validationData.returned)
-
-    let returnAll$ = this.dbs.getBuyRequestedProducts(product.buyId).pipe(
-      map(products => {
-        let prodFilter = products.map(el => {
-          let count = 0
-          if (el.id == product.id) {
-            el.returned = false
-          }
-          if (el.validationData && el.id != product.id) {
-            count = el.validationData.returned
-          }
-          return {
-            ...el,
-            returnedQuantity: count
-          }
-        })
-        return {
-          returned: prodFilter.reduce((a, b) => a || b.returned, false),
-          returnedQuantity: prodFilter.reduce((a, b) => a + b.returnedQuantity, 0)
-        }
-      }),
-      take(1)
-    )
-
-    if (product.validatedStatus == 'pendiente') {
-      returnAll$.subscribe(res => {
-        this.af.firestore.runTransaction((transaction) => {
-          return transaction.get(productRef).then((prodDoc) => {
-            let newStock = prodDoc.data().realStock - quantity;
-            let newMerma = prodDoc.data().mermaStock - product.validationData.mermaStock;
-
-            transaction.update(productRef, {
-              realStock: newStock,
-              mermaStock: newMerma
-            });
-
-            transaction.update(requestRef, {
-              validated: false,
-              validatedDate: null,
-              returned: res.returned,
-              returnedQuantity: res.returnedQuantity
-            })
-
-            transaction.update(requestProductRef, {
-              validationStatus: 'por validar',
-              validationData: null,
-              returned: false,
-              returnedStatus: 'por validar'
-            })
-
-          });
-        }).then(() => {
-          this.loadingUndo = 'F'
-          this.snackBar.open(
-            'Cambios guardados',
-            'Cerrar',
-            { duration: 6000, }
-          );
-
-        }).catch(function (error) {
-          console.log("Transaction failed: ", error);
-          this.snackBar.open(
-            'Ocurrió un problema',
-            'Cerrar',
-            { duration: 6000, }
-          );
-        });
-      })
-    }
 
   }
 

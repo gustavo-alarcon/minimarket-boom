@@ -88,6 +88,7 @@ export class LogisticsReturnsComponent implements OnInit {
       switchMap((res) => {
         return this.dbs.getBuyRequests(res).pipe(
           map((buy, i) => {
+           
             return buy.filter(el => el.returned).map(el => {
               return {
                 ...el,

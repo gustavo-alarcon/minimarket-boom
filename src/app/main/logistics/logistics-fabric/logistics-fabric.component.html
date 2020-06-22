@@ -51,10 +51,16 @@
             <mat-icon *ngIf="panelOpenState[ind]">keyboard_arrow_up</mat-icon>
             <mat-icon *ngIf="!panelOpenState[ind]">keyboard_arrow_down</mat-icon>
           </span>
-          <button mat-icon-button (click)="onCreateEditRequest(true, buy)"
-            [ngStyle]="{'visibility': (buy['onevalidated$'] | async)?'hidden':'visible'}">
-            <mat-icon>edit</mat-icon>
-          </button>
+          <div *ngIf="buy['onevalidated$'] | async as isedit; else spinload">
+            <button mat-icon-button (click)="onCreateEditRequest(true, buy)"
+              [ngStyle]="{'visibility': isedit['edit']?'hidden':'visible'}">
+              <mat-icon>edit</mat-icon>
+            </button>
+          </div>
+          <ng-template #spinload>
+            <div class="lds-dual-ring"></div>
+          </ng-template>
+
         </div>
       </div>
 
@@ -116,14 +122,11 @@
               style="justify-content: center;">
 
               <button (click)="validated(element,true)" mat-raised-button color="primary" style="margin-right: 8px;"
-                class="buttonNoRounded" [disabled]="isloading(ind,i)">Correcto</button>
+                class="buttonNoRounded">Correcto</button>
 
-              <button *ngIf="!isloading(ind,i)" (click)="undoValidated(element,ind,i)" mat-icon-button
-                matTooltip="Deshacer">
+              <button (click)="undoValidated(element)" mat-icon-button matTooltip="Deshacer">
                 <mat-icon>undo</mat-icon>
               </button>
-
-              <div *ngIf="isloading(ind,i)" class="lds-dual-ring"></div>
 
             </div>
 
@@ -131,15 +134,11 @@
               style="justify-content: center;">
 
               <button (click)="validated(element,true)" mat-raised-button color="accent" style="margin-right: 8px;"
-                class="buttonNoRounded" [disabled]="isloading(ind,i)">Pendiente</button>
+                class="buttonNoRounded">Pendiente</button>
 
-              <button *ngIf="!isloading(ind,i)" (click)="undoValidated(element,ind,i)" mat-icon-button
-                matTooltip="Deshacer">
+              <button (click)="undoValidated(element)" mat-icon-button matTooltip="Deshacer">
                 <mat-icon>undo</mat-icon>
               </button>
-
-              <div *ngIf="isloading(ind,i)" class="lds-dual-ring"></div>
-
             </div>
           </td>
         </ng-container>
