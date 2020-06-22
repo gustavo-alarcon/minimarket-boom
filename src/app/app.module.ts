@@ -1,3 +1,4 @@
+import { AuthService } from './core/services/auth.service';
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
@@ -23,6 +24,8 @@ import { MatButtonModule } from '@angular/material/button';
 import { MAT_DATE_LOCALE as MAT_DATE_LOCALESAT } from 'saturn-datepicker';
 import { MAT_DATE_LOCALE } from '@angular/material/core';
 
+import { DatePipe } from '@angular/common';
+
 @NgModule({
   declarations: [
     AppComponent,
@@ -41,6 +44,8 @@ import { MAT_DATE_LOCALE } from '@angular/material/core';
     MatButtonModule
   ],
   providers: [
+    AuthService,
+    DatePipe,
     { provide: MAT_SNACK_BAR_DEFAULT_OPTIONS, useValue: { duration: 5000 } },
     { provide: MAT_DATE_LOCALE, useValue: 'en-GB'},
     { provide: MAT_DATE_LOCALESAT, useValue: 'en-GB'}

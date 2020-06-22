@@ -1,3 +1,4 @@
+import { DatePipe } from '@angular/common';
 import { AngularFirestore } from '@angular/fire/firestore';
 import { BuyRequestedProduct } from './../../../core/models/buy.model';
 import { MatTableDataSource } from '@angular/material/table';
@@ -9,8 +10,9 @@ import { RequestCreateEditComponent } from './request-create-edit/request-create
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { DatabaseService } from 'src/app/core/services/database.service';
 import { Observable, combineLatest, forkJoin, BehaviorSubject } from 'rxjs';
-import { switchMap, startWith, map, tap, concatMap, concatAll, take } from 'rxjs/operators';
+import { switchMap, startWith, map, tap, concatMap, concatAll, take, filter } from 'rxjs/operators';
 import { ValidatedDialogComponent } from './validated-dialog/validated-dialog.component';
+import * as XLSX from 'xlsx';
 
 @Component({
   selector: 'app-logistics-fabric',
@@ -25,8 +27,6 @@ export class LogisticsFabricComponent implements OnInit {
   loading$ = this.loading.asObservable();
 
   loadingUndo: string = 'F'
-
-
   statusOptions = [
     "Todos", 'Pendiente', 'Validado'
   ]
@@ -42,11 +42,24 @@ export class LogisticsFabricComponent implements OnInit {
 
   p: number = 1;
 
+  data_xls: any = []
+  headersXlsx: string[] = [
+    'Producto',
+    'Cantidad',
+    'Fecha',
+    'Precio U.C.',
+    'Precio T.',
+    'Merma',
+    'Lista de ventas',
+    'Usuario'
+  ]
+
   constructor(
     private dialog: MatDialog,
     private snackBar: MatSnackBar,
     private af: AngularFirestore,
-    private dbs: DatabaseService
+    private dbs: DatabaseService,
+    public datePipe: DatePipe
   ) { }
 
   ngOnInit(): void {
@@ -91,7 +104,14 @@ export class LogisticsFabricComponent implements OnInit {
             return buy.map(el => {
               return {
                 ...el,
-                products: this.dbs.getBuyRequestedProducts(el.id),
+                products: this.dbs.getBuyRequestedProducts(el.id).pipe(
+                  tap(res=> {
+                    this.data_xls.push({
+                      corr: el.correlative,
+                      products: res
+                    })
+                  })
+                ),
                 onevalidated$: this.dbs.getBuyRequestedProducts(el.id).pipe(
                   map(prod => prod.reduce((a, b) => a || b.validated, false))
                 )
@@ -113,10 +133,7 @@ export class LogisticsFabricComponent implements OnInit {
               return !search ? buyReq :
                 buyReq.correlative.toString().padStart(6).includes(String(search))
             case 'Pendiente':
-              return !search ? buyReq.validated == false : (
-                buyReq.correlative.toString().padStart(6).includes(String(search)) &&
-                buyReq.validated == false
-              )
+              return !search ? buyReq.status == 'pendiente' : true
             case 'Validado':
               return !search ? buyReq.validated == true : (
                 buyReq.correlative.toString().padStart(6).includes(String(search)) &&
@@ -227,53 +244,84 @@ export class LogisticsFabricComponent implements OnInit {
       take(1)
     )
 
-    returnAll$.subscribe(res => {
-      this.af.firestore.runTransaction((transaction) => {
-        return transaction.get(productRef).then((prodDoc) => {
-          let newStock = prodDoc.data().realStock - quantity;
-          let newMerma = prodDoc.data().mermaStock - product.validationData.mermaStock;
+    if (product.validatedStatus == 'pendiente') {
+      returnAll$.subscribe(res => {
+        this.af.firestore.runTransaction((transaction) => {
+          return transaction.get(productRef).then((prodDoc) => {
+            let newStock = prodDoc.data().realStock - quantity;
+            let newMerma = prodDoc.data().mermaStock - product.validationData.mermaStock;
 
-          transaction.update(productRef, {
-            realStock: newStock,
-            mermaStock: newMerma
+            transaction.update(productRef, {
+              realStock: newStock,
+              mermaStock: newMerma
+            });
+
+            transaction.update(requestRef, {
+              validated: false,
+              validatedDate: null,
+              returned: res.returned,
+              returnedQuantity: res.returnedQuantity
+            })
+
+            transaction.update(requestProductRef, {
+              validationStatus: 'por validar',
+              validationData: null,
+              returned: false,
+              returnedStatus: 'por validar'
+            })
+
           });
+        }).then(() => {
+          this.loadingUndo = 'F'
+          this.snackBar.open(
+            'Cambios guardados',
+            'Cerrar',
+            { duration: 6000, }
+          );
 
-          transaction.update(requestRef, {
-            validated: false,
-            validatedDate: null,
-            returned: res.returned,
-            returnedQuantity: res.returnedQuantity
-          })
-
-          transaction.update(requestProductRef, {
-            validated: false,
-            validatedBy: null,
-            validatedDate: null,
-            validationData: null,
-            returned: false
-          })
-
-
-
+        }).catch(function (error) {
+          console.log("Transaction failed: ", error);
+          this.snackBar.open(
+            'Ocurrió un problema',
+            'Cerrar',
+            { duration: 6000, }
+          );
         });
-      }).then(() => {
-        this.loadingUndo = 'F'
-        this.snackBar.open(
-          'Cambios guardados',
-          'Cerrar',
-          { duration: 6000, }
-        );
+      })
+    }
 
-      }).catch(function (error) {
-        console.log("Transaction failed: ", error);
-        this.snackBar.open(
-          'Ocurrió un problema',
-          'Cerrar',
-          { duration: 6000, }
-        );
-      });
+  }
+
+
+  downloadXls(ind): void {
+    console.log(this.data_xls[ind]);
+
+    /*
+    let table_xlsx: any[] = [];
+
+    table_xlsx.push(this.headersXlsx);
+
+    this.data_xls[ind].forEach(element => {
+      const temp = [
+        this.datePipe.transform(element['createdAt'].toMillis(), 'dd/MM/yyyy'),
+        this.datePipe.transform(element['createdAt'].toMillis(), 'hh:mm'),
+        element['documentType'],
+        element['documentSerial'] + '-' + element['documentCorrelative'],
+        element['customerId'] ? element['customerName'] : 'Sin nombre',
+        element['total'],
+        element['orderList'].map(el => el['name']).join('-'),
+        element['createdBy']['displayName']
+      ];
+      table_xlsx.push(temp);
     })
 
+    const ws: XLSX.WorkSheet = XLSX.utils.aoa_to_sheet(table_xlsx);
+
+    const wb: XLSX.WorkBook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, 'Solicitudes de Fábrica');
+
+    const name = 'Solicitud.xlsx'
+    XLSX.writeFile(wb, name);*/
   }
 
 }

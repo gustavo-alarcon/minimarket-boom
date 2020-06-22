@@ -17,6 +17,7 @@ export interface Buy {
 
   returned?: boolean;
   returnedQuantity?: number;
+  status?:string;
   returnedDate?: Date;
   returnedValidated?: boolean;
 
@@ -47,11 +48,13 @@ export interface BuyRequestedProduct {               //How many products should 
   }
   validatedBy: string;
   validatedDate: Date;
+  validatedStatus: string;
 
   returned?: boolean;
-  returnedDate?: Date;
+  returnedDate?: any[];
   returnedQuantity?: number;
   returnedValidated?: boolean;
+  returnedStatus?: string;
 
   requestedDate: Date;      //When the request was submitted
   requestedBy: User

@@ -9,6 +9,7 @@ import { FormControl } from '@angular/forms';
 import { Buy, BuyRequestedProduct } from 'src/app/core/models/buy.model';
 import { Observable, BehaviorSubject, combineLatest } from 'rxjs';
 import { Component, OnInit } from '@angular/core';
+import * as XLSX from 'xlsx';
 
 @Component({
   selector: 'app-logistics-returns',

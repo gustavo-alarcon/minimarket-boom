@@ -1,4 +1,4 @@
-import { switchMap, map } from 'rxjs/operators';
+import { switchMap, map, startWith } from 'rxjs/operators';
 import { Observable, combineLatest, BehaviorSubject } from 'rxjs';
 import { Sale } from './../../core/models/sale.model';
 import { DatabaseService } from 'src/app/core/services/database.service';
@@ -13,8 +13,7 @@ import { Component, OnInit } from '@angular/core';
 })
 export class ProductsHistoryComponent implements OnInit {
 
-  dateForm: FormControl = new FormControl('')
-
+  dateForm: FormControl 
   init$: Observable<Sale[]>
 
   chooseSale:Sale
@@ -28,9 +27,36 @@ export class ProductsHistoryComponent implements OnInit {
   ) { }
 
   ngOnInit(): void {
+    const view = this.dbs.getCurrentMonthOfViewDate();
+
+    let beginDate = view.from;
+    let endDate = new Date();
+    endDate.setHours(23, 59, 59);
+
+    this.dateForm = new FormControl({
+      begin: beginDate,
+      end: endDate
+    })
+    
     this.init$ = this.auth.user$.pipe(
       switchMap(user=>{
-        return this.dbs.getSalesUser(user.uid)
+        return combineLatest(
+          this.dbs.getSalesUser(user.uid),
+          this.dateForm.valueChanges.pipe(
+            startWith<{ begin: Date, end: Date }>({ begin: beginDate, end: endDate }),
+            map(({ begin, end }) => {
+              begin.setHours(0, 0, 0, 0);
+              end.setHours(23, 59, 59);
+              return { begin, end }
+            })
+          )
+        ).pipe(
+          map(([products, date])=>{
+            console.log(date);
+            
+            return products
+          })
+        )
       })
     )
   }

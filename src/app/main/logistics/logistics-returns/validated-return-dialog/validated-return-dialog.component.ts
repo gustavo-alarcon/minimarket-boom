@@ -106,7 +106,7 @@ export class ValidatedReturnDialogComponent implements OnInit {
             return el
           })
           return {
-            validated: prodFilter.reduce((a, b) => a && b.validated, true),
+            validated: prodFilter.reduce((a, b) => a && b.returnedValidated, true),
             returnedQuantity: prodFilter.reduce((a, b) => a + b.returnedQuantity, 0)
           }
         })
@@ -115,11 +115,13 @@ export class ValidatedReturnDialogComponent implements OnInit {
       const ref = this.af.firestore.collection(`/db/distoProductos/productsList`).doc(this.data.item.id);
       this.af.firestore.runTransaction((transaction) => {
         return transaction.get(ref).then((prodDoc) => {
+          let newStock = prodDoc.data().realStock + this.validatedFormGroup.value['returned'];
           let newMerma = prodDoc.data().mermaStock + this.validatedFormGroup.value['mermaStock'];
           let discount = this.validatedFormGroup.get('returned').value +  this.validatedFormGroup.get('mermaStock').value 
 
           transaction.update(ref, {
-            mermaStock: newMerma
+            mermaStock: newMerma,
+            realStock: newStock
           })
 
           transaction.update(requestProductRef, {
