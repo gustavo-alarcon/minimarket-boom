@@ -63,13 +63,12 @@
                         ({{item.get('product').value['unit']['abbreviation']}})
                     </td>
                     <!-- Description -->
-                    <td class="table-sale__td table-sale__td--space">
+                    <td class="table-sale__td table-sale__td--space" style="overflow: auto;">
 
                         <!-- Normal -->
                         <span *ngIf="!item.get('product').value.promo">
-                            {{item.get('product').value.description}}
+                            {{item.get('product').value.description}} 
                         </span>
-
                         <!-- We have promo-->
                         <div *ngIf="item.get('product').value.promo" class="table-sale__colum">
                             <p>

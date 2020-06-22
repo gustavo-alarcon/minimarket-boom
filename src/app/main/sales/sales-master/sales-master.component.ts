@@ -16,6 +16,7 @@ import { DatePipe } from '@angular/common';
 })
 export class SalesMasterComponent implements OnInit {
   @Input() detailSubject: BehaviorSubject<Sale>
+  @Input() totalPriceSubject: BehaviorSubject<number>;
 
   defaultImage = '../../../../assets/images/no-image.png'
 
@@ -74,8 +75,14 @@ export class SalesMasterComponent implements OnInit {
           console.log(sales);
           let order = sales.sort((a, b) => Number(b.correlative) - Number(a.correlative))
           if(saleState == 'Todos'){
-            return sales
+            if(this.totalPriceSubject){
+              this.totalPriceSubject.next(this.giveTotalSalesPrice(order))
+            }
+            return order
           } else {
+            if(this.totalPriceSubject){
+              this.totalPriceSubject.next(this.giveTotalSalesPrice(order.filter(el => el.status == saleState)))
+            }
             return order.filter(el => el.status == saleState);
           }
         }),
@@ -163,7 +170,7 @@ export class SalesMasterComponent implements OnInit {
         "S/."+this.giveTotalPrice(sale).toFixed(2),
         "S/."+sale.deliveryPrice.toFixed(2),
         (this.giveTotalPrice(sale)+sale.deliveryPrice).toFixed(2),
-        sale.payType,
+        typeof sale.payType == 'string' ? sale.payType : sale.payType.name+` (${sale.payType.account})`,
         sale.createdAt ? this.getXlsDate(sale.createdAt) : "---",
         sale.requestDate ? this.getXlsDate(sale.requestDate) : "---",
         sale.attendedData ? this.getXlsDate(sale.attendedData.attendedAt) : "---",
@@ -218,7 +225,6 @@ export class SalesMasterComponent implements OnInit {
   getXlsDate(date){
     let dateObj = new Date(1970);
     dateObj.setSeconds(date['seconds'])
-    console.log(date);
     return this.datePipe.transform(dateObj, 'dd/MM/yyyy');
   }
 
@@ -242,6 +248,9 @@ export class SalesMasterComponent implements OnInit {
   }
   giveTotalPrice(sale: Sale): number{
     return sale.requestedProducts.reduce((a,b) => a + this.givePrice(b), 0)
+  }
+  giveTotalSalesPrice(sales: Sale[]): number {
+    return sales.reduce((a,b)=> a + this.giveTotalPrice(b), 0)
   }
 }
 

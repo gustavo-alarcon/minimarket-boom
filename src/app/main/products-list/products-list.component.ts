@@ -32,8 +32,8 @@ export class ProductsListComponent implements OnInit {
   productsTableDataSource = new MatTableDataSource<Product>();
   productsDisplayedColumns: string[] = [
     'index', 'photoURL', 'description', 'sku', 'category', 'price', 
-    'unitDescription', 'unitAbbreviation', 'unitWeight', 'realStock', 'sellMinimum', 'alertMinimum', 
-    'mermaStock', 'virtualStock', 'published', 'actions'
+    'unitDescription', 'unitAbbreviation', 'unitWeight', 'sellMinimum', 'alertMinimum', 
+    'realStock', 'mermaStock', 'virtualStock', 'published', 'actions'
   ]
 
   productsObservable$: Observable<Product[]>

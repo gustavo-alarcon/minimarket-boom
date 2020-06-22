@@ -1,7 +1,7 @@
 <div class="w3-section w3-margin-left w3-margin-right animated fadeInUp delay-2
     componente-container">
   <div style="padding: 0 3vw;">
-    <div style="display: flex; flex-direction: row; justify-content: space-between; align-items: flex-end;">
+    <div style="display: flex; flex-direction: row; justify-content: space-between; align-items: flex-end; flex-wrap: wrap;">
       <h2 class="title">
         <div class="containerMobile">
           <button style="vertical-align: text-bottom;"
@@ -17,7 +17,7 @@
         <div>
           <button color="accent" mat-raised-button><b>Tendencias</b></button>
         </div>
-        <div color="primary" class="totalPrice">S/. 2450.00</div>
+        <div color="primary" class="totalPrice">{{totalPriceSubj | async | currency:"S/."}}</div>
       </div>
     </div>
     <mat-divider></mat-divider>
@@ -26,6 +26,7 @@
       <div class="containerDesktop">
         <app-sales-master
           style="width: 700px;"
+          [totalPriceSubject]="totalPriceSubj"
           [detailSubject]="detailSubject">
         </app-sales-master>
 
@@ -51,6 +52,7 @@
       <div class="containerMobile">
         <ng-template #master>
           <app-sales-master style="width:100%" 
+          [totalPriceSubject]="totalPriceSubj"
             [detailSubject]="detailSubject">
           </app-sales-master>
         </ng-template>
