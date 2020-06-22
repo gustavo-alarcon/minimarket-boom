@@ -82,7 +82,79 @@ export class ValidatedReturnDialogComponent implements OnInit {
   }
 
 
+  deleteDate(item, ind) {
+    let newDate = [...this.data.item.returnedDate].splice(ind, 1)
+    this.returnStock(item, newDate)
+
+
+  }
+
+  returnStock(item, array) {
+    console.log(array);
+    
+    this.loading.next(true)
+    this.validatedFormGroup.markAsPending();
+    this.validatedFormGroup.disable()
+    const requestRef = this.af.firestore.collection(`/db/distoProductos/buys`).doc(this.data.item.buyId);
+    const requestProductRef = this.af.firestore.collection(`/db/distoProductos/buys/${this.data.item.buyId}/buyRequestedProducts`).doc(this.data.item.id);
+
+    const ref = this.af.firestore.collection(`/db/distoProductos/productsList`).doc(this.data.item.id);
+    this.af.firestore.runTransaction((transaction) => {
+      return transaction.get(ref).then((prodDoc) => {
+        let newStock = prodDoc.data().realStock - item.quantity
+        let newMerma = prodDoc.data().mermaStock - item.merma
+
+        transaction.update(ref, {
+          mermaStock: newMerma,
+          realStock: newStock
+        })
+
+        transaction.update(requestProductRef, {
+          validated: false,
+          validatedStatus: 'pendiente',
+          validatedDate: null,
+          returnedQuantity: this.data.item.returnedQuantity + item.quantity + item.merma,
+          returnedValidated: false,
+          returnedDate: array
+        })
+
+        transaction.update(requestRef, {
+          validated: false,
+          validatedDate: null,
+          editedDate: null,
+          editedBy: null,
+          returnedValidated: false,
+          returnedDate: null,
+          status: 'pendiente',
+          returnedStatus: 'pendiente'
+        })
+
+      });
+    }).then(() => {
+      this.loading.next(false)
+      this.dialogRef.close()
+      this.snackBar.open(
+        'Producto validado',
+        'Cerrar',
+        { duration: 6000, }
+      );
+
+    }).catch(error => {
+      this.snackBar.open(
+        'Ocurrió un error. Por favor, vuelva a intentarlo.',
+        'Cerrar',
+        { duration: 6000, }
+      );
+    })
+  }
   save() {
+    if (this.getStock() != 0 || this.validatedFormGroup.get('mermaStock').value != 0) {
+      this.saveAll()
+    }
+  }
+
+
+  saveAll() {
     this.loading.next(true)
     this.validatedFormGroup.markAsPending();
     this.validatedFormGroup.disable()
@@ -131,12 +203,14 @@ export class ValidatedReturnDialogComponent implements OnInit {
             records = this.data.item.returnedDate
             records.push({
               date: new Date(),
-              quantity: discount
+              merma: this.validatedFormGroup.get('mermaStock').value,
+              quantity: this.getStock()
             })
           } else {
             records.push({
               date: new Date(),
-              quantity: discount
+              merma: this.validatedFormGroup.get('mermaStock').value,
+              quantity: this.getStock()
             })
           }
 
@@ -156,7 +230,8 @@ export class ValidatedReturnDialogComponent implements OnInit {
             editedBy: res.validated ? user : null,
             returnedValidated: res.returnedValidated,
             returnedDate: res.returnedValidated ? new Date() : null,
-            status: res.validated ? 'validado' : 'pendiente'
+            status: res.validated ? 'validado' : 'pendiente',
+            returnedStatus: res.returnedValidated ? 'validado' : 'pendiente'
           })
 
         });

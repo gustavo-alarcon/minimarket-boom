@@ -55,18 +55,29 @@
         </div>
 
         <div *ngIf="data.item.returnedDate">
-            <p>Historial</p>
+            <div *ngIf="data.item.returnedDate.length">
+                <mat-divider></mat-divider>
 
-            <div *ngFor="let date of data.item.returnedDate" class="ms-flex ms-flex--center"
-                style="justify-content: space-between;">
-                <div>{{date.date.toMillis() | dateP}}</div>
-                <div>
-                    {{date.quantity}}{{getUnit(data.item.unit,false)}}
+                <div class="ms-flex ms-flex--center" style="justify-content: space-between;font-weight: bold;">
+                    <div style="width: 20%;">Fecha</div>
+                    <div style="width: 10%;"> Merma </div>
+                    <div style="width: 20%;"> Almacén</div>
+                    <div style="width: 5%;"></div>
                 </div>
-                <div>
-                    <button mat-icon-button>
-                        <mat-icon>delete</mat-icon>
-                    </button>
+                <div *ngFor="let date of data.item.returnedDate;let ind = index" class="ms-flex ms-flex--center"
+                    style="justify-content: space-between;">
+                    <div>{{date.date.toMillis() | dateP}}</div>
+                    <div>
+                        {{date.merma}}{{getUnit(data.item.unit,false)}}
+                    </div>
+                    <div>
+                        {{date.quantity}}{{getUnit(data.item.unit,false)}}
+                    </div>
+                    <div>
+                        <button mat-icon-button (click)="deleteDate(date, ind)">
+                            <mat-icon>delete</mat-icon>
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>

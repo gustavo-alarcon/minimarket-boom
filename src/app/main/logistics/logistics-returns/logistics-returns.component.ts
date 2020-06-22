@@ -1,3 +1,4 @@
+import { DatePipe } from '@angular/common';
 import { ValidatedReturnDialogComponent } from './validated-return-dialog/validated-return-dialog.component';
 import { startWith, map, switchMap, tap, take } from 'rxjs/operators';
 import { DatabaseService } from 'src/app/core/services/database.service';
@@ -42,11 +43,12 @@ export class LogisticsReturnsComponent implements OnInit {
 
   p: number = 1;
 
+  data_xls: any = []
+
   constructor(
     private dialog: MatDialog,
-    private snackBar: MatSnackBar,
-    private af: AngularFirestore,
-    private dbs: DatabaseService
+    private dbs: DatabaseService,
+    public datePipe: DatePipe
   ) { }
 
   ngOnInit(): void {
@@ -87,13 +89,19 @@ export class LogisticsReturnsComponent implements OnInit {
       }),
       switchMap((res) => {
         return this.dbs.getBuyRequests(res).pipe(
-          map((buy, i) => {
-           
-            return buy.filter(el => el.returned).map(el => {
+          map(buy => {
+
+            return buy.filter(el => el.returned).map((el, i) => {
               return {
                 ...el,
                 products: this.dbs.getBuyRequestedProducts(el.id).pipe(
-                  map(prod => prod.filter(el => el.returned))
+                  map(prod => prod.filter(el => el.returned)),
+                  tap(res => {
+                    this.data_xls[i] = {
+                      corr: el.correlative,
+                      products: res
+                    }
+                  })
                 ),
                 total$: this.dbs.getBuyRequestedProducts(el.id).pipe(
                   map(prod => prod.filter(el => el.returned).reduce((a, b) => a + (b.unitPrice * b.returnedQuantity), 0))
@@ -119,10 +127,7 @@ export class LogisticsReturnsComponent implements OnInit {
               return !search ? buyReq :
                 buyReq.correlative.toString().padStart(6).includes(String(search))
             case 'Pendiente':
-              return !search ? buyReq.validated == false : (
-                buyReq.correlative.toString().padStart(6).includes(String(search)) &&
-                buyReq.returnedValidated == false
-              )
+              return !search ? buyReq.returnedStatus == 'pendiente' : true
             case 'Validado':
               return !search ? buyReq.validated == true : (
                 buyReq.correlative.toString().padStart(6).includes(String(search)) &&
@@ -150,5 +155,51 @@ export class LogisticsReturnsComponent implements OnInit {
     })
   }
 
+
+  downloadXls(ind): void {
+
+
+    let data: { corr: number, products: BuyRequestedProduct[] } = this.data_xls[ind];
+    let corr = ("#F000" + data.corr).slice(-4)
+    let table_xlsx: any[] = [];
+
+    console.log(data);
+
+    let headersXlsx: string[] = [
+      'Producto',
+      'Cantidad',
+      'Precio U.C.',
+      'Precio T.',
+      'Observaciones'
+    ]
+
+    table_xlsx.push(headersXlsx);
+
+    data.products.forEach(el => {
+      const temp = [
+        el.productDescription,
+        el.validationData.returned,
+        "S/." + el.unitPrice.toFixed(2),
+        "S/." + (el.quantity * el.unitPrice).toFixed(2),
+        el.validationData ? el.validationData.observations : "---",
+
+      ];
+      table_xlsx.push(temp);
+    })
+
+    const ws: XLSX.WorkSheet = XLSX.utils.aoa_to_sheet(table_xlsx);
+
+    const wb: XLSX.WorkBook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, 'Devoluciones de Fábrica');
+
+    const name = `Devolución de solicitud ${corr}.xlsx`
+    XLSX.writeFile(wb, name);
+  }
+
+  getXlsDate(date) {
+    let dateObj = new Date(1970);
+    dateObj.setSeconds(date['seconds'])
+    return this.datePipe.transform(dateObj, 'dd/MM/yyyy');
+  }
 
 }
