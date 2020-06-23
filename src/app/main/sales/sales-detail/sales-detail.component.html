@@ -68,7 +68,7 @@
                         <!-- Normal -->
                         <span *ngIf="!item.get('product').value.promo">
                             {{item.get('product').value.description}} 
-                            <mat-icon 
+                            <mat-icon style="cursor: pointer; font-size:medium; width:auto"
                                 matTooltip="{{item.get('product').value.price | currency: 'S/. '}} por {{item.get('product').value.unit.abbreviation}}">
                                 info
                             </mat-icon>
