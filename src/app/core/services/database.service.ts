@@ -442,4 +442,13 @@ export class DatabaseService {
       .valueChanges();
   }
 
+  onSaveSale(sale: Sale): Observable<firebase.firestore.WriteBatch>{
+    let saleRef: DocumentReference = this.afs.firestore.collection(this.salesRef).doc(sale.id);
+    let saleData: Sale = sale;
+    let batch = this.afs.firestore.batch()
+
+    batch.set(saleRef, saleData);
+    return of(batch);
+  }
+
 }

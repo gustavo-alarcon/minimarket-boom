@@ -1,19 +1,38 @@
-<div class="general-container background-color">
+<div *ngIf="auth.user$ | async as user" class="general-container background-color">
     <div style="display: flex; flex-direction: row; justify-content: space-between;">
         <b style="font-size: 28px;">
             #{{sale.correlativeType}}{{getCorrelative(sale.correlative)}}
         </b>
         <span>
-            <button style="height: 40px;"
-                (click)="onCancelSale()" 
+            <button 
+                *ngIf="sale.status == saleStatusOptions.requested else deshacer"
+                style="height: 40px;"
+                (click)="onSubmitForm(saleStatusOptions.attended, user)" 
+                [disabled]="loading$ | async"
                 mat-raised-button
                 color="accent"
                 type="button">
                 <b>ATENDER</b>
             </button>
+            <ng-template #deshacer>
+                <button 
+                    *ngIf="
+                        sale.status != saleStatusOptions.cancelled ||
+                        sale.status != saleStatusOptions.finished"
+                    style="height: 40px;"
+                    [disabled]="loading$ | async"
+                    (click)="onEditSale(sale.status, user)" 
+                    mat-raised-button
+                    color="warn"
+                    type="button">
+                    <b>Deshacer</b>
+                </button>
+            </ng-template>
         </span>
         <span>
-            <button (click)="onCancelSale()" 
+            <button 
+                (click)="onCancelSale(user)" 
+                [disabled]="loading$ | async"
                 mat-mini-fab
                 color="warn"
                 type="button">
@@ -23,12 +42,14 @@
     </div>
     <div *ngIf="products$ | async as products"
         class="actionsContainer formFieldRounded">
-        <mat-form-field class="content w3-small"
+        <mat-form-field *ngIf="sale.status == saleStatusOptions.attended"
+            class="content w3-small"
             style="display: block; width:100%; margin-bottom: 0;"
             appearance="outline">
             <mat-icon matPrefix></mat-icon>
             <mat-label>Buscar producto</mat-label>
-            <input [formControl]="searchProductControl" #product
+            <input 
+            [formControl]="searchProductControl" #product
             type="text" autocomplete="off"
             matInput placeholder="Buscar producto"
             [matAutocomplete]="auto">
@@ -57,9 +78,13 @@
                 <div [formGroupName]="i" style="display:contents">
                     <!-- Quantity -->
                     <td class="table-sale__td table-sale__td--space">
-                        <input autocomplete="off" class="table-sale__input--thin" 
-                                formControlName="quantity" type="number" max=99
-                                min=0 required>
+                        <input *ngIf="sale.status == saleStatusOptions.attended else readQuantity"
+                            autocomplete="off" class="table-sale__input--thin" 
+                            formControlName="quantity" type="number" max=99
+                            min=0 required>
+                        <ng-template #readQuantity>
+                            {{item.get('quantity').value}}
+                        </ng-template>
                         ({{item.get('product').value['unit']['abbreviation']}})
                     </td>
                     <!-- Description -->
@@ -176,8 +201,13 @@
                     Delivery
                 </td>
                 <td class="w3-right-align table-sale__td table-sale__td--border table-sale__td--space">
-                    S/. <input autocomplete="off" class="table-sale__input--width" formControlName="deliveryPrice" type="number"
-                        required min=0>
+                    S/. <input *ngIf="sale.status == saleStatusOptions.attended else readDelivery"
+                            autocomplete="off" class="table-sale__input--width" 
+                            formControlName="deliveryPrice" type="number"
+                            required min=0>
+                        <ng-template #readDelivery>
+                            {{this.productForm.get('deliveryPrice').value |number:'1.2-2'}}
+                        </ng-template>
                 </td>
             </tr>
         </table>
@@ -204,106 +234,159 @@
         </div>
     </div>
 
-    <div 
-        style="width: 100%; margin-top: 10px;
-            display:flex; flex-direction: row; justify-content: space-between"> 
-        <!-- realStock  -->
-        <mat-form-field style="width: 48%"
-          appearance="outline">
-          <mat-label>F. Solicitud</mat-label>
-          <input autocomplete="off"
-            type="text"
-            matInput placeholder="F. Solicitud">
-          <mat-error>
-              <!-- <span *ngIf="productForm.get('realStock').errors?.required">Campo requerido</span>
-              <span *ngIf="productForm.get('realStock').errors?.min">Solo positivos</span> -->
-          </mat-error>
-        </mat-form-field>
-        
-        <!-- mermaStock  -->
-        <mat-form-field style="width: 48%"
-          appearance="outline">
-          <mat-label>F. Asignada</mat-label>
-          <input autocomplete="off"
-            type="text"
-            matInput placeholder="F. Asignada">
-          <mat-error>
-              <!-- <span *ngIf="productForm.get('mermaStock').errors?.required">Campo requerido</span>
-              <span *ngIf="productForm.get('mermaStock').errors?.min">Solo positivos</span> -->
-          </mat-error>
-        </mat-form-field>
-    </div>
-    <div>
-        <mat-form-field appearance="outline" style="width: 100%">
-            <mat-label>Observaciones</mat-label>
-            <textarea #observation 
-              style="min-height: 50px;"
-              matInput maxlength="150"></textarea>
-            <mat-hint align="end">{{observation.value?.length || 0}}/150</mat-hint>
-        </mat-form-field>
-    </div>
+    <!-- confirmedRequestData -->
+    <form 
+        style="display:contents"
+        [formGroup]="confirmedRequestForm"
+        *ngIf="
+            sale.status == saleStatusOptions.attended ||
+            sale.status == saleStatusOptions.confirmedRequest ||
+            sale.status == saleStatusOptions.confirmedDocument ||
+            sale.status == saleStatusOptions.confirmedDelivery ||
+            sale.status == saleStatusOptions.driverAssigned ||
+            sale.status == saleStatusOptions.finished ||
+            sale.status == saleStatusOptions.cancelled
+            ">
+        <div style="width: 100%; margin-top: 10px;
+                display:flex; flex-direction: row; justify-content: space-between"> 
+            <!-- requestDate  -->
+            <mat-form-field style="width: 48%"
+                appearance="outline">
+                <mat-label>F. Solicitud</mat-label>
+                <input readonly matInput placeholder="F. Solicitud" 
+                    [satDatepicker]="desiredDatePicker"
+                    [formControl]="confirmedRequestForm.get('desiredDate')" >
+                <sat-datepicker #desiredDatePicker [rangeMode]="false"></sat-datepicker>
+                <sat-datepicker-toggle disabled matSuffix [for]="desiredDatePicker" ></sat-datepicker-toggle>
+            </mat-form-field>
 
-    <div 
-        style="width: 100%;
-            display:flex; flex-direction: row; justify-content: space-between"> 
-        <!-- realStock  -->
-        <mat-form-field style="width: 32%"
-          appearance="outline">
-          <mat-label>Tipo de Comp.</mat-label>
-          <input autocomplete="off"
-            type="text"
-            matInput placeholder="Tipo de Comp.">
-          <mat-error>
-              <!-- <span *ngIf="productForm.get('realStock').errors?.required">Campo requerido</span>
-              <span *ngIf="productForm.get('realStock').errors?.min">Solo positivos</span> -->
-          </mat-error>
-        </mat-form-field>
-        
-        <!-- mermaStock  -->
-        <mat-form-field style="width: 64%"
-          appearance="outline">
-          <mat-label>Número de Comprobante</mat-label>
-          <input autocomplete="off"
-            type="text"
-            matInput placeholder="Número de Comprobante">
-          <mat-error>
-              <!-- <span *ngIf="productForm.get('mermaStock').errors?.required">Campo requerido</span>
-              <span *ngIf="productForm.get('mermaStock').errors?.min">Solo positivos</span> -->
-          </mat-error>
-        </mat-form-field>
-    </div>
-
-    <div style="width: 100%;
-            display:flex; flex-direction: row; justify-content: space-between"> 
-        <!-- realStock  -->
-        <div style="width: 32%; display: flex;
-            flex-direction: column; justify-content: center;">
-            <div style="display: flex; justify-content: center;">
-                <mat-slide-toggle color="primary"></mat-slide-toggle>
-            </div>
-            <div style="display: flex; justify-content: space-evenly;">
-                <span>Biker</span>
-                <span>Moto</span>
-            </div>
+            <!-- assignedDate  -->
+            <mat-form-field style="width: 48%"
+                appearance="outline">
+                <mat-label>F. Asignada</mat-label>
+                <input readonly matInput placeholder="F. Asignada" 
+                    [min]="confirmedRequestForm.get('desiredDate').value"
+                    [satDatepicker]="assignedDatePicker"
+                    [formControl]="confirmedRequestForm.get('assignedDate')" >
+                <sat-datepicker #assignedDatePicker [rangeMode]="false"></sat-datepicker>
+                <sat-datepicker-toggle matSuffix [for]="assignedDatePicker"
+                    [disabled]="sale.status != saleStatusOptions.attended"></sat-datepicker-toggle>
+            </mat-form-field>
         </div>
-        
-        <!-- mermaStock  -->
-        <mat-form-field style="width: 64%"
-          appearance="outline">
-          <mat-label>Asignar empresa de delivery.</mat-label>
-          <input autocomplete="off"
-            type="text"
-            matInput placeholder="Asignar empresa de delivery.">
-          <mat-error>
-              <!-- <span *ngIf="productForm.get('mermaStock').errors?.required">Campo requerido</span>
-              <span *ngIf="productForm.get('mermaStock').errors?.min">Solo positivos</span> -->
-          </mat-error>
-        </mat-form-field>
-    </div>
-    
+        <!-- observation -->
+        <div>
+            <mat-form-field appearance="outline" style="width: 100%">
+                <mat-label>Observaciones</mat-label>
+                <textarea formControlName="observation"  #observation 
+                    [readonly]="sale.status != saleStatusOptions.attended"
+                    style="min-height: 50px;"
+                    matInput maxlength="150"></textarea>
+                <mat-hint align="end">{{observation.value?.length || 0}}/150</mat-hint>
+            </mat-form-field>
+        </div>
+    </form>
 
-    <button *ngIf="sale.status == 'Solicitado'" class="w3-block w3-margin-top" mat-raised-button color="accent"
-        (click)="onSubmitForm()" type="button" [disabled]="productForm.status != 'VALID'"><b>Confirmar</b></button>
+    <!-- confirmedDocumentData -->
+    <ng-container 
+    *ngIf="
+        sale.status == saleStatusOptions.confirmedRequest ||
+        sale.status == saleStatusOptions.confirmedDocument ||
+        sale.status == saleStatusOptions.confirmedDelivery ||
+        sale.status == saleStatusOptions.driverAssigned ||
+        sale.status == saleStatusOptions.finished ||
+        sale.status == saleStatusOptions.cancelled
+        ">
+        <div style="width: 100%;
+                display:flex; flex-direction: row; justify-content: space-between"> 
+            <!-- document  -->
+            <mat-form-field style="width: 32%"
+                appearance="outline">
+            <mat-label>Tipo de Comp.</mat-label>
+            <input readonly
+                autocomplete="off" type="text"
+                matInput placeholder="Tipo de Comp.">
+            <mat-error>
+                <!-- <span *ngIf="productForm.get('realStock').errors?.required">Campo requerido</span>
+                <span *ngIf="productForm.get('realStock').errors?.min">Solo positivos</span> -->
+            </mat-error>
+            </mat-form-field>
+            
+            <!-- documentNumber  -->
+            <mat-form-field style="width: 64%"
+            appearance="outline">
+            <mat-label>Número de Comprobante</mat-label>
+            <input 
+                [readonly]="sale.status != saleStatusOptions.confirmedRequest"
+                autocomplete="off" type="text"
+                matInput placeholder="Número de Comprobante">
+            <mat-error>
+                <!-- <span *ngIf="productForm.get('mermaStock').errors?.required">Campo requerido</span>
+                <span *ngIf="productForm.get('mermaStock').errors?.min">Solo positivos</span> -->
+            </mat-error>
+            </mat-form-field>
+        </div>
+    </ng-container>
 
+    <!-- confirmedDeliveryData -->
+    <ng-container 
+    *ngIf="
+        sale.status == saleStatusOptions.confirmedDocument ||
+        sale.status == saleStatusOptions.confirmedDelivery ||
+        sale.status == saleStatusOptions.driverAssigned ||
+        sale.status == saleStatusOptions.finished ||
+        sale.status == saleStatusOptions.cancelled
+        ">
+        <div style="width: 100%;
+                display:flex; flex-direction: row; justify-content: space-between"> 
+            <!-- deliveryType  -->
+            <div style="width: 32%; display: flex;
+                flex-direction: column; justify-content: center;">
+                <div style="display: flex; justify-content: center;">
+                    <mat-slide-toggle color="primary"></mat-slide-toggle>
+                </div>
+                <div style="display: flex; justify-content: space-evenly;">
+                    <span>Biker</span>
+                    <span>Moto</span>
+                </div>
+            </div>
+            
+            <!-- deliveryBusiness  -->
+            <mat-form-field style="width: 64%"
+            appearance="outline">
+            <mat-label>Asignar empresa de delivery.</mat-label>
+            <input [readonly]="sale.status != saleStatusOptions.confirmedDocument"
+                autocomplete="off" type="text"
+                matInput placeholder="Asignar empresa de delivery.">
+            <mat-error>
+                <!-- <span *ngIf="productForm.get('mermaStock').errors?.required">Campo requerido</span>
+                <span *ngIf="productForm.get('mermaStock').errors?.min">Solo positivos</span> -->
+            </mat-error>
+            </mat-form-field>
+        </div>
+    </ng-container>
+
+    <button *ngIf="sale.status == saleStatusOptions.attended" 
+        class="w3-block w3-margin-top" mat-raised-button 
+        color="accent" type="button" 
+        (click)="onSubmitForm(saleStatusOptions.confirmedRequest, user)" 
+        [disabled]="loading$ | async">
+        <b>Confirmar pedido</b>
+    </button>
+
+    <button *ngIf="sale.status == saleStatusOptions.confirmedRequest" 
+        class="w3-block w3-margin-top" mat-raised-button 
+        color="accent" type="button" 
+        (click)="onSubmitForm(saleStatusOptions.confirmedDocument, user)" 
+        [disabled]="loading$ | async">
+        <b>Confirmar comprobante</b>
+    </button>
+
+    <button *ngIf="sale.status == saleStatusOptions.confirmedDocument" 
+        class="w3-block w3-margin-top" mat-raised-button 
+        color="accent" type="button" 
+        (click)="onSubmitForm(saleStatusOptions.confirmedDelivery, user)" 
+        [disabled]="loading$ | async">
+        <b>Confirmar delivery</b>
+    </button>
 
 </div>

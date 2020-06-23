@@ -9,7 +9,6 @@ export class saleStatusOptions {
   driverAssigned = 'Conductor Asignado';
   finished = 'Entregado';
   cancelled = 'Anulado'
-
 }
 
 type FilterFlags<Base, Condition, Data> =
@@ -42,6 +41,12 @@ export interface Sale {
     phone: number
   },
 
+  userId?: string;
+  user: User;                   //requesting user
+  requestDate: Date,            //Fecha deseada por cliente
+
+  //A partir de este punto, todo varia de acuerdo
+  //a formulario de ventas.
   status: saleStatusOptions[keyof saleStatusOptions]
 
   requestedProducts: SaleRequestedProducts[];
@@ -54,10 +59,6 @@ export interface Sale {
     voucherPath: string
   }[]
 
-  userId?: string;
-  user: User;
-  requestDate: Date,            //Fecha deseada por cliente
-
   voucherChecked: boolean,      //done by admin. needed to confirmedDelivery
 
   attendedData?: {             //Can go only when Atendido or more
@@ -67,7 +68,8 @@ export interface Sale {
 
   confirmedRequestData?: {        //only when confirmedRequest or more
     assignedDate: Date,           //Fecha asignada por admin
-    observation: string
+    requestedProductsId: string[];//Used in virtual stock
+    observation: string,
 
     confirmedBy: User,
     confirmedAt: Date,
@@ -88,6 +90,11 @@ export interface Sale {
     confirmedAt: Date
   }
 
+  cancelledData?: {
+    cancelledAt: Date,
+    cancelledBy: User,
+  }
+
   driverAssignedData?: {
     assignedAt: Date,
     assignedBy: User,
@@ -100,11 +107,6 @@ export interface Sale {
     finishedAt: Date,
     finishedBy: User,
     observation: string
-  }
-
-  cancelledData?: {
-    cancelledAt: Date,
-    cancelledBy: User,
   }
 
   createdAt: Date,

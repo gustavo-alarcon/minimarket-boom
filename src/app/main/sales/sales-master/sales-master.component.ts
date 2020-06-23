@@ -65,7 +65,6 @@ export class SalesMasterComponent implements OnInit {
         return this.dbs.getSales({begin: date.begin, end: endDate})
       }),
       map(sales => {
-        sales.forEach(el => el['requestingUser$'] = this.dbs.getUserDisplayName(el.userId));
         return sales
       })
     );
