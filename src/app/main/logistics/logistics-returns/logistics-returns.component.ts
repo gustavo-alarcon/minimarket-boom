@@ -1,9 +1,8 @@
+import { UndoReturnDialogComponent } from './undo-return-dialog/undo-return-dialog.component';
 import { DatePipe } from '@angular/common';
 import { ValidatedReturnDialogComponent } from './validated-return-dialog/validated-return-dialog.component';
 import { startWith, map, switchMap, tap, take } from 'rxjs/operators';
 import { DatabaseService } from 'src/app/core/services/database.service';
-import { AngularFirestore } from '@angular/fire/firestore';
-import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatDialog } from '@angular/material/dialog';
 import { MatTableDataSource } from '@angular/material/table';
 import { FormControl } from '@angular/forms';
@@ -146,15 +145,32 @@ export class LogisticsReturnsComponent implements OnInit {
     )
   }
 
-  validated(product: BuyRequestedProduct) {
+  validated(product: BuyRequestedProduct, ind) {
 
     this.dialog.open(ValidatedReturnDialogComponent, {
       data: {
         item: product
       }
+    }).afterClosed().pipe(
+      take(1)
+    ).subscribe(() => {
+      this.panelOpenState[ind] = false
     })
   }
 
+  undoValidated(product: BuyRequestedProduct,ind) {
+    this.dialog.open(UndoReturnDialogComponent, {
+      data: {
+        item: product
+      }
+    }).afterClosed().pipe(
+      take(1)
+    ).subscribe(() => {
+      this.panelOpenState[ind] = false
+    })
+
+
+  }
 
   downloadXls(ind): void {
 

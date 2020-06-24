@@ -251,8 +251,7 @@ export class PurchaseComponent implements OnInit {
       requestDate: this.secondFormGroup.get('date').value,
       createdAt: new Date(),
       createdBy: null,
-      userId:this.user.uid,
-      user:this.user,
+      user: this.user,
       requestedProducts: this.dbs.order,
       status: 'Solicitado',
       total: this.total,
@@ -323,37 +322,20 @@ export class PurchaseComponent implements OnInit {
             })
           }
 
-
-
         });
 
-
       }).then(() => {
-        this.dbs.order.forEach((order, ind) => {
-          const ref = this.af.firestore.collection(`/db/distoProductos/productsList`).doc(order.product.id);
-          this.af.firestore.runTransaction((transaction) => {
-            // This code may get re-run multiple times if there are conflicts.
-            return transaction.get(ref).then((prodDoc) => {
-              let newStock = prodDoc.data().realStock - order.quantity;
-              transaction.update(ref, { realStock: newStock });
-            });
-          }).then(() => {
-            if (ind == this.dbs.order.length - 1) {
-              this.dialog.open(SaleDialogComponent, {
-                data: {
-                  name: this.firstFormGroup.value['name'],
-                  number: newSale.correlative,
-                  email: this.user.email
-                }
-              })
-
-              this.dbs.order = []
-              this.dbs.total = 0
-              this.dbs.view.next(1)
-            }
-
-          })
+        this.dialog.open(SaleDialogComponent, {
+          data: {
+            name: this.firstFormGroup.value['name'],
+            number: newSale.correlative,
+            email: this.user.email
+          }
         })
+
+        this.dbs.order = []
+        this.dbs.total = 0
+        this.dbs.view.next(1)
         //this.loading.next(3)
       }).catch(function (error) {
         console.log("Transaction failed: ", error);

@@ -12,18 +12,21 @@ export interface Buy {
   totalAmount: number;     //in KG
   totalPrice: number;
 
+  //validated 
   validated: boolean;       //True only when all products are validated
   validatedDate: Date;
+  status:string;
 
+  //returned
   returned?: boolean;
   returnedQuantity?: number;
-  status?:string;
   returnedDate?: Date;
   returnedValidated?: boolean;
+  returnedStatus?: string;
 
   requestedDate: Date;      //When the request was submitted
   requestedBy: User;
-  returnedStatus?: string;
+  
   
   editedDate: Date;
   editedBy: User;
@@ -41,6 +44,8 @@ export interface BuyRequestedProduct {               //How many products should 
   quantity: number;
 
   desiredDate: Date;      //When we want this product
+
+  //validated
   validated: boolean;
   validationData: {       //null when it is not validated
     mermaStock: number;  //realStock = quantity - mermaStock - returned
@@ -50,13 +55,17 @@ export interface BuyRequestedProduct {               //How many products should 
   validatedBy: string;
   validatedDate: Date;
   validatedStatus: string;
+  validatedRecord?: any[];
 
+  //returned
   returned?: boolean;
-  returnedDate?: any[];
+  returnedRecord?: any[];
   returnedQuantity?: number;
   returnedValidated?: boolean;
   returnedStatus?: string;
-  dateReturn?: Date;
+  returnDate?: Date;
+
+  
   requestedDate: Date;      //When the request was submitted
   requestedBy: User
 }

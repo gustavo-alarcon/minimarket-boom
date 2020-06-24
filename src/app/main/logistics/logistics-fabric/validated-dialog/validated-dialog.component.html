@@ -57,7 +57,8 @@
     </mat-dialog-content>
 
     <mat-dialog-actions>
-        <button mat-raised-button color="accent" class="w3-block" type="button" (click)="data.edit?edit():save()"
-            [disabled]="getStock()<0">Guardar</button>
+        <button *ngIf="data.item.validatedStatus != 'validado'" mat-raised-button color="accent" class="w3-block"
+            type="button" (click)="data.edit?edit():save()"
+            [disabled]="isInvalidNumber() || (negative$ | async)">Guardar</button>
     </mat-dialog-actions>
 </div>

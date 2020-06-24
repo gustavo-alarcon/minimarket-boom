@@ -1,5 +1,5 @@
 import { Unit } from 'src/app/core/models/unit.model';
-import { take, map, debounceTime, tap } from 'rxjs/operators';
+import { take, map, debounceTime, tap, startWith } from 'rxjs/operators';
 import { AuthService } from 'src/app/core/services/auth.service';
 import { BehaviorSubject, Observable, combineLatest } from 'rxjs';
 import { AngularFirestore } from '@angular/fire/firestore';
@@ -25,6 +25,8 @@ export class ValidatedReturnDialogComponent implements OnInit {
 
   retQuantity$: Observable<boolean>
   mermQuantity$: Observable<boolean>
+
+  negative$: Observable<boolean>
 
   constructor(
     private dialogRef: MatDialogRef<ValidatedReturnDialogComponent>,
@@ -55,6 +57,18 @@ export class ValidatedReturnDialogComponent implements OnInit {
       })
     )
 
+    this.negative$ = combineLatest(
+      this.validatedFormGroup.get('returned').valueChanges.pipe(
+        startWith(0)
+      ),
+      this.validatedFormGroup.get('mermaStock').valueChanges.pipe(
+        startWith(0)
+      )
+    ).pipe(
+      map(([ret, merm]) => {
+        return ret < 0 || merm < 0
+      })
+    )
   }
 
   getUnit(unit: Unit, show: boolean) {
@@ -82,78 +96,6 @@ export class ValidatedReturnDialogComponent implements OnInit {
   }
 
 
-  deleteDate(item, ind) {
-    let newDate
-    if (this.data.item.returnedDate.length == 1) {
-      newDate = []
-    } else {
-      newDate = [...this.data.item.returnedDate].splice(ind, 1)
-    }
-
-    this.returnStock(item, newDate)
-
-
-  }
-
-  returnStock(item, array) {
-    console.log(array);
-
-    this.loading.next(true)
-    this.validatedFormGroup.markAsPending();
-    this.validatedFormGroup.disable()
-    const requestRef = this.af.firestore.collection(`/db/distoProductos/buys`).doc(this.data.item.buyId);
-    const requestProductRef = this.af.firestore.collection(`/db/distoProductos/buys/${this.data.item.buyId}/buyRequestedProducts`).doc(this.data.item.id);
-
-    const ref = this.af.firestore.collection(`/db/distoProductos/productsList`).doc(this.data.item.id);
-    this.af.firestore.runTransaction((transaction) => {
-      return transaction.get(ref).then((prodDoc) => {
-        let newStock = prodDoc.data().realStock - item.quantity
-        let newMerma = prodDoc.data().mermaStock - item.merma
-
-        transaction.update(ref, {
-          mermaStock: newMerma,
-          realStock: newStock
-        })
-
-        transaction.update(requestProductRef, {
-          validated: false,
-          validatedStatus: array.length == 0 ? 'por validar' : 'pendiente',
-          validatedDate: null,
-          returnedQuantity: this.data.item.returnedQuantity + item.quantity + item.merma,
-          returnedValidated: false,
-          returnedDate: array,
-          dateReturn: new Date()
-        })
-
-        transaction.update(requestRef, {
-          validated: false,
-          validatedDate: null,
-          editedDate: null,
-          editedBy: null,
-          returnedValidated: false,
-          returnedDate: null,
-          status: 'pendiente',
-          returnedStatus: array.length == 0 ? 'por validar' : 'pendiente'
-        })
-
-      });
-    }).then(() => {
-      this.loading.next(false)
-      this.dialogRef.close()
-      this.snackBar.open(
-        'Producto validado',
-        'Cerrar',
-        { duration: 6000, }
-      );
-
-    }).catch(error => {
-      this.snackBar.open(
-        'Ocurrió un error. Por favor, vuelva a intentarlo.',
-        'Cerrar',
-        { duration: 6000, }
-      );
-    })
-  }
   save() {
     if (this.getStock() != 0 || this.validatedFormGroup.get('mermaStock').value != 0) {
       this.saveAll()
@@ -189,7 +131,7 @@ export class ValidatedReturnDialogComponent implements OnInit {
           })
           return {
             validated: prodv.reduce((a, b) => a && b.validated, true),
-            returnedValidated: prodFilter.reduce((a, b) => a && b.returnedValidated, true),
+            returnedValidated: prodFilter.reduce((a, b) => a && b.returnedValidated, true)
           }
         })
       )
@@ -206,8 +148,8 @@ export class ValidatedReturnDialogComponent implements OnInit {
             realStock: newStock
           })
 
-          if (this.data.item.returnedDate) {
-            records = this.data.item.returnedDate
+          if (this.data.item.returnedRecord) {
+            records = [...this.data.item.returnedRecord]
             records.push({
               date: new Date(),
               merma: this.validatedFormGroup.get('mermaStock').value,
@@ -221,16 +163,6 @@ export class ValidatedReturnDialogComponent implements OnInit {
             })
           }
 
-          transaction.update(requestProductRef, {
-            validated: this.validatedFormGroup.get('returned').value == 0,
-            validatedStatus: this.validatedFormGroup.get('returned').value == 0 ? 'validado' : 'pendiente',
-            validatedDate: this.validatedFormGroup.get('returned').value == 0 ? new Date() : null,
-            returnedQuantity: this.validatedFormGroup.get('returned').value,
-            returnedValidated: this.validatedFormGroup.get('returned').value == 0,
-            returnedDate: records,
-            dateReturn: new Date()
-          })
-
           transaction.update(requestRef, {
             validated: res.validated,
             validatedDate: res.validated ? new Date() : null,
@@ -241,6 +173,19 @@ export class ValidatedReturnDialogComponent implements OnInit {
             status: res.validated ? 'validado' : 'pendiente',
             returnedStatus: res.returnedValidated ? 'validado' : 'pendiente'
           })
+
+          transaction.update(requestProductRef, {
+            validated: this.validatedFormGroup.get('returned').value == 0,
+            validatedStatus: this.validatedFormGroup.get('returned').value == 0 ? 'validado' : 'pendiente',
+            validatedDate: this.validatedFormGroup.get('returned').value == 0 ? new Date() : null,
+            returnedStatus: this.validatedFormGroup.get('returned').value == 0 ? 'validado' : 'pendiente',
+            returnedQuantity: this.validatedFormGroup.get('returned').value,
+            returnedValidated: this.validatedFormGroup.get('returned').value == 0,
+            returnedDate: new Date(),
+            returnedRecord: records
+          })
+
+          
 
         });
       }).then(() => {

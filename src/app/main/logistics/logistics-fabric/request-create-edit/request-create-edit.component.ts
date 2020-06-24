@@ -147,6 +147,7 @@ export class RequestCreateEditComponent implements OnInit {
         totalPrice: this.selectedProducts.value.reduce((a,b)=> a + b.quantity*b.unitPrice, 0),
         validated: false,       //already validated docs should not be editted again
         validatedDate: null,
+        status:'por validar',
         requestedDate: this.data.data.requestedDate,
         requestedBy: this.data.data.requestedBy,
         editedBy: user,
@@ -163,6 +164,7 @@ export class RequestCreateEditComponent implements OnInit {
         totalPrice: this.selectedProducts.value.reduce((a,b)=> a + b.quantity*b.unitPrice, 0),
         validated: false,
         validatedDate: null,
+        status:'por validar',
         requestedDate: date,
         requestedBy: user,
         editedBy: null,
