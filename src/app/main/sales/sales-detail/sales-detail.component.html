@@ -21,7 +21,7 @@
                         sale.status != saleStatusOptions.finished"
                     style="height: 40px;"
                     [disabled]="loading$ | async"
-                    (click)="onEditSale(sale.status, user)" 
+                    (click)="onSubmitForm(sale.status, user, true)" 
                     mat-raised-button
                     color="warn"
                     type="button">
@@ -29,9 +29,10 @@
                 </button>
             </ng-template>
         </span>
-        <span>
+        <span *ngIf="sale.status != saleStatusOptions.finished &&
+            sale.status != saleStatusOptions.cancelled">
             <button 
-                (click)="onCancelSale(user)" 
+                (click)="onSubmitForm(saleStatusOptions.cancelled, user)" 
                 [disabled]="loading$ | async"
                 mat-mini-fab
                 color="warn"
@@ -114,34 +115,6 @@
                                     new_releases
                                 </mat-icon>
                             </p>
-                            <!-- <div class="table-sale__descrip">
-                                {{item.get('product').value.price | currency: 'S/. '}}/{{item.get('product').value.unit.abbreviation}}
-                            </div> -->
-                            <!-- <div class="table-sale__descrip">
-                                <<div>
-                                    Oferta:
-                                </div> 
-                                <div>
-                                    {{onFloor(item.get('quantity').value, item.get('product').value.promoData.quantity)}}
-                                    ({{item.get('product').value.promoData.quantity}}{{(item.get('product').value.unit.abbreviation)}}
-                                    X
-                                    {{item.get('product').value.promoData.promoPrice | currency: 'S/. '}})
-                                </div>
-                            </div> -->
-                            <!-- <ng-container
-                                *ngIf="item.get('quantity').value % item.get('product').value.promoData.quantity">
-                                <div class="table-sale__descrip">
-                                    <div>
-                                        Sin oferta:
-                                    </div>
-                                    <div>
-                                        {{item.get('quantity').value % item.get('product').value.promoData.quantity}}
-                                        {{item.get('product').value.unit.abbreviation}}
-                                        ({{item.get('product').value.price | currency: 'S/. '}}/{{item.get('product').value.unit.abbreviation}})
-                                    </div>
-                                </div>
-                            </ng-container> -->
-
                         </div>
 
                     </td>
@@ -250,7 +223,7 @@
         <div style="width: 100%; margin-top: 10px;
                 display:flex; flex-direction: row; justify-content: space-between"> 
             <!-- requestDate  -->
-            <mat-form-field style="width: 48%"
+            <!-- <mat-form-field style="width: 48%"
                 appearance="outline">
                 <mat-label>F. Solicitud</mat-label>
                 <input readonly matInput placeholder="F. Solicitud" 
@@ -258,14 +231,14 @@
                     [formControl]="confirmedRequestForm.get('desiredDate')" >
                 <sat-datepicker #desiredDatePicker [rangeMode]="false"></sat-datepicker>
                 <sat-datepicker-toggle disabled matSuffix [for]="desiredDatePicker" ></sat-datepicker-toggle>
-            </mat-form-field>
+            </mat-form-field> -->
 
             <!-- assignedDate  -->
-            <mat-form-field style="width: 48%"
+            <mat-form-field style="width: 100%"
                 appearance="outline">
                 <mat-label>F. Asignada</mat-label>
                 <input readonly matInput placeholder="F. Asignada" 
-                    [min]="confirmedRequestForm.get('desiredDate').value"
+                    [min]="now"
                     [satDatepicker]="assignedDatePicker"
                     [formControl]="confirmedRequestForm.get('assignedDate')" >
                 <sat-datepicker #assignedDatePicker [rangeMode]="false"></sat-datepicker>
@@ -287,7 +260,9 @@
     </form>
 
     <!-- confirmedDocumentData -->
-    <ng-container 
+    <form 
+        style="display:contents"
+        [formGroup]="confirmedDocumentForm"
     *ngIf="
         sale.status == saleStatusOptions.confirmedRequest ||
         sale.status == saleStatusOptions.confirmedDocument ||
@@ -302,7 +277,7 @@
             <mat-form-field style="width: 32%"
                 appearance="outline">
             <mat-label>Tipo de Comp.</mat-label>
-            <input readonly
+            <input formControlName="document" readonly
                 autocomplete="off" type="text"
                 matInput placeholder="Tipo de Comp.">
             <mat-error>
@@ -315,7 +290,7 @@
             <mat-form-field style="width: 64%"
             appearance="outline">
             <mat-label>Número de Comprobante</mat-label>
-            <input 
+            <input formControlName="documentNumber" 
                 [readonly]="sale.status != saleStatusOptions.confirmedRequest"
                 autocomplete="off" type="text"
                 matInput placeholder="Número de Comprobante">
@@ -325,24 +300,33 @@
             </mat-error>
             </mat-form-field>
         </div>
-    </ng-container>
+    </form>
 
-    <!-- confirmedDeliveryData -->
-    <ng-container 
+    <!-- confirmedDeliveryData: We will not use this anymore -->
+    
+    <form 
+        style="display:contents"
+        [formGroup]="confirmedDeliveryForm"
+        *ngIf="false">
+    <!-- <form 
+        style="display:contents"
+        [formGroup]="confirmedDeliveryForm"
     *ngIf="
         sale.status == saleStatusOptions.confirmedDocument ||
         sale.status == saleStatusOptions.confirmedDelivery ||
         sale.status == saleStatusOptions.driverAssigned ||
         sale.status == saleStatusOptions.finished ||
         sale.status == saleStatusOptions.cancelled
-        ">
+        "> -->
         <div style="width: 100%;
                 display:flex; flex-direction: row; justify-content: space-between"> 
             <!-- deliveryType  -->
             <div style="width: 32%; display: flex;
                 flex-direction: column; justify-content: center;">
                 <div style="display: flex; justify-content: center;">
-                    <mat-slide-toggle color="primary"></mat-slide-toggle>
+                    <mat-slide-toggle color="primary" 
+                        [disabled]="sale.status != saleStatusOptions.confirmedDocument"
+                        formControlName="deliveryType"></mat-slide-toggle>
                 </div>
                 <div style="display: flex; justify-content: space-evenly;">
                     <span>Biker</span>
@@ -352,18 +336,20 @@
             
             <!-- deliveryBusiness  -->
             <mat-form-field style="width: 64%"
-            appearance="outline">
-            <mat-label>Asignar empresa de delivery.</mat-label>
-            <input [readonly]="sale.status != saleStatusOptions.confirmedDocument"
-                autocomplete="off" type="text"
-                matInput placeholder="Asignar empresa de delivery.">
-            <mat-error>
-                <!-- <span *ngIf="productForm.get('mermaStock').errors?.required">Campo requerido</span>
-                <span *ngIf="productForm.get('mermaStock').errors?.min">Solo positivos</span> -->
-            </mat-error>
+                appearance="outline">
+                <mat-label>Asignar empresa de delivery.</mat-label>
+                <input 
+                    formControlName="deliveryBusiness"
+                    [readonly]="sale.status != saleStatusOptions.confirmedDocument"
+                    autocomplete="off" type="text"
+                    matInput placeholder="Asignar empresa de delivery.">
+                <mat-error>
+                    <!-- <span *ngIf="productForm.get('mermaStock').errors?.required">Campo requerido</span>
+                    <span *ngIf="productForm.get('mermaStock').errors?.min">Solo positivos</span> -->
+                </mat-error>
             </mat-form-field>
         </div>
-    </ng-container>
+    </form>
 
     <button *ngIf="sale.status == saleStatusOptions.attended" 
         class="w3-block w3-margin-top" mat-raised-button 
@@ -381,12 +367,12 @@
         <b>Confirmar comprobante</b>
     </button>
 
-    <button *ngIf="sale.status == saleStatusOptions.confirmedDocument" 
+    <!-- <button *ngIf="sale.status == saleStatusOptions.confirmedDocument" 
         class="w3-block w3-margin-top" mat-raised-button 
         color="accent" type="button" 
         (click)="onSubmitForm(saleStatusOptions.confirmedDelivery, user)" 
         [disabled]="loading$ | async">
         <b>Confirmar delivery</b>
-    </button>
+    </button> -->
 
 </div>

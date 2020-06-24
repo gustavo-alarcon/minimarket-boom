@@ -451,4 +451,18 @@ export class DatabaseService {
     return of(batch);
   }
 
+  onUpdateStock(requestedProducts: Sale['requestedProducts'], 
+    batch: firebase.firestore.WriteBatch, decrease: boolean){
+      
+    let dec = decrease ? -1 : 1;
+    let requestedProductRef: DocumentReference;
+
+    requestedProducts.forEach(product => {
+      requestedProductRef = this.afs.firestore.collection(this.productsListRef).doc(product.product.id)
+      batch.update(requestedProductRef, {realStock: firebase.firestore.FieldValue.increment(dec*product.quantity)});
+    })
+
+    return batch;
+  }
+
 }
