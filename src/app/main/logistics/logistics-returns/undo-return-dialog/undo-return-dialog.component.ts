@@ -7,35 +7,24 @@ import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { Component, OnInit, Inject } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
 
+
 @Component({
-  selector: 'app-undo-dialog',
-  templateUrl: './undo-dialog.component.html',
-  styleUrls: ['./undo-dialog.component.scss']
+  selector: 'app-undo-return-dialog',
+  templateUrl: './undo-return-dialog.component.html',
+  styleUrls: ['./undo-return-dialog.component.scss']
 })
-export class UndoDialogComponent implements OnInit {
+export class UndoReturnDialogComponent implements OnInit {
+
   loading = new BehaviorSubject<boolean>(false);
   loading$ = this.loading.asObservable();
   constructor(
-    private dialogRef: MatDialogRef<UndoDialogComponent>,
+    private dialogRef: MatDialogRef<UndoReturnDialogComponent>,
     private dbs: DatabaseService,
     private snackBar: MatSnackBar,
     private af: AngularFirestore,
     @Inject(MAT_DIALOG_DATA) public data: { item: BuyRequestedProduct, status: 'string' }) { }
 
   ngOnInit(): void {
-  }
-
-  saveUndo() {
-    if (this.data.item.validationData.returned > 0) {
-
-      if (this.data.item.returnedStatus == 'por validar') {
-        this.undoValidated(this.data.item)
-      } else {
-        this.deleteDate()
-      }
-    } else {
-      this.undoValidated(this.data.item)
-    }
   }
 
   deleteDate() {
@@ -123,23 +112,19 @@ export class UndoDialogComponent implements OnInit {
       map(products => {
         let prodFilter = products.map(el => {
           let count = 0
-          let retValid = true
           if (el.id == product.id) {
             el.returned = false
           }
           if (el.validationData && el.id != product.id) {
             count = el.validationData.returned
-            retValid = el.returnedValidated
           }
           return {
             ...el,
-            returnedQuantity: count,
-            retValid: retValid
+            returnedQuantity: count
           }
         })
         return {
           returned: prodFilter.reduce((a, b) => a || b.returned, false),
-          returnedValidated: prodFilter.reduce((a, b) => a || b.retValid, false),
           returnedQuantity: prodFilter.reduce((a, b) => a + b.returnedQuantity, 0)
         }
       }),
@@ -163,7 +148,6 @@ export class UndoDialogComponent implements OnInit {
             validatedDate: null,
             returned: res.returned,
             returnedQuantity: res.returnedQuantity,
-            returnedValidated: res.returnedValidated,
             status: res.returned ? 'pendiente' : 'por validar'
           })
 
@@ -172,8 +156,7 @@ export class UndoDialogComponent implements OnInit {
             validated: false,
             validationData: null,
             returned: false,
-            returnedStatus: 'por validar',
-            returnRecord: null
+            returnedStatus: 'por validar'
           })
 
         });
@@ -187,6 +170,7 @@ export class UndoDialogComponent implements OnInit {
         this.loading.next(false)
 
       }).catch(function (error) {
+        console.log("Transaction failed: ", error);
         this.snackBar.open(
           'Ocurrió un problema',
           'Cerrar',

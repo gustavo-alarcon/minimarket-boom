@@ -22,13 +22,15 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { NgxPaginationModule } from 'ngx-pagination';
 import { DatePPipe } from './date-p.pipe';
 import { ValidatedReturnDialogComponent } from './validated-return-dialog/validated-return-dialog.component';
+import { UndoReturnDialogComponent } from './undo-return-dialog/undo-return-dialog.component';
 
 
 @NgModule({
   declarations: [
     LogisticsReturnsComponent,
     DatePPipe,
-    ValidatedReturnDialogComponent
+    ValidatedReturnDialogComponent,
+    UndoReturnDialogComponent
   ],
   imports: [
     CommonModule,
@@ -50,10 +52,14 @@ import { ValidatedReturnDialogComponent } from './validated-return-dialog/valida
     MatProgressBarModule,
     MatTooltipModule,
     NgxPaginationModule,
-    MatSnackBarModule 
+    MatSnackBarModule
   ],
   providers: [
     { provide: MAT_DATE_LOCALESAT, useValue: 'en-GB' }
+  ],
+  entryComponents: [
+    ValidatedReturnDialogComponent,
+    UndoReturnDialogComponent
   ]
 })
 export class LogisticsReturnsModule { }
