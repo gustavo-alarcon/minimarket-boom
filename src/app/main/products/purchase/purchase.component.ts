@@ -102,7 +102,7 @@ export class PurchaseComponent implements OnInit {
       tap(res => {
         this.user = res
 
-        if (res['salesCount'] > 0) {
+        if (res['name'] ) {
 
           this.firstFormGroup = this.fb.group({
             email: [res['email'], [Validators.required, Validators.email]],
@@ -114,7 +114,6 @@ export class PurchaseComponent implements OnInit {
           });
 
           this.secondFormGroup = this.fb.group({
-            date: [null, [Validators.required]],
             address: [res.contact.address, [Validators.required]],
             district: [res.contact.district, [Validators.required]],
             ref: [res.contact.reference, [Validators.required]]
@@ -136,7 +135,6 @@ export class PurchaseComponent implements OnInit {
           });
 
           this.secondFormGroup = this.fb.group({
-            date: [null, [Validators.required]],
             address: [null, [Validators.required]],
             district: [null, [Validators.required]],
             ref: [null, [Validators.required]]
@@ -248,7 +246,7 @@ export class PurchaseComponent implements OnInit {
         },
         phone: this.firstFormGroup.get('phone').value
       },
-      requestDate: this.secondFormGroup.get('date').value,
+      requestDate: null,
       createdAt: new Date(),
       createdBy: null,
       user: this.user,

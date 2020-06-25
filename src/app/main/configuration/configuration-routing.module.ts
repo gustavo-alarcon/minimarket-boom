@@ -1,11 +1,12 @@
+import { ConfigurationComponent } from './configuration.component';
 import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
-import { LogisticsAvailabilityComponent } from './logistics-availability.component';
+
 
 const routes: Routes = [
   {
     path: '',
-    component: LogisticsAvailabilityComponent
+    component: ConfigurationComponent,
   }
 ];
 
@@ -13,6 +14,4 @@ const routes: Routes = [
   imports: [RouterModule.forChild(routes)],
   exports: [RouterModule]
 })
-
-
-export class LogisticsAvailabilityRoutingModule { }
+export class ConfigurationRoutingModule { }

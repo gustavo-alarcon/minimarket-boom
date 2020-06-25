@@ -32,6 +32,11 @@ const routes: Routes = [
         loadChildren: () => import('./logistics/logistics.module').then(mod => mod.LogisticsModule),
         //canActivate: [AuthGuard]
       },
+      {
+        path: 'configuration',
+        loadChildren: () => import('./configuration/configuration.module').then(mod => mod.ConfigurationModule),
+        //canActivate: [AuthGuard]
+      },
     ]
   }
 ]
