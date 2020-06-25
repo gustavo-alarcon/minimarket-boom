@@ -1,0 +1,37 @@
+.admin {
+    &__container {
+        max-width: 800px;
+        padding: 0 25px;
+    }
+
+    &__input {
+        width: 100%;
+        max-width: 300px;
+        margin-right: 16px;
+    }
+
+    &__title {
+        font-family: "Raleway", sans-serif;
+        font-size: 1em;
+        font-weight: 900;
+    }
+
+    &__list {
+        padding-inline-start: 0px;
+    }
+
+    &__item {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: space-between;
+        align-items: center;
+        font-family: Montserrat;
+        margin: 10px 0;
+    }
+}
+
+@media (max-width: 600px) {
+    .admin__container {
+        padding: 0px;
+    }
+}

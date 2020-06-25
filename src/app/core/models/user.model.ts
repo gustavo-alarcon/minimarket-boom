@@ -7,8 +7,11 @@ export interface User {
   name?: string;
   lastName1?: string;
   lastName2?: string;
+  completeName?: string;
   displayName?: string;
   token?: string;
+  admin?: boolean;
+  
   lastLogin?: Date;
   contact?: {
     address: string;
