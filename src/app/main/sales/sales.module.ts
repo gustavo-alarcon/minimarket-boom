@@ -21,6 +21,10 @@ import { MatCheckboxModule } from '@angular/material/checkbox';
 import {MatSlideToggleModule} from '@angular/material/slide-toggle';
 import {MatTooltipModule} from '@angular/material/tooltip';
 import { ConfirmationDialogComponent } from '../confirmation-dialog/confirmation-dialog.component';
+import { SalesPhotoDialogComponent } from './sales-photo-dialog/sales-photo-dialog.component';
+import { MatDialogModule } from '@angular/material/dialog';
+import { MatProgressBarModule } from '@angular/material/progress-bar';
+import { Ng2ImgMaxModule } from 'ng2-img-max';
 
 
 
@@ -29,7 +33,8 @@ import { ConfirmationDialogComponent } from '../confirmation-dialog/confirmation
   declarations: [
     SalesComponent,
     SalesMasterComponent,
-    SalesDetailComponent
+    SalesDetailComponent,
+    SalesPhotoDialogComponent
   ],
   imports: [
     CommonModule,
@@ -50,13 +55,17 @@ import { ConfirmationDialogComponent } from '../confirmation-dialog/confirmation
     MatAutocompleteModule,
     MatCheckboxModule,
     MatSlideToggleModule,
-    MatTooltipModule
+    MatTooltipModule,
+    MatDialogModule,
+    MatProgressBarModule,
+    Ng2ImgMaxModule
   ],
   providers: [
     DatePipe
   ],
   entryComponents: [
-    ConfirmationDialogComponent
+    ConfirmationDialogComponent,
+    SalesPhotoDialogComponent
   ]
 })
 export class SalesModule { }

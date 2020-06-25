@@ -78,7 +78,7 @@
 
                 <div [formGroupName]="i" style="display:contents">
                     <!-- Quantity -->
-                    <td class="table-sale__td table-sale__td--space">
+                    <td class="table-sale__td table-sale__td--space" style="overflow: auto;">
                         <input *ngIf="sale.status == saleStatusOptions.attended else readQuantity"
                             autocomplete="off" class="table-sale__input--thin" 
                             formControlName="quantity" type="number" max=99
@@ -120,7 +120,7 @@
                     </td>
                     <!-- price -->
                     <td class="w3-right-align table-sale__td table-sale__td--space">
-                        {{item.get('price').value | currency: 'S/. '}}
+                        {{giveProductPrice(item.value) | currency: 'S/. '}}
                         <!-- S/. <input autocomplete="off" style="width: 54px"
                             formControlName="price" type="number"required min=0> -->
                     </td>
@@ -132,12 +132,9 @@
                     SubTotal
                 </td>
                 <td class="w3-left-align table-sale__td table-sale__td--border table-sale__td--space">
-                    <ng-container *ngIf="individualPrice$ | async"></ng-container>
-                    <ng-container *ngIf="totalPrice$ | async">
-                        <span>{{this.productForm.get('totalPrice').value -
-                        this.productForm.get('totalPrice').value/1.18*0.18 | currency:'S/. '}}
-                        </span>
-                    </ng-container>
+                    <span>{{getTotalPrice() -
+                        getTotalPrice()/1.18*0.18 | currency:'S/. '}}
+                    </span>
                 </td>
             </tr>
             <tr>
@@ -146,12 +143,9 @@
                     I.G.V
                 </td>
                 <td class="w3-left-align table-sale__td table-sale__td--space">
-                    <ng-container *ngIf="individualPrice$ | async"></ng-container>
-                    <ng-container *ngIf="totalPrice$ | async">
-                        <span>
-                            {{this.productForm.get('totalPrice').value/1.18*0.18 | currency:'S/. '}}
-                        </span>
-                    </ng-container>
+                    <span>
+                        {{getTotalPrice()/1.18*0.18 | currency:'S/. '}}
+                    </span>
                 </td>
             </tr>
             <tr>
@@ -160,12 +154,9 @@
                     Total
                 </td>
                 <td class="w3-left-align table-sale__td table-sale__td--space">
-                    <ng-container *ngIf="individualPrice$ | async"></ng-container>
-                    <ng-container *ngIf="totalPrice$ | async">
-                        <span>
-                            {{this.productForm.get('totalPrice').value | currency:'S/. '}}
-                        </span>
-                    </ng-container>
+                    <span>
+                        {{getTotalPrice() | currency:'S/. '}}
+                    </span>
                 </td>
             </tr>
             <tr>
@@ -187,25 +178,34 @@
     </div>
     <div class="total-div">
         <div class="bigCheckbox">
-            <mat-checkbox color="primary"></mat-checkbox>
+            <mat-checkbox 
+                [disabled]="loading$ | async"
+                [formControl]="voucherCheckedForm"
+                (click)="confirmVoucherChecked($event)"
+                color="primary"></mat-checkbox>
         </div>
-        <div class="photo">
-            <span>Foto</span>
+        <div class="voucher-div">
+            <div (click)="checkVouchers()" class="photo">
+                <mat-icon style="font-size: xx-large; height: auto; width:auto;"
+                    *ngIf="sale.voucher.length > 1">collections_bookmark</mat-icon>
+                <mat-icon style="font-size: xx-large; height: auto; width:auto;"
+                    *ngIf="sale.voucher.length == 1">book</mat-icon>
+            </div>
+            <div class="photo-number">
+                <span>{{sale.voucher.length | number:"2.0-0"}} voucher</span>
+            </div>
         </div>
         <div class="ticket__total">
             <span style="white-space: nowrap;">
-                {{productForm.get('totalPrice').value + productForm.get('deliveryPrice').value | currency:'S/. '}}
+                {{getTotalPrice() + productForm.get('deliveryPrice').value | currency:'S/. '}}
             </span>
         </div>
     </div>
-    <div class="voucher-div">
+    <!-- <div class="voucher-div">
         <div class="photo-number">
-            <span>02 voucher</span>
+            <span>{{sale.voucher.length | number:"2.0-0"}} voucher</span>
         </div>
-        <div class="availability">
-            Ver disponibilidad
-        </div>
-    </div>
+    </div> -->
 
     <!-- confirmedRequestData -->
     <form 
@@ -363,7 +363,7 @@
         class="w3-block w3-margin-top" mat-raised-button 
         color="accent" type="button" 
         (click)="onSubmitForm(saleStatusOptions.confirmedDocument, user)" 
-        [disabled]="loading$ | async">
+        [disabled]="(loading$ | async) || !voucherCheckedForm.value">
         <b>Confirmar comprobante</b>
     </button>
 
@@ -374,5 +374,7 @@
         [disabled]="loading$ | async">
         <b>Confirmar delivery</b>
     </button> -->
+
+    <ng-container *ngIf="weight$ | async"></ng-container>
 
 </div>
