@@ -251,7 +251,7 @@ export class DatabaseService {
 
   deletePhotoProduct(path: string): Observable<any> {
     let st = this.storage.ref(path);
-    return st.delete();
+    return st.delete().pipe(takeLast(1));
   }
 
   editProductPromo(productId: string, promo: boolean, promoData: Product['promoData']): firebase.firestore.WriteBatch {
@@ -318,7 +318,6 @@ export class DatabaseService {
     return upload$;
   }
 
-  
   getProductRecipesValueChanges(productId: string): Observable<Recipe[]>{
     return this.afs.collection<Recipe>(this.recipesRef, 
       ref => ref.where("productsId", "array-contains", productId)).valueChanges()
@@ -440,6 +439,42 @@ export class DatabaseService {
     return this.afs.collection<Sale>(this.salesRef, 
       ref => ref.where("createdAt", "<=", date.end).where("createdAt", ">=", date.begin))
       .valueChanges();
+  }
+
+  onSaveSale(sale: Sale): Observable<firebase.firestore.WriteBatch>{
+    let saleRef: DocumentReference = this.afs.firestore.collection(this.salesRef).doc(sale.id);
+    let saleData: Sale = sale;
+    let batch = this.afs.firestore.batch()
+
+    batch.set(saleRef, saleData);
+    return of(batch);
+  }
+
+  onUpdateSaleVoucher(saleId: string, voucher: boolean, photos?: Sale['voucher']): firebase.firestore.WriteBatch{
+    let saleRef: DocumentReference = this.afs.firestore.collection(this.salesRef).doc(saleId);
+    let batch = this.afs.firestore.batch();
+    if(photos){
+      if(photos.length){
+        batch.update(saleRef, {voucherChecked: voucher, voucher: photos})
+      }
+    } else {
+      batch.update(saleRef, {voucherChecked: voucher})
+    }
+    return batch
+  }
+
+  onUpdateStock(requestedProducts: Sale['requestedProducts'], 
+    batch: firebase.firestore.WriteBatch, decrease: boolean){
+      
+    let dec = decrease ? -1 : 1;
+    let requestedProductRef: DocumentReference;
+
+    requestedProducts.forEach(product => {
+      requestedProductRef = this.afs.firestore.collection(this.productsListRef).doc(product.product.id)
+      batch.update(requestedProductRef, {realStock: firebase.firestore.FieldValue.increment(dec*product.quantity)});
+    })
+
+    return batch;
   }
 
 }

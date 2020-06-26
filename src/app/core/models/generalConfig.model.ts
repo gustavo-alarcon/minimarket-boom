@@ -5,4 +5,5 @@ export interface GeneralConfig{
   units: Unit[];
   salesRCounter: number;
   buysCounter: number;
+  maxWeight: number;
 }

@@ -20,6 +20,13 @@ import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import {MatSlideToggleModule} from '@angular/material/slide-toggle';
 import {MatTooltipModule} from '@angular/material/tooltip';
+import { ConfirmationDialogComponent } from '../confirmation-dialog/confirmation-dialog.component';
+import { SalesPhotoDialogComponent } from './sales-photo-dialog/sales-photo-dialog.component';
+import { MatDialogModule } from '@angular/material/dialog';
+import { MatProgressBarModule } from '@angular/material/progress-bar';
+import { Ng2ImgMaxModule } from 'ng2-img-max';
+import { SalesAddressDialogComponent } from './sales-address-dialog/sales-address-dialog.component';
+import { AgmCoreModule } from '@agm/core';
 
 
 
@@ -28,7 +35,9 @@ import {MatTooltipModule} from '@angular/material/tooltip';
   declarations: [
     SalesComponent,
     SalesMasterComponent,
-    SalesDetailComponent
+    SalesDetailComponent,
+    SalesPhotoDialogComponent,
+    SalesAddressDialogComponent
   ],
   imports: [
     CommonModule,
@@ -49,10 +58,21 @@ import {MatTooltipModule} from '@angular/material/tooltip';
     MatAutocompleteModule,
     MatCheckboxModule,
     MatSlideToggleModule,
-    MatTooltipModule
+    MatTooltipModule,
+    MatDialogModule,
+    MatProgressBarModule,
+    Ng2ImgMaxModule,
+    AgmCoreModule.forRoot({
+      apiKey: 'AIzaSyA2tVXwzAQc5Ppj8-oTEuYBCFyJp39Hz7s'
+    })
   ],
   providers: [
     DatePipe
+  ],
+  entryComponents: [
+    ConfirmationDialogComponent,
+    SalesPhotoDialogComponent,
+    SalesAddressDialogComponent
   ]
 })
 export class SalesModule { }
