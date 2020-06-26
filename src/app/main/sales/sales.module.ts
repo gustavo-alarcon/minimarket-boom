@@ -25,6 +25,8 @@ import { SalesPhotoDialogComponent } from './sales-photo-dialog/sales-photo-dial
 import { MatDialogModule } from '@angular/material/dialog';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { Ng2ImgMaxModule } from 'ng2-img-max';
+import { SalesAddressDialogComponent } from './sales-address-dialog/sales-address-dialog.component';
+import { AgmCoreModule } from '@agm/core';
 
 
 
@@ -34,7 +36,8 @@ import { Ng2ImgMaxModule } from 'ng2-img-max';
     SalesComponent,
     SalesMasterComponent,
     SalesDetailComponent,
-    SalesPhotoDialogComponent
+    SalesPhotoDialogComponent,
+    SalesAddressDialogComponent
   ],
   imports: [
     CommonModule,
@@ -58,14 +61,18 @@ import { Ng2ImgMaxModule } from 'ng2-img-max';
     MatTooltipModule,
     MatDialogModule,
     MatProgressBarModule,
-    Ng2ImgMaxModule
+    Ng2ImgMaxModule,
+    AgmCoreModule.forRoot({
+      apiKey: 'AIzaSyA2tVXwzAQc5Ppj8-oTEuYBCFyJp39Hz7s'
+    })
   ],
   providers: [
     DatePipe
   ],
   entryComponents: [
     ConfirmationDialogComponent,
-    SalesPhotoDialogComponent
+    SalesPhotoDialogComponent,
+    SalesAddressDialogComponent
   ]
 })
 export class SalesModule { }

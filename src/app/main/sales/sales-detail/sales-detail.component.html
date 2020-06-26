@@ -17,8 +17,7 @@
             <ng-template #deshacer>
                 <button 
                     *ngIf="
-                        sale.status != saleStatusOptions.cancelled ||
-                        sale.status != saleStatusOptions.finished"
+                        sale.status != saleStatusOptions.cancelled"
                     style="height: 40px;"
                     [disabled]="loading$ | async"
                     (click)="onSubmitForm(sale.status, user, true)" 
@@ -29,8 +28,7 @@
                 </button>
             </ng-template>
         </span>
-        <span *ngIf="sale.status != saleStatusOptions.finished &&
-            sale.status != saleStatusOptions.cancelled">
+        <span *ngIf="sale.status != saleStatusOptions.cancelled">
             <button 
                 (click)="onSubmitForm(saleStatusOptions.cancelled, user)" 
                 [disabled]="loading$ | async"
@@ -223,9 +221,6 @@
             sale.status == saleStatusOptions.attended ||
             sale.status == saleStatusOptions.confirmedRequest ||
             sale.status == saleStatusOptions.confirmedDocument ||
-            sale.status == saleStatusOptions.confirmedDelivery ||
-            sale.status == saleStatusOptions.driverAssigned ||
-            sale.status == saleStatusOptions.finished ||
             sale.status == saleStatusOptions.cancelled
             ">
         <div style="width: 100%; margin-top: 10px;
@@ -274,9 +269,6 @@
     *ngIf="
         sale.status == saleStatusOptions.confirmedRequest ||
         sale.status == saleStatusOptions.confirmedDocument ||
-        sale.status == saleStatusOptions.confirmedDelivery ||
-        sale.status == saleStatusOptions.driverAssigned ||
-        sale.status == saleStatusOptions.finished ||
         sale.status == saleStatusOptions.cancelled
         ">
         <div style="width: 100%;

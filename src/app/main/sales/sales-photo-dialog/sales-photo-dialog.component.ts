@@ -4,7 +4,7 @@ import { Ng2ImgMaxService } from 'ng2-img-max';
 import { take, takeLast, tap, switchMap } from 'rxjs/operators';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
-import { Sale } from 'src/app/core/models/sale.model';
+import { Sale, saleStatusOptions } from 'src/app/core/models/sale.model';
 import { combineLatest, forkJoin, throwError, BehaviorSubject } from 'rxjs';
 import { DatabaseService } from 'src/app/core/services/database.service';
 
@@ -15,6 +15,7 @@ import { DatabaseService } from 'src/app/core/services/database.service';
   styleUrls: ['./sales-photo-dialog.component.scss']
 })
 export class SalesPhotoDialogComponent implements OnInit {
+  saleStatusOptions = new saleStatusOptions()
 
   photoFormArray: FormArray = new FormArray([])
   loading$: BehaviorSubject<boolean> = new BehaviorSubject(false);

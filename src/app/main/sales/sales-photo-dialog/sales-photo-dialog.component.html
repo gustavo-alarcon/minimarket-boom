@@ -16,7 +16,7 @@
         style="display:flex; flex-direction: column; 
                 align-items: center; margin-bottom: 16px; position: relative">
 
-          <button [disabled]="loading$ | async"
+          <button [disabled]="(loading$ | async) || data.data.status==saleStatusOptions.confirmedDocument"
             style="position: absolute; top:4px; right: 4px;"
             color="warn" mat-icon-button (click)="deletePhoto(i)">
               <mat-icon>delete</mat-icon>
@@ -37,7 +37,7 @@
           </div>
 
           <input 
-            [disabled]="loading$ | async"
+            [disabled]="(loading$ | async) || data.data.status==saleStatusOptions.confirmedDocument"
             style="display: none" #photoURL type="file" accept='image/*' 
             (change)="addNewPhoto(i, photoURL.files)"/>
       </div>
@@ -45,12 +45,12 @@
       <div 
         style="width: 100%; display: flex; flex-direction: column;
           align-items: center; padding: 0 0 16px 0;">
-        <button [disabled]="loading$ | async"
+        <button [disabled]="(loading$ | async) || data.data.status==saleStatusOptions.confirmedDocument"
           (click)="newPhoto.click()" mat-fab color="primary" type="button">
           <mat-icon>add</mat-icon>
         </button>
 
-        <input [disabled]="loading$ | async"
+        <input [disabled]="(loading$ | async) || data.data.status==saleStatusOptions.confirmedDocument"
           style="display: none" #newPhoto type="file" accept='image/*' 
             (change)="addNewPhoto(photoFormArray.length, newPhoto.files)"/>
       </div>
@@ -62,5 +62,5 @@
 <mat-dialog-actions align="end">
   <button mat-stroked-button class="w3-margin-right" mat-dialog-close>Cancelar</button>
   <button mat-raised-button color="accent" (click)="onSubmitForm()" type="button"
-      [disabled]="(loading$ | async) || !photoFormArray.length">Guardar</button>
+      [disabled]="(loading$ | async) || !photoFormArray.length || data.data.status==saleStatusOptions.confirmedDocument">Guardar</button>
 </mat-dialog-actions>

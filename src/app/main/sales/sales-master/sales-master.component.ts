@@ -7,6 +7,7 @@ import { DatabaseService } from 'src/app/core/services/database.service';
 import { MatDialog } from '@angular/material/dialog';
 import * as XLSX from 'xlsx';
 import { DatePipe } from '@angular/common';
+import { SalesAddressDialogComponent } from '../sales-address-dialog/sales-address-dialog.component';
 
 
 @Component({
@@ -19,6 +20,8 @@ export class SalesMasterComponent implements OnInit {
   @Input() totalPriceSubject: BehaviorSubject<number>;
 
   defaultImage = '../../../../assets/images/no-image.png'
+
+  saleStatusOptions = new saleStatusOptions();
 
   p: number = 1;
 
@@ -104,10 +107,11 @@ export class SalesMasterComponent implements OnInit {
 
   onCheckDirection(el: Sale, event) {
     event.stopPropagation()
-    // this.dialog.open(SaleAdressDialogComponent, {
-    //   data: el,
-    //   width: '80%'
-    // })
+    this.dialog.open(SalesAddressDialogComponent, {
+      data: el,
+      width: '90vw',
+      maxWidth: '700px'
+    })
   }
 
   getName(displayName: string): string {
@@ -148,14 +152,14 @@ export class SalesMasterComponent implements OnInit {
       'Total', 
       'Tipo de pago',
       'Fecha de Solicitud', 
-      'Fecha de Envio Deseada', 
+      //'Fecha de Envio Deseada', 
       'Fecha de Atención',
       'Fecha de Confirmación de Solicitud', 
       'Fecha Asignada',
       'Fecha de Confirmación de Comprobante',
-      'Fecha de Confirmación de Delivery', 
-      'Fecha de Asignación de Conductor', 
-      'Fecha de Entrega',
+      //'Fecha de Confirmación de Delivery', 
+      //'Fecha de Asignación de Conductor', 
+      //'Fecha de Entrega',
       'Fecha de Cancelación']
 
     table_xlsx.push(headersXlsx);
@@ -175,14 +179,14 @@ export class SalesMasterComponent implements OnInit {
         (this.giveTotalPrice(sale)+sale.deliveryPrice).toFixed(2),
         typeof sale.payType == 'string' ? sale.payType : sale.payType.name+` (${sale.payType.account})`,
         sale.createdAt ? this.getXlsDate(sale.createdAt) : "---",
-        sale.requestDate ? this.getXlsDate(sale.requestDate) : "---",
+        //sale.requestDate ? this.getXlsDate(sale.requestDate) : "---",
         sale.attendedData ? this.getXlsDate(sale.attendedData.attendedAt) : "---",
         sale.confirmedRequestData ? this.getXlsDate(sale.confirmedRequestData.confirmedAt) : "---",
         sale.confirmedRequestData ? this.getXlsDate(sale.confirmedRequestData.assignedDate) : "---",
-        sale.confirmedDocumentData ? this.getXlsDate(sale.confirmedDocumentData.confirmedBy) : "---",
-        sale.confirmedDeliveryData ? this.getXlsDate(sale.confirmedDeliveryData.confirmedAt) : "---",
-        sale.driverAssignedData ? this.getXlsDate(sale.driverAssignedData.assignedAt) : "---",
-        sale.finishedData ? this.getXlsDate(sale.finishedData.finishedAt) : "---",
+        sale.confirmedDocumentData ? this.getXlsDate(sale.confirmedDocumentData.confirmedAt) : "---",
+        //sale.confirmedDeliveryData ? this.getXlsDate(sale.confirmedDeliveryData.confirmedAt) : "---",
+        //sale.driverAssignedData ? this.getXlsDate(sale.driverAssignedData.assignedAt) : "---",
+        //sale.finishedData ? this.getXlsDate(sale.finishedData.finishedAt) : "---",
         sale.cancelledData ? this.getXlsDate(sale.cancelledData.cancelledAt) : "---",
       ];
 

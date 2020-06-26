@@ -4,10 +4,10 @@ export class saleStatusOptions {
   requested = 'Solicitado';
   attended = 'Atendido';
   confirmedRequest = 'Solicitud Confirmada';        //can be confirmed only when voucher is valid
-  confirmedDocument = 'Número de Comprobante Confirmado';
-  confirmedDelivery = 'Delivery Confirmado';
-  driverAssigned = 'Conductor Asignado';
-  finished = 'Entregado';
+  confirmedDocument = 'Comprobante Confirmado';
+  // confirmedDelivery = 'Delivery Confirmado';
+  // driverAssigned = 'Conductor Asignado';
+  // finished = 'Entregado';
   cancelled = 'Anulado'
 }
 

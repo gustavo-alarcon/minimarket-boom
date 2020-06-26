@@ -403,26 +403,26 @@ export class SalesDetailComponent implements OnInit {
           return  this.saleStatusOptions.attended
       case this.saleStatusOptions.confirmedDocument:
           return  this.saleStatusOptions.confirmedRequest
-      case this.saleStatusOptions.confirmedDelivery:
-        //we should refill stock here
-          return  this.saleStatusOptions.confirmedDocument
-      //If it is in finished or driverAssigned state,
-      //we return it to confirmedDelivery
-      case this.saleStatusOptions.driverAssigned:
-          return  this.saleStatusOptions.confirmedDocument
-      case this.saleStatusOptions.finished:
-          return  this.saleStatusOptions.confirmedDocument
+      // case this.saleStatusOptions.confirmedDelivery:
+      //   //we should refill stock here
+      //     return  this.saleStatusOptions.confirmedDocument
+      // //If it is in finished or driverAssigned state,
+      // //we return it to confirmedDelivery
+      // case this.saleStatusOptions.driverAssigned:
+      //     return  this.saleStatusOptions.confirmedDocument
+      // case this.saleStatusOptions.finished:
+      //     return  this.saleStatusOptions.confirmedDocument
       case this.saleStatusOptions.cancelled:
         //We don't include a finished data, 
         //because a finished sale can not be cancelled
         if(this.sale.finishedData){
-          return this.saleStatusOptions.finished
+          // return this.saleStatusOptions.finished
         } else {
           if(this.sale.driverAssignedData){
-              return  this.saleStatusOptions.driverAssigned
+              // return  this.saleStatusOptions.driverAssigned
           } else {
             if(this.sale.confirmedDeliveryData){
-                return  this.saleStatusOptions.confirmedDelivery
+                // return  this.saleStatusOptions.confirmedDelivery
             } else {
               if(this.sale.confirmedDocumentData){
                   return  this.saleStatusOptions.confirmedDocument
@@ -566,7 +566,7 @@ export class SalesDetailComponent implements OnInit {
       }
     } else {
       sale.cancelledData = null;
-      if(newStatus == this.saleStatusOptions.confirmedDelivery){
+      if(/*newStatus == this.saleStatusOptions.confirmedDelivery*/ false){
         sale.confirmedDeliveryData = {
           confirmedAt: date,
           confirmedBy: user,
