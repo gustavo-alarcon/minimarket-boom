@@ -54,29 +54,23 @@
                 <strong>{{validatedFormGroup.get('returned').value}} {{getUnit(data.item.unit,false)}}</strong></p>
         </div>
 
-        <div *ngIf="data.item.returnedDate">
-            <div *ngIf="data.item.returnedDate.length">
+        <div *ngIf="data.item.returnedRecord">
+            <div *ngIf="data.item.returnedRecord.length">
                 <mat-divider></mat-divider>
 
                 <div class="ms-flex ms-flex--center" style="justify-content: space-between;font-weight: bold;">
                     <div style="width: 20%;">Fecha</div>
                     <div style="width: 10%;"> Merma </div>
                     <div style="width: 20%;"> Almacén</div>
-                    <div style="width: 5%;"></div>
                 </div>
-                <div *ngFor="let date of data.item.returnedDate;let ind = index" class="ms-flex ms-flex--center"
+                <div *ngFor="let item of data.item.returnedRecord;let ind = index" class="ms-flex ms-flex--center"
                     style="justify-content: space-between;">
-                    <div>{{date.date.toMillis() | dateP}}</div>
+                    <div>{{item['date'].toMillis() | dateP}}</div>
                     <div>
-                        {{date.merma}}{{getUnit(data.item.unit,false)}}
+                        {{item['merma']}}{{getUnit(data.item.unit,false)}}
                     </div>
                     <div>
-                        {{date.quantity}}{{getUnit(data.item.unit,false)}}
-                    </div>
-                    <div>
-                        <button mat-icon-button (click)="deleteDate(date, ind)">
-                            <mat-icon>delete</mat-icon>
-                        </button>
+                        {{item['quantity']}}{{getUnit(data.item.unit,false)}}
                     </div>
                 </div>
             </div>
@@ -86,6 +80,6 @@
 
     <mat-dialog-actions>
         <button mat-raised-button color="accent" class="w3-block" type="button" (click)="save()"
-            [disabled]="getStock()<0">Guardar</button>
+            [disabled]="(getStock()<0) || (negative$ | async)">Guardar</button>
     </mat-dialog-actions>
 </div>

@@ -1,10 +1,12 @@
 <div class="w3-section w3-hide-large w3-hide-medium">
-    <div class="w3-padding formFieldRounded" *ngIf="(dbs.view$|async)==1">
-        <mat-form-field appearance="outline" class="w3-block">
-            <mat-label>Buscar</mat-label>
-            <input matInput [formControl]="searchForm" placeholder="Buscar Producto" autocomplete="off">
-            <mat-icon matPrefix style="vertical-align: middle;margin-right: 5px;">search</mat-icon>
-        </mat-form-field>
+    <div class="w3-padding" *ngIf="(dbs.view$|async)==1">
+        <div class="formFieldRounded">
+            <mat-form-field appearance="outline" class="w3-block">
+                <mat-label>Buscar</mat-label>
+                <input matInput [formControl]="searchForm" placeholder="Buscar Producto" autocomplete="off">
+                <mat-icon matPrefix style="vertical-align: middle;margin-right: 5px;">search</mat-icon>
+            </mat-form-field>
+        </div>
         <div *ngIf="products$ | async as products">
             <app-product-div [product]="product" [buttonAdd]="true"
                 *ngFor="let product of products| paginate: { itemsPerPage: 10, currentPage: p }"></app-product-div>

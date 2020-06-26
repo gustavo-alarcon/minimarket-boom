@@ -1,10 +1,10 @@
 import { Unit } from 'src/app/core/models/unit.model';
-import { take, map, debounceTime, tap } from 'rxjs/operators';
+import { take, map, debounceTime, tap, startWith } from 'rxjs/operators';
 import { AuthService } from 'src/app/core/services/auth.service';
 import { BehaviorSubject, Observable, combineLatest } from 'rxjs';
 import { AngularFirestore } from '@angular/fire/firestore';
 import { BuyRequestedProduct } from './../../../../core/models/buy.model';
-import { FormBuilder, FormGroup } from '@angular/forms';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { DatabaseService } from './../../../../core/services/database.service';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
@@ -26,6 +26,8 @@ export class ValidatedDialogComponent implements OnInit {
   retQuantity$: Observable<boolean>
   mermQuantity$: Observable<boolean>
 
+  negative$: Observable<boolean>
+
   constructor(
     private dialogRef: MatDialogRef<ValidatedDialogComponent>,
     private dbs: DatabaseService,
@@ -40,20 +42,18 @@ export class ValidatedDialogComponent implements OnInit {
 
     if (this.data.edit) {
       this.validatedFormGroup = this.fb.group({
-        mermaStock: this.data.item.validationData.mermaStock,
-        returned: this.data.item.validationData.returned,
+        mermaStock: [this.data.item.validationData.mermaStock, Validators.min(0)],
+        returned: [this.data.item.validationData.returned, Validators.min(0)],
         observations: this.data.item.validationData.observations
       })
 
-      if (this.data.item.returnedStatus == 'pendiente') {
-        if (this.data.item.returnedValidated) {
-          this.validatedFormGroup.disable()
-        }
+      if (this.data.item.validatedStatus == 'validado') {
+        this.validatedFormGroup.disable()
       }
     } else {
       this.validatedFormGroup = this.fb.group({
-        mermaStock: 0,
-        returned: 0,
+        mermaStock: [0, Validators.min(0)],
+        returned: [0, Validators.min(0)],
         observations: null
       })
     }
@@ -67,6 +67,19 @@ export class ValidatedDialogComponent implements OnInit {
     this.mermQuantity$ = this.validatedFormGroup.get('mermaStock').valueChanges.pipe(
       map(mer => {
         return this.data.item.quantity - this.validatedFormGroup.get('returned').value < mer
+      })
+    )
+
+    this.negative$ = combineLatest(
+      this.validatedFormGroup.get('returned').valueChanges.pipe(
+        startWith(0)
+      ),
+      this.validatedFormGroup.get('mermaStock').valueChanges.pipe(
+        startWith(0)
+      )
+    ).pipe(
+      map(([ret, merm]) => {
+        return ret < 0 || merm < 0
       })
     )
 
@@ -94,6 +107,10 @@ export class ValidatedDialogComponent implements OnInit {
     let increase = this.data.item.quantity
     let decrease = this.validatedFormGroup.get('mermaStock').value + this.validatedFormGroup.get('returned').value
     return increase - decrease
+  }
+
+  isInvalidNumber() {
+    return this.getStock() < 0 && this.getStock() > this.data.item.quantity
   }
 
   edit() {
@@ -127,78 +144,6 @@ export class ValidatedDialogComponent implements OnInit {
     const requestProductRef = this.af.firestore.collection(`/db/distoProductos/buys/${this.data.item.buyId}/buyRequestedProducts`).doc(this.data.item.id);
     const ref = this.af.firestore.collection(`/db/distoProductos/productsList`).doc(this.data.item.id);
 
-    this.dbs.getBuyRequestedProducts(this.data.item.buyId).pipe(
-      map(products => {
-        let prodFilter = products.map(el => {
-          let count = 0
-          if (el.id == this.data.item.id) {
-            el.validated = this.validatedFormGroup.value['returned'] == 0
-            count = this.validatedFormGroup.get('returned').value
-          } else {
-            if (el.validationData) {
-              count = el.validationData.returned
-            }
-          }
-          return {
-            ...el,
-            count: count
-          }
-        })
-        return {
-          validated: prodFilter.reduce((a, b) => a && b.validated, true),
-          returnedQuantity: prodFilter.reduce((a, b) => a + b.count, 0)
-        }
-      }),
-      take(1)
-    ).subscribe(res => {
-      this.af.firestore.runTransaction((transaction) => {
-        return transaction.get(ref).then((prodDoc) => {
-          let newStock = prodDoc.data().realStock + difSt;
-          let newMerma = prodDoc.data().mermaStock + difMerm;
-          transaction.update(ref, {
-            realStock: newStock,
-            mermaStock: newMerma
-          });
-
-          transaction.update(requestProductRef, {
-            validatedDate: new Date(),
-            validationData: this.validatedFormGroup.value,
-            returned: this.validatedFormGroup.value['returned'] > 0,
-            returnedQuantity: this.validatedFormGroup.value['returned']
-          })
-
-          transaction.update(requestRef, {
-            returned: res.returnedQuantity > 0,
-            returnedQuantity: res.returnedQuantity,
-            returnedValidated: false,
-            validated: res.validated,
-            validatedDate: res.validated ? new Date() : null,
-            editedDate: res.validated ? new Date() : null,
-            status: res.validated ? 'validado' : 'pendiente'
-          })
-
-        });
-      }).then(() => {
-        this.loading.next(false)
-        this.dialogRef.close()
-        this.snackBar.open(
-          'Producto editado',
-          'Cerrar',
-          { duration: 6000, }
-        );
-
-      })
-    })
-
-  }
-
-  save() {
-    this.loading.next(true)
-    this.validatedFormGroup.markAsPending();
-    this.validatedFormGroup.disable()
-    const requestRef = this.af.firestore.collection(`/db/distoProductos/buys`).doc(this.data.item.buyId);
-    const requestProductRef = this.af.firestore.collection(`/db/distoProductos/buys/${this.data.item.buyId}/buyRequestedProducts`).doc(this.data.item.id);
-
     combineLatest(
       this.auth.user$,
       this.dbs.getBuyRequestedProducts(this.data.item.buyId).pipe(
@@ -208,97 +153,87 @@ export class ValidatedDialogComponent implements OnInit {
             if (el.id == this.data.item.id) {
               el.validated = this.validatedFormGroup.value['returned'] == 0
               count = this.validatedFormGroup.get('returned').value
-            }
-
-            if (el.validationData && el.id != this.data.item.id) {
-              count = el.validationData.returned
+            } else {
+              if (el.validationData) {
+                count = el.validationData.returned
+              }
             }
             return {
               ...el,
-              returnedQuantity: count
+              count: count
             }
           })
           return {
             validated: prodFilter.reduce((a, b) => a && b.validated, true),
-            returnedQuantity: prodFilter.reduce((a, b) => a + b.returnedQuantity, 0)
+            returnedQuantity: prodFilter.reduce((a, b) => a + b.count, 0)
           }
         })
-      )
-    ).pipe(take(1)).subscribe(([user, res]) => {
-      const ref = this.af.firestore.collection(`/db/distoProductos/productsList`).doc(this.data.item.id);
-      this.af.firestore.runTransaction((transaction) => {
-        return transaction.get(ref).then((prodDoc) => {
-          let newStock = prodDoc.data().realStock + this.getStock();
-          let newMerma = prodDoc.data().mermaStock + this.validatedFormGroup.value['mermaStock'];
+      )).pipe(take(1)).subscribe(([user, res]) => {
+        this.af.firestore.runTransaction((transaction) => {
+          return transaction.get(ref).then((prodDoc) => {
+            let newStock = prodDoc.data().realStock + difSt;
+            let newMerma = prodDoc.data().mermaStock + difMerm;
+            transaction.update(ref, {
+              realStock: newStock,
+              mermaStock: newMerma
+            });
 
-          transaction.update(ref, {
-            realStock: newStock,
-            mermaStock: newMerma
-          })
+            if (this.validatedFormGroup.value['returned'] == 0) {
+              transaction.update(requestProductRef, {
+                validated: true,
+                validatedBy: user,
+                validatedDate: new Date(),
+                validationData: this.validatedFormGroup.value,
+                validatedStatus: 'validado',
+                returned: false,
+                returnedQuantity: 0,
+                returnedValidated: false
+              })
 
-          if (this.validatedFormGroup.value['returned'] == 0) {
-            transaction.update(requestProductRef, {
-              validated: true,
-              validatedBy: user,
-              validatedDate: new Date(),
-              validationData: this.validatedFormGroup.value,
-              validatedStatus: 'validado',
-              returned: false,
-              returnedQuantity: 0,
-              returnedValidated: false
-            })
+              transaction.update(requestRef, {
+                validated: res.validated,
+                validatedDate: res.validated ? new Date() : null,
+                editedDate: res.validated ? new Date() : null,
+                editedBy: res.validated ? user : null,
+                status: res.validated ? 'validado' : 'pendiente'
+              })
+            } else {
+              transaction.update(requestProductRef, {
+                validationData: this.validatedFormGroup.value,
+                validatedStatus: 'pendiente',
+                returned: true,
+                returnedQuantity: this.validatedFormGroup.value['returned'],
+                returnedValidated: false,
+                returnedStatus: 'por validar',
+              })
 
-            transaction.update(requestRef, {
-              validated: res.validated,
-              validatedDate: res.validated ? new Date() : null,
-              editedDate: res.validated ? new Date() : null,
-              editedBy: res.validated ? user : null,
-              status: res.validated ? 'validado' : 'pendiente'
-            })
-          } else {
-            transaction.update(requestProductRef, {
-              validationData: this.validatedFormGroup.value,
-              validatedStatus: 'pendiente',
-              returned: true,
-              returnedQuantity: this.validatedFormGroup.value['returned'],
-              returnedValidated: false,
-              returnedStatus: 'por validar',
-            })
+              transaction.update(requestRef, {
+                returned: res.returnedQuantity > 0,
+                returnedQuantity: res.returnedQuantity,
+                returnedValidated: false,
+                status: 'pendiente',
+                editedDate: res.validated ? new Date() : null,
+                editedBy: res.validated ? user : null,
+              })
+            }
 
-            transaction.update(requestRef, {
-              returned: res.returnedQuantity > 0,
-              returnedQuantity: res.returnedQuantity,
-              returnedValidated: false,
-              status: 'pendiente',
-              editedDate: res.validated ? new Date() : null,
-              editedBy: res.validated ? user : null,
-            })
-          }
+          });
+        }).then(() => {
+          this.loading.next(false)
+          this.dialogRef.close()
+          this.snackBar.open(
+            'Producto editado',
+            'Cerrar',
+            { duration: 6000, }
+          );
 
-
-
-        });
-      }).then(() => {
-        this.loading.next(false)
-        this.dialogRef.close()
-        this.snackBar.open(
-          'Producto validado',
-          'Cerrar',
-          { duration: 6000, }
-        );
-
-      }).catch(error => {
-        this.snackBar.open(
-          'Ocurrió un error. Por favor, vuelva a intentarlo.',
-          'Cerrar',
-          { duration: 6000, }
-        );
+        })
       })
 
+  }
 
-
-    })
-
+  save() {
+    this.editSave(this.validatedFormGroup.value['mermaStock'],0 ,this.getStock())
   }
 
 }

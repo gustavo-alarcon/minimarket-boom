@@ -22,7 +22,7 @@ export class ProductsComponent implements OnInit {
   init$: Observable<User>
 
   name: string = ''
-  delivery:number = 4
+  delivery: number = 4
 
   searchForm: FormControl = new FormControl('')
 
@@ -66,12 +66,14 @@ export class ProductsComponent implements OnInit {
 
     this.init$ = this.auth.user$.pipe(
       tap(res => {
-        if (res['salesCount']) {
-          this.firstSale = false
-          this.name = res.name.split(' ')[0]
-          this.delivery = res.contact.district.delivery
-        } else {
-          this.firstSale = true
+        if (res) {
+          if (res['salesCount']) {
+            this.firstSale = false
+            this.name = res.name.split(' ')[0]
+            this.delivery = res.contact.district.delivery
+          } else {
+            this.firstSale = true
+          }
         }
       })
     )
@@ -79,7 +81,7 @@ export class ProductsComponent implements OnInit {
     this.dbs.total = this.dbs.order.map(el => this.giveProductPrice(el)).reduce((a, b) => a + b, 0)
   }
 
-  
+
 
   getdiscount(item: Product) {
     let promo = item.price - item.promoData.promoPrice
@@ -97,7 +99,7 @@ export class ProductsComponent implements OnInit {
     })
   }
 
-  
+
 
   giveProductPrice(item) {
     if (item.product.promo) {
