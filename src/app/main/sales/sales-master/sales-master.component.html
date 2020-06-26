@@ -102,7 +102,7 @@
                     <div style="font-size: 24px;">
                         <b>#{{sale.correlativeType}}{{getCorrelative(sale.correlative)}}</b>
                     </div>
-                    <div>
+                    <div class="overflow_container">
                         <mat-icon style="font-size:20px;"
                             color="primary">assignment_ind</mat-icon>
                         Paola Ruiz
@@ -114,44 +114,58 @@
                     </div>
                     <div>
                         <mat-icon style="font-size:20px;"
-                            color="primary">directions_bike</mat-icon>
+                            color="primary">assignment_turned_in</mat-icon>
                         21/10/2020
                     </div>
                 </div>
+                <mat-divider></mat-divider>
                 <div class="client">
-                    <mat-icon>group</mat-icon>
-                    <b *ngIf="sale.requestingUser$ | async as userName else noUser"> {{userName}}</b>
-                    <ng-template #noUser>
-                        <b>Sin Nombre</b>
-                    </ng-template>
-                </div>
-                <div class="document">
-                    <b>Agregar comprobante</b>
-                </div>
-                <div class="driver">
-                    <div class="driver_header">
-                        <mat-icon>directions_bike</mat-icon>
-                        <span>José Romero</span>
-                        <mat-icon>phone_in_talk</mat-icon>
+                    <div class="overflow_container">
+                        <mat-icon>group</mat-icon>
+                        <b *ngIf="sale.requestingUser$ | async as userName else noUser"> {{userName}}</b>
+                        <ng-template #noUser>
+                            <b>Sin Nombre</b>
+                        </ng-template>
                     </div>
-                    <div class="driver_row">
-                        <span>Asignado</span>
-                        <b>14:21</b>
+                    <div class="overflow_container">
+                        <mat-icon>chrome_reader_mode</mat-icon>
+                        <b *ngIf="sale.requestingUser$ | async as userName else noNumber">70344578</b>
+                        <ng-template #noNumber>
+                            <b>00000000</b>
+                        </ng-template>
                     </div>
-                    <div class="driver_row">
-                        <span>En curso</span>
-                        <b>16:12</b>
+                    <div class="overflow_container">
+                        <mat-icon>mail</mat-icon>
+                        <b *ngIf="sale.requestingUser$ | async as userName else noMail">ftorres@distoperu.com</b>
+                        <ng-template #noMail>
+                            <b>000ftorres@distoperu.com00000</b>
+                        </ng-template>
+                    </div>
+                    <div class="actions-container">
+                        <button class="actions" color="accent" 
+                            mat-raised-button type=button>
+                            <mat-icon>place</mat-icon>
+                        </button>
+                        <button class="actions" color="accent" 
+                            mat-raised-button type=button>
+                            <mat-icon>local_phone</mat-icon>
+                        </button>
                     </div>
                 </div>
+                <mat-divider></mat-divider>
                 <div class="status">
-                    <button style="height: 100%; width:100%;" color="accent" 
-                        mat-raised-button type=button>
+                    <div class="overflow_container">
+                        <b *ngIf="sale.requestingUser$ | async as userName else noDocument">Factura FE001-00003</b>
+                        <ng-template #noDocument>
+                            <b>Factura FE001-00003</b>
+                        </ng-template>
+                    </div>
+                    <button style="width:100%;" color="accent" 
+                        mat-flat-button type=button>
                         <b>Pedido</b>
                     </button>
-                </div>
-                <div class="price">
-                    <button style="height: 100%; width:100%;" color="primary"
-                         mat-raised-button type=button>
+                    <button style="width:100%;" color="primary"
+                         mat-flat-button type=button>
                         <b>{{(giveTotalPrice(sale) + sale.deliveryPrice) | currency:'S/.'}}</b>
                     </button>
                 </div>

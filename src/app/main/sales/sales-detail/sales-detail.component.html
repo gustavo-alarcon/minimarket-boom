@@ -100,29 +100,30 @@
                             </mat-icon>
                         </span>
                         <!-- We have promo-->
-                        <div *ngIf="item.get('product').value.promo" class="table-sale__colum">
-                            <p>
-                                {{item.get('product').value.description}} 
-                                <mat-icon style="cursor: pointer; font-size:medium; width:auto"
-                                    matTooltip="Precio: {{item.get('product').value.price | currency: 'S/. '}} por {{item.get('product').value.unit.abbreviation}}">
-                                    info
-                                </mat-icon>
-                                <mat-icon style="cursor: pointer; font-size:medium; width:auto"
-                                    matTooltip="Oferta ({{onFloor(item.get('quantity').value, item.get('product').value.promoData.quantity)}}): 
-                                    {{item.get('product').value.promoData.quantity}} {{(item.get('product').value.unit.abbreviation)}}
-                                    X
-                                    {{item.get('product').value.promoData.promoPrice | currency: 'S/. '}}">
-                                    new_releases
-                                </mat-icon>
-                            </p>
-                        </div>
+                        <span *ngIf="item.get('product').value.promo">
+                            {{item.get('product').value.description}} 
+                            <mat-icon style="cursor: pointer; font-size:medium; width:auto"
+                                matTooltip="Precio: {{item.get('product').value.price | currency: 'S/. '}} por {{item.get('product').value.unit.abbreviation}}">
+                                info
+                            </mat-icon>
+                            <mat-icon style="cursor: pointer; font-size:medium; width:auto"
+                                matTooltip="Oferta ({{onFloor(item.get('quantity').value, item.get('product').value.promoData.quantity)}}): 
+                                {{item.get('product').value.promoData.quantity}} {{(item.get('product').value.unit.abbreviation)}}
+                                X
+                                {{item.get('product').value.promoData.promoPrice | currency: 'S/. '}}">
+                                new_releases
+                            </mat-icon>
+                        </span>
 
                     </td>
                     <!-- price -->
                     <td class="w3-right-align table-sale__td table-sale__td--space">
-                        {{giveProductPrice(item.value) | currency: 'S/. '}}
-                        <!-- S/. <input autocomplete="off" style="width: 54px"
-                            formControlName="price" type="number"required min=0> -->
+                        <span>{{giveProductPrice(item.value) | currency: 'S/. ':'symbol':'2.2-2'}}</span>
+                        <mat-icon class="removeIcon"
+                            color="primary"
+                            (click)="onDeleteProduct(i)">
+                            remove_circle
+                        </mat-icon>
                     </td>
                 </div>
             </tr>
@@ -131,46 +132,53 @@
                 <td class="w3-right-align table-sale__td table-sale__td--border">
                     SubTotal
                 </td>
-                <td class="w3-left-align table-sale__td table-sale__td--border table-sale__td--space">
+                <td class="w3-right-align table-sale__td table-sale__td--border table-sale__td--space"
+                    style="padding-right:32px">
                     <span>{{getTotalPrice() -
-                        getTotalPrice()/1.18*0.18 | currency:'S/. '}}
+                        getTotalPrice()/1.18*0.18 | currency:'S/. ':'symbol':'2.2-2'}}
                     </span>
                 </td>
+
             </tr>
             <tr>
                 <td class="table-sale__td"></td>
                 <td class="w3-right-align table-sale__td">
                     I.G.V
                 </td>
-                <td class="w3-left-align table-sale__td table-sale__td--space">
+                <td class="w3-right-align table-sale__td table-sale__td--space"
+                    style="padding-right:32px">
                     <span>
-                        {{getTotalPrice()/1.18*0.18 | currency:'S/. '}}
+                        {{getTotalPrice()/1.18*0.18 | currency:'S/. ':'symbol':'2.2-2'}}
                     </span>
                 </td>
+
             </tr>
             <tr>
                 <td class="table-sale__td"></td>
                 <td class="w3-right-align table-sale__td">
                     Total
                 </td>
-                <td class="w3-left-align table-sale__td table-sale__td--space">
+                <td class="w3-right-align table-sale__td table-sale__td--space"
+                    style="padding-right:32px">
                     <span>
-                        {{getTotalPrice() | currency:'S/. '}}
+                        {{getTotalPrice() | currency:'S/. ':'symbol':'2.2-2'}}
                     </span>
                 </td>
+
             </tr>
             <tr>
                 <td class="table-sale__td table-sale__td--border"></td>
                 <td class="w3-right-align table-sale__td table-sale__td--border">
                     Delivery
                 </td>
-                <td class="w3-right-align table-sale__td table-sale__td--border table-sale__td--space">
+                <td class="w3-right-align table-sale__td table-sale__td--border table-sale__td--space"
+                    style="padding-right:32px">
                     S/. <input *ngIf="sale.status == saleStatusOptions.attended else readDelivery"
                             autocomplete="off" class="table-sale__input--width" 
                             formControlName="deliveryPrice" type="number"
                             required min=0>
                         <ng-template #readDelivery>
-                            {{this.productForm.get('deliveryPrice').value |number:'1.2-2'}}
+                            {{this.productForm.get('deliveryPrice').value |number:'2.2-2'}}
                         </ng-template>
                 </td>
             </tr>
@@ -355,7 +363,9 @@
         class="w3-block w3-margin-top" mat-raised-button 
         color="accent" type="button" 
         (click)="onSubmitForm(saleStatusOptions.confirmedRequest, user)" 
-        [disabled]="loading$ | async">
+        [disabled]="(loading$ | async) || !productForm.valid || 
+            !productForm.get('productList')['controls']?.length||
+            !confirmedRequestForm.valid">
         <b>Confirmar pedido</b>
     </button>
 
@@ -363,7 +373,7 @@
         class="w3-block w3-margin-top" mat-raised-button 
         color="accent" type="button" 
         (click)="onSubmitForm(saleStatusOptions.confirmedDocument, user)" 
-        [disabled]="(loading$ | async) || !voucherCheckedForm.value">
+        [disabled]="(loading$ | async) || !voucherCheckedForm.valid || !confirmedDocumentForm.valid">
         <b>Confirmar comprobante</b>
     </button>
 

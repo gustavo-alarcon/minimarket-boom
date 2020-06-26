@@ -56,14 +56,14 @@ export class SalesDetailComponent implements OnInit {
   
 
   initForm(){
-    this.now = new Date(this.now.valueOf() + 345600000)
     this.searchProductControl = new FormControl("")
+
     this.productForm = this.fb.group({
       deliveryPrice: [this.sale.deliveryPrice, Validators.required],
       productList: this.fb.array([])
     });
 
-    this.voucherCheckedForm = new FormControl(!!this.sale.voucherChecked);
+    this.voucherCheckedForm = new FormControl(!!this.sale.voucherChecked, Validators.requiredTrue);
 
 
     this.sale.requestedProducts.forEach((product, index) => {
@@ -79,7 +79,8 @@ export class SalesDetailComponent implements OnInit {
       // desiredDate: [this.getDateFromDB(this.sale.requestDate)],
       assignedDate: [
         !this.sale.confirmedRequestData ? null :
-        this.getDateFromDB(this.sale.confirmedRequestData.assignedDate)],
+        this.getDateFromDB(this.sale.confirmedRequestData.assignedDate),
+        Validators.required],
       observation: [
         !this.sale.confirmedRequestData ? null :
         this.sale.confirmedRequestData.observation],
@@ -89,7 +90,8 @@ export class SalesDetailComponent implements OnInit {
       document: [this.sale.document],
       documentNumber: [
         !this.sale.confirmedDocumentData ? null : 
-        this.sale.confirmedDocumentData.documentNumber
+        this.sale.confirmedDocumentData.documentNumber,
+        Validators.required
       ]
     })
 
@@ -163,14 +165,17 @@ export class SalesDetailComponent implements OnInit {
     ).pipe(
       filter(([[prev, curr], config])=> this.getTotalWeight() > config.maxWeight ? true : false),
       tap(([[prev, curr], config])=> {
+
         let changedItemIndex = curr.findIndex(currEl => { 
-          if(prev.find(prevEl => prevEl.product.id != currEl.product.id)){
+          if(prev.find(prevEl => prevEl.product.id == currEl.product.id)){
             return (this.giveProductWeight(currEl) != 
-            this.giveProductWeight(prev.find(prevEl => prevEl.product.id != currEl.product.id)))
+            this.giveProductWeight(prev.find(prevEl => prevEl.product.id == currEl.product.id)))
           } else {
             return false
           }
          });
+
+        console.log(changedItemIndex);
 
         let foundPreviousItem = prev.find((prevEl) => curr[changedItemIndex].product.id == prevEl.product.id);
         this.snackBar.open("No puede aumentar la cantidad. Exceso de peso.", "Aceptar");
@@ -178,6 +183,10 @@ export class SalesDetailComponent implements OnInit {
           .controls[changedItemIndex].get('quantity').setValue(foundPreviousItem.quantity)
       })
     )
+  }
+
+  onDeleteProduct(index: number){
+    (<FormArray>this.productForm.get('productList')).removeAt(index);
   }
 
   confirmVoucherChecked(event: MouseEvent){
