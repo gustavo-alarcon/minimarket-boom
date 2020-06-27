@@ -37,15 +37,15 @@
                     <div style="padding-left: 24px; padding-right: 24px; margin-bottom: 16px;">
                         <mat-divider></mat-divider>
                     </div>
-                    <div class="w3-center">
+                    <div class="w3-center w3-margin-bottom" >
                         <mat-slide-toggle color="primary" (click)="themeService.toggleTheme()">
                             Modo Oscuro
                         </mat-slide-toggle>
                     </div>
                     <!-- <h2 class="menu__title font--primary">menu</h2> -->
-                    <div class="menu">
-                        <button mat-button class="w3-block menu__button" routerLink="configuration"
-                            (click)="toggleSideMenu()">
+                    <div class="menu" *ngIf="auth.user$ | async as user">
+                        <button mat-button *ngIf="user.role == 'Administrador'" class="w3-block menu__button"
+                            routerLink="configuration" (click)="toggleSideMenu()">
                             <mat-icon class="menu__icon">settings</mat-icon>
                             Configuración
                         </button>
@@ -59,18 +59,18 @@
                             <mat-icon class="menu__icon">history</mat-icon>
                             Historial
                         </button>
-                        <button mat-button class="w3-block menu__button" routerLink="products-list"
+                        <button mat-button class="w3-block menu__button" *ngIf="user?.admin" routerLink="products-list"
                             (click)="toggleSideMenu()">
                             <mat-icon class="menu__icon">local_offer</mat-icon>
                             Lista de Productos
                         </button>
-                        <button mat-button class="w3-block menu__button" routerLink="sales"
+                        <button mat-button class="w3-block menu__button" *ngIf="user?.admin" routerLink="sales"
                             (click)="toggleSideMenu()">
                             <mat-icon class="menu__icon">assignment</mat-icon>
                             Ventas
                         </button>
-                        <button mat-button class="w3-block menu__button" routerLink="logistics"
-                            (click)="toggleSideMenu()">
+                        <button mat-button class="w3-block menu__button" *ngIf="user.admin && user.role != 'Vendedora'"
+                            routerLink="logistics" (click)="toggleSideMenu()">
                             <mat-icon class="menu__icon">multiple_stop</mat-icon>
                             Logística
                         </button>

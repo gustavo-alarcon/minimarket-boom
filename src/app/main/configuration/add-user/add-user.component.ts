@@ -83,7 +83,11 @@ export class AddUserComponent implements OnInit {
       name: this.userForm.get('name').value,
       lastName1: this.userForm.get('lastname').value,
       role: this.userForm.get('permits').value,
-      admin: true
+      admin: true,
+      seller: this.userForm.get('permits').value == 'Vendedora',
+      logistic: this.userForm.get('permits').value == 'Logística',
+      accountant: this.userForm.get('permits').value == 'Contabilidad',
+      confi: this.userForm.get('permits').value == 'Administrador'
     }
 
     batch.update(ref, updateData)
