@@ -13,6 +13,10 @@ table {
   opacity: 0.8;
   table-layout: fixed;
 }
+table .quantity{
+  width: 100px;
+
+}
 
 .table-sale {
   width: 100%;
@@ -60,7 +64,7 @@ table {
 .total-div {
   display: flex;
   flex-direction: row;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
   justify-content: space-between;
   align-items: center;
   margin-top: 20px;
@@ -89,7 +93,7 @@ table {
     box-shadow: 0px 5.66077px 5.66077px rgba(0, 0, 0, 0.25);
     border-radius: 20px;
     font-weight: 900;
-    font-size: 33.9646px;
+    font-size: 30px;
     line-height: 41px;
     display: flex;
     align-items: center;
@@ -132,4 +136,9 @@ table {
     }
   }
   
+}
+@media(max-width: 601px){
+  table .quantity{
+    width: unset;
+  }
 }

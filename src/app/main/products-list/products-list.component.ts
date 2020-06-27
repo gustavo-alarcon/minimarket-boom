@@ -48,7 +48,7 @@ export class ProductsListComponent implements OnInit {
 
 
   //Variables
-  defaultImage = "../../../assets/images/default-image.jpg";
+  defaultImage = "../../../assets/images/Disto_Logo1.png";
 
   //noResult
   noResult$: Observable<string>;

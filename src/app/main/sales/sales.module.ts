@@ -27,6 +27,7 @@ import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { Ng2ImgMaxModule } from 'ng2-img-max';
 import { SalesAddressDialogComponent } from './sales-address-dialog/sales-address-dialog.component';
 import { AgmCoreModule } from '@agm/core';
+import {LazyLoadImageModule} from 'ng-lazyload-image';
 
 
 
@@ -62,6 +63,7 @@ import { AgmCoreModule } from '@agm/core';
     MatDialogModule,
     MatProgressBarModule,
     Ng2ImgMaxModule,
+    LazyLoadImageModule.forRoot(),
     AgmCoreModule.forRoot({
       apiKey: 'AIzaSyA2tVXwzAQc5Ppj8-oTEuYBCFyJp39Hz7s'
     })

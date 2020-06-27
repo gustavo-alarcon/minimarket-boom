@@ -141,7 +141,7 @@ export class SalesMasterComponent implements OnInit {
     let table_xlsx: any[] = [];
     let headersXlsx = [
       'Correlativo', 
-      //'Usuario', 
+      'Usuario', 
       'Estado', 
       'Teléfono', 
       'Dirección', 
@@ -160,15 +160,19 @@ export class SalesMasterComponent implements OnInit {
       //'Fecha de Confirmación de Delivery', 
       //'Fecha de Asignación de Conductor', 
       //'Fecha de Entrega',
-      'Fecha de Cancelación']
+      'Fecha de Cancelación',
+      'Sub Total', 'IGV', 'Total', 'Delivery', 'Total + Delivery',
+      'Producto', 'Cantidad', 'Unidad', 'Precio']
 
     table_xlsx.push(headersXlsx);
 
     sales.forEach(sale => {
       const temp = [
         sale.correlative.toString().padStart(6, "0"),
-        //"Quedar con Melanie",
-        //sale.createdBy.displayName,
+        sale.user.name ? sale.user.lastName1 ? sale.user.lastName2 ? 
+        sale.user.name+" "+sale.user.lastName1+" "+sale.user.lastName2 : 
+        sale.user.name+" "+sale.user.lastName1 : sale.user.name :
+        (sale.user.displayName ? sale.user.displayName : "Sin nombre"),
         sale.status,
         sale.location.phone,
         sale.location.address,
@@ -188,9 +192,24 @@ export class SalesMasterComponent implements OnInit {
         //sale.driverAssignedData ? this.getXlsDate(sale.driverAssignedData.assignedAt) : "---",
         //sale.finishedData ? this.getXlsDate(sale.finishedData.finishedAt) : "---",
         sale.cancelledData ? this.getXlsDate(sale.cancelledData.cancelledAt) : "---",
+        "S/. "+(this.giveTotalPrice(sale) -this.giveTotalPrice(sale)/1.18*0.18).toFixed(2),
+        "S/. "+(this.giveTotalPrice(sale)/1.18*0.18).toFixed(2),
+        "S/. "+(this.giveTotalPrice(sale)).toFixed(2),
+        "S/. "+(sale.deliveryPrice).toFixed(2),
+        "S/. "+(this.giveTotalPrice(sale) + sale.deliveryPrice).toFixed(2),
       ];
+//      'Producto', 'Cantidad', 'Precio'
 
-      table_xlsx.push(temp);
+      sale.requestedProducts.forEach(prod => {
+        let temp2 = [
+          ...temp,
+          prod.quantity,
+          prod.product.unit.abbreviation,
+          prod.product.description,
+          "S/. "+this.givePrice(prod).toFixed(2)
+        ]
+        table_xlsx.push(temp2);
+      })
     })
 
     /* generate worksheet */
@@ -261,6 +280,7 @@ export class SalesMasterComponent implements OnInit {
   giveTotalPrice(sale: Sale): number{
     return sale.requestedProducts.reduce((a,b) => a + this.givePrice(b), 0)
   }
+
   giveTotalSalesPrice(sales: Sale[]): number {
     return sales.reduce((a,b)=> a + this.giveTotalPrice(b), 0)
   }

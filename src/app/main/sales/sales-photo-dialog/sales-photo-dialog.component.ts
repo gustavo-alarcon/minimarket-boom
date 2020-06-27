@@ -17,6 +17,8 @@ import { DatabaseService } from 'src/app/core/services/database.service';
 export class SalesPhotoDialogComponent implements OnInit {
   saleStatusOptions = new saleStatusOptions()
 
+  defaultImage = "../../../../assets/images/Disto_Logo1.png";
+
   photoFormArray: FormArray = new FormArray([])
   loading$: BehaviorSubject<boolean> = new BehaviorSubject(false);
 
