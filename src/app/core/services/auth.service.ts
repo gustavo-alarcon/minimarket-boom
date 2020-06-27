@@ -20,9 +20,9 @@ export const facebookProvider = new firebase.auth.FacebookAuthProvider();
 })
 export class AuthService {
 
-  user$: Observable<User>;
+  public user$: Observable<User>;
 
-  authLoader: boolean = false;
+  public authLoader: boolean = false;
 
   constructor(
     private afAuth: AngularFireAuth,
@@ -52,19 +52,19 @@ export class AuthService {
       )
   }
 
-  signInEmail(email: string, pass: string): Promise<any> {
+  public signInEmail(email: string, pass: string): Promise<any> {
     return this.afAuth.signInWithEmailAndPassword(email, pass);
   }
 
-  signUp(data: any): Promise<any> {
+  public signUp(data: any): Promise<any> {
     return this.afAuth.createUserWithEmailAndPassword(data.email, data.pass);
   }
 
-  resetPassword(email:string){
+  public resetPassword(email:string){
     return this.afAuth.sendPasswordResetEmail(email)
   }
 
-  signIn(type: string): Promise<void | firebase.auth.UserCredential> {
+  public signIn(type: string): Promise<void | firebase.auth.UserCredential> {
     let provider = null;
 
     switch (type) {

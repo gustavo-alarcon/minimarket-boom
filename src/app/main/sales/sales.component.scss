@@ -23,6 +23,12 @@
   padding: 24px 16px
 }
 
+@media(max-width: 601px){
+  .totalPrice {
+    font-size: 7vw
+  }
+}
+
 .containerDesktop{
   display: flex;
   justify-content: flex-start;
@@ -32,7 +38,7 @@
   display: none;
 }
 
-@media(max-width: 993px) {
+@media(max-width: 1165px) {
   .containerDesktop{
     display: none
   }

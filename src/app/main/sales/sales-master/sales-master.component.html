@@ -20,7 +20,7 @@
       </mat-form-field>
       <ng-container *ngIf="salesFiltered$ | async as salesFiltered">
           <button (click)="downloadXls(salesFiltered)" mat-raised-button [disabled]="!salesFiltered.length"
-              color="accent" type="button">
+              color="accent" type="button" class="content">
               Descargar Excel
           </button>
       </ng-container>
@@ -102,56 +102,104 @@
                     <div style="font-size: 24px;">
                         <b>#{{sale.correlativeType}}{{getCorrelative(sale.correlative)}}</b>
                     </div>
-                    <div>
+                    <div class="overflow_container">
                         <mat-icon style="font-size:20px;"
                             color="primary">assignment_ind</mat-icon>
-                        Paola Ruiz
+                        <span *ngIf="sale.attendedData else noAttended">
+                            <ng-container *ngIf="sale.attendedData.attendedBy.name else displayName">
+                                {{sale.attendedData.attendedBy.name+" "+sale.attendedData.attendedBy?.lastName1}}
+                            </ng-container>
+                            <ng-template #displayName>
+                                <span>{{sale.attendedData.attendedBy?.displayName}}</span>
+                            </ng-template>
+                        </span>
+                        <ng-template #noAttended>
+                            <span>Sin Atender</span>
+                        </ng-template>
                     </div>
                     <div>
                         <mat-icon style="font-size:20px;"
                             color="primary">assignment_turned_in</mat-icon>
-                        01/06/2020
+                        {{sale.createdAt['seconds']*1000 | date:'dd/MM/yyyy'}}
                     </div>
                     <div>
                         <mat-icon style="font-size:20px;"
-                            color="primary">directions_bike</mat-icon>
-                        21/10/2020
+                            color="primary">assignment_turned_in</mat-icon>
+                        <span *ngIf="sale.confirmedRequestData else noConfirmedRequest">
+                            {{sale.confirmedRequestData?.assignedDate['seconds']*1000 | date:'dd/MM/yyyy'}}
+                        </span>
+                        <ng-template #noConfirmedRequest>
+                            <span>"---"</span>
+                        </ng-template>
                     </div>
                 </div>
+                <div class="divider"></div>
                 <div class="client">
-                    <mat-icon>group</mat-icon>
-                    <b *ngIf="sale.requestingUser$ | async as userName else noUser"> {{userName}}</b>
-                    <ng-template #noUser>
-                        <b>Sin Nombre</b>
-                    </ng-template>
-                </div>
-                <div class="document">
-                    <b>Agregar comprobante</b>
-                </div>
-                <div class="driver">
-                    <div class="driver_header">
-                        <mat-icon>directions_bike</mat-icon>
-                        <span>José Romero</span>
-                        <mat-icon>phone_in_talk</mat-icon>
+                    <div class="overflow_container">
+                        <mat-icon>group</mat-icon>
+                        <b *ngIf="sale.user else noUser"> 
+                            <ng-container *ngIf="sale.user?.name else userDisplayName">
+                                {{sale.user.name+" "+sale.user?.lastName1}}
+                            </ng-container>
+                            <ng-template #userDisplayName>
+                                {{sale.user?.displayName}}
+                            </ng-template>
+                        </b>
+                        <ng-template #noUser>
+                            <b>Sin Nombre</b>
+                        </ng-template>
                     </div>
-                    <div class="driver_row">
-                        <span>Asignado</span>
-                        <b>14:21</b>
+                    <div class="overflow_container">
+                        <mat-icon>chrome_reader_mode</mat-icon>
+                        <b *ngIf="sale.location?.phone else noNumber">
+                            {{sale.location?.phone}}
+                        </b>
+                        <ng-template #noNumber>
+                            <b>00000000</b>
+                        </ng-template>
                     </div>
-                    <div class="driver_row">
-                        <span>En curso</span>
-                        <b>16:12</b>
+                    <div class="overflow_container">
+                        <mat-icon>mail</mat-icon>
+                        <b *ngIf="sale.user?.email else noMail">
+                            {{sale.user?.email}}
+                        </b>
+                        <ng-template #noMail>
+                            <b>Sin correo</b>
+                        </ng-template>
+                    </div>
+                    <div class="actions-container">
+                        <button class="actions" color="accent" 
+                            (click)="onCheckDirection(sale, $event)"
+                            mat-raised-button type=button>
+                            <mat-icon>place</mat-icon>
+                        </button>
+                        <a class="actions" [href]="'tel:'+sale.location.phone"
+                            (click)="$event.stopPropagation()">
+                            <button style="width:100%" color="accent" 
+                                mat-raised-button type=button>
+                                <mat-icon>local_phone</mat-icon>
+                            </button>
+                        </a>
+
                     </div>
                 </div>
+                <div class="divider"></div>
                 <div class="status">
-                    <button style="height: 100%; width:100%;" color="accent" 
-                        mat-raised-button type=button>
-                        <b>Pedido</b>
+                    <div class="overflow_container">
+                        <b *ngIf="sale.confirmedDocumentData  else noDocument">
+                            {{sale.document |titlecase}}{{" "+ sale.confirmedDocumentData.documentNumber}}
+                        </b>
+                        <ng-template #noDocument>
+                            <b>Agregar Comprobante</b>
+                        </ng-template>
+                    </div>
+                    <button color="accent" 
+                        style="overflow: auto;"
+                        mat-flat-button type=button>
+                        <b>{{sale.status}}</b>
                     </button>
-                </div>
-                <div class="price">
-                    <button style="height: 100%; width:100%;" color="primary"
-                         mat-raised-button type=button>
+                    <button color="primary"
+                         mat-flat-button type=button>
                         <b>{{(giveTotalPrice(sale) + sale.deliveryPrice) | currency:'S/.'}}</b>
                     </button>
                 </div>
