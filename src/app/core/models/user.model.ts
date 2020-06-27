@@ -7,8 +7,11 @@ export interface User {
   name?: string;
   lastName1?: string;
   lastName2?: string;
+  completeName?: string;
   displayName?: string;
   token?: string;
+  admin?: boolean;
+  role?: string;
   lastLogin?: Date;
   contact?: {
     address: string;
@@ -18,7 +21,7 @@ export interface User {
     };
     coord: {
       lat: number;
-      long: number;
+      lng: number;
     };
     reference: string;
     phone: number;

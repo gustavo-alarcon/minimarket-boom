@@ -18,10 +18,6 @@ const routes: Routes = [
         loadChildren: () => import('./logistics-fabric/logistics-fabric.module').then(mod => mod.LogisticsFabricModule)
       },
       {
-        path: 'availability',
-        loadChildren: () => import('./logistics-availability/logistics-availability.module').then(mod => mod.LogisticsAvailabilityModule)
-      },
-      {
         path: 'returns',
         loadChildren: () => import('./logistics-returns/logistics-returns.module').then(mod => mod.LogisticsReturnsModule)
       },

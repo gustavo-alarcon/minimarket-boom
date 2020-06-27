@@ -5,8 +5,8 @@ import { AngularFirestore } from '@angular/fire/firestore';
 import { Sale, SaleRequestedProducts } from './../../../core/models/sale.model';
 import { Ng2ImgMaxService } from 'ng2-img-max';
 import { DatabaseService } from 'src/app/core/services/database.service';
-import { tap, take, takeLast } from 'rxjs/operators';
-import { Observable, BehaviorSubject, forkJoin } from 'rxjs';
+import { tap, take, takeLast, map } from 'rxjs/operators';
+import { Observable, BehaviorSubject, forkJoin, combineLatest } from 'rxjs';
 import { AuthService } from 'src/app/core/services/auth.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
@@ -26,6 +26,8 @@ export class PurchaseComponent implements OnInit {
   userData$: Observable<any>
   user: User = null
 
+  init$: Observable<any>
+
   name: boolean = false
   total: number = 0
   delivery: number = 4
@@ -36,29 +38,9 @@ export class PurchaseComponent implements OnInit {
 
   photosList: Array<any> = []
 
-  payType: Array<any> = [
-    { name: 'Yape', account: '987880986', image: '../../../../assets/images/logo-yape-min.png' },
-    { name: 'BCP', account: '215-56894578-69-73', image: '../../../../assets/images/bcp-logo.png' },
-    { name: 'Interbank', account: '215-56894578-69-73', image: '../../../../assets/images/logo_Interbank.png' }
-  ]
-
+  payType: Array<any>
   documents: Array<string> = ['Boleta', 'Factura']
-  districts: Array<any> = [{
-    name: 'Cercado',
-    delivery: 5
-  },
-  {
-    name: 'Miraflores',
-    delivery: 4
-  },
-  {
-    name: 'Paucarpata',
-    delivery: 7
-  },
-  {
-    name: 'Alto Selva Alegre',
-    delivery: 6
-  }]
+  districts: Array<any>
 
   now: Date
 
@@ -92,18 +74,29 @@ export class PurchaseComponent implements OnInit {
     let date = new Date()
     this.now = new Date(date.getTime() + (345600000))
 
+    this.init$ = this.dbs.getGeneralConfigDoc().pipe(
+      tap(res => {
+        this.payType = res['payments']
+        this.districts = res['districts']
+      })
+    )
+
     this.payFormGroup = this.fb.group({
       pay: [null, [Validators.required]],
       typePay: [null, [Validators.required]],
       photoURL: [null, [Validators.required]]
     });
 
-    this.userData$ = this.auth.user$.pipe(
+    this.userData$ = combineLatest(
+      this.dbs.getUsers(),
+      this.auth.user$
+    ).pipe(
+      map(([users, id]) => {
+        return users.filter(el => el.uid == id.uid)[0]
+      }),
       tap(res => {
         this.user = res
-
-        if (res['salesCount'] > 0) {
-
+        if (res['name']) {
           this.firstFormGroup = this.fb.group({
             email: [res['email'], [Validators.required, Validators.email]],
             dni: [res['dni'], [Validators.required, Validators.minLength(8)]],
@@ -113,8 +106,9 @@ export class PurchaseComponent implements OnInit {
             phone: [res.contact.phone, [Validators.required, Validators.minLength(6)]],
           });
 
+          this.firstFormGroup.get('email').disable()
+
           this.secondFormGroup = this.fb.group({
-            date: [null, [Validators.required]],
             address: [res.contact.address, [Validators.required]],
             district: [res.contact.district, [Validators.required]],
             ref: [res.contact.reference, [Validators.required]]
@@ -135,8 +129,9 @@ export class PurchaseComponent implements OnInit {
             phone: [null, [Validators.required, Validators.minLength(6)]],
           });
 
+          this.firstFormGroup.get('email').disable()
+
           this.secondFormGroup = this.fb.group({
-            date: [null, [Validators.required]],
             address: [null, [Validators.required]],
             district: [null, [Validators.required]],
             ref: [null, [Validators.required]]
@@ -146,7 +141,6 @@ export class PurchaseComponent implements OnInit {
             this.name = true
           }
         }
-
       })
     )
 
@@ -248,7 +242,7 @@ export class PurchaseComponent implements OnInit {
         },
         phone: this.firstFormGroup.get('phone').value
       },
-      requestDate: this.secondFormGroup.get('date').value,
+      requestDate: null,
       createdAt: new Date(),
       createdBy: null,
       user: this.user,

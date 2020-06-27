@@ -44,6 +44,11 @@
                     </div>
                     <!-- <h2 class="menu__title font--primary">menu</h2> -->
                     <div class="menu">
+                        <button mat-button class="w3-block menu__button" routerLink="configuration"
+                            (click)="toggleSideMenu()">
+                            <mat-icon class="menu__icon">settings</mat-icon>
+                            Configuración
+                        </button>
                         <button mat-button class="w3-block menu__button" routerLink="products"
                             (click)="toggleSideMenu()">
                             <mat-icon class="menu__icon">local_offer</mat-icon>

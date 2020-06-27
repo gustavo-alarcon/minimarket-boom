@@ -1,15 +1,13 @@
 import { User } from 'src/app/core/models/user.model';
 import { AuthService } from 'src/app/core/services/auth.service';
-import { MatDialog, MatDialogRef } from '@angular/material/dialog';
-import { map, startWith, filter, take, tap } from 'rxjs/operators';
+import { MatDialog } from '@angular/material/dialog';
+import { map, startWith, filter, tap } from 'rxjs/operators';
 import { FormControl } from '@angular/forms';
 import { DatabaseService } from 'src/app/core/services/database.service';
 import { Observable, combineLatest } from 'rxjs';
-import { Component, OnInit } from '@angular/core';
-import { MatSnackBar } from '@angular/material/snack-bar';
+import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
 import { Product } from 'src/app/core/models/product.model';
 import { LoginDialogComponent } from '../login-dialog/login-dialog.component';
-
 @Component({
   selector: 'app-products',
   templateUrl: './products.component.html',
@@ -23,17 +21,20 @@ export class ProductsComponent implements OnInit {
 
   name: string = ''
   delivery: number = 4
+  maxWeight: number = 3
 
   searchForm: FormControl = new FormControl('')
 
   defaultImage = "../../../assets/images/default-image.jpg";
 
+  @ViewChild("movilForm", { static: false }) searchbar: ElementRef;
+  @ViewChild("slogan", { static: false }) slogan: ElementRef;
+
   p: number = 1;
   constructor(
     public dbs: DatabaseService,
     private dialog: MatDialog,
-    public auth: AuthService,
-    private snackBar: MatSnackBar
+    public auth: AuthService
   ) { }
 
   ngOnInit(): void {
@@ -64,7 +65,15 @@ export class ProductsComponent implements OnInit {
       })
     )
 
-    this.init$ = this.auth.user$.pipe(
+    this.init$ = combineLatest(
+      this.dbs.getUsers(),
+      this.auth.user$,
+      this.dbs.getGeneralConfigDoc()
+    ).pipe(
+      map(([users, id, confi]) => {
+        this.maxWeight = confi['maxWeight']
+        return users.filter(el => el.uid == id.uid)[0]
+      }),
       tap(res => {
         if (res) {
           if (res['salesCount']) {
@@ -79,6 +88,7 @@ export class ProductsComponent implements OnInit {
     )
 
     this.dbs.total = this.dbs.order.map(el => this.giveProductPrice(el)).reduce((a, b) => a + b, 0)
+
   }
 
 
@@ -121,11 +131,13 @@ export class ProductsComponent implements OnInit {
 
   back() {
     this.dbs.view.next(1)
+    this.p = 1
     this.dbs.total = this.dbs.order.map(el => this.giveProductPrice(el)).reduce((a, b) => a + b, 0)
   }
 
   finish() {
     this.dbs.view.next(3)
+    this.p = 1
     localStorage.clear()
   }
 

@@ -1,62 +1,100 @@
-<div class="w3-section w3-hide-large w3-hide-medium">
-    <div class="w3-padding" *ngIf="(dbs.view$|async)==1">
-        <div class="formFieldRounded">
-            <mat-form-field appearance="outline" class="w3-block">
-                <mat-label>Buscar</mat-label>
-                <input matInput [formControl]="searchForm" placeholder="Buscar Producto" autocomplete="off">
-                <mat-icon matPrefix style="vertical-align: middle;margin-right: 5px;">search</mat-icon>
-            </mat-form-field>
+<div class="w3-section w3-margin-left w3-margin-right">
+    <div class="w3-row">
+        <div class="w3-col s0 m1 l1">
+            <p></p>
         </div>
-        <div *ngIf="products$ | async as products">
-            <app-product-div [product]="product" [buttonAdd]="true"
-                *ngFor="let product of products| paginate: { itemsPerPage: 10, currentPage: p }"></app-product-div>
+        <div class="w3-col s12 m10 l10">
+            <div *ngIf="(dbs.view$|async)==1">
+                <div class="ms-flex" style="align-items: baseline;">
+                    <div class="formFieldRounded w3-block" style="max-width: 400px;">
+                        <mat-form-field appearance="outline" class="w3-block">
+                            <mat-label>Buscar</mat-label>
+                            <input matInput [formControl]="searchForm" placeholder="Buscar Producto" autocomplete="off">
+                            <mat-icon matPrefix style="vertical-align: middle;margin-right: 5px;">search</mat-icon>
+                        </mat-form-field>
+                    </div>
+                    <span class="ms-fill"></span>
+                    <button mat-raised-button class="w3-hide-small buttonNoRounded" color="accent"
+                        style="height: 40px; padding: 0 20px;" (click)="dbs.total>0?shoppingCart():''">
+                        <span style="font-size: 1.5em;">🛒</span>
+                        <span style="font-size: 1em;" *ngIf="dbs.total>0"> S/.
+                            {{dbs.total | number: '.2'}}</span>
+                    </button>
+                </div>
+                <mat-divider class="w3-margin-bottom w3-hide-small"></mat-divider>
+                <div *ngIf="products$ | async as products" class="ms-flex" style="justify-content: space-between;">
+                    <app-product-div [product]="product" [buttonAdd]="true" [maxWeight]="maxWeight"
+                        *ngFor="let product of products| paginate: { itemsPerPage: 12, currentPage: p }">
+                    </app-product-div>
 
-            <div style="display: flex; width: 100%; justify-content: flex-end;" *ngIf="products$ | async ">
-                <pagination-controls (pageChange)="p = $event" previousLabel="" nextLabel="" maxSize="6">
-                </pagination-controls>
+                    <div style="display: flex; width: 100%; justify-content: flex-end;" *ngIf="products.length > 12">
+                        <pagination-controls (pageChange)="p = $event" previousLabel="" nextLabel="" maxSize="6">
+                        </pagination-controls>
+                    </div>
+                </div>
+                <p *ngIf="init$ | async"></p>
             </div>
+            <div *ngIf="(dbs.view$|async)==2" style="max-width: 400px;">
+                <div class="ms-flex ms-flex--center">
+                    <button mat-icon-button style="margin-left: -10px; margin-top: -10px;" (click)="back()">
+                        <mat-icon>keyboard_backspace</mat-icon>
+                    </button>
+                    <h2 class="title2 w3-margin-left">Lista de compras 🛒</h2>
+                </div>
+                <app-shopping-cart [delivery]="delivery" [order]="dbs.order" [modified]="true"></app-shopping-cart>
+
+                <button *ngIf="auth.user$ | async; else register" mat-raised-button color="accent" class="w3-block"
+                    (click)="finish()" style=" font-weight: bold;">
+                    Continuar con la compra
+                    <mat-icon class="w3-margin-left">arrow_forward</mat-icon>
+                </button>
+                <ng-template #register>
+                    <button mat-raised-button color="accent" class="w3-block" (click)="login()"
+                        style=" font-weight: bold;">
+                        Continuar con la compra
+                        <mat-icon class="w3-margin-left">arrow_forward</mat-icon>
+                    </button>
+                </ng-template>
+            </div>
+            <div *ngIf="(dbs.view$|async)==3">
+                <div class="ms-flex ms-flex--center" *ngIf="init$ | async as user">
+                    <button mat-icon-button style="margin-left: -10px; margin-top: -10px;" (click)="shoppingCart()">
+                        <mat-icon>keyboard_backspace</mat-icon>
+                    </button>
+                    <h2 *ngIf="firstSale" class="title2">Es tu primera compra 😊</h2>
+                    <h2 *ngIf="!firstSale" class="title2">Hola, {{name}} 😊</h2>
+                </div>
+                <p *ngIf="firstSale">Hola cheese lover, gracias por tu preferencia. Comencemos anotando tus datos</p>
+                <p *ngIf="!firstSale">Gracias por volver a comprar nuestros productos</p>
+                <div class="ms-flex">
+                    <div style="max-width: 500px;">
+                        <app-purchase></app-purchase>
+                    </div>
+                    <span class="ms-fill"></span>
+                    <mat-card class="w3-hide-small" style="min-width: 400px; padding: 0 16px;">
+                        <app-shopping-cart [delivery]="delivery" [order]="dbs.order" [modified]="false">
+                        </app-shopping-cart>
+                    </mat-card>
+
+                </div>
+
+            </div>
+
+
         </div>
-        <p *ngIf="init$ | async"></p>
-        <div class="fly-button" *ngIf="dbs.total>0">
-            <div class="shopping-button" (click)="shoppingCart()">
-                <span class="shopping-button__icon">🛒</span>
-                <div class="shopping-button__total">
-                    <span style="font-size: 0.7em">S/. </span>
-                    {{dbs.total | number: '.2'}}</div>
-            </div>
+        <div class="w3-col s0 m1 l1">
+            <p></p>
         </div>
     </div>
-    <div class="w3-padding" *ngIf="(dbs.view$|async)==2">
-        <div class="ms-flex ms-flex--center">
-            <button mat-icon-button style="margin-left: -10px; margin-top: -10px;" (click)="back()">
-                <mat-icon>keyboard_backspace</mat-icon>
-            </button>
-            <h2 class="title2 w3-margin-left">Lista de compras 🛒</h2>
-        </div>
-        <app-shopping-cart [delivery]="delivery" [order]="dbs.order" [modified]="true"></app-shopping-cart>
 
-        <button *ngIf="auth.user$ | async; else register" mat-raised-button color="accent" class="w3-block"
-            (click)="finish()" style=" font-weight: bold;">
-            Continuar con la compra
-            <mat-icon class="w3-margin-left">arrow_forward</mat-icon>
-        </button>
-        <ng-template #register>
-            <button mat-raised-button color="accent" class="w3-block" (click)="login()" style=" font-weight: bold;">
-                Continuar con la compra
-                <mat-icon class="w3-margin-left">arrow_forward</mat-icon>
-            </button>
-        </ng-template>
-    </div>
-    <div class="w3-padding" *ngIf="(dbs.view$|async)==3">
-        <div class="ms-flex ms-flex--center" *ngIf="init$ | async as user">
-            <button mat-icon-button style="margin-left: -10px; margin-top: -10px;" (click)="shoppingCart()">
-                <mat-icon>keyboard_backspace</mat-icon>
-            </button>
-            <h2 *ngIf="firstSale" class="title2">Es tu primera compra 😊</h2>
-            <h2 *ngIf="!firstSale" class="title2">Hola, {{name}} 😊</h2>
+</div>
+<div *ngIf="(dbs.view$|async)==1" class="w3-hide-large  w3-hide-medium">
+    <div class="fly-button" *ngIf="dbs.total>0">
+        <div class="shopping-button" (click)="shoppingCart()">
+            <span class="shopping-button__icon">🛒</span>
+            <div class="shopping-button__total">
+                <span style="font-size: 0.7em">S/. </span>
+                {{dbs.total | number: '.2'}}</div>
         </div>
-        <p *ngIf="firstSale">Hola cheese lover, gracias por tu preferencia. Comencemos anotando tus datos</p>
-        <p *ngIf="!firstSale">Gracias por volver a comprar nuestros productos</p>
-        <app-purchase></app-purchase>
     </div>
 </div>

@@ -13,8 +13,7 @@ export class LogisticsComponent implements OnInit {
 
   links = [
     { name: 'Fábrica', route: 'fabric' },   
-    { name: 'Devoluciones', route: 'returns' },
-    { name: 'Disponibilidad', route: 'availability' }
+    { name: 'Devoluciones', route: 'returns' }
   ];
 
   activeLink = this.links[0];
