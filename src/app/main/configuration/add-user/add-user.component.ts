@@ -23,6 +23,8 @@ export class AddUserComponent implements OnInit {
 
   filteredUsers$: Observable<User[]>;
 
+  selectedUser: User
+
   constructor(
     private dialogRef: MatDialogRef<AddUserComponent>,
     private fb: FormBuilder,
@@ -55,18 +57,47 @@ export class AddUserComponent implements OnInit {
 
   }
 
-  selectUser(option:User){
-    console.log(option);
-    if(option.name){
+  selectUser(option: User) {
+    this.selectedUser = option
+    if (option.name) {
       this.userForm.get('name').setValue(option.name)
       this.userForm.get('lastname').setValue(option.lastName1)
+    } else {
+      if (option.displayName) {
+        this.userForm.get('name').setValue(option.displayName)
+        this.userForm.get('lastname').setValue(null)
+      }
     }
-    
+
   }
+
   save() {
     this.userForm.markAsPending();
     this.userForm.disable()
     this.loading.next(true)
+    const ref: DocumentReference = this.afs.firestore.collection(`users`).doc(this.selectedUser.uid);
+    const batch = this.afs.firestore.batch();
+
+    let updateData = {
+      completeName: this.userForm.value['name'].split(" ", 1)[0] + ' ' + this.userForm.value['lastname'].split(" ", 1)[0],
+      name: this.userForm.get('name').value,
+      lastName1: this.userForm.get('lastname').value,
+      role: this.userForm.get('permits').value,
+      admin: true
+    }
+
+    batch.update(ref, updateData)
+
+    batch.commit()
+      .then(() => {
+        this.loading.next(false)
+        this.dialogRef.close();
+        this.snackBar.open("Usuario agregado!", "Cerrar");
+      })
+      .catch(err => {
+        console.log(err);
+        this.snackBar.open("Ups! parece que hubo un error ...", "Cerrar");
+      })
   }
 
   showSelectedUser(staff): string | undefined {
@@ -76,9 +107,9 @@ export class AddUserComponent implements OnInit {
   emailRepeatedValidator() {
     return (control: AbstractControl) => {
       const value = control.value;
-      if(typeof value == 'string'){
+      if (typeof value == 'string') {
         return of({ emailRepeatedValidator: true })
-      }else{
+      } else {
         return of(null)
       }
     }

@@ -102,7 +102,7 @@ $disto-productos-dark-theme: mat-dark-theme($disto-productos-primary, $disto-pro
 }
 
 .shadow-color {
-  background-color: #F2F2F2;
+  background-color: #fafafa;
 }
 
 .dark-theme {
@@ -273,7 +273,7 @@ a {
       border-radius: 0 20px 20px 0 !important;
     }
   }
-  button {
+  button:not([class*=mat-normal]) {
     font-weight: bold;
     height: 45px;
   }

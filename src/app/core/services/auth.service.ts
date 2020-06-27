@@ -38,7 +38,6 @@ export class AuthService {
     this.user$ =
       this.afAuth.authState.pipe(
         switchMap(user => {
-          console.log(user)
           if (user) {
             this.updateUserData(user);
             return this.afs.collection('users').doc<User>(user.uid)
@@ -98,13 +97,11 @@ export class AuthService {
     const data = {
       uid: user.uid,
       email: user.email,
-      // phone: user.phone,
       displayName: user.displayName,
       photoURL: user.photoURL,
       lastLogin: new Date(),
       lastBrowser: [key.length ? key.join(", ") : "empty", navigator.userAgent]
     }
-    //this.router.navigateByUrl("/main/productos");
     return userRef.set(data, { merge: true });
   }
 

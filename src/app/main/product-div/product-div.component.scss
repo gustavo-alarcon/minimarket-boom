@@ -47,7 +47,6 @@
     &__etiquet {
         font-size: 0.7em;
         color: #bdbdbd;
-        max-width: 35vw;
     }
 
     &__price {
@@ -81,5 +80,25 @@
         margin-top: 5px;
         padding: 3px;
         font-weight: bold;
+    }
+}
+
+@media only screen and (min-width: 1160px) {
+    .product {
+        width: 25vw;
+        min-width: 305px;
+    }
+}
+
+@media only screen and (max-width: 1159px)and (min-width: 800px) {
+    .product {
+        max-width: 410px;
+        width: 38vw;
+    }
+}
+
+@media only screen and (max-width: 799px){
+    .product {
+        width: 100%;
     }
 }

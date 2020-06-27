@@ -1,3 +1,4 @@
+import { User } from 'src/app/core/models/user.model';
 import { AngularFirestore, DocumentReference } from '@angular/fire/firestore';
 import { take, map } from 'rxjs/operators';
 import { MatSnackBar } from '@angular/material/snack-bar';
@@ -32,7 +33,7 @@ export class CreateUserComponent implements OnInit {
     private snackBar: MatSnackBar,
     private afs: AngularFirestore,
     private http: HttpClient,
-    @Inject(MAT_DIALOG_DATA) public data: { item: any, edit: boolean }
+    @Inject(MAT_DIALOG_DATA) public data: { item: User, edit: boolean }
   ) {
 
     this.httpOptions = {
@@ -43,13 +44,25 @@ export class CreateUserComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.userForm = this.fb.group({
-      email: [null, [Validators.required, Validators.email], [this.emailRepeatedValidator()]],
-      pass: [null, [Validators.required, Validators.minLength(6)]],
-      name: [null, Validators.required],
-      lastname: [null, Validators.required],
-      permits: [null, Validators.required]
-    })
+    if (this.data.edit) {
+      this.userForm = this.fb.group({
+        email: [this.data.item.email, [Validators.required, Validators.email], [this.emailRepeatedValidator()]],
+        name: [this.data.item.name, Validators.required],
+        lastname: [this.data.item.lastName1, Validators.required],
+        permits: [this.data.item.role, Validators.required]
+      })
+
+      this.userForm.get('email').disable()
+    } else {
+      this.userForm = this.fb.group({
+        email: [null, [Validators.required, Validators.email], [this.emailRepeatedValidator()]],
+        pass: [null, [Validators.required, Validators.minLength(6)]],
+        name: [null, Validators.required],
+        lastname: [null, Validators.required],
+        permits: [null, Validators.required]
+      })
+    }
+
 
   }
 
@@ -57,7 +70,13 @@ export class CreateUserComponent implements OnInit {
     this.userForm.markAsPending();
     this.userForm.disable()
     this.loading.next(true)
-    this.create()
+
+    if (this.data.edit) {
+      this.edit()
+    } else {
+      this.create()
+    }
+
   }
 
   showSelectedUser(staff): string | undefined {
@@ -75,6 +94,29 @@ export class CreateUserComponent implements OnInit {
     }
   }
 
+  edit() {
+    const ref: DocumentReference = this.afs.firestore.collection(`users`).doc(this.data.item.uid);
+    const batch = this.afs.firestore.batch();
+    let updateData = {
+      completeName: this.userForm.value['name'].split(" ", 1)[0] + ' ' + this.userForm.value['lastname'].split(" ", 1)[0],
+      name: this.userForm.get('name').value,
+      lastName1: this.userForm.get('lastname').value,
+      role: this.userForm.get('permits').value,
+    }
+
+    batch.update(ref, updateData)
+
+    batch.commit()
+      .then(() => {
+        this.loading.next(false)
+        this.dialogRef.close();
+        this.snackBar.open("Usuario editado!", "Cerrar");
+      })
+      .catch(err => {
+        console.log(err);
+        this.snackBar.open("Ups! parece que hubo un error ...", "Cerrar");
+      })
+  }
 
   create(): void {
     this.userForm.markAsPending()

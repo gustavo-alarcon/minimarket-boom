@@ -11,16 +11,15 @@
         <mat-form-field class="w3-block" appearance="outline">
             <mat-label>Correo</mat-label>
             <input matInput type="text" formControlName="email" placeholder="Correo electrónico" autocomplete="off">
-            
+
             <mat-error>
                 <span *ngIf="userForm.get('email').errors?.required">Usuario requerido</span>
                 <span *ngIf="userForm.get('email').errors?.email">Email no válido</span>
-                <span
-                        *ngIf="userForm.get('email').hasError('emailRepeatedValidator')">Usuario
-                        ya registrado.</span>
+                <span *ngIf="userForm.get('email').hasError('emailRepeatedValidator')">Usuario
+                    ya registrado.</span>
             </mat-error>
         </mat-form-field>
-        <mat-form-field class="w3-block" appearance="outline">
+        <mat-form-field class="w3-block" appearance="outline" *ngIf="!data.edit">
             <mat-label>Contraseña</mat-label>
             <input matInput [type]="hidePass ? 'password' : 'text'" formControlName="pass" placeholder="***"
                 autocomplete="off">
