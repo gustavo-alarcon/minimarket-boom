@@ -220,7 +220,7 @@ export class SalesDetailComponent implements OnInit {
         content: `¿Está seguro de confirmar la validación del Voucher?`,
         noObservation: true,
         observation: null,
-        title: 'Deshacer',
+        title: 'Confirmar',
         titleIcon: 'warning'
         }
       })
@@ -532,7 +532,7 @@ export class SalesDetailComponent implements OnInit {
           content: `¿Está seguro de actualizar la solicitud al estado <b>'${newStatus}'</b>?`,
           noObservation: true,
           observation: null,
-          title: 'Deshacer',
+          title: 'Actualizar',
           titleIcon: 'warning'
           }
         })
