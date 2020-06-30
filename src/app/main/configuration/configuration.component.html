@@ -34,6 +34,7 @@
                                 </mat-form-field>
 
                                 <mat-form-field class="admin__input" appearance="outline">
+                                    <mat-icon matPrefix></mat-icon>
                                     <mat-label>Cargo</mat-label>
                                     <mat-select formControlName="permits">
                                         <mat-option *ngFor="let unit of permits" [value]="unit">
@@ -136,6 +137,7 @@
                         <div>
                             <form class="detail-form formFieldRounded" [formGroup]="districtForm">
                                 <mat-form-field class="admin__input" appearance="outline">
+                                    <mat-icon matPrefix></mat-icon>
                                     <mat-label>Distrito</mat-label>
                                     <input matInput type="text" placeholder="Escriba..." formControlName="name"
                                         autocomplete="off">
@@ -148,6 +150,7 @@
                                 </mat-form-field>
 
                                 <mat-form-field class="admin__input" appearance="outline">
+                                    <mat-icon matPrefix></mat-icon>
                                     <mat-label>Delivery</mat-label>
                                     <input matInput type="number" placeholder="Costo Delivery (S/.)"
                                         formControlName="delivery" autocomplete="off">
@@ -254,6 +257,7 @@
                         <div class="formFieldRounded" *ngIf="weight$ | async">
 
                             <mat-form-field class="admin__input" appearance="outline">
+                                <mat-icon matPrefix></mat-icon>
                                 <input matInput type="number" placeholder="Escriba..." [formControl]="weightForm"
                                     autocomplete="off">
                                 <span matSuffix style="vertical-align: super;">KG</span>

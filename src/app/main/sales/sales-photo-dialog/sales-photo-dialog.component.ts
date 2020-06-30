@@ -7,6 +7,7 @@ import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { Sale, saleStatusOptions } from 'src/app/core/models/sale.model';
 import { combineLatest, forkJoin, throwError, BehaviorSubject } from 'rxjs';
 import { DatabaseService } from 'src/app/core/services/database.service';
+import { User } from 'src/app/core/models/user.model';
 
 
 @Component({
@@ -30,7 +31,7 @@ export class SalesPhotoDialogComponent implements OnInit {
     private fb: FormBuilder,
     private dialogRef: MatDialogRef<SalesPhotoDialogComponent>,
     private dbs: DatabaseService,
-    @Inject(MAT_DIALOG_DATA) public data: { data: Sale }
+    @Inject(MAT_DIALOG_DATA) public data: { data: Sale, user: User }
   ) { }
 
   ngOnInit(): void {
@@ -141,7 +142,7 @@ export class SalesPhotoDialogComponent implements OnInit {
             voucherPhoto: el.photoURL
           }))
 
-          return this.dbs.onUpdateSaleVoucher(this.data.data.id, false, photos).commit()
+          return this.dbs.onUpdateSaleVoucher(this.data.data.id, false, this.data.user, photos).commit()
           .then(()=> {
             this.snackBar.open('Los vouchers fueron actualizados satisfactoriamente', 'Aceptar');
           })

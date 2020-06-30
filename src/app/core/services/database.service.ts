@@ -450,15 +450,21 @@ export class DatabaseService {
     return of(batch);
   }
 
-  onUpdateSaleVoucher(saleId: string, voucher: boolean, photos?: Sale['voucher']): firebase.firestore.WriteBatch{
+  onUpdateSaleVoucher(saleId: string, voucher: boolean, user: User, photos?: Sale['voucher']): firebase.firestore.WriteBatch{
     let saleRef: DocumentReference = this.afs.firestore.collection(this.salesRef).doc(saleId);
     let batch = this.afs.firestore.batch();
     if(photos){
       if(photos.length){
-        batch.update(saleRef, {voucherChecked: voucher, voucher: photos})
+        batch.update(saleRef, {
+          voucherActionAt: new Date(), 
+          voucherActionBy: user, 
+          voucherChecked: voucher, 
+          voucher: photos,
+          editedAt: new Date(),
+          editedBy: user})
       }
     } else {
-      batch.update(saleRef, {voucherChecked: voucher})
+      batch.update(saleRef, {voucherActionAt: new Date(), voucherActionBy: user, voucherChecked: voucher})
     }
     return batch
   }

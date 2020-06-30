@@ -36,7 +36,7 @@ export class AuthGuard implements CanActivate {
           case 'products-list':
             return user ? !!user.admin : false;
           case 'sales':
-            return user ? !!user.admin : false;
+            return user ? (!!user.confi || !!user.accountant || !!user.seller) : false;
           case 'logistics':
             return user ? (!!user.confi || !!user.accountant || !!user.logistic) : false;
           case 'configuracion':

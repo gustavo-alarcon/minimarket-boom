@@ -189,7 +189,7 @@ export class SalesDetailComponent implements OnInit {
     (<FormArray>this.productForm.get('productList')).removeAt(index);
   }
 
-  confirmVoucherChecked(event: MouseEvent){
+  confirmVoucherChecked(event: MouseEvent, user: User){
     event.preventDefault();
     this.loading$.next(true)
     let dialogRef: MatDialogRef<ConfirmationDialogComponent>;
@@ -232,7 +232,7 @@ export class SalesDetailComponent implements OnInit {
         //condition
         () => {return answer.action =="confirm"},
         //confirmed
-        of(this.dbs.onUpdateSaleVoucher(this.sale.id, !this.voucherCheckedForm.value)).pipe(
+        of(this.dbs.onUpdateSaleVoucher(this.sale.id, !this.voucherCheckedForm.value, user)).pipe(
           switchMap(
             batch => {
                             
@@ -264,12 +264,13 @@ export class SalesDetailComponent implements OnInit {
       )
   }
 
-  checkVouchers(){
+  checkVouchers(user: User){
     let dialogRef: MatDialogRef<SalesPhotoDialogComponent>
     dialogRef = this.dialog.open(SalesPhotoDialogComponent, {
       width: '350px',
       data: {
-        data: this.sale
+        data: this.sale,
+        user: user
       }
     });
 
@@ -599,7 +600,7 @@ export class SalesDetailComponent implements OnInit {
             sale.confirmedRequestData = null
             if(newStatus == this.saleStatusOptions.attended){
               sale.attendedData = {
-                attendedAt: new Date(),
+                attendedAt: date,
                 attendedBy: user
               }
             }

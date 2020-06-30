@@ -117,12 +117,12 @@
                             <span>Sin Atender</span>
                         </ng-template>
                     </div>
-                    <div>
+                    <div matTooltip="Fecha Solicitada">
                         <mat-icon style="font-size:20px;"
                             color="primary">assignment_turned_in</mat-icon>
                         {{sale.createdAt['seconds']*1000 | date:'dd/MM/yyyy'}}
                     </div>
-                    <div>
+                    <div matTooltip="Fecha Asignada">
                         <mat-icon style="font-size:20px;"
                             color="primary">assignment_turned_in</mat-icon>
                         <span *ngIf="sale.confirmedRequestData else noConfirmedRequest">
