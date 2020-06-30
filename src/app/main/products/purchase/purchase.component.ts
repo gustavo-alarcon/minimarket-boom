@@ -144,10 +144,12 @@ export class PurchaseComponent implements OnInit {
       })
     )
 
+    this.delivery = this.dbs.delivery
     this.total = this.dbs.total
   }
 
   changeDelivery(district) {
+    this.dbs.delivery = district['delivery']
     this.delivery = district['delivery']
   }
 
@@ -217,11 +219,24 @@ export class PurchaseComponent implements OnInit {
       );
   }
 
+  updateUser() {
+    this.user.name = this.firstFormGroup.get('name').value
+    this.user.lastName1 = this.firstFormGroup.get('lastname1').value
+    this.user.lastName2 = this.firstFormGroup.get('lastname2').value
+    this.user.dni = this.firstFormGroup.get('dni').value
+    this.user.contact.phone = this.firstFormGroup.get('phone').value
+    this.user.contact.address = this.secondFormGroup.get('address').value
+    this.user.contact.district = this.secondFormGroup.get('district').value
+    this.user.contact.reference = this.secondFormGroup.get('ref').value
+    this.user.contact.coord.lat = this.latitud
+    this.user.contact.coord.lng = this.longitud
+  }
+
   save() {
     this.loading.next(true)
-
-    this.payFormGroup.markAsPending();
-    this.payFormGroup.disable()
+    this.firstFormGroup.markAsPending()
+    this.secondFormGroup.markAsPending()
+    this.updateUser()
 
     const saleCount = this.af.firestore.collection(`/db/distoProductos/config/`).doc('generalConfig');
     const saleRef = this.af.firestore.collection(`/db/distoProductos/sales`).doc();
@@ -265,7 +280,6 @@ export class PurchaseComponent implements OnInit {
 
     let photos = [...this.photos.data.map(el => this.dbs.uploadPhotoVoucher(saleRef.id, el))]
 
-
     forkJoin(photos).pipe(
       takeLast(1),
     ).subscribe((res: string[]) => {
@@ -277,7 +291,6 @@ export class PurchaseComponent implements OnInit {
       })]
 
       return this.af.firestore.runTransaction((transaction) => {
-        // This code may get re-run multiple times if there are conflicts.
         return transaction.get(saleCount).then((sfDoc) => {
           if (!sfDoc.exists) {
             transaction.set(saleCount, { salesRCounter: 0 });
@@ -296,25 +309,14 @@ export class PurchaseComponent implements OnInit {
 
           transaction.set(saleRef, newSale);
           //user
-          //primera compra
-          if (this.firstSale) {
-            transaction.update(ref, {
-              contact: newSale.location,
-              name: this.firstFormGroup.value['name'],
-              lastName1: this.firstFormGroup.value['lastname1'],
-              lastName2: this.firstFormGroup.value['lastname2'],
-              dni: this.firstFormGroup.value['dni'],
-              salesCount: userCorrelative
-            })
-          } else {
-            transaction.update(ref, {
-              contact: newSale.location,
-              name: this.firstFormGroup.value['name'],
-              lastName1: this.firstFormGroup.value['lastname1'],
-              lastName2: this.firstFormGroup.value['lastname2'],
-              salesCount: userCorrelative
-            })
-          }
+          transaction.update(ref, {
+            contact: newSale.location,
+            name: this.firstFormGroup.value['name'],
+            lastName1: this.firstFormGroup.value['lastname1'],
+            lastName2: this.firstFormGroup.value['lastname2'],
+            dni: this.firstFormGroup.value['dni'],
+            salesCount: userCorrelative
+          })
 
         });
 
@@ -330,11 +332,12 @@ export class PurchaseComponent implements OnInit {
         this.dbs.order = []
         this.dbs.total = 0
         this.dbs.view.next(1)
-        //this.loading.next(3)
+        this.loading.next(false)
       }).catch(function (error) {
         console.log("Transaction failed: ", error);
       });
     })
+
 
   }
 

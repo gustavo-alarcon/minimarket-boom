@@ -124,9 +124,7 @@ export class UndoDialogComponent implements OnInit {
         let prodFilter = products.map(el => {
           let count = 0
           let retValid = true
-          if (el.id == product.id) {
-            el.returned = false
-          }
+          
           if (el.validationData && el.id != product.id) {
             count = el.validationData.returned
             retValid = el.returnedValidated
@@ -137,8 +135,15 @@ export class UndoDialogComponent implements OnInit {
             retValid: retValid
           }
         })
+
+        let prodR = products.filter(el=>el.validationData).map(el=>{
+          if (el.id == product.id) {
+            el.returned = false
+          }
+          return el
+        })
         return {
-          returned: prodFilter.reduce((a, b) => a || b.returned, false),
+          returned: prodR.reduce((a, b) => a || b.returned, false),
           returnedValidated: prodFilter.reduce((a, b) => a || b.retValid, false),
           returnedQuantity: prodFilter.reduce((a, b) => a + b.returnedQuantity, 0)
         }
@@ -147,6 +152,7 @@ export class UndoDialogComponent implements OnInit {
     )
 
     returnAll$.subscribe(res => {
+      console.log(res);
 
       this.af.firestore.runTransaction((transaction) => {
         return transaction.get(productRef).then((prodDoc) => {
@@ -186,7 +192,8 @@ export class UndoDialogComponent implements OnInit {
         );
         this.loading.next(false)
 
-      }).catch(function (error) {
+      }).catch(error => {
+
         this.snackBar.open(
           'Ocurrió un problema',
           'Cerrar',

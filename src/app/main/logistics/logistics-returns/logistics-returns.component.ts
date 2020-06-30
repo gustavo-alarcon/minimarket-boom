@@ -28,7 +28,7 @@ export class LogisticsReturnsComponent implements OnInit {
 
 
   statusOptions = [
-    "Todos", 'Pendiente', 'Validado'
+    "Todos", "Por validar", 'Pendiente', 'Validado'
   ]
 
   panelOpenState: boolean[] = [];
@@ -125,6 +125,8 @@ export class LogisticsReturnsComponent implements OnInit {
             case "Todos":
               return !search ? buyReq :
                 buyReq.correlative.toString().padStart(6).includes(String(search))
+            case "Por validar":
+              return !search ? buyReq.returnedStatus == 'por validar' : true
             case 'Pendiente':
               return !search ? buyReq.returnedStatus == 'pendiente' : true
             case 'Validado':
@@ -158,7 +160,7 @@ export class LogisticsReturnsComponent implements OnInit {
     })
   }
 
-  undoValidated(product: BuyRequestedProduct,ind) {
+  undoValidated(product: BuyRequestedProduct, ind) {
     this.dialog.open(UndoReturnDialogComponent, {
       data: {
         item: product

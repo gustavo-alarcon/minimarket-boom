@@ -2,7 +2,7 @@ import { User } from 'src/app/core/models/user.model';
 import { AuthService } from 'src/app/core/services/auth.service';
 import { MatDialog } from '@angular/material/dialog';
 import { map, startWith, filter, tap } from 'rxjs/operators';
-import { FormControl } from '@angular/forms';
+import { FormControl, FormGroup, FormBuilder } from '@angular/forms';
 import { DatabaseService } from 'src/app/core/services/database.service';
 import { Observable, combineLatest } from 'rxjs';
 import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
@@ -18,12 +18,12 @@ export class ProductsComponent implements OnInit {
 
   products$: Observable<Product[]>
   init$: Observable<User>
+  categoryList$: Observable<string[]>
 
   name: string = ''
-  delivery: number = 4
   maxWeight: number = 3
 
-  searchForm: FormControl = new FormControl('')
+  searchForm: FormGroup
 
   defaultImage = "../../../assets/images/default-image.jpg";
 
@@ -34,20 +34,31 @@ export class ProductsComponent implements OnInit {
   constructor(
     public dbs: DatabaseService,
     private dialog: MatDialog,
+    private fb: FormBuilder,
     public auth: AuthService
   ) { }
 
   ngOnInit(): void {
 
+    this.searchForm = this.fb.group({
+      category: [''],
+      name: ['']
+    })
+
+    this.categoryList$ = this.dbs.getProductsListCategoriesValueChanges()
+
     this.products$ = combineLatest(
       this.dbs.getProductsListValueChanges(),
-      this.searchForm.valueChanges.pipe(
+      this.searchForm.get('name').valueChanges.pipe(
         filter(input => input !== null),
         startWith<any>(''),
         map(value => value.toLowerCase())
+      ),
+      this.searchForm.get('category').valueChanges.pipe(
+        startWith<any>('Todos')
       )
     ).pipe(
-      map(([products, search]) => {
+      map(([products, search, category]) => {
         let publish = products.filter(el => el.published)
         if (this.dbs.order.length == 0 && localStorage.getItem('order')) {
           let number = Number(localStorage.getItem('length'))
@@ -62,6 +73,7 @@ export class ProductsComponent implements OnInit {
           this.dbs.total = this.dbs.order.map(el => this.giveProductPrice(el)).reduce((a, b) => a + b, 0)
         }
         return publish.filter(el => search ? el.description.toLowerCase().includes(search) : true)
+          .filter(el => category != 'Todos' ? el.category == category : true)
       })
     )
 
@@ -79,7 +91,7 @@ export class ProductsComponent implements OnInit {
           if (res['salesCount']) {
             this.firstSale = false
             this.name = res.name.split(' ')[0]
-            this.delivery = res.contact.district.delivery
+            this.dbs.delivery = res.contact.district.delivery
           } else {
             this.firstSale = true
           }

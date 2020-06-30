@@ -28,7 +28,7 @@ export class LogisticsFabricComponent implements OnInit {
 
   loadingUndo: string = 'F'
   statusOptions = [
-    "Todos", 'Pendiente', 'Validado'
+    "Todos", "Por validar", 'Pendiente', 'Validado'
   ]
 
   panelOpenState: boolean[] = [];
@@ -127,6 +127,8 @@ export class LogisticsFabricComponent implements OnInit {
             case "Todos":
               return !search ? buyReq :
                 buyReq.correlative.toString().padStart(6).includes(String(search))
+            case "Por validar":
+              return !search ? buyReq.status == 'por validar' : true
             case 'Pendiente':
               return !search ? buyReq.status == 'pendiente' : true
             case 'Validado':
@@ -208,7 +210,7 @@ export class LogisticsFabricComponent implements OnInit {
   }
 
 
-  undoValidated(product: BuyRequestedProduct,ind) {
+  undoValidated(product: BuyRequestedProduct, ind) {
     this.dialog.open(UndoDialogComponent, {
       data: {
         item: product

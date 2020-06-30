@@ -1,7 +1,6 @@
-
 <div *ngIf="init$ | async">
     <mat-horizontal-stepper *ngIf="userData$ | async" linear #stepper class="ms-stepper">
-        <mat-step label="📝" [stepControl]="firstFormGroup">
+        <mat-step label="📝" [stepControl]="firstFormGroup" [completed]="firstFormGroup.valid">
             <h2 class="subtitle">Datos personales</h2>
             <form [formGroup]="firstFormGroup">
                 <mat-form-field class="w3-block" appearance="outline">
@@ -51,7 +50,7 @@
                 </button>
             </div>
         </mat-step>
-        <mat-step label="📦" [stepControl]="secondFormGroup">
+        <mat-step label="📦" [stepControl]="secondFormGroup" [completed]="secondFormGroup.valid">
             <h2 class="subtitle">Datos de envío</h2>
             <form [formGroup]="secondFormGroup">
                 <mat-form-field class="w3-block" appearance="outline">
@@ -60,8 +59,8 @@
                         placeholder="Dirección de entrega">
                     <mat-error>Campo requerido</mat-error>
                 </mat-form-field>
-    
-                <mat-form-field style="margin-bottom: 12px;" class="w3-block" appearance="outline">
+
+                <mat-form-field  class="w3-block w3-margin-bottom" appearance="outline">
                     <mat-select [compareWith]="compareObjects" formControlName="district" placeholder="Distrito">
                         <mat-option *ngFor="let district of districts" [value]="district"
                             (click)="changeDelivery(district)">
@@ -70,7 +69,7 @@
                     </mat-select>
                     <mat-hint>El precio de delivery dependerá del distrito de destino</mat-hint>
                 </mat-form-field>
-    
+
                 <mat-form-field class="w3-block" appearance="outline">
                     <mat-label>Referencia</mat-label>
                     <input autocomplete="off" formControlName="ref" type="text" matInput placeholder="Referencia">
@@ -88,7 +87,7 @@
                         (mapClick)="mapClicked($event)">
                         <agm-marker [latitude]="latitud" [longitude]="longitud"></agm-marker>
                     </agm-map>
-    
+
                 </div>
                 <div class="ms-flex">
                     <button mat-button matStepperPrevious class="font--primary">
@@ -102,87 +101,104 @@
             </form>
         </mat-step>
         <mat-step label="💳">
-            <h2 class="subtitle">Pago</h2>
-            <form [formGroup]="payFormGroup">
-                <mat-form-field class="w3-block" appearance="outline">
-                    <mat-label>Opciones de pago</mat-label>
-                    <mat-select formControlName="pay" placeholder='Seleccionar'>
-                        <mat-option *ngFor="let type of payType" [value]="type">
-                            <img class="example-option-img" aria-hidden [src]="type.photoURL" height="25">
-                            <span>{{type.name}}</span>
-                        </mat-option>
-                    </mat-select>
-                </mat-form-field>
-                <div class="w3-margin-bottom account" *ngIf="payFormGroup.get('pay').value as pay">
-                    <img class="example-option-img" height="30" aria-hidden [src]="pay['photoURL']" alt="image:account">
-                    <span>{{pay['account']}}</span>
-    
-                </div>
-                <div class="pay ms-flex">
-                    <div class="pay__total">
-                        Total a pagar
+            <div *ngIf="!(loading$ | async)">
+                <h2 class="subtitle">Pago</h2>
+                <form [formGroup]="payFormGroup">
+                    <mat-form-field class="w3-block" appearance="outline">
+                        <mat-label>Opciones de pago</mat-label>
+                        <mat-select formControlName="pay" placeholder='Seleccionar'>
+                            <mat-option *ngFor="let type of payType" [value]="type">
+                                <img class="example-option-img" aria-hidden [src]="type.photoURL" height="25">
+                                <span>{{type.name}}</span>
+                            </mat-option>
+                        </mat-select>
+                    </mat-form-field>
+                    <div class="w3-margin-bottom account" *ngIf="payFormGroup.get('pay').value as pay">
+                        <img class="example-option-img" height="30" aria-hidden [src]="pay['photoURL']"
+                            alt="image:account">
+                        <span>{{pay['account']}}</span>
+
                     </div>
-                    <div class="ticket__total">
-                        S/. {{total + delivery | number: '.2'}}
-                    </div>
-                </div>
-                <mat-form-field class="w3-block" appearance="outline">
-                    <mat-select formControlName="typePay" placeholder='Boleta/Factura'>
-                        <mat-option *ngFor="let type of documents" [value]="type">
-                            {{type}}
-                        </mat-option>
-                    </mat-select>
-                </mat-form-field>
-                <div class="w3-margin-bottom">
-                    <div class="w3-margin-bottom" style="position: relative;"
-                        *ngFor="let image of photosList; let ind = index">
-                        <img class="voucher" style="object-fit: cover;" [src]="image.img" alt="fotografía">
-                        <div class="ms-flex w3-block" style="position: absolute; top: 0;">
-                            <span class="ms-fill"></span>
-                            <button type="button" *ngIf="!image.show" mat-icon-button (click)="image.show=true">
-                                <mat-icon>zoom_in</mat-icon>
-                            </button>
-                            <button type="button" *ngIf="image.show" mat-icon-button (click)="image.show=false">
-                                <mat-icon>zoom_out</mat-icon>
-                            </button>
-                            <button type="button" mat-icon-button (click)="eliminatedphoto(ind)">
-                                <mat-icon>close</mat-icon>
-                            </button>
+                    <div class="pay ms-flex">
+                        <div class="pay__total">
+                            Total a pagar
                         </div>
-                        <div style="text-align: center; border: 1px solid silver;" *ngIf="image.show">
-                            <div class="ms-flex w3-block">
+                        <div class="ticket__total">
+                            S/. {{total + delivery | number: '.2'}}
+                        </div>
+                    </div>
+                    <mat-form-field class="w3-block" appearance="outline">
+                        <mat-select formControlName="typePay" placeholder='Boleta/Factura'>
+                            <mat-option *ngFor="let type of documents" [value]="type">
+                                {{type}}
+                            </mat-option>
+                        </mat-select>
+                    </mat-form-field>
+                    <div class="w3-margin-bottom">
+                        <div class="w3-margin-bottom" style="position: relative;"
+                            *ngFor="let image of photosList; let ind = index">
+                            <img class="voucher" style="object-fit: cover;" [src]="image.img" alt="fotografía">
+                            <div class="ms-flex w3-block" style="position: absolute; top: 0;">
                                 <span class="ms-fill"></span>
-                                <button mat-icon-button (click)="image.show=false">
+                                <button type="button" *ngIf="!image.show" mat-icon-button (click)="image.show=true">
+                                    <mat-icon>zoom_in</mat-icon>
+                                </button>
+                                <button type="button" *ngIf="image.show" mat-icon-button (click)="image.show=false">
+                                    <mat-icon>zoom_out</mat-icon>
+                                </button>
+                                <button type="button" mat-icon-button (click)="eliminatedphoto(ind)">
                                     <mat-icon>close</mat-icon>
                                 </button>
                             </div>
-                            <img style="width:80%;" [src]="image.img" alt="fotografía grande">
+                            <div style="text-align: center; border: 1px solid silver;" *ngIf="image.show">
+                                <div class="ms-flex w3-block">
+                                    <span class="ms-fill"></span>
+                                    <button mat-icon-button (click)="image.show=false">
+                                        <mat-icon>close</mat-icon>
+                                    </button>
+                                </div>
+                                <img style="width:80%;" [src]="image.img" alt="fotografía grande">
+                            </div>
                         </div>
+
+                        <div class="voucher" (click)="photoURL.click()">
+                            Agregar foto de voucher de pago
+                        </div>
+
+                        <mat-progress-bar *ngIf="photos?.resizing$.photoURL | async" style="width:100%"
+                            mode="indeterminate">
+                        </mat-progress-bar>
+                        <span *ngIf="photos.resizing$.photoURL | async" class="w3-small ms-color-11 ms-font-montserrat"
+                            style="width:100%">*comprimiendo</span>
+                        <input style="display: none" #photoURL type="file" accept='image/*'
+                            (change)="addNewPhoto('photoURL', photoURL.files)" />
                     </div>
-    
-                    <div class="voucher" (click)="photoURL.click()">
-                        Agregar foto de voucher de pago
-                    </div>
-    
-                    <mat-progress-bar *ngIf="photos?.resizing$.photoURL | async" style="width:100%" mode="indeterminate">
-                    </mat-progress-bar>
-                    <span *ngIf="photos.resizing$.photoURL | async" class="w3-small ms-color-11 ms-font-montserrat"
-                        style="width:100%">*comprimiendo</span>
-                    <input style="display: none" #photoURL type="file" accept='image/*'
-                        (change)="addNewPhoto('photoURL', photoURL.files)" />
+                </form>
+                <div class="ms-flex">
+                    <button mat-button matStepperPrevious class="font--primary">
+                        <mat-icon color="primary">keyboard_backspace</mat-icon> Anterior
+                    </button>
+                    <span class="ms-fill"></span>
                 </div>
-            </form>
-            <div class="ms-flex">
-                <button mat-button matStepperPrevious class="font--primary">
-                    <mat-icon color="primary">keyboard_backspace</mat-icon> Anterior
+                <button mat-raised-button color="accent" type="button" (click)="save()" [disabled]="!payFormGroup.valid"
+                    class="w3-block w3-margin-top" style=" font-weight: bold;">
+                    Finalizar Compra
                 </button>
-                <span class="ms-fill"></span>
             </div>
-            <mat-progress-bar mode="indeterminate" *ngIf="loading$ | async"></mat-progress-bar>
-            <button mat-raised-button color="accent" type="button" (click)="save()" [disabled]="!payFormGroup.valid"
-                class="w3-block" style=" font-weight: bold;">
-                Finalizar Compra
-            </button>
+            <div *ngIf="loading$ | async" style="padding-top: 14vh;">
+                <div class="w3-block w3-center">
+                    <div class="lds-ring">
+                        <div></div>
+                        <div></div>
+                        <div></div>
+                        <div></div>
+                    </div>
+                    <p style="color: #5da92f;">Espere, estamos procesando su compra</p>
+                </div>
+            </div>
+
         </mat-step>
     </mat-horizontal-stepper>
+
+
 </div>

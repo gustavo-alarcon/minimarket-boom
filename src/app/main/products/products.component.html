@@ -6,12 +6,23 @@
         <div class="w3-col s12 m10 l10">
             <div *ngIf="(dbs.view$|async)==1">
                 <div class="ms-flex" style="align-items: baseline;">
-                    <div class="formFieldRounded w3-block" style="max-width: 400px;">
-                        <mat-form-field appearance="outline" class="w3-block">
-                            <mat-label>Buscar</mat-label>
-                            <input matInput [formControl]="searchForm" placeholder="Buscar Producto" autocomplete="off">
-                            <mat-icon matPrefix style="vertical-align: middle;margin-right: 5px;">search</mat-icon>
-                        </mat-form-field>
+                    <div class="formFieldRounded">
+                        <form [formGroup]="searchForm" class="search-form">
+                            <mat-form-field appearance="outline" class="search-input">
+                                <mat-label>BUSCAR</mat-label>
+                                <input formControlName="name" matInput placeholder="Buscar Producto" autocomplete="off">
+                                <mat-icon matPrefix style="vertical-align: middle;margin-right: 5px;">search</mat-icon>
+                            </mat-form-field>
+                            <mat-form-field appearance="outline" class="search-input" *ngIf="categoryList$ | async as categories">
+                                <mat-label>CATEGORÍA</mat-label>
+                                <mat-select formControlName="category">
+                                    <mat-option [value]="'Todos'">-- Todos --</mat-option>
+                                    <mat-option *ngFor="let category of categories" [value]="category">
+                                        {{category | titlecase}}
+                                      </mat-option>
+                                </mat-select>
+                            </mat-form-field>
+                        </form>
                     </div>
                     <span class="ms-fill"></span>
                     <button mat-raised-button class="w3-hide-small buttonNoRounded" color="accent"
@@ -24,7 +35,7 @@
                 <mat-divider class="w3-margin-bottom w3-hide-small"></mat-divider>
                 <div *ngIf="products$ | async as products" class="ms-flex" style="justify-content: space-between;">
                     <app-product-div [product]="product" [buttonAdd]="true" [maxWeight]="maxWeight"
-                        *ngFor="let product of products| paginate: { itemsPerPage: 12, currentPage: p }">
+                        *ngFor="let product of products| paginate: { itemsPerPage: 12, currentPage: p }" class="product-div">
                     </app-product-div>
 
                     <div style="display: flex; width: 100%; justify-content: flex-end;" *ngIf="products.length > 12">
@@ -41,7 +52,7 @@
                     </button>
                     <h2 class="title2 w3-margin-left">Lista de compras 🛒</h2>
                 </div>
-                <app-shopping-cart [delivery]="delivery" [order]="dbs.order" [modified]="true"></app-shopping-cart>
+                <app-shopping-cart [delivery]="dbs.delivery" [order]="dbs.order" [modified]="true"></app-shopping-cart>
 
                 <button *ngIf="auth.user$ | async; else register" mat-raised-button color="accent" class="w3-block"
                     (click)="finish()" style=" font-weight: bold;">
@@ -66,17 +77,19 @@
                 </div>
                 <p *ngIf="firstSale">Hola cheese lover, gracias por tu preferencia. Comencemos anotando tus datos</p>
                 <p *ngIf="!firstSale">Gracias por volver a comprar nuestros productos</p>
-                <div class="ms-flex">
-                    <div style="max-width: 500px;">
+                <div class="ms-flex w3-hide-small w3-hide-medium " style="align-items: baseline;">
+                    <div style="max-width: 420px;">
                         <app-purchase></app-purchase>
                     </div>
                     <span class="ms-fill"></span>
-                    <mat-card class="w3-hide-small" style="min-width: 400px; padding: 0 16px;">
-                        <app-shopping-cart [delivery]="delivery" [order]="dbs.order" [modified]="false">
+                    <mat-card  style="min-width: 400px; padding: 0 16px;">
+                        <app-shopping-cart [delivery]="dbs.delivery" [order]="dbs.order" [modified]="false">
                         </app-shopping-cart>
                     </mat-card>
 
                 </div>
+
+                <app-purchase class="w3-hide-large"></app-purchase>
 
             </div>
 
