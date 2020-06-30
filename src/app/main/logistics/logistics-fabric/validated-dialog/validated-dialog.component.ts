@@ -211,6 +211,7 @@ export class ValidatedDialogComponent implements OnInit {
                 returned: res.returnedQuantity > 0,
                 returnedQuantity: res.returnedQuantity,
                 returnedValidated: false,
+                returnedStatus: 'por validar',
                 status: 'pendiente',
                 editedDate: res.validated ? new Date() : null,
                 editedBy: res.validated ? user : null,

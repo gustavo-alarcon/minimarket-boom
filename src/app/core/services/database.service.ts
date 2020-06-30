@@ -26,6 +26,7 @@ export class DatabaseService {
   public view$ = this.view.asObservable();
 
   public total: number = 0
+  public delivery: number = 0
 
   constructor(
     private afs: AngularFirestore,

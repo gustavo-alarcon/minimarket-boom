@@ -3,6 +3,7 @@
     box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
     padding: 5px 12px 12px 12px;
     height: 230px;
+    width: 100%;
 
     &__container {
         justify-content: space-between;
@@ -83,22 +84,3 @@
     }
 }
 
-@media only screen and (min-width: 1160px) {
-    .product {
-        width: 25vw;
-        min-width: 305px;
-    }
-}
-
-@media only screen and (max-width: 1159px)and (min-width: 800px) {
-    .product {
-        max-width: 410px;
-        width: 38vw;
-    }
-}
-
-@media only screen and (max-width: 799px){
-    .product {
-        width: 100%;
-    }
-}

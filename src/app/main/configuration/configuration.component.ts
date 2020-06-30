@@ -38,6 +38,7 @@ export class ConfigurationComponent implements OnInit {
 
   /*Districts*/
   districts$: Observable<object[]>
+  repeat$: Observable<boolean>
 
   loadingDistrict = new BehaviorSubject<boolean>(true);
   loadingDistrict$ = this.loadingDistrict.asObservable();
@@ -138,6 +139,22 @@ export class ConfigurationComponent implements OnInit {
       })
     )
 
+    this.repeat$ = combineLatest(
+      this.dbs.getDistricts(),
+      this.districtForm.get('name').valueChanges.pipe(
+        startWith(''))
+    )
+      .pipe(
+        map(([array, district]) => {
+          if (array) {
+            return district ? array.map(el => el['name'].toLowerCase()).includes(district.toLowerCase()) : false
+          } else {
+            return false
+          }
+
+        })
+      )
+
 
 
     //Payments
@@ -184,12 +201,19 @@ export class ConfigurationComponent implements OnInit {
     const ref = this.af.firestore.collection(`users`).doc(user.uid);
     batch.update(ref, {
       admin: false,
+      seller: false,
+      logistic: false,
+      accountant: false,
+      confi: false,
       role: null
     })
     batch.commit().then(() => {
       this.loadingAdmin.next(false)
     })
   }
+
+
+  //Districts
 
   repeatedValidator() {
     return (control: AbstractControl) => {
@@ -201,16 +225,17 @@ export class ConfigurationComponent implements OnInit {
     }
   }
 
-  //Districts
   addDistrict() {
     let district = this.districtForm.value
-    this.existDistrict.push(district)
+    let min = [district]
+    let before = [...this.existDistrict]
+    this.existDistrict = min.concat(before)
     this.loadingDistrict.next(true)
     this.updateDistrict()
 
     this.districtForm = this.fb.group({
-      name: ['', Validators.required],
-      delivery: ['', Validators.required]
+      name: ['', [Validators.required], [this.repeatedValidator()]],
+      delivery: ['', [Validators.required]]
     })
 
   }
@@ -227,7 +252,9 @@ export class ConfigurationComponent implements OnInit {
     this.deleteDistrict(district)
   }
 
+
   updateDistrict() {
+    this.districtForm.disable()
     const batch = this.af.firestore.batch()
     const ref = this.af.firestore.collection(`/db/distoProductos/config`).doc('generalConfig')
     batch.update(ref, {
@@ -235,7 +262,7 @@ export class ConfigurationComponent implements OnInit {
     })
     batch.commit().then(() => {
       this.loadingDistrict.next(false)
-
+      this.districtForm.enable()
     })
   }
 
