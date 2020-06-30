@@ -5,6 +5,7 @@ import { DatabaseService } from 'src/app/core/services/database.service';
 import { AuthService } from 'src/app/core/services/auth.service';
 import { FormControl } from '@angular/forms';
 import { Component, OnInit } from '@angular/core';
+import { THIS_EXPR } from '@angular/compiler/src/output/output_ast';
 
 @Component({
   selector: 'app-products-history',
@@ -20,6 +21,9 @@ export class ProductsHistoryComponent implements OnInit {
 
   view = new BehaviorSubject<number>(1);
   view$ = this.view.asObservable();
+
+  p: number = 1;
+  p1: number = 1;
 
   constructor(
     private dbs: DatabaseService,
@@ -67,14 +71,53 @@ export class ProductsHistoryComponent implements OnInit {
     let end = time.end.getTime()
     return date >= begin && date <= end
   }
-  showList(item: Sale) {
-    this.chooseSale = item
-    this.view.next(2)
 
+  showList(item: Sale, small:boolean) {
+    this.chooseSale = item
+    if(small){
+      this.view.next(2)
+    }
+    
+  }
+
+  hideList(){
+    this.chooseSale = null
   }
 
   back() {
     this.view.next(1)
+    this.hideList()
+  }
+
+  getStatus(status:string) {
+    switch (status.toLowerCase()) {
+      case 'solicitado':
+        return 'Solicitado'
+        break;
+      case 'atendido':
+        return 'En atención'
+        break;
+      case 'anulado':
+        return 'Anulado'
+        break;
+      default:
+        return 'Atendido'
+        break;
+    }
+  }
+
+  getColor(status:string) {
+    switch (status.toLowerCase()) {
+      case 'atendido':
+        return 'attend status'
+        break;
+        case 'anulado':
+          return 'anulado status'
+          break;
+      default:
+        return 'solicitado status'
+        break;
+    }
   }
 
 }

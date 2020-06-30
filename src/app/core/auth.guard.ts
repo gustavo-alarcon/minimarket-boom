@@ -25,28 +25,28 @@ export class AuthGuard implements CanActivate {
         console.log('auth');
         let childComponent = state.url.split('/')[2];
 
-        if(childComponent.startsWith('products')){
+        if (childComponent.startsWith('products')) {
           childComponent = 'products';
         }
-        switch(childComponent){
-          case 'products': 
+        switch (childComponent) {
+          case 'products':
             return true;
-          case 'products-history': 
+          case 'products-history':
             return true;
-          case 'products-list': 
-            //return  user ? true : false;
-          case 'sales': 
-            //return true
-          case 'logistics': 
-            //return user ? (!!user.driver || !!user.admin) : false;
-          case 'configuracion': 
-            //return user ? !!user.admin : false;
+          case 'products-list':
+            return user ? !!user.admin : false;
+          case 'sales':
+            return user ? !!user.admin : false;
+          case 'logistics':
+            return user ? (!!user.confi || !!user.accountant || !!user.logistic) : false;
+          case 'configuracion':
+            return user ? !!user.confi : false;
           default:
             return true;
         }
       }),
       tap(res => {
-        if(!res){
+        if (!res) {
           this.snackbar.open('Acceso denegado', 'Aceptar');
           this.router.navigate(['/main']);
         }

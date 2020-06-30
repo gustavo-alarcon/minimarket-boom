@@ -11,6 +11,10 @@ export interface User {
   displayName?: string;
   token?: string;
   admin?: boolean;
+  seller?: boolean;
+  logistic?: boolean;
+  accountant?: boolean;
+  confi?:boolean;
   role?: string;
   lastLogin?: Date;
   contact?: {

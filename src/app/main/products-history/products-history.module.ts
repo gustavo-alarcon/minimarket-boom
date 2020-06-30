@@ -18,6 +18,7 @@ import { SatDatepickerModule, SatNativeDateModule } from 'saturn-datepicker';
 import { MAT_DATE_LOCALE as MAT_DATE_LOCALESAT } from 'saturn-datepicker';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { NgxPaginationModule } from 'ngx-pagination';
 
 @NgModule({
   declarations: [
@@ -42,7 +43,8 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
     FormsModule,
     ReactiveFormsModule,
     SatDatepickerModule, 
-    SatNativeDateModule
+    SatNativeDateModule,
+    NgxPaginationModule
   ],
   providers: [
     { provide: MAT_DATE_LOCALESAT, useValue: 'en-GB' }
