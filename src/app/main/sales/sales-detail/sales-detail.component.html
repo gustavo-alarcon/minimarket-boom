@@ -185,13 +185,13 @@
     <div class="total-div">
         <div class="bigCheckbox">
             <mat-checkbox 
-                [disabled]="loading$ | async"
+                [disabled]="(loading$ | async) || !(user.confi || user.accountant)"
                 [formControl]="voucherCheckedForm"
-                (click)="confirmVoucherChecked($event)"
+                (click)="confirmVoucherChecked($event, user)"
                 color="primary"></mat-checkbox>
         </div>
         <div class="voucher-div">
-            <div (click)="checkVouchers()" class="photo">
+            <div (click)="checkVouchers(user)" class="photo">
                 <mat-icon style="font-size: xx-large; height: auto; width:auto;"
                     *ngIf="sale.voucher.length > 1">collections_bookmark</mat-icon>
                 <mat-icon style="font-size: xx-large; height: auto; width:auto;"

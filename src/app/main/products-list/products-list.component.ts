@@ -33,7 +33,7 @@ export class ProductsListComponent implements OnInit {
   productsDisplayedColumns: string[] = [
     'index', 'photoURL', 'description', 'sku', 'category', 'price', 
     'unitDescription', 'unitAbbreviation', 'unitWeight', 'sellMinimum', 'alertMinimum', 
-    'realStock', 'mermaStock', 'virtualStock', 'published', 'actions'
+    'realStock', 'mermaStock', /*'virtualStock', */'published', 'actions'
   ]
 
   productsObservable$: Observable<Product[]>

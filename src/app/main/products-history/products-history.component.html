@@ -21,8 +21,10 @@
                                     <div class="corr">#{{sale.correlativeType}}{{("000"+sale.correlative).slice(-4)}}
                                     </div>
                                     <div class="dates">
-                                        <div>🛍️ {{sale['createdAt'].toMillis() | date: 'dd-MMM-yyyy' }}</div>
-                                        <div *ngIf="sale.confirmedRequestData">📦
+                                        <div matTooltip="Fecha Solicitada">
+                                            🛍️ {{sale['createdAt'].toMillis() | date: 'dd-MMM-yyyy' }}
+                                        </div>
+                                        <div *ngIf="sale.confirmedRequestData" matTooltip="Fecha Asignada">📦
                                             {{sale.confirmedRequestData['assignedDate'].toMillis() | date: 'dd-MMM-yyyy' }}
                                         </div>
                                     </div>
@@ -70,8 +72,8 @@
                                     <div class="corr">#{{sale.correlativeType}}{{("000"+sale.correlative).slice(-4)}}
                                     </div>
                                     <div class="dates">
-                                        <div>🛍️ {{sale['createdAt'].toMillis() | date: 'dd-MMM-yyyy' }}</div>
-                                        <div *ngIf="sale.confirmedRequestData">📦
+                                        <div matTooltip="Fecha Solicitada">🛍️ {{sale['createdAt'].toMillis() | date: 'dd-MMM-yyyy' }}</div>
+                                        <div matTooltip="Fecha Asignada" *ngIf="sale.confirmedRequestData">📦
                                             {{sale.confirmedRequestData['assignedDate'].toMillis() | date: 'dd-MMM-yyyy' }}
                                         </div>
                                     </div>

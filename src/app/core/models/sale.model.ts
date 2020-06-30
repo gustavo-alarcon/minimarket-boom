@@ -60,6 +60,8 @@ export interface Sale {
   }[]
 
   voucherChecked: boolean,      //done by admin. needed to confirmedDelivery
+  voucherActionBy?: User,
+  voucherActionAt?: Date,
 
   attendedData?: {             //Can go only when Atendido or more
     attendedBy: User,
