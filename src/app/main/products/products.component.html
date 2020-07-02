@@ -9,18 +9,19 @@
                     <div class="formFieldRounded">
                         <form [formGroup]="searchForm" class="search-form">
                             <mat-form-field appearance="outline" class="search-input">
-                                <mat-label>BUSCAR</mat-label>
+                                <mat-label>Buscar</mat-label>
                                 <input formControlName="name" matInput placeholder="Buscar Producto" autocomplete="off">
                                 <mat-icon matPrefix style="vertical-align: middle;margin-right: 5px;">search</mat-icon>
                             </mat-form-field>
-                            <mat-form-field appearance="outline" class="search-input" *ngIf="categoryList$ | async as categories">
-                                <mat-label>CATEGORÍA</mat-label>
+                            <mat-form-field appearance="outline" class="content search-input" *ngIf="categoryList$ | async as categories">
+                                <mat-label>Categoría</mat-label>
                                 <mat-select formControlName="category">
                                     <mat-option [value]="'Todos'">-- Todos --</mat-option>
                                     <mat-option *ngFor="let category of categories" [value]="category">
                                         {{category | titlecase}}
                                       </mat-option>
                                 </mat-select>
+                                <span matPrefix style="vertical-align: middle;margin-right: 16px;"></span>
                             </mat-form-field>
                         </form>
                     </div>

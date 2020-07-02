@@ -1,17 +1,15 @@
 .title-div {
     background: linear-gradient(180deg, rgba(255, 255, 255, 0.15) 0%, rgba(255, 255, 255, 0) 100%),
         url(../../../../assets/images/recipes-title.png);
-    min-height: 150px;
     background-size: cover;
     box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
 
     &__recipe {
         color: white;
         text-transform: uppercase;
-        padding-right: 25px;
+        padding-right: 12vw;
         font-weight: 900;
         letter-spacing: 0.05em;
-        font-size: 3em;
         line-height: 1em;
         font-family: Poppins;
         text-align: right;
@@ -26,10 +24,15 @@
         color: white;
         font-family: Poppins;
         font-weight: bold;
-        font-size: 2em;
         line-height: 1.3em;
-        padding: 0 35px;
         text-shadow: 0px 4px 4px rgba(255, 255, 255, 0.25);
+    }
+}
+
+.recipe {
+    &__descrip {
+        font-size: 1em;
+        line-height: 1.3em;
     }
 }
 
@@ -46,4 +49,99 @@ ul li::before {
     display: inline-block;
     width: 0.5em;
     vertical-align: middle;
+}
+
+@media only screen and (min-width: 900px) {
+    .title-div {
+        min-height: 240px;
+        &__recipe {
+            padding-top: 25px;
+            padding-right: 12vw;
+            font-size: 4.5em;
+        }
+
+        &__product {
+            font-size: 2.5em;
+            padding: 0 5vw;
+        }
+    }
+    .recipe {
+        &__list {
+            width: 50%;
+        }
+
+        &__video {
+            height: 170px;
+            width: 300px;
+        }
+    }
+}
+
+@media only screen and (max-width: 899px) and (min-width: 601px) {
+    .title-div {
+        min-height: 220px;
+        &__recipe {
+            padding-top: 16px;
+            font-size: 4.2em;
+        }
+        &__product {
+            font-size: 2.2em;
+            padding: 0 6vw;
+        }
+    }
+    .recipe {
+        &__list {
+            width: 45%;
+        }
+
+        &__video {
+            height: 135px;
+            width: 230px;
+        }
+    }
+}
+
+@media only screen and (max-width: 600px) and (min-width: 401px) {
+    .title-div {
+        min-height: 220px;
+        &__recipe {
+            padding-top: 16px;
+            font-size: 3.2em;
+        }
+        &__product {
+            font-size: 2em;
+            padding: 0 6vw;
+        }
+    }
+}
+
+@media only screen and (max-width: 400px) {
+    .title-div {
+        min-height: 160px;
+        &__recipe {
+            padding-top: 0;
+            font-size: 3em;
+        }
+        &__product {
+            font-size: 2em;
+            padding: 0 35px;
+        }
+    }
+}
+
+@media only screen and (max-width: 600px) {
+    .recipe {
+        &__descrip {
+            font-size: 0.75em;
+        }
+
+        &__list {
+            width: 41%;
+        }
+
+        &__video {
+            height: 100px;
+            width: 160px;
+        }
+    }
 }
