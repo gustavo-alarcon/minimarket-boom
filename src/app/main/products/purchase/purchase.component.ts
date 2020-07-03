@@ -232,6 +232,16 @@ export class PurchaseComponent implements OnInit {
     this.user.contact.coord.lng = this.longitud
   }
 
+  openSale(){
+    this.dialog.open(SaleDialogComponent, {
+      data: {
+        name: this.firstFormGroup.value['name'],
+        number: 10,
+        email: this.user.email
+      }
+    })
+  }
+  
   save() {
     this.loading.next(true)
     this.firstFormGroup.markAsPending()
