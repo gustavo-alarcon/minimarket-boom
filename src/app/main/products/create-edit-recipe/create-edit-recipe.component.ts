@@ -131,7 +131,7 @@ export class CreateEditRecipeComponent implements OnInit {
   onAddProduct(auto: MatAutocomplete, event: MatChipInputEvent){
     let options = auto.options;
     if(options.length){
-      console.log(options.first.value);
+      //(options.first.value);
       this.onSelectProduct(options.first.value)
     }
     event.input.value = "";
@@ -164,7 +164,7 @@ export class CreateEditRecipeComponent implements OnInit {
     return (control: AbstractControl): {'recipe2ProductsValidator': boolean} => {
       if(control){
         let products = <Product[]>control.value;
-        console.log(products);
+        //console.log(products);
         if(!products.length){
           return {recipe2ProductsValidator: true}
         }
@@ -174,8 +174,8 @@ export class CreateEditRecipeComponent implements OnInit {
   }
 
   deb(){
-    console.log(this.recipeForm);
-    console.log(this.inputsFormGroup);
+    //console.log(this.recipeForm);
+    //console.log(this.inputsFormGroup);
   }
 
   displayFn(input: Product) {

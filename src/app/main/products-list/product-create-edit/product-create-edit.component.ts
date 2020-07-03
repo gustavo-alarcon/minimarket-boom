@@ -65,7 +65,7 @@ export class ProductCreateEditComponent implements OnInit {
   }
 
   initForm() {
-    console.log(this.data);
+    //console.log(this.data);
     if (this.data.edit) {
       this.productForm = this.fb.group({
         description: this.fb.control(this.data.data.description, {
@@ -118,7 +118,7 @@ export class ProductCreateEditComponent implements OnInit {
     }
   }
   deb(){
-    console.log(this.productForm);
+    //console.log(this.productForm);
   }
   initObservables() {
     this.descriptionFormatting$ = this.productForm.get('description').valueChanges.pipe(
@@ -137,7 +137,7 @@ export class ProductCreateEditComponent implements OnInit {
         return /\s+/g.test(desc);
       }),
       tap((desc: string) => {
-        console.log('skuformat')
+        //console.log('skuformat')
         this.productForm.get('sku').setValue(
           desc.match(/\S/g).join("")
         )

@@ -14,7 +14,7 @@ export class ProductDivComponent implements OnInit {
   @Input() product: Product
   @Input() maxWeight: number
   @Input() buttonAdd: boolean = false
-  defaultImage = "../../../assets/images/default-image.jpg";
+  defaultImage = "../../../assets/images/Disto_Logo1.png";
 
   constructor(
     public dbs: DatabaseService,

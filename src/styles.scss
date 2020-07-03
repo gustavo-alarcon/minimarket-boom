@@ -286,6 +286,22 @@ a {
   justify-content: space-between;
 }
 
+@media(max-width: 601px){
+  .actionsContainer{
+    flex-direction: column;
+    justify-content: center;
+    button {
+      display: block;
+      width: 100%
+    }
+    
+  }
+  .actionsContainer .content {
+    margin: 16px 0 !important;
+    width: 100%
+  }
+}
+
 .actionsContainer .content {
   margin: 16px;
   line-height: 17px;

@@ -95,8 +95,8 @@ export class RequestCreateEditComponent implements OnInit {
   }
 
   deb(){
-    console.log(this.selectedProducts);
-    console.log(this.requestFormGroup);
+    //console.log(this.selectedProducts);
+    //console.log(this.requestFormGroup);
   }
 
   onAddProduct(){

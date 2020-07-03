@@ -48,7 +48,7 @@ export class SalesDetailComponent implements OnInit {
   ) { }
 
   ngOnInit() {
-    console.log(this.sale)
+    //console.log(this.sale)
     this.initForm()
     this.initObservables()
   }
@@ -124,7 +124,7 @@ export class SalesDetailComponent implements OnInit {
       this.dbs.getGeneralConfigDoc()).pipe(
         map(([formValue, productsList, generalConfig])=> {
 
-          console.log(formValue);
+          //console.log(formValue);
 
           let products = !productsList.length ? [] : 
             productsList.filter(el => !this.productForm.get('productList').value.find(
@@ -175,7 +175,7 @@ export class SalesDetailComponent implements OnInit {
           }
          });
 
-        console.log(changedItemIndex);
+        //console.log(changedItemIndex);
 
         let foundPreviousItem = prev.find((prevEl) => curr[changedItemIndex].product.id == prevEl.product.id);
         this.snackBar.open("No puede aumentar la cantidad. Exceso de peso.", "Aceptar");

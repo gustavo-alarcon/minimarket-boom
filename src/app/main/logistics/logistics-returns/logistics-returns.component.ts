@@ -181,7 +181,7 @@ export class LogisticsReturnsComponent implements OnInit {
     let corr = ("#F000" + data.corr).slice(-4)
     let table_xlsx: any[] = [];
 
-    console.log(data);
+    //console.log(data);
 
     let headersXlsx: string[] = [
       'Producto',

@@ -117,7 +117,7 @@ export class LoginDialogComponent implements OnInit {
   passwordReset() {
     if (this.dataFormGroup.get('email').value) {
       if (this.dataFormGroup.get('email').valid) {
-        console.log('email');
+        //console.log('email');
         this.auth.resetPassword(this.dataFormGroup.get('email').value).then(() => {
           // Email sent.
 

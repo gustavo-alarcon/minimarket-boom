@@ -78,7 +78,7 @@ export class SalesMasterComponent implements OnInit {
       this.statusForm.valueChanges.pipe(startWith('Todos')))
       .pipe(
         map(([sales, saleState]) => {
-          console.log(sales);
+          //console.log(sales);
           let order = sales.sort((a, b) => Number(b.correlative) - Number(a.correlative))
           if(saleState == 'Todos'){
             if(this.totalPriceSubject){
@@ -137,7 +137,7 @@ export class SalesMasterComponent implements OnInit {
   // }
 
   downloadXls(sales: Sale[]): void {
-    console.log(sales);
+    //console.log(sales);
     let table_xlsx: any[] = [];
     let headersXlsx = [
       'Correlativo', 
@@ -277,7 +277,7 @@ export class SalesMasterComponent implements OnInit {
   }
 
   getUser(userId): Observable<string>{
-    console.log("now")
+    //console.log("now")
     return this.dbs.getUserDisplayName(userId)
   }
 

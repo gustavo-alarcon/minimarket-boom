@@ -35,7 +35,7 @@ export class SalesPhotoDialogComponent implements OnInit {
   ) { }
 
   ngOnInit(): void {
-    console.log(this.data.data)
+    //console.log(this.data.data)
     this.initForm();
   }
 
@@ -107,7 +107,7 @@ export class SalesPhotoDialogComponent implements OnInit {
   }
 
   deb(){
-    console.log(this.photoFormArray);
+    //console.log(this.photoFormArray);
   }
 
   onSubmitForm(){
@@ -156,7 +156,7 @@ export class SalesPhotoDialogComponent implements OnInit {
           let newSale: Sale =this.data.data;
           newSale.voucherChecked = false;
           newSale.voucher = photos;
-          console.log(newSale);
+          //console.log(newSale);
           this.dialogRef.close(newSale);
         },
         (err) => {

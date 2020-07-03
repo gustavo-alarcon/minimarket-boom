@@ -29,7 +29,7 @@ export class ConfirmationDialogComponent implements OnInit {
 
 
   action(action: string){
-    console.log(action);
+    //console.log(action);
     this.dialogRef.close({
       action: action,
       lastObservation: this.lastObservation.value

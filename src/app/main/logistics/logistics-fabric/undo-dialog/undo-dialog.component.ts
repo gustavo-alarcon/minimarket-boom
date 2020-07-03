@@ -152,7 +152,7 @@ export class UndoDialogComponent implements OnInit {
     )
 
     returnAll$.subscribe(res => {
-      console.log(res);
+      //console.log(res);
 
       this.af.firestore.runTransaction((transaction) => {
         return transaction.get(productRef).then((prodDoc) => {

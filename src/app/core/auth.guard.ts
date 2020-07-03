@@ -22,7 +22,7 @@ export class AuthGuard implements CanActivate {
     return this.auth.user$.pipe(
       take(1),
       map(user => {
-        console.log('auth');
+        //console.log('auth');
         let childComponent = state.url.split('/')[2];
 
         if (childComponent.startsWith('products')) {
