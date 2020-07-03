@@ -1,0 +1,85 @@
+<div style="max-width: 350px;">
+    <div mat-dialog-title>
+        <div class="ms-flex">
+            <h2 class="title-login">
+                {{data.item.productDescription | titlecase}} {{getUnit(data.item.unit,true)}} -
+                {{data.item.returnedQuantity}}
+                {{getUnit(data.item.unit,false)}}
+            </h2>
+            <span class="ms-fill"></span>
+            <button mat-icon-button mat-dialog-close>
+                <mat-icon>close</mat-icon>
+            </button>
+        </div>
+        <mat-divider></mat-divider>
+    </div>
+    <mat-dialog-content>
+        <mat-progress-bar mode="indeterminate" *ngIf="loading$ | async"></mat-progress-bar>
+        <div>
+            <p>Cantidad original a devolver: <strong>{{data.item.validationData.returned}}
+                    {{getUnit(data.item.unit,false)}}</strong> </p>
+            <p>Cantidad por devolver: <strong>{{data.item.returnedQuantity}} {{getUnit(data.item.unit,false)}}</strong>
+            </p>
+        </div>
+        <form [formGroup]="validatedFormGroup" style="width: 100%">
+            <mat-form-field class="w3-block w3-small" appearance="outline">
+                <mat-label>Cantidad a merma</mat-label>
+                <input formControlName="mermaStock" type="number" autocomplete="off" matInput
+                    placeholder="Cantidad de merma">
+                <mat-hint style="color:red" *ngIf="mermQuantity$ | async">
+                    Número Inválido
+                </mat-hint>
+            </mat-form-field>
+
+            <mat-form-field class="w3-block w3-small" appearance="outline">
+                <mat-label>Cantidad a devolver</mat-label>
+                <input formControlName="returned" type="number" autocomplete="off" matInput
+                    placeholder="Cantidad en devolución">
+                <mat-hint style="color:red" *ngIf="retQuantity$ | async">
+                    Número Inválido
+                </mat-hint>
+            </mat-form-field>
+
+
+        </form>
+
+        <div>
+            <p>Ingresarán
+                <strong>{{getStock()}} {{getUnit(data.item.unit,false)}}</strong> al
+                <strong>almacén regular</strong></p>
+            <p *ngIf="validatedFormGroup.get('mermaStock').value">Ingresarán
+                <strong>{{validatedFormGroup.get('mermaStock').value}} {{getUnit(data.item.unit,false)}}</strong> al
+                <strong>almacén de merma</strong></p>
+            <p *ngIf="validatedFormGroup.get('returned').value">Falta devolver
+                <strong>{{validatedFormGroup.get('returned').value}} {{getUnit(data.item.unit,false)}}</strong></p>
+        </div>
+
+        <div *ngIf="data.item.returnedRecord">
+            <div *ngIf="data.item.returnedRecord.length">
+                <mat-divider></mat-divider>
+
+                <div class="ms-flex ms-flex--center" style="justify-content: space-between;font-weight: bold;">
+                    <div style="width: 20%;">Fecha</div>
+                    <div style="width: 10%;"> Merma </div>
+                    <div style="width: 20%;"> Almacén</div>
+                </div>
+                <div *ngFor="let item of data.item.returnedRecord;let ind = index" class="ms-flex ms-flex--center"
+                    style="justify-content: space-between;">
+                    <div>{{item['date'].toMillis() | dateP}}</div>
+                    <div>
+                        {{item['merma']}}{{getUnit(data.item.unit,false)}}
+                    </div>
+                    <div>
+                        {{item['quantity']}}{{getUnit(data.item.unit,false)}}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </mat-dialog-content>
+
+    <mat-dialog-actions>
+        <button mat-raised-button color="accent" class="w3-block" type="button" (click)="save()"
+            [disabled]="(getStock()<0) || (negative$ | async)">Guardar</button>
+    </mat-dialog-actions>
+</div>

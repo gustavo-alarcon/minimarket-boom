@@ -1,0 +1,81 @@
+<div class="w3-section w3-margin-left w3-margin-right animated fadeInUp delay-2
+    componente-container">
+  <div style="padding: 0 3vw;">
+    <div style="display: flex; flex-direction: row; justify-content: space-between; align-items: flex-end; flex-wrap: wrap;">
+      <h2 class="title">
+        <div class="containerMobile">
+          <button 
+            mat-icon-button
+            *ngIf="detail$ | async" 
+            (click)="back()">
+            <mat-icon>arrow_back</mat-icon>
+          </button>
+        </div>
+        <mat-icon>assignment</mat-icon>
+        Ventas</h2>
+      <div [class.w3-hide-small]="(detail$ | async)"
+        style="display: flex; flex-direction: row; flex-wrap: nowrap; align-items: center;"
+        >
+        <!-- <div>
+          <button color="accent" mat-raised-button><b>Analítica</b></button>
+        </div> -->
+        <div color="primary" class="totalPrice">{{totalPriceSubj | async | currency:"S/."}}</div>
+      </div>
+    </div>
+    <mat-divider></mat-divider>
+    <div style="margin-top: 1em;">
+
+      <div class="containerDesktop">
+        <app-sales-master
+          style="width: 700px;"
+          [totalPriceSubject]="totalPriceSubj"
+          [detailSubject]="detailSubject">
+        </app-sales-master>
+
+        <div *ngIf="detail$ | async as detail"
+          class="shadow-color"
+          style="padding: 32px; border-radius: 10px;">
+          <app-sales-detail class="animated fadeIn"
+            style="width: 435px"
+            [sale]="detail"
+            [detailSubject]="detailSubject">
+          </app-sales-detail>
+
+          <!-- <app-sale-confirmed-detail class="animated fadeIn "
+            style="width:700px; margin-left: 32px"
+            *ngIf="detail.status == 'Confirmado' || detail.status == 'En reparto' || detail.status == 'Entregado'"
+            [sale]="detail"
+            [detailSubject]="detailSubject">
+          </app-sale-confirmed-detail> -->
+        </div>
+        
+      </div>
+
+      <div class="containerMobile">
+        <ng-template #master>
+          <app-sales-master style="width:100%" 
+          [totalPriceSubject]="totalPriceSubj"
+            [detailSubject]="detailSubject">
+          </app-sales-master>
+        </ng-template>
+
+        <ng-container *ngIf="detail$ | async as detail else master">
+          <app-sales-detail class="animated fadeIn "
+              style="width:100%; min-width:300px"
+              [sale]="detail"
+              [detailSubject]="detailSubject">
+          </app-sales-detail>
+
+          <!-- <app-sale-confirmed-detail class="animated fadeIn "
+              style="width:100%; min-width:300px"
+              *ngIf="detail.status == 'Confirmado' || detail.status == 'En reparto' || detail.status == 'Entregado'"
+              [sale]="detail"
+              [detailSubject]="detailSubject">
+          </app-sale-confirmed-detail> -->
+        </ng-container>
+      </div>
+
+
+    </div>
+  </div>
+</div>

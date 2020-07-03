@@ -1,0 +1,70 @@
+<div mat-dialog-title>
+    <h2 class="title-dialog" style="font-size:1.2em">
+        <mat-icon style="vertical-align:middle; margin-right: 8px;">account_circle</mat-icon>
+        {{data.edit?'Editar Usuario':'Crear Usuario'}}
+    </h2>
+    <mat-divider></mat-divider>
+</div>
+<mat-dialog-content style="max-width: 350px;">
+    <mat-progress-bar mode='indeterminate' *ngIf="loading$ | async"></mat-progress-bar>
+    <form [formGroup]="userForm">
+        <mat-form-field class="w3-block" appearance="outline">
+            <mat-label>Correo</mat-label>
+            <input matInput type="text" formControlName="email" placeholder="Correo electrónico" autocomplete="off">
+
+            <mat-error>
+                <span *ngIf="userForm.get('email').errors?.required">Usuario requerido</span>
+                <span *ngIf="userForm.get('email').errors?.email">Email no válido</span>
+                <span *ngIf="userForm.get('email').hasError('emailRepeatedValidator')">Usuario
+                    ya registrado.</span>
+            </mat-error>
+        </mat-form-field>
+        <mat-form-field class="w3-block" appearance="outline" *ngIf="!data.edit">
+            <mat-label>Contraseña</mat-label>
+            <input matInput [type]="hidePass ? 'password' : 'text'" formControlName="pass" placeholder="***"
+                autocomplete="off">
+            <button mat-icon-button matSuffix (click)="hidePass = !hidePass" [attr.aria-label]="'Ocultar contraseña'"
+                [attr.aria-pressed]="hidePass">
+                <mat-icon>{{hidePass ? 'visibility_off' : 'visibility'}}</mat-icon>
+            </button>
+            <mat-error>
+                <span *ngIf="userForm.get('pass').errors?.required">Contraseña requerido</span>
+                <span *ngIf="userForm.get('pass').hasError('minlength')">Mínimo 6 caracteres</span>
+            </mat-error>
+        </mat-form-field>
+
+        <mat-form-field class="w3-block" appearance="outline" class="w3-block">
+            <mat-label>Nombre</mat-label>
+            <input #input autocomplete="off" formControlName="name" type="text" matInput placeholder="Nombre">
+            <mat-error>
+                Campo requerido
+            </mat-error>
+        </mat-form-field>
+        <mat-form-field class="w3-block" appearance="outline" class="w3-block">
+            <mat-label>Apellido</mat-label>
+            <input #input autocomplete="off" formControlName="lastname" type="text" matInput placeholder="Nombre">
+            <mat-error>
+                Campo requerido
+            </mat-error>
+        </mat-form-field>
+
+        <mat-form-field class="w3-block" appearance="outline">
+            <mat-label>Cargo</mat-label>
+            <mat-select formControlName="permits">
+                <mat-option *ngFor="let unit of permits" [value]="unit">
+                    {{unit}}
+                </mat-option>
+            </mat-select>
+            <mat-error>
+                Campo requerido
+            </mat-error>
+        </mat-form-field>
+
+    </form>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+    <button mat-raised-button class="w3-margin-right buttonNoRounded" mat-dialog-close>Cancelar</button>
+    <button mat-raised-button class="buttonNoRounded" color="accent" (click)="save()" type="button"
+        [disabled]="userForm.status != 'VALID'">Guardar</button>
+</mat-dialog-actions>

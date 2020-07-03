@@ -1,0 +1,49 @@
+<div mat-dialog-title>
+    <h2 class="title-dialog" style="font-size:1.2em">
+        <mat-icon style="vertical-align:middle">add_circle</mat-icon>
+        {{data.edit?'Editar método de Pago':'Crear método de Pago'}}
+    </h2>
+    <mat-divider></mat-divider>
+</div>
+<mat-dialog-content>
+    <mat-progress-bar mode='indeterminate' *ngIf="loading$ | async"></mat-progress-bar>
+    <form [formGroup]="payForm">
+        <mat-form-field appearance="outline" class="w3-block">
+            <mat-label>Nombre</mat-label>
+            <input #input autocomplete="off" formControlName="name" type="text" matInput placeholder="Nombre">
+            <mat-error>
+                Campo requerido
+            </mat-error>
+        </mat-form-field>
+
+        <mat-form-field class="w3-block" appearance="outline">
+            <mat-label>N° de cuenta</mat-label>
+            <input #input autocomplete="off" formControlName="account" type="phone" matInput placeholder="N° de cuenta">
+            <mat-error>
+                Campo requerido
+            </mat-error>
+        </mat-form-field>
+
+        <p>Ícono</p>
+        <!-- Photo  -->
+        <div class="w3-margin-bottom w3-center">
+            <img class="w3-card-4" (click)="photoURL.click()" *ngIf="payForm.get('photoURL').value!=null"
+                style="width: 200px;" [src]="payForm.get('photoURL').value" alt="fotografía">
+            <img class="w3-card-4" (click)="photoURL.click()" *ngIf="payForm.get('photoURL').value==null"
+                style="width: 200px;" [src]="noImage" alt="sin fotografía">
+
+            <mat-progress-bar *ngIf="photos?.resizing$.photoURL | async" mode="indeterminate">
+            </mat-progress-bar>
+            <span *ngIf="photos.resizing$.photoURL | async" class="w3-small" style="width:100%">*comprimiendo</span>
+            <input style="display: none" #photoURL type="file" accept='image/*'
+                (change)="addNewPhoto('photoURL', photoURL.files)" />
+        </div>
+
+    </form>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+    <button mat-raised-button class="w3-margin-right buttonNoRounded" mat-dialog-close>Cancelar</button>
+    <button mat-raised-button class="buttonNoRounded" color="accent" (click)="save()" type="button"
+        [disabled]="payForm.status != 'VALID'">Guardar</button>
+</mat-dialog-actions>

@@ -1,0 +1,28 @@
+<div class="w3-section w3-margin-left w3-margin-right">
+  <div class="w3-row">
+      <div class="w3-col s0 m1 l1">
+          <p></p>
+      </div>
+      <div class="w3-col s12 m10 l10">
+        <h2 class="title">
+          <mat-icon style="vertical-align: middle; margin-right: 8px;">multiple_stop</mat-icon>Logística
+        </h2>
+        <mat-divider></mat-divider>
+        <div style="margin-top: 1em;">
+    
+          <nav mat-tab-nav-bar>
+            <a mat-tab-link *ngFor="let link of links" [routerLink]="link['route']"
+            routerLinkActive #rla="routerLinkActive" [active]="rla.isActive"> {{link['name']}} </a>
+          </nav>
+          <mat-progress-bar mode="indeterminate" *ngIf="loading$ | async"></mat-progress-bar>
+          <router-outlet></router-outlet>
+    
+        </div>
+
+      </div>
+      <div class="w3-col s0 m1 l1">
+          <p></p>
+      </div>
+  </div>
+
+</div>

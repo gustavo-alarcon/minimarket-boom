@@ -1,0 +1,25 @@
+<div style="max-width: 320px;">
+    <div mat-dialog-title>
+        <div class="ms-flex">
+            <h2 class="title-login">
+                Deshacer
+            </h2>
+            <span class="ms-fill"></span>
+            <button mat-icon-button mat-dialog-close>
+                <mat-icon>close</mat-icon>
+            </button>
+        </div>
+        <mat-divider></mat-divider>
+    </div>
+
+    <div mat-dialog-content>
+        <p>¿Desea continuar con la acción?</p>
+        <p>Se borrará todos los cambios realizados anteriormente</p>
+    </div>
+
+    <div class="w3-block" mat-dialog-actions>
+        <div class="ms-fill"></div>
+        <button class="buttonNoRounded" mat-raised-button color='accent'
+            [disabled]="loading$ | async" (click)="deleteDate()">Deshacer</button>
+    </div>
+</div>
