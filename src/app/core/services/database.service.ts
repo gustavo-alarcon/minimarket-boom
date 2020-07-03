@@ -314,7 +314,6 @@ export class DatabaseService {
 
     let upload$ = concat(
       snapshot$,
-      interval(1000).pipe(take(2)),
       url$)
     return upload$;
   }

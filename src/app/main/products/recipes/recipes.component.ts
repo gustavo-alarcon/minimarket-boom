@@ -1,3 +1,4 @@
+import { AuthService } from 'src/app/core/services/auth.service';
 import { tap, take, switchMap } from 'rxjs/operators';
 import { Observable } from 'rxjs';
 import { DatabaseService } from './../../../core/services/database.service';
@@ -24,7 +25,8 @@ export class RecipesComponent implements OnInit {
     private dialog: MatDialog,
     private snackBar: MatSnackBar,
     private route: ActivatedRoute,
-    public sanitizer: DomSanitizer
+    public sanitizer: DomSanitizer,
+    public auth: AuthService
   ) { }
 
   ngOnInit(): void {

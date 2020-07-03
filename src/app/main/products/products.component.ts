@@ -84,7 +84,11 @@ export class ProductsComponent implements OnInit {
     ).pipe(
       map(([users, id, confi]) => {
         this.maxWeight = confi['maxWeight']
-        return users.filter(el => el.uid == id.uid)[0]
+        if(id){
+          return users.filter(el => el.uid == id.uid)[0]
+        }else{
+          return null
+        }
       }),
       tap(res => {
         if (res) {
