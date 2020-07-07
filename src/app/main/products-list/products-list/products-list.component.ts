@@ -14,15 +14,18 @@ import { MatTableDataSource } from '@angular/material/table';
 import { MatPaginator } from '@angular/material/paginator';
 
 import { Product } from 'src/app/core/models/product.model';
-import { ProductCreateEditComponent } from './product-create-edit/product-create-edit.component';
-import { ProductEditPromoComponent } from './product-edit-promo/product-edit-promo.component';
-import { ConfirmationDialogComponent } from '../confirmation-dialog/confirmation-dialog.component';
+import { ProductCreateEditComponent } from '../product-create-edit/product-create-edit.component';
+import { ProductEditPromoComponent } from '../product-edit-promo/product-edit-promo.component';
+import { ConfirmationDialogComponent } from '../../confirmation-dialog/confirmation-dialog.component';
+
+
 @Component({
   selector: 'app-products-list',
   templateUrl: './products-list.component.html',
   styleUrls: ['./products-list.component.scss']
 })
 export class ProductsListComponent implements OnInit {
+
   //Forms
   categoryForm: FormControl;
   itemsFilterForm: FormControl;

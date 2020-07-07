@@ -2,8 +2,7 @@ import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule } from '@angular/forms';
 
-import { ProductsListComponent } from './products-list.component';
-import { ProductsListRoutingModule } from './products-list-routing.module';
+import { ProductsListRoutingModule } from './parent-list-routing.module';
 
 import { MatMenuModule } from '@angular/material/menu';
 import { MatTableModule } from '@angular/material/table';
@@ -18,6 +17,12 @@ import { MatDividerModule } from '@angular/material/divider';
 import { MatDialogModule } from '@angular/material/dialog';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatSelectModule } from '@angular/material/select';
+import {MatChipsModule} from '@angular/material/chips';
+import { MatDatepickerModule } from '@angular/material/datepicker';
+import { SatDatepickerModule, SatNativeDateModule } from 'saturn-datepicker';
+import {MatTabsModule} from '@angular/material/tabs';
+
+
 
 import { Ng2ImgMaxModule } from 'ng2-img-max';
 import { LazyLoadImageModule } from 'ng-lazyload-image';
@@ -26,17 +31,26 @@ import { ProductConfigCategoriesComponent } from './product-config-categories/pr
 import { ProductEditPromoComponent } from './product-edit-promo/product-edit-promo.component';
 import { DatabaseService } from 'src/app/core/services/database.service';
 import { ProductConfigUnitsComponent } from './product-config-units/product-config-units.component';
+import { PackagesCreateEditComponent } from './packages-create-edit/packages-create-edit.component';
+import { PackagesConfigUnitsComponent } from './packages-config-units/packages-config-units.component';
+import { PackagesListComponent } from './packages-list/packages-list.component';
+import { ProductsListComponent } from './products-list/products-list.component';
+import { ParentListComponent } from './parent-list.component';
 
 
 
 
 @NgModule({
   declarations: [
+    ParentListComponent,
     ProductsListComponent,
     ProductCreateEditComponent,
     ProductConfigCategoriesComponent,
     ProductEditPromoComponent,
-    ProductConfigUnitsComponent
+    ProductConfigUnitsComponent,
+    PackagesCreateEditComponent,
+    PackagesConfigUnitsComponent,
+    PackagesListComponent
   ],
   imports: [
     CommonModule,
@@ -56,12 +70,19 @@ import { ProductConfigUnitsComponent } from './product-config-units/product-conf
     MatDividerModule,
     MatDialogModule,
     MatProgressBarModule,
-    MatSelectModule
+    MatSelectModule,
+    MatDatepickerModule,
+    SatDatepickerModule,
+    SatNativeDateModule,
+    MatChipsModule,
+    MatTabsModule
   ],
   providers: [
     ProductCreateEditComponent,
     ProductEditPromoComponent,
+    PackagesCreateEditComponent,
+    PackagesConfigUnitsComponent,
     DatabaseService
   ]
 })
-export class ProductsListModule { }
+export class ParentListModule { }
