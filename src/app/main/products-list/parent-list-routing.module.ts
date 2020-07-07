@@ -1,6 +1,6 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ProductsListComponent } from './products-list.component';
+import { ParentListComponent } from './parent-list.component';
 import { Routes, RouterModule } from '@angular/router';
 
 
@@ -8,7 +8,7 @@ import { Routes, RouterModule } from '@angular/router';
 const routes: Routes = [
   {
     path: '',
-    component: ProductsListComponent,
+    component: ParentListComponent,
   },
 ]
 

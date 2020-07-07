@@ -258,14 +258,13 @@ export class DatabaseService {
     return st.delete().pipe(takeLast(1));
   }
 
-  editProductPromo(productId: string, promo: boolean, promoData: Product['promoData']): firebase.firestore.WriteBatch {
+  editProductPromo(productId: string, promo: boolean, promoData: Product['promoData'] | Package['promoData'], pack?: boolean): firebase.firestore.WriteBatch {
     let productRef: DocumentReference;
-    let productData: Product['promoData'];
     let batch = this.afs.firestore.batch();
 
     //Editting
-    productRef = this.afs.firestore.collection(this.productsListRef).doc(productId);
-    productData = promoData;
+    productRef = this.afs.firestore.collection(
+      pack ? this.packagesListRef : this.productsListRef).doc(productId);
     batch.update(productRef, {
       promo,
       promoData: {
@@ -306,80 +305,80 @@ export class DatabaseService {
     }), shareReplay(1))
   }
 
-  createEditProduct(edit: boolean, product: Product, oldProduct?: Product, photo?: File): Observable<firebase.firestore.WriteBatch> {
-    let productRef: DocumentReference;
-    let productData: Product;
+  createEditPackage(edit: boolean, pack: Package, oldPackage?: Package, photo?: File): Observable<firebase.firestore.WriteBatch> {
+    let packageRef: DocumentReference;
+    let packageData: Package;
     let batch = this.afs.firestore.batch();
 
     //Editting
     if (edit) {
-      productRef = this.afs.firestore.collection(this.productsListRef).doc(oldProduct.id);
-      productData = product;
-      productData.id = productRef.id;
-      productData.photoURL = oldProduct.photoURL;
-      productData.promo = oldProduct.promo;
+      packageRef = this.afs.firestore.collection(this.packagesListRef).doc(oldPackage.id);
+      packageData = pack;
+      packageData.id = packageRef.id;
+      packageData.photoURL = oldPackage.photoURL;
+      packageData.promo = oldPackage.promo;
     }
     //creating
     else {
-      productRef = this.afs.firestore.collection(this.productsListRef).doc();
-      productData = product;
-      productData.id = productRef.id;
-      productData.photoURL = null;
+      packageRef = this.afs.firestore.collection(this.packagesListRef).doc();
+      packageData = pack;
+      packageData.id = packageRef.id;
+      packageData.photoURL = null;
     }
 
     //With or without photo
     if (photo) {
       if (edit) {
         return concat(
-          this.deletePhotoProduct(oldProduct.photoPath).pipe(takeLast(1)),
-          this.uploadPhotoProduct(productRef.id, photo).pipe(takeLast(1))
+          this.deletePhotoPackage(oldPackage.photoPath).pipe(takeLast(1)),
+          this.uploadPhotoPackage(packageRef.id, photo).pipe(takeLast(1))
         ).pipe(
           takeLast(1),
           map((res: string) => {
-            productData.photoURL = res;
-            productData.photoPath = `/productsList/pictures/${productRef.id}-${photo.name}`;
-            batch.set(productRef, productData, { merge: true });
+            packageData.photoURL = res;
+            packageData.photoPath = `/packagesList/pictures/${packageRef.id}-${photo.name}`;
+            batch.set(packageRef, packageData, { merge: true });
             return batch
           })
         )
       }
       else {
-        return this.uploadPhotoProduct(productRef.id, photo).pipe(
+        return this.uploadPhotoPackage(packageRef.id, photo).pipe(
           takeLast(1),
           map((res: string) => {
-            productData.photoURL = res;
-            productData.photoPath = `/productsList/pictures/${productRef.id}-${photo.name}`;
-            batch.set(productRef, productData, { merge: true });
+            packageData.photoURL = res;
+            packageData.photoPath = `/packagesList/pictures/${packageRef.id}-${photo.name}`;
+            batch.set(packageRef, packageData, { merge: true });
             return batch
           })
         )
       }
     }
     else {
-      batch.set(productRef, productData, { merge: true });
+      batch.set(packageRef, packageData, { merge: true });
       return of(batch);
     }
   }
 
-  publishPackage(published: boolean, product: Product, user: User): firebase.firestore.WriteBatch {
-    let productRef: DocumentReference = this.afs.firestore.collection(this.productsListRef).doc(product.id);
+  publishPackage(published: boolean, pack: Package, user: User): firebase.firestore.WriteBatch {
+    let packageRef: DocumentReference = this.afs.firestore.collection(this.packagesListRef).doc(pack.id);
     let batch = this.afs.firestore.batch();
-    batch.update(productRef, { published })
+    batch.update(packageRef, { published })
     return batch;
   }
 
-  deleteProduct(product: Product): Observable<firebase.firestore.WriteBatch> {
-    let productRef: DocumentReference = this.afs.firestore.collection(this.productsListRef).doc(product.id)
+  deletePackage(pack: Package): Observable<firebase.firestore.WriteBatch> {
+    let packageRef: DocumentReference = this.afs.firestore.collection(this.packagesListRef).doc(pack.id)
     let batch = this.afs.firestore.batch();
-    batch.delete(productRef)
-    return this.deletePhotoProduct(product.photoPath).pipe(
+    batch.delete(packageRef)
+    return this.deletePhotoPackage(pack.photoPath).pipe(
       takeLast(1),
       mapTo(batch)
     )
   }
 
-  uploadPhotoProduct(id: string, file: File): Observable<string | number> {
-    const path = `/productsList/pictures/${id}-${file.name}`;
+  uploadPhotoPackage(id: string, file: File): Observable<string | number> {
+    const path = `/packagesList/pictures/${id}-${file.name}`;
 
     // Reference to storage bucket
     const ref = this.storage.ref(path);
@@ -400,28 +399,12 @@ export class DatabaseService {
     return upload$;
   }
 
-  deletePhotoProduct(path: string): Observable<any> {
+  deletePhotoPackage(path: string): Observable<any> {
     let st = this.storage.ref(path);
     return st.delete().pipe(takeLast(1));
   }
 
-  editProductPromo(productId: string, promo: boolean, promoData: Product['promoData']): firebase.firestore.WriteBatch {
-    let productRef: DocumentReference;
-    let productData: Product['promoData'];
-    let batch = this.afs.firestore.batch();
 
-    //Editting
-    productRef = this.afs.firestore.collection(this.productsListRef).doc(productId);
-    productData = promoData;
-    batch.update(productRef, {
-      promo,
-      promoData: {
-        promoPrice: promoData.promoPrice,
-        quantity: promoData.quantity
-      }
-    });
-    return batch;
-  }
   ////////////////////////////////////////////////////////////////////////////////
   //Products//////////////////////////////////////////////////////////////////////
   createEditRecipe(recipe: Recipe, edit: boolean): firebase.firestore.WriteBatch {

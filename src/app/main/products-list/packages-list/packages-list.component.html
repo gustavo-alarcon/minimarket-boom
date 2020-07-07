@@ -1,0 +1,42 @@
+<div>
+  <!-- Actions -->
+  <div class="w3-margin actionsContainer formFieldRounded">
+    <!-- Select item's type -->
+    <button mat-raised-button 
+        style="height: 45px;"
+        (click)="onCreateEditItem(false)" 
+        color="accent">
+      <mat-icon>add</mat-icon>Crear
+    </button>
+
+    <!-- <ng-container *ngIf="filter$ | async as filter">
+      <mat-form-field color="primary" class="content w3-small" appearance="outline">
+        <mat-label>Buscar</mat-label>
+        <mat-icon matPrefix class="w3-margin-right">search</mat-icon>
+        <input [formControl]="itemsFilterForm" matInput type="text" placeholder="Escriba..." autocomplete="off">
+        <mat-hint>Filtro de nombre</mat-hint>
+      </mat-form-field>
+
+      <mat-slide-toggle [formControl]="promoFilterForm" style="margin-bottom: 8px" color="accent">
+        Mostrar solo ofertas
+      </mat-slide-toggle>
+    </ng-container> -->
+
+    <!-- <button mat-raised-button 
+        style="height: 45px;"
+        (click)="downloadXls()" 
+        color="accent">
+      Descargar Excel
+    </button> -->
+
+  </div>
+
+
+</div>
+
+<ng-template #default>
+  <div class="w3-container w3-center w3-margin-top w3-margin-bottom">
+    <!-- <img [src]="noResultImage" alt="no data" style="width: 100%; max-width: 300px;"> -->
+    <p>Sin Resultados</p>
+  </div>
+</ng-template>

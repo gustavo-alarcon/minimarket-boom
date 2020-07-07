@@ -1,5 +1,5 @@
 import { Component, OnInit, Inject } from '@angular/core';
-import { FormGroup, FormBuilder, Validators, AbstractControl } from '@angular/forms';
+import { FormGroup, FormBuilder, Validators, AbstractControl, FormArray } from '@angular/forms';
 import {COMMA, ENTER} from '@angular/cdk/keycodes';
 import { MatDialogRef, MatDialog, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
@@ -14,6 +14,9 @@ import { User } from 'src/app/core/models/user.model';
 import { PackageUnit } from 'src/app/core/models/unit.model';
 import { ProductConfigUnitsComponent } from '../product-config-units/product-config-units.component';
 import { Package } from 'src/app/core/models/package.model';
+import { MatAutocomplete } from '@angular/material/autocomplete';
+import { MatChipInputEvent } from '@angular/material/chips';
+import { PackagesConfigUnitsComponent } from '../packages-config-units/packages-config-units.component';
 
 @Component({
   selector: 'app-packages-create-edit',
@@ -23,14 +26,18 @@ import { Package } from 'src/app/core/models/package.model';
 export class PackagesCreateEditComponent implements OnInit {
   //Variables
   packageForm: FormGroup;
-  dateType: ["Definida", "Indefinida"];
-  itemsFormGroup: FormGroup;
+  dateType = ["Definida", "Indefinida"];
+  itemsFormArray: FormArray;
+  dateLimit = new Date(Date.now() + 8.64e+7)
+  maxItems = Array.from(Array(3), (_, i) => i + 1);
 
   descriptionFormatting$: Observable<string>
   skuFormatting$: Observable<string>
   units$: Observable<PackageUnit[]>
+  dateType$: Observable<boolean>
+  totalItems$: Observable<number>
   productsList$: Observable<Product[]>
-  productsListAutocomplete$: Observable<Product[]>;
+  productsListAutocompletes$: Observable<Product[]>[];
 
   noImage = '../../../../assets/images/no-image.png';
   separatorKeysCodes: number[] = [ENTER, COMMA];
@@ -68,11 +75,14 @@ export class PackagesCreateEditComponent implements OnInit {
   }
 
   initForm() {
-    //console.log(this.data);
+    this.itemsFormArray = this.fb.array([])
+    
     if (this.data.edit) {
-      this.itemsFormGroup = this.fb.group({
-        textInput: [''],
-        product: [this.data.data.items, this.minInputsValidator()]
+      this.data.data.items.forEach(el => {
+        this.itemsFormArray.push(this.fb.group({
+          textInput: [''],
+          productsOptions: [el.productsOptions, this.minInputsValidator()]
+        }))
       })
 
       this.packageForm = this.fb.group({
@@ -100,18 +110,14 @@ export class PackagesCreateEditComponent implements OnInit {
       })
     }
     else {
-      this.itemsFormGroup = this.fb.group({
-        textInput: [''],
-        product: [[], this.minInputsValidator()]
-      })
 
       this.packageForm = this.fb.group({
-        description: this.fb.control(this.data.data.description, {
+        description: this.fb.control(null, {
           validators: [Validators.required],
           asyncValidators: this.descriptionRepeatedValidator(this.dbs, this.data),
           updateOn: 'blur'
         }),
-        sku: this.fb.control(this.data.data.sku, {
+        sku: this.fb.control(null, {
           validators: [Validators.required],
           asyncValidators: this.skuRepeatedValidator(this.dbs, this.data),
           updateOn: 'blur'
@@ -124,7 +130,7 @@ export class PackagesCreateEditComponent implements OnInit {
             value: null, 
             disabled: true,
           }, Validators.required],
-        totalItems: [null, [Validators.required, Validators.min(1)]],
+        totalItems: [0, [Validators.required, Validators.min(1)]],
         additionalDescription:[null, Validators.required],
         photoURL: [null, Validators.required],
       })
@@ -159,7 +165,7 @@ export class PackagesCreateEditComponent implements OnInit {
         )
       }))
 
-    this.units$ = this.dbs.getProductsListUnitsValueChanges().pipe(
+    this.units$ = this.dbs.getPackagesListUnitsValueChanges().pipe(
       take(1),
       tap(unit => {
       if(this.data.edit){
@@ -167,14 +173,79 @@ export class PackagesCreateEditComponent implements OnInit {
         this.packageForm.get('unit').setValue(selectedUnit)
       }
     }));
+
+    this.dateType$ = this.packageForm.get('dateType').valueChanges.pipe(
+      startWith(this.packageForm.get('dateType').value),
+      map(el => {
+        if(el == this.dateType[0]){
+          this.packageForm.get('dateLimit').enable()
+          return true
+        } else {
+          this.packageForm.get('dateLimit').disable()
+          return false
+        }
+      })
+    )
+
+    this.productsList$ = this.dbs.getProductsListValueChanges();
+
+    this.totalItems$ = this.packageForm.get('totalItems').valueChanges.pipe(
+      //startWith<number>(this.packageForm.get('totalItems').value),
+      tap(total => {
+        this.itemsFormArray.clear();
+        for(let i=0; i<total; i++){
+          this.itemsFormArray.push(this.fb.group({
+            textInput: [''],
+            productsOptions: [[], this.minInputsValidator()]
+          }))
+        }
+        this.updateProductsListAutocompletes();
+      })
+    )
+
+    this.updateProductsListAutocompletes();
   }
 
-  onAddCategory() {
-    this.dialog.open(ProductConfigCategoriesComponent);
+  updateProductsListAutocompletes() {
+    this.productsListAutocompletes$ = this.itemsFormArray.controls.map(group => {
+        return combineLatest(
+          group.get('textInput').valueChanges.pipe(startWith('')), 
+          this.productsList$
+          ).pipe(map(([formValue, products]) => {
+            let filter = products.filter(el => el.description.match(new RegExp(formValue,'ig')));
+            return filter;
+          }))
+      })
+  }
+
+  //Mat Chip
+  onRemoveProduct(product: Product, formGroup: FormGroup){
+    let removedList = (<Product[]>formGroup.get('productsOptions').value).filter(
+      el => el.id != product.id
+    )
+    formGroup.get('productsOptions').setValue(removedList)
+  }
+
+  onAddProduct(auto: MatAutocomplete, event: MatChipInputEvent, formGroup: FormGroup){
+    let options = auto.options;
+    if(options.length){
+      //(options.first.value);
+      this.onSelectProduct(options.first.value, formGroup)
+    }
+    event.input.value = "";
+  }
+
+  onSelectProduct(product: Product, formGroup: FormGroup){
+    let initList = (<Product[]>formGroup.get('productsOptions').value);
+    if(!initList.find(el => el.id == product.id)){
+      initList.unshift(product)
+      formGroup.get('productsOptions').setValue(initList);
+    }
+    formGroup.get('textInput').setValue("");
   }
 
   onAddUnit() {
-    this.dialog.open(ProductConfigUnitsComponent);
+    this.dialog.open(PackagesConfigUnitsComponent);
   }
 
   //Photo
@@ -212,30 +283,30 @@ export class PackagesCreateEditComponent implements OnInit {
   onSubmitForm(user: User) {
     this.packageForm.markAsPending();
 
-    let product: Product = {
+    let pack: Package = {
+      package: true,
       id: null,
       description: this.packageForm.get('description').value.trim().toLowerCase(),
       additionalDescription: this.packageForm.get('additionalDescription').value.trim(),
       sku: this.packageForm.get('sku').value,
-      category: this.packageForm.get('category').value,
       price: this.packageForm.get('price').value,
       unit: this.packageForm.get('unit').value,
-      realStock: this.packageForm.get('realStock').value,
-      mermaStock: this.packageForm.get('mermaStock').value,
-      sellMinimum: this.packageForm.get('sellMinimum').value,
-      alertMinimum: this.packageForm.get('alertMinimum').value,
+      dateLimit: this.packageForm.get('dateType').value == this.dateType[0] ? 
+        this.packageForm.get('dateLimit').value : null,
+      totalItems: this.packageForm.get('totalItems').value,
+      items: this.itemsFormArray.controls.map(el => ({productsOptions: el.get('productsOptions').value})),
       photoURL: this.packageForm.get('photoURL').value,
       photoPath: this.data.edit ? this.data.data.photoPath : null,
       promo: this.data.edit ? this.data.data.promo : false,
       promoData: this.data.edit ? this.data.data.promoData : null,
-      published: this.data.edit ? this.data.data.published : null,
+      published: /*this.data.edit ? this.data.data.published : null*/ true,
       createdAt: this.data.edit ? this.data.data.createdAt : new Date(),
       createdBy: this.data.edit ? this.data.data.createdBy : user,
       editedAt: this.data.edit ? new Date() : null,
       editedBy: this.data.edit ? user : null,
     }
 
-    this.dbs.createEditProduct(this.data.edit, product, this.data.data, this.photos.data.photoURL)
+    this.dbs.createEditPackage(this.data.edit, pack, this.data.data, this.photos.data.photoURL)
       .subscribe(batch => {
         batch.commit().then(res => {      
           this.dialogRef.close(true);
@@ -249,24 +320,6 @@ export class PackagesCreateEditComponent implements OnInit {
         });
   }
 
-  minimumSellValidator(){
-    return (control: AbstractControl): {'sellMinimumExceeded': boolean} => {
-      if(control.parent){
-        if(control.parent.get('sellMinimum').value >= control.parent.get('alertMinimum').value){
-            if(control.parent.get('sellMinimum').value && control.parent.get('alertMinimum').value){
-              return {'sellMinimumExceeded': true}
-            }
-            return null
-        } else{
-          return null
-        }
-      } else {
-        return null
-      }
-      
-    }
-  }
-
   descriptionRepeatedValidator(dbs: DatabaseService, data: {data: Package, edit: boolean}){
     return (control: AbstractControl): Observable<{'descriptionRepeatedValidator': boolean}> => {
       const value = control.value.toUpperCase();
@@ -275,12 +328,12 @@ export class PackagesCreateEditComponent implements OnInit {
           return of(null)
         }
         else{
-          return dbs.getProductsList().pipe(
+          return dbs.getPackagesList().pipe(
             map(res => !!res.find(el => el.description.toUpperCase() == value)  ? {descriptionRepeatedValidator: true} : null),)
           }
         }
       else{
-        return dbs.getProductsList().pipe(
+        return dbs.getPackagesList().pipe(
           map(res => !!res.find(el => el.description.toUpperCase() == value)  ? {descriptionRepeatedValidator: true} : null),)
         }
     }
@@ -294,12 +347,12 @@ export class PackagesCreateEditComponent implements OnInit {
           return of(null)
         }
         else{
-          return dbs.getProductsList().pipe(
+          return dbs.getPackagesList().pipe(
             map(res => !!res.find(el => el.sku.toUpperCase() == value)  ? {skuRepeatedValidator: true} : null),)
           }
         }
       else{
-        return dbs.getProductsList().pipe(
+        return dbs.getPackagesList().pipe(
           map(res => !!res.find(el => el.sku.toUpperCase() == value)  ? {skuRepeatedValidator: true} : null),)
         }
     }
@@ -308,14 +361,18 @@ export class PackagesCreateEditComponent implements OnInit {
   minInputsValidator(){
     return (control: AbstractControl): {'minInputsValidator': boolean} => {
       if(control){
-        let products = <Product[]>control.value;
-        //console.log(products);
-        if(!products.length){
+        let packages = <Package[]>control.value;
+        if(!packages.length){
           return {minInputsValidator: true}
         }
       }
       return null
     }
+  }
+
+  displayFn(input: Product) {
+    if (!input) return '';
+    return input.description;
   }
 
 }

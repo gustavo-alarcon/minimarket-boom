@@ -37,20 +37,6 @@
         <mat-hint align="end">{{abbreviation.value?.length || 0}}/6</mat-hint>
     </mat-form-field>
 
-    <mat-form-field style="margin-bottom: 8px; display:block"
-      appearance="outline">
-        <mat-label>Peso en KG</mat-label>
-        <input formControlName="weight" #weight
-            type="number" autocomplete="off"
-            matInput placeholder="Peso en KG">
-        <mat-error>
-            <span *ngIf="unitFormGroup.get('weight').errors?.required">Campo requerido</span>
-            <span *ngIf="unitFormGroup.get('weight').errors?.min">El peso debe ser mayor a 0.</span>
-            <span *ngIf="unitFormGroup.get('weight').errors?.max">El peso no puede exceder 3.5KG.</span>
-        </mat-error>
-        <mat-hint align="start">Peso correspondiente.</mat-hint>
-    </mat-form-field>
-
     <button mat-raised-button style="display:block; width: 100%; margin-bottom: 16px"
       [disabled]="unitFormGroup.status != 'VALID'"
       (click)="addUnit()">
@@ -69,7 +55,7 @@
     <div *ngFor="let unit of units"
       class="inputsContainer">
       <div class="bullet">
-          {{unit.description}} ({{unit.abbreviation}}) - {{unit.weight}}KG
+          {{unit.description}} ({{unit.abbreviation}})
       </div>
       <div>
         <button type="button"

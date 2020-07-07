@@ -4,8 +4,12 @@
     <h2 class="title"><mat-icon>local_offer</mat-icon>Lista de Productos</h2>
     <mat-divider></mat-divider>
     <div style="margin-top: 2em;">
+      <mat-tab-group>
+        <mat-tab label="Productos"><app-products-list></app-products-list></mat-tab>
+        <mat-tab label="Paquetes"><app-packages-list></app-packages-list></mat-tab>
+      </mat-tab-group>
 
-      <app-products-list></app-products-list>
+      
 
     </div>
   </div>
