@@ -1,8 +1,9 @@
-import { Unit } from './unit.model';
+import { Unit, PackageUnit } from './unit.model';
 
 export interface GeneralConfig{
   categories: string[];
   units: Unit[];
+  packagesUnits: PackageUnit[];
   salesRCounter: number;
   buysCounter: number;
   maxWeight: number;

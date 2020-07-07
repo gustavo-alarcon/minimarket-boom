@@ -26,6 +26,7 @@ import { ProductConfigCategoriesComponent } from './product-config-categories/pr
 import { ProductEditPromoComponent } from './product-edit-promo/product-edit-promo.component';
 import { DatabaseService } from 'src/app/core/services/database.service';
 import { ProductConfigUnitsComponent } from './product-config-units/product-config-units.component';
+import { PackagesCreateEditComponent } from './packages-create-edit/packages-create-edit.component';
 
 
 
@@ -36,7 +37,8 @@ import { ProductConfigUnitsComponent } from './product-config-units/product-conf
     ProductCreateEditComponent,
     ProductConfigCategoriesComponent,
     ProductEditPromoComponent,
-    ProductConfigUnitsComponent
+    ProductConfigUnitsComponent,
+    PackagesCreateEditComponent
   ],
   imports: [
     CommonModule,

@@ -25,11 +25,13 @@ import { MAT_DATE_LOCALE as MAT_DATE_LOCALESAT } from 'saturn-datepicker';
 import { MAT_DATE_LOCALE } from '@angular/material/core';
 
 import { DatePipe } from '@angular/common';
+import { PackagesListComponent } from './main/products-list/packages-list/packages-list.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     LoginComponent,
+    PackagesListComponent,
   ],
   imports: [
     BrowserModule,
