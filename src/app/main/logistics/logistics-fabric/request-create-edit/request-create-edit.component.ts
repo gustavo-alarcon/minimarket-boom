@@ -62,8 +62,8 @@ export class RequestCreateEditComponent implements OnInit {
     this.correlative$ = this.data.edit ? 
       of(this.data.data.correlative.toString().padStart(6, "0")) : 
       this.dbs.getBuysCorrelativeValueChanges().pipe(
-        map(corr => corr.toString().padStart(6, "0")),
-        startWith("000000")
+        map(corr => corr.toString().padStart(4, "0")),
+        startWith("0001")
       );
 
     this.products$ = combineLatest(
@@ -92,11 +92,6 @@ export class RequestCreateEditComponent implements OnInit {
             return this.selectedProducts.asObservable()
           })
         )
-  }
-
-  deb(){
-    //console.log(this.selectedProducts);
-    //console.log(this.requestFormGroup);
   }
 
   onAddProduct(){

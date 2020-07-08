@@ -99,19 +99,16 @@ export class LoginDialogComponent implements OnInit {
           } else {
             return res.find(el => el.email.toLowerCase() == value) ? { emailRepeatedValidator: true } : null
           }
-
         }))
-
     }
   }
 
   reset() {
+    let data = this.dataFormGroup.value
     this.dataFormGroup = this.fb.group({
-      email: [null, [Validators.required, Validators.email], [this.emailRepeatedValidator()]],
-      pass: [null, [Validators.required, Validators.minLength(6)]]
+      email: [data.email, [Validators.required, Validators.email], [this.emailRepeatedValidator()]],
+      pass: [data.pass, [Validators.required, Validators.minLength(6)]]
     });
-
-
   }
 
   passwordReset() {

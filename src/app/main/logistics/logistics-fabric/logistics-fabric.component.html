@@ -1,7 +1,7 @@
 <!-- Actions -->
 <div class="w3-margin actionsContainer formFieldRounded">
   <!-- Select item's type -->
-  <button mat-raised-button style="height: 45px;" (click)="onCreateEditRequest(false, null)" color="accent">
+  <button mat-raised-button class="w3-margin-bottom" (click)="onCreateEditRequest(false, null)" color="accent">
     <mat-icon>add</mat-icon>Crear
   </button>
 
@@ -38,9 +38,9 @@
     <mat-expansion-panel-header>
       <div class="ms-flex w3-block" style="justify-content: space-between; align-items: center;">
         <div>#F{{("000"+buy.correlative).slice(-4)}}</div>
-        <div class="thin">{{buy.totalAmount}} KG</div>
-        <div class="thin">S/. {{buy.totalPrice | number: '.2'}}</div>
-        <div class="thin">
+        <div class="thin w3-hide-small">{{buy.totalAmount}} KG</div>
+        <div class="thin w3-hide-small">S/. {{buy.totalPrice | number: '.2'}}</div>
+        <div class="thin w3-hide-small">
           {{(buy.validated ? buy['validatedDate'].toMillis() :buy['requestedDate'].toMillis()) | dateP }}
         </div>
         <div class="ms-flex panel-icons">
@@ -67,7 +67,7 @@
     </mat-expansion-panel-header>
     <mat-progress-bar mode='indeterminate' *ngIf="!(buy['products'] | async)"></mat-progress-bar>
     <div *ngIf="buy['products'] | async as products">
-      <table mat-table [dataSource]="products" matSort class="ms-table">
+      <table mat-table [dataSource]="products" matSort class="ms-table w3-hide-small">
         <ng-container matColumnDef="name">
           <th *matHeaderCellDef class="w3-center ms-table__th">
             Producto
@@ -145,6 +145,47 @@
         <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
 
       </table>
+      <div class="w3-hide-large w3-hide-medium ms-flex ms-flex--center" *ngFor="let element of products">
+        <div>
+          <div><strong>{{element['productDescription'] | titlecase}}</strong></div>
+          <div class="ms-flex" style="min-width: 130px;">
+            <span> {{element['quantity']}} {{element['unit']['abbreviation']}}</span>
+            <span class="ms-fill"></span>
+            <span> S/. {{(element['unitPrice'] * element['quantity']) | number: '.2'}}</span>
+          </div>
+          <div>
+            {{(element.validated? element['validatedDate'].toMillis() : element['desiredDate'].toMillis()) | dateP}}
+          </div>
+        </div>
+        <span class="ms-fill"></span>
+        <div>
+          <button *ngIf="element['validatedStatus']=='por validar'" mat-raised-button color="accent"
+            class="buttonNoRounded" (click)="validated(element,false,ind)" style="width: 110px;">Validar</button>
+
+
+          <div *ngIf="element['validatedStatus']=='validado'" class="ms-flex ms-flex--center"
+            style="justify-content: center;">
+
+            <button (click)="validated(element,true,ind)" mat-raised-button color="primary" style="margin-right: 8px;"
+              class="buttonNoRounded">Correcto</button>
+
+            <button (click)="undoValidated(element,ind)" mat-icon-button matTooltip="Deshacer">
+              <mat-icon>undo</mat-icon>
+            </button>
+          </div>
+
+          <div *ngIf="element['validatedStatus']=='pendiente'" class="ms-flex ms-flex--center"
+            style="justify-content: center;">
+
+            <button (click)="validated(element,true,ind)" mat-raised-button color="accent" style="margin-right: 8px;"
+              class="buttonNoRounded">Pendiente</button>
+
+            <button (click)="undoValidated(element,ind)" mat-icon-button matTooltip="Deshacer">
+              <mat-icon>undo</mat-icon>
+            </button>
+          </div>
+        </div>
+      </div>
     </div>
 
   </mat-expansion-panel>

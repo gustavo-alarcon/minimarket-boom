@@ -2,7 +2,7 @@
 @import "./assets/css/animate.css";
 @import "./assets/css/w3.css";
 @import "~@angular/material/theming";
-@import '~saturn-datepicker/theming';
+@import "~saturn-datepicker/theming";
 
 // Include the common styles for Angular Material. We include this here so that you only
 // have to load a single css file for Angular Material in your app.
@@ -98,7 +98,7 @@ $disto-productos-dark-theme: mat-dark-theme($disto-productos-primary, $disto-pro
 
 /* You can add global styles to this file, and also import other style files */
 .background-color {
-  background-color: #FFFFFF;
+  background-color: #ffffff;
 }
 
 .shadow-color {
@@ -238,7 +238,7 @@ a {
   padding-bottom: 16px !important;
 }
 
-.mat-divider{
+.mat-divider {
   border-top: 4px solid var(--primary-color) !important;
 }
 
@@ -247,9 +247,8 @@ a {
     transform: scale(2);
     border-radius: 6.25px;
     box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25) !important;
-
   }
-  
+
   .mat-checkbox-checked .mat-checkbox-background {
     transform: scale(2);
     border-radius: 6.25px;
@@ -257,11 +256,11 @@ a {
   }
 }
 
-
 .mat-form-field-appearance-outline .mat-form-field-label,
 .mat-form-field-appearance-outline.mat-focused .mat-form-field-label {
   font-family: "Raleway", sans-serif;
 }
+
 .formFieldRounded {
   font-size: 14px !important;
   .mat-form-field-appearance-outline {
@@ -273,7 +272,7 @@ a {
       border-radius: 0 20px 20px 0 !important;
     }
   }
-  button:not([class*=mat-normal]) {
+  button:not([class*="mat-normal"]) {
     font-weight: bold;
     height: 45px;
   }
@@ -286,26 +285,32 @@ a {
   justify-content: space-between;
 }
 
-@media(max-width: 601px){
-  .actionsContainer{
+.actionsContainer .content {
+  margin-left: 16px;
+  line-height: 17px;
+  //display: block !important;
+}
+
+@media (max-width: 601px) {
+  .actionsContainer {
     flex-direction: column;
     justify-content: center;
     button {
       display: block;
-      width: 100%
+      width: 100%;
     }
-    
   }
   .actionsContainer .content {
-    margin: 16px 0 !important;
-    width: 100%
+    margin: 0 !important;
+    width: 100%;
   }
-}
 
-.actionsContainer .content {
-  margin: 16px;
-  line-height: 17px;
-  //display: block !important;
+  .mat-expansion-panel-body {
+    padding: 0 16px 16px !important;
+  }
+  .mat-expansion-panel-header {
+    padding: 0 16px !important;
+  }
 }
 
 
@@ -368,7 +373,7 @@ img.ng-lazyloaded {
   border-radius: 20px !important;
 }
 
-.mat-raised-button.buttonNoRounded{
+.mat-raised-button.buttonNoRounded {
   border-radius: 5px !important;
   font-weight: 900;
 }
@@ -491,7 +496,6 @@ img.ng-lazyloaded {
   font-weight: 500;
 }
 
-
 .ms-table__td.mat-cell:first-of-type {
   padding-left: 0 !important;
 }
@@ -509,20 +513,20 @@ img.ng-lazyloaded {
 }
 
 /*mat-stepper*/
-.mat-stepper-horizontal.ms-stepper{
+.mat-stepper-horizontal.ms-stepper {
   background-color: transparent;
   font-family: Raleway;
 }
 
-.mat-stepper-horizontal.ms-stepper .mat-horizontal-content-container{
+.mat-stepper-horizontal.ms-stepper .mat-horizontal-content-container {
   padding: 0;
 }
 
-.mat-stepper-horizontal.ms-stepper .mat-horizontal-stepper-header{
+.mat-stepper-horizontal.ms-stepper .mat-horizontal-stepper-header {
   height: 50px;
 }
 
-.mat-stepper-horizontal.ms-stepper .mat-step-header .mat-step-icon-selected{
+.mat-stepper-horizontal.ms-stepper .mat-step-header .mat-step-icon-selected {
   font-family: Roboto;
 }
 

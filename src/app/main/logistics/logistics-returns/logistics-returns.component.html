@@ -34,8 +34,8 @@
     <mat-expansion-panel-header>
       <div class="ms-flex w3-block" style="justify-content: space-between; align-items: center;">
         <div>#F{{("000"+buy.correlative).slice(-4)}}</div>
-        <div class="thin">{{buy.returnedQuantity}} KG</div>
-        <div class="thin">S/. {{(buy.total$ | async ) | number: '.2'}}</div>
+        <div class="thin w3-hide-small">{{buy.returnedQuantity}} KG</div>
+        <div class="thin w3-hide-small">S/. {{(buy.total$ | async ) | number: '.2'}}</div>
         <div *ngIf="buy['returnedDate']" class="thin">{{buy['returnedDate'].toMillis() | dateP }}</div>
         <div class="ms-flex panel-icons">
           <button mat-icon-button (click)="downloadXls(ind)">
@@ -51,7 +51,7 @@
     </mat-expansion-panel-header>
     <mat-progress-bar mode='indeterminate' *ngIf="!(buy['products'] | async)"></mat-progress-bar>
     <div *ngIf="buy['products'] | async as products">
-      <table mat-table [dataSource]="products" matSort class="ms-table">
+      <table mat-table [dataSource]="products" matSort class="ms-table w3-hide-small">
         <ng-container matColumnDef="name">
           <th *matHeaderCellDef class="w3-center ms-table__th">
             Producto
@@ -142,6 +142,42 @@
         <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
 
       </table>
+      <div class="w3-hide-large w3-hide-medium ms-flex ms-flex--center" *ngFor="let element of products">
+        <div>
+          <div><strong>{{element['productDescription'] | titlecase}}</strong></div>
+          <div> {{element['validationData']['returned']-element['returnedQuantity']}}
+            {{element['unit']['abbreviation']}}/{{element['validationData']['returned']}}
+            {{element['unit']['abbreviation']}}</div>
+          <div *ngIf="element['returnedDate']">{{element['returnedDate'].toMillis() | dateP}}</div>
+        </div>
+        <span class="ms-fill"></span>
+        <div>
+          <button *ngIf="element['returnedStatus']=='por validar'" mat-raised-button color="accent"
+            class="buttonNoRounded" (click)="validated(element,ind)" style="width: 110px;">Validar</button>
+
+          <div *ngIf="element['returnedStatus']=='validado'" class="ms-flex ms-flex--center"
+            style="justify-content: center;">
+
+            <button mat-raised-button color="primary" style="margin-right: 8px;"
+              class="buttonNoRounded">Correcto</button>
+
+            <button (click)="undoValidated(element,ind)" mat-icon-button matTooltip="Deshacer">
+              <mat-icon>undo</mat-icon>
+            </button>
+          </div>
+
+          <div *ngIf="element['returnedStatus']=='pendiente'" class="ms-flex ms-flex--center"
+            style="justify-content: center;">
+
+            <button (click)="validated(element,ind)" mat-raised-button color="accent" style="margin-right: 8px;"
+              class="buttonNoRounded">Pendiente</button>
+
+            <button (click)="undoValidated(element,ind)" mat-icon-button matTooltip="Deshacer">
+              <mat-icon>undo</mat-icon>
+            </button>
+          </div>
+        </div>
+      </div>
     </div>
 
   </mat-expansion-panel>
