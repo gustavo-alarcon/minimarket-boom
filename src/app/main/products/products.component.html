@@ -7,23 +7,11 @@
             <div *ngIf="(dbs.view$|async)==1">
                 <div class="ms-flex" style="align-items: baseline;">
                     <div class="formFieldRounded">
-                        <form [formGroup]="searchForm" class="search-form">
-                            <mat-form-field appearance="outline" class="search-input">
-                                <mat-label>Buscar</mat-label>
-                                <input formControlName="name" matInput placeholder="Buscar Producto" autocomplete="off">
-                                <mat-icon matPrefix style="vertical-align: middle;margin-right: 5px;">search</mat-icon>
-                            </mat-form-field>
-                            <mat-form-field appearance="outline" class="content search-input" *ngIf="categoryList$ | async as categories">
-                                <mat-label>Categoría</mat-label>
-                                <mat-select formControlName="category">
-                                    <mat-option [value]="'Todos'">-- Todos --</mat-option>
-                                    <mat-option *ngFor="let category of categories" [value]="category">
-                                        {{category | titlecase}}
-                                      </mat-option>
-                                </mat-select>
-                                <span matPrefix style="vertical-align: middle;margin-right: 16px;"></span>
-                            </mat-form-field>
-                        </form>
+                        <mat-form-field appearance="outline" class="search-input">
+                            <mat-label>Buscar</mat-label>
+                            <input [formControl]="searchForm" matInput placeholder="Buscar Producto" autocomplete="off">
+                            <mat-icon matPrefix style="vertical-align: middle;margin-right: 5px;">search</mat-icon>
+                        </mat-form-field>
                     </div>
                     <span class="ms-fill"></span>
                     <button mat-raised-button class="w3-hide-small buttonNoRounded" color="accent"
@@ -36,7 +24,9 @@
                 <mat-divider class="w3-margin-bottom w3-hide-small"></mat-divider>
                 <div *ngIf="products$ | async as products" class="ms-flex" style="justify-content: space-between;">
                     <app-product-div [product]="product" [buttonAdd]="true" [maxWeight]="maxWeight"
-                        *ngFor="let product of products| paginate: { itemsPerPage: 12, currentPage: p }" class="product-div">
+                        [package]="product.package?true:false"
+                        *ngFor="let product of products| paginate: { itemsPerPage: 12, currentPage: p }"
+                        class="product-div">
                     </app-product-div>
 
                     <div style="display: flex; width: 100%; justify-content: flex-end;" *ngIf="products.length > 12">
@@ -83,7 +73,7 @@
                         <app-purchase></app-purchase>
                     </div>
                     <span class="ms-fill"></span>
-                    <mat-card  style="min-width: 400px; padding: 0 16px;">
+                    <mat-card style="min-width: 400px; padding: 0 16px;">
                         <app-shopping-cart [delivery]="dbs.delivery" [order]="dbs.order" [modified]="false">
                         </app-shopping-cart>
                     </mat-card>
