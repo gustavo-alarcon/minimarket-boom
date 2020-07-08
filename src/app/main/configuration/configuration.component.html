@@ -1,9 +1,9 @@
-<div class="w3-section w3-margin-left w3-margin-right animated fadeInUp delay-2">
+<div class="w3-section w3-margin-left w3-margin-right">
     <div class="w3-row">
         <div class="w3-col s0 m1 l1">
-            <p></p>
+            <p class="w3-hide-small"></p>
         </div>
-        <div class="w3-col s12 m10 l10" style="min-height:86vh">
+        <div class="w3-col s12 m10 l10">
             <h2 class="title">
                 <mat-icon style="vertical-align: middle; margin-right: 8px;">settings</mat-icon>Configuración
             </h2>
@@ -26,14 +26,14 @@
                         </div>
                         <div>
                             <form class="detail-form formFieldRounded" [formGroup]="searchForm">
-                                <mat-form-field class="admin__input" appearance="outline">
+                                <mat-form-field class="admin__input w3-small" appearance="outline">
                                     <mat-label>Buscar</mat-label>
                                     <input matInput type="text" placeholder="Escriba..." formControlName="name"
                                         autocomplete="off">
                                     <mat-icon matPrefix>search</mat-icon>
                                 </mat-form-field>
 
-                                <mat-form-field class="admin__input" appearance="outline">
+                                <mat-form-field class="admin__input w3-small" appearance="outline">
                                     <mat-icon matPrefix></mat-icon>
                                     <mat-label>Cargo</mat-label>
                                     <mat-select formControlName="permits">
@@ -136,7 +136,7 @@
                     <div class="admin__container">
                         <div>
                             <form class="detail-form formFieldRounded" [formGroup]="districtForm">
-                                <mat-form-field class="admin__input" appearance="outline">
+                                <mat-form-field class="admin__input w3-small" appearance="outline">
                                     <mat-icon matPrefix></mat-icon>
                                     <mat-label>Distrito</mat-label>
                                     <input matInput type="text" placeholder="Escriba..." formControlName="name"
@@ -149,7 +149,7 @@
                                     </mat-error>
                                 </mat-form-field>
 
-                                <mat-form-field class="admin__input" appearance="outline">
+                                <mat-form-field class="admin__input w3-small" appearance="outline">
                                     <mat-icon matPrefix></mat-icon>
                                     <mat-label>Delivery</mat-label>
                                     <input matInput type="number" placeholder="Costo Delivery (S/.)"
@@ -215,7 +215,7 @@
                                 </mat-paginator>
                             </div>
                             <div class="w3-hide-large w3-hide-medium">
-                                <ul class="admin__list" style="padding-inline-start: 0px;" >
+                                <ul class="admin__list" style="padding-inline-start: 0px;">
                                     <li *ngFor="let user of existDistrict| paginate: { itemsPerPage: 5, currentPage: p3 }"
                                         class="admin__item">
                                         <div style="width: 100%; font-weight: 900;">
@@ -367,6 +367,69 @@
                                 </div>
                             </div>
                         </div>
+                    </div>
+
+
+                </mat-expansion-panel>
+
+                <mat-expansion-panel class="w3-margin-bottom">
+                    <mat-expansion-panel-header>
+                        <mat-panel-title>
+                            <h4 class="admin__title">Categorías</h4>
+                        </mat-panel-title>
+
+                    </mat-expansion-panel-header>
+                    <mat-progress-bar *ngIf="loadingCategories$ | async" mode="indeterminate"></mat-progress-bar>
+                    <div>
+                        <button mat-raised-button color="accent" (click)="createCategory(null,false)">
+                            Crear Categoría</button>
+                        <div *ngIf="categories$ |async as images">
+                            <div class="w3-margin-top row-category">
+                                <div *ngFor="let image of categories" class="banner__category border--primary">
+                                    <img [defaultImage]="defaultImage" [lazyLoad]="image.photoURL" [offset]="100"
+                                        class="banner__image">
+                                    <div class="row-category">
+                                        <p><strong>{{image.name}}</strong></p>
+                                            <span class="ms-fill"></span>
+                                            <button mat-icon-button color="primary"
+                                                (click)="createCategory(image, true)">
+                                                <mat-icon>edit</mat-icon>
+                                            </button>
+                                            <button mat-icon-button color="primary" style="margin-left: 10px;"
+                                                (click)="deleteCategory(image)">
+                                                <mat-icon>delete</mat-icon>
+                                            </button>
+                                    </div>
+
+
+                                </div>
+                            </div>
+                            <div *ngIf="images.length" class="w3-margin-top w3-margin-bottom">
+                                <!--mat-progress-bar mode='indeterminate' *ngIf="(loading$ | async)==4"></mat-progress-bar-->
+                                <div style="width: 100%;max-width: 500px;">
+                                    <div class="row-category"
+                                        style="justify-content: space-between; padding: 10px 0;">
+                                        <span style="font-weight: 700;">Ordenar posición</span>
+                                        <button mat-raised-button color="primary" (click)="savePosition(images)">
+                                            <span>Guardar</span>
+                                        </button>
+                                    </div>
+                                    <div cdkDropList class="banner__list border--primary"
+                                        (cdkDropListDropped)="drop(images,$event)">
+                                        <mat-card class="banner__box" *ngFor="let image of images" cdkDrag>
+                                            {{image['name']}}
+                                        </mat-card>
+                                    </div>
+                                </div>
+                                <div class="w3-margin-top ms-flex" style="justify-content: space-between;">
+                                    <div *ngFor="let image of images" class="banner__frame" [ngStyle]="{'background-image': 'url(' + image['photoURL'] + ')'}">
+                                        <span class="banner__name">{{image['name']}}</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+
                     </div>
 
 

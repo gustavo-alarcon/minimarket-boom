@@ -15,8 +15,9 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatTableModule } from '@angular/material/table';
 import { MatPaginatorModule } from '@angular/material/paginator';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
-import {MatTabsModule} from '@angular/material/tabs';
-import {MatExpansionModule} from '@angular/material/expansion';
+import { MatTabsModule } from '@angular/material/tabs';
+import { MatExpansionModule } from '@angular/material/expansion';
+import { MatCardModule } from '@angular/material/card';
 import { ConfigurationRoutingModule } from './configuration-routing.module';
 import { ConfigurationComponent } from './configuration.component';
 import { CreatePayComponent } from './create-pay/create-pay.component';
@@ -24,12 +25,15 @@ import { CreateUserComponent } from './create-user/create-user.component';
 import { Ng2ImgMaxModule } from 'ng2-img-max';
 import { HttpClientModule } from '@angular/common/http';
 import { AddUserComponent } from './add-user/add-user.component';
+import { CreateCategoryComponent } from './create-category/create-category.component';
+import { LazyLoadImageModule } from 'ng-lazyload-image';
+import { DragDropModule } from '@angular/cdk/drag-drop';
 
 @NgModule({
   declarations: [
-    ConfigurationComponent, 
-    CreatePayComponent, 
-    CreateUserComponent, AddUserComponent
+    ConfigurationComponent,
+    CreatePayComponent,
+    CreateUserComponent, AddUserComponent, CreateCategoryComponent
   ],
   imports: [
     CommonModule,
@@ -49,14 +53,17 @@ import { AddUserComponent } from './add-user/add-user.component';
     MatPaginatorModule,
     MatProgressBarModule,
     MatExpansionModule,
+    MatCardModule,
     ReactiveFormsModule,
     FormsModule,
     NgxPaginationModule,
     Ng2ImgMaxModule,
-    HttpClientModule
+    HttpClientModule,
+    LazyLoadImageModule,
+    DragDropModule
   ],
-  entryComponents:[
-    CreatePayComponent, 
+  entryComponents: [
+    CreatePayComponent,
     CreateUserComponent
   ]
 })

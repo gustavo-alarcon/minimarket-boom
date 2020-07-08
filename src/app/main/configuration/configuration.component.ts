@@ -1,3 +1,4 @@
+import { CreateCategoryComponent } from './create-category/create-category.component';
 import { CreateUserComponent } from './create-user/create-user.component';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { CreatePayComponent } from './create-pay/create-pay.component';
@@ -12,6 +13,7 @@ import { Component, OnInit, ViewChild } from '@angular/core';
 import { MatTableDataSource } from '@angular/material/table';
 import { MatPaginator } from '@angular/material/paginator';
 import { AddUserComponent } from './add-user/add-user.component';
+import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
 
 @Component({
   selector: 'app-configuration',
@@ -73,6 +75,16 @@ export class ConfigurationComponent implements OnInit {
   @ViewChild("paginatorPayment", { static: false }) set content2(paginator: MatPaginator) {
     this.dataSourcePay.paginator = paginator;
   }
+
+  /*Categories*/
+  categories$: Observable<object[]>
+  categories: Array<any>
+
+  loadingCategories = new BehaviorSubject<boolean>(true);
+  loadingCategories$ = this.loadingCategories.asObservable();
+
+  indCategory: number = 1
+  defaultImage = "../../../assets/images/Disto_Logo1.png";
 
 
   p1: number = 1;
@@ -178,8 +190,19 @@ export class ConfigurationComponent implements OnInit {
       })
     )
 
-
+    //Categories
+    this.categories$ = this.dbs.getGeneralConfigDoc().pipe(
+      map(el => el['Categories']),
+      tap(res => {
+        if (res) {
+          this.categories = res
+          this.indCategory = res.length + 1
+        }
+        this.loadingCategories.next(false)
+      })
+    )
   }
+
 
   //Admins
   addAdmin() {
@@ -318,6 +341,66 @@ export class ConfigurationComponent implements OnInit {
     });
   }
 
+  //Categories
 
+  createCategory(data, isedit) {
+    this.dialog.open(CreateCategoryComponent, {
+      data: {
+        item: data,
+        edit: isedit,
+        index: this.indCategory
+      }
+    })
+  }
+
+  deleteCategory(data) {
+    this.loadingCategories.next(true)
+    const categoryRef = this.af.firestore.collection(`/db/distoProductos/config/`).doc('generalConfig');
+    return this.af.firestore.runTransaction((transaction) => {
+      return transaction.get(categoryRef).then((doc) => {
+        if (!doc.exists) {
+          transaction.set(categoryRef, { Categories: [] });
+        }
+
+        const list = doc.data().Categories ? doc.data().Categories : [];
+
+        let ind = list.findIndex(el => el.name == data.name)
+        list.splice(ind, 1)
+        transaction.update(categoryRef, { Categories: list });
+
+      });
+
+    }).then(() => {
+      this.loadingCategories.next(false)
+      this.snackBar.open("Elemento eliminado", "Cerrar", {
+        duration: 4000
+      })
+    }).catch(function (error) {
+      console.log("Transaction failed: ", error);
+    });
+  }
+
+  drop(array, event: CdkDragDrop<string[]>) {
+    moveItemInArray(array, event.previousIndex, event.currentIndex);
+  }
+
+  savePosition(array) {
+    let batch = this.af.firestore.batch();
+
+    array.forEach((el, i) => {
+      const ref = this.af.firestore.collection(`/db/mandaditos/banners`).doc(el['id']);
+      batch.update(ref, {
+        position: i
+      })
+    })
+
+    batch.commit().then(() => {
+      this.snackBar.open("Cambios Guardados", "Cerrar", {
+        duration: 6000
+      })
+      console.log('done');
+
+    })
+  }
 
 }

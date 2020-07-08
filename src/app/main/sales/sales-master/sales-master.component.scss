@@ -20,17 +20,16 @@
   justify-content: space-between;
 }
 
-.list-container hr { 
-  display: block; 
-  // margin-before: 0.5em; 
+.list-container hr {
+  display: block;
+  // margin-before: 0.5em;
   // margin-after: 0.5em;
-  // margin-start: auto; 
-  // margin-end: auto; 
-  overflow: hidden; 
+  // margin-start: auto;
+  // margin-end: auto;
+  overflow: hidden;
   border-style: inset;
   border-width: 1px;
 }
-
 
 .list-container .mat-icon {
   vertical-align: middle;
@@ -42,7 +41,7 @@
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  width:37%;
+  width: 37%;
   .actions-container {
     width: 100%;
     display: flex;
@@ -79,27 +78,27 @@
 
 .overflow_container {
   overflow-y: hidden;
-  white-space:nowrap
+  white-space: nowrap;
 }
 
 .divider {
-  border: 1px solid #E0E0E0;
+  border: 1px solid #e0e0e0;
   height: 90%;
   align-self: center;
 }
 
-@media(max-width: 601px) {
+@media (max-width: 601px) {
   .actionsContainer {
-    width: 100% ;
-    margin-right: 0 ;
-    flex-direction: column ;
-    justify-content: center ;
+    width: 100%;
+    margin-right: 0;
+    flex-direction: column;
+    justify-content: center;
     .content {
-      width: 100% ;
-      margin: 8px 0 ;
+      width: 100%;
+      margin: 8px 0;
     }
   }
-  .list-parent-container{
+  .list-parent-container {
     display: flex;
     flex-direction: row;
     justify-content: center;
