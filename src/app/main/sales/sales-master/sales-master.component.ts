@@ -168,7 +168,7 @@ export class SalesMasterComponent implements OnInit {
       'Usuario de Anulación',
       'Fecha de Anulación',
       'Sub Total', 'IGV', 'Total', 'Delivery', 'Total + Delivery',
-      'Producto', 'Cantidad', 'Unidad', 'Precio']
+      'Producto o Paquete', 'Cantidad', 'Unidad', 'Precio']
 
     table_xlsx.push(headersXlsx);
 
@@ -229,9 +229,13 @@ export class SalesMasterComponent implements OnInit {
 //      'Producto', 'Cantidad', 'Precio'
 
       sale.requestedProducts.forEach(prod => {
+        console.log(prod);
+
         let temp2 = [
           ...temp,
-          prod.product.description,
+          !prod.product.package ? prod.product.description : prod.product.description+"("+
+            prod.chosenOptions.map(el => el ? el.description : "Sin elegir").join("; ")
+          +")",
           prod.quantity,
           prod.product.unit.abbreviation,
           "S/. "+this.givePrice(prod).toFixed(2)

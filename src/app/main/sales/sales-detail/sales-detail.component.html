@@ -113,17 +113,46 @@
                             </mat-icon>
                         </span>
 
+                        <ng-container *ngIf="item.get('product').value.package">
+                            <br>
+                            <ol style="margin: 0; padding-left: 14px;">
+                                <li *ngFor="let field of item.get('chosenOptions')['controls']; let i2=index">
+                                    <ng-container 
+                                        *ngIf="(item.get('product').value.items[i2].productsOptions.length == 1
+                                                || sale.status != saleStatusOptions.attended) else noSingle">
+                                        {{field.value.description | titlecase}}
+                                        <mat-icon style="cursor: pointer; font-size:medium; width:auto"
+                                            matTooltip="{{field.value.unit.abbreviation}}">
+                                            info
+                                        </mat-icon>
+                                    </ng-container>
+                                    <ng-template #noSingle>
+                                        <select style="max-width: 100px;" [formControl]="field">
+                                            <option *ngFor="let product of item.get('product').value.items[i2].productsOptions"
+                                                [ngValue]="product">
+                                                {{product.description | titlecase}} ({{product.unit.abbreviation}})
+                                            </option>
+                                        </select>
+                                    </ng-template>
+                                </li>
+                            </ol>
+                        </ng-container>
+
+
+
                     </td>
                     <!-- price -->
                     <td class="w3-right-align table-sale__td table-sale__td--space">
                         <span>{{giveProductPrice(item.value) | currency: 'S/. ':'symbol':'2.2-2'}}</span>
-                        <mat-icon class="removeIcon"
+                        <mat-icon *ngIf="sale.status == saleStatusOptions.attended"
+                            class="removeIcon"
                             color="primary"
                             (click)="onDeleteProduct(i)">
                             remove_circle
                         </mat-icon>
                     </td>
                 </div>
+                
             </tr>
             <tr>
                 <td class="table-sale__td table-sale__td--border"></td>
