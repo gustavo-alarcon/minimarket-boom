@@ -6,6 +6,7 @@ import { MatDialogRef, MatDialog, MAT_DIALOG_DATA } from '@angular/material/dial
 import { DatabaseService } from 'src/app/core/services/database.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { startWith, tap } from 'rxjs/operators';
+import { Package } from 'src/app/core/models/package.model';
 
 @Component({
   selector: 'app-product-edit-promo',
@@ -24,7 +25,7 @@ export class ProductEditPromoComponent implements OnInit {
     private fb: FormBuilder,
     public dbs: DatabaseService,
     private snackBar: MatSnackBar,
-    @Inject(MAT_DIALOG_DATA) public data: { data: Product }
+    @Inject(MAT_DIALOG_DATA) public data: { data: Product | Package, pack: boolean }
   ) { }
 
   ngOnInit() {
@@ -95,8 +96,9 @@ export class ProductEditPromoComponent implements OnInit {
         promoPrice: 0,
         quantity: 0
       };
-
-    this.dbs.editProductPromo(this.data.data.id, this.productForm.get('promo').value, promoData)
+    
+    
+    this.dbs.editProductPromo(this.data.data.id, this.productForm.get('promo').value, promoData, !!this.data.pack)
       .commit().then(
         res => {
           this.dialogRef.close(true);

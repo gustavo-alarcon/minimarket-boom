@@ -124,7 +124,7 @@ export class ProductsListComponent implements OnInit {
   }
 
   onPublish(product: Product, publish: boolean) {
-    let prod = product;
+    let prod = {...product};
     prod.published = publish;
     this.dbs.publishProduct(true, prod, null).commit().then(
       res => {
@@ -189,7 +189,7 @@ export class ProductsListComponent implements OnInit {
     dialogRef = this.dialog.open(ProductEditPromoComponent, {
       width: '350px',
       data: {
-        data: product,
+        data: {...product},
       }
     });
     dialogRef.afterClosed().subscribe(res => {
@@ -212,7 +212,7 @@ export class ProductsListComponent implements OnInit {
       dialogRef = this.dialog.open(ProductCreateEditComponent, {
         width: '350px',
         data: {
-          data: product,
+          data: {...product},
           edit: edit
         }
       });

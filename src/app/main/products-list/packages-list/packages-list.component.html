@@ -9,7 +9,7 @@
       <mat-icon>add</mat-icon>Crear
     </button>
 
-    <!-- <ng-container *ngIf="filter$ | async as filter">
+    <ng-container *ngIf="filter$ | async as filter">
       <mat-form-field color="primary" class="content w3-small" appearance="outline">
         <mat-label>Buscar</mat-label>
         <mat-icon matPrefix class="w3-margin-right">search</mat-icon>
@@ -20,17 +20,184 @@
       <mat-slide-toggle [formControl]="promoFilterForm" style="margin-bottom: 8px" color="accent">
         Mostrar solo ofertas
       </mat-slide-toggle>
-    </ng-container> -->
+    </ng-container>
 
-    <!-- <button mat-raised-button 
+    <button mat-raised-button 
         style="height: 45px;"
         (click)="downloadXls()" 
         color="accent">
       Descargar Excel
-    </button> -->
+    </button>
 
   </div>
 
+    <!-- Table -->
+    <div *ngIf="packagesObservable$ | async; else default">
+      <!-- Desktop -->
+      <div *ngIf="packagesTableDataSource.filteredData.length else default" class="w3-margin-top" style="border-radius: 10px 10px 10px 10px;">
+        <div style="overflow:auto; border-radius: 10px 10px 0px 0px">
+          <table mat-table [dataSource]="packagesTableDataSource" matSort style="text-align: center !important; ">
+  
+            <ng-container matColumnDef="index" >
+              <th *matHeaderCellDef style="font-size: 0.9em;padding:0px 1em; font-weight: 500; color: #828282;"
+                class="w3-center w3-padding  ">N°</th>
+              <td style="padding:0px 25px;" *matCellDef="let raw; let i = index">
+                {{1 + i + (packagesPaginator.pageIndex * packagesPaginator.pageSize)}}
+              </td>
+            </ng-container>
+  
+            <ng-container matColumnDef="photoURL">
+              <th *matHeaderCellDef style=" font-size: 0.9em;padding:0px 1em; font-weight: 500; color: #828282;  "
+                class="w3-center w3-padding  ">
+                Imagen referencial
+              </th>
+              <td *matCellDef="let raw" class="w3-center" style="padding: 10px">
+                <a href="{{raw.photoURL}}" target="_blank" *ngIf="raw.photoURL; else defaultPicture">
+                  <div class="reveal">
+                    <div [className]="raw.promo?'border--secondary triangleTopLeft w3-card-4':'border--primary triangleTopLeft w3-card-4'">
+                      <div class="slogan background--secondary" *ngIf="raw['promo']"></div>
+                      <div class="promo" *ngIf="raw['promo']">OFERTA</div>
+                      <img [defaultImage]="defaultImage" [lazyLoad]="raw.photoURL" [offset]="100"
+                        style="object-fit:cover; width: 115px; height: 115px;">
+                    </div>
+                  </div>
+                </a>
+                <ng-template #defaultPicture>
+                  <div style="height:120px;padding:6px 6px">
+                    <img src="../../../assets/images/no-image.png" style="max-width:100%; height:100%"
+                      class="w3-card-4">
+                  </div>
+                </ng-template>
+              </td>
+            </ng-container>
+  
+            <ng-container matColumnDef="description" sticky>
+              <th *matHeaderCellDef style=" font-size: 0.9em;padding:0px 1em; font-weight: 500; color: #828282; "
+                class="w3-center w3-padding  ">
+                Descripción
+              </th>
+              <td style="padding:0px 8px; font-weight: bold;" *matCellDef="let raw">
+                {{raw.description |titlecase}}
+              </td>
+            </ng-container>
+
+            <ng-container matColumnDef="items" sticky>
+              <th *matHeaderCellDef 
+                style=" font-size: 0.9em;padding:0px 1em; font-weight: 500; color: #828282; white-space: nowrap;"
+                class="w3-center w3-padding  ">
+                Opciones de Productos
+              </th>
+              <td style="padding:0px 8px; font-weight: bold;" *matCellDef="let raw">
+                <ol style="text-align:left">
+                  <li *ngFor="let item of raw.items">
+                    <span *ngFor="let option of item.productsOptions; let i = index">
+                      {{option.description |titlecase}}{{i+1 < item.productsOptions.length ? "; ":"."}}
+                    </span>
+                  </li>
+                </ol>
+              </td>
+            </ng-container>
+  
+            <ng-container matColumnDef="sku">
+              <th *matHeaderCellDef style=" font-size: 0.9em;padding:0px 1em; font-weight: 500; color: #828282; "
+                class="w3-center w3-padding  ">
+                SKU
+              </th>
+              <td style="padding:0px 8px; font-weight: bold;" *matCellDef="let raw">
+                {{raw.sku}}
+              </td>
+            </ng-container>
+  
+            <ng-container matColumnDef="price">
+              <th *matHeaderCellDef style=" font-size: 0.9em;padding:0px 1em; font-weight: 500; color: #828282; "
+                class="w3-center w3-padding  ">
+                Precio
+              </th>
+              <td style="padding:0px 8px; font-weight: bold;" *matCellDef="let raw">
+                {{raw.price | currency : 'S/.'}}
+              </td>
+            </ng-container>
+  
+            <ng-container matColumnDef="unitDescription">
+              <th *matHeaderCellDef style=" font-size: 0.9em;padding:0px 1em; font-weight: 500; color: #828282; "
+                class="w3-center w3-padding  ">
+                Descripción de Unidad
+              </th>
+              <td style="padding:0px 8px; font-weight: bold;" *matCellDef="let raw">
+                {{raw.unit.description}}
+              </td>
+            </ng-container>
+  
+            <ng-container matColumnDef="unitAbbreviation">
+              <th *matHeaderCellDef style=" font-size: 0.9em;padding:0px 1em; font-weight: 500; color: #828282; "
+                class="w3-center w3-padding  ">
+                Abreviación
+              </th>
+              <td style="padding:0px 8px; font-weight: bold;" *matCellDef="let raw">
+                {{raw.unit.abbreviation}}
+              </td>
+            </ng-container>
+  
+            <ng-container matColumnDef="published">
+              <th *matHeaderCellDef style=" font-size: 0.9em;padding:0px 1em; font-weight: 500; color: #828282; "
+                class="w3-center w3-padding  ">
+                Estado
+              </th>
+              <td style="padding:0px 8px; font-weight: bold;" *matCellDef="let raw">
+                {{raw.published ? 'Publicado' : 'Oculto'}}
+              </td>
+            </ng-container>
+
+            <ng-container matColumnDef="dateLimit">
+              <th *matHeaderCellDef style=" font-size: 0.9em;padding:0px 1em; font-weight: 500; color: #828282; "
+                class="w3-center w3-padding  ">
+                Límite de Fecha
+              </th>
+              <td style="padding:0px 8px; font-weight: bold;" *matCellDef="let raw">
+                {{!raw.dateLimit ? 'Indefinido' : (raw.dateLimit['seconds']*1000 | date:'dd/MM/yyyy')}}
+              </td>
+            </ng-container>
+  
+            <ng-container matColumnDef="actions" stickyEnd>
+              <th *matHeaderCellDef style=" font-size: 0.9em;padding:0px 1em; font-weight: 500; color: #828282; "
+                class="w3-center w3-padding  ">Acciones</th>
+              <td style="padding:0px 24px" *matCellDef="let raw">
+                <mat-menu #rawMenu="matMenu">
+                  <button mat-menu-item (click)="onPromo(raw)">
+                    Promoción
+                  </button>
+                  <button *ngIf="raw?.published else publish" mat-menu-item (click)="onPublish(raw, false)">
+                    Ocultar
+                  </button>
+                  <ng-template #publish>
+                    <button mat-menu-item (click)="onPublish(raw, true)">
+                      Publicar
+                    </button>
+                  </ng-template>
+                  <button mat-menu-item (click)="onCreateEditItem(true, raw)">
+                    Editar
+                  </button>
+                  <button mat-menu-item (click)="onDeleteItem(raw)">
+                    Borrar
+                  </button>
+                </mat-menu>
+                <button mat-icon-button [matMenuTriggerFor]="rawMenu">
+                  <mat-icon>more_vert</mat-icon>
+                </button>
+              </td>
+            </ng-container>
+  
+            <tr mat-header-row *matHeaderRowDef="packagesDisplayedColumns; sticky: true"
+              style="text-align-last: center;"></tr>
+            <tr mat-row *matRowDef="let row; columns: packagesDisplayedColumns;"></tr>
+  
+          </table>
+        </div>
+        <mat-paginator #packagesPaginator style="border-radius: 0px 0px 10px 10px" [pageSizeOptions]="[5, 10, 20]"
+          showFirstLastButtons></mat-paginator>
+      </div>
+  
+    </div>
 
 </div>
 

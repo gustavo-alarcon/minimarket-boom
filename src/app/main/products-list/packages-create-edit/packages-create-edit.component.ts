@@ -78,6 +78,10 @@ export class PackagesCreateEditComponent implements OnInit {
     this.itemsFormArray = this.fb.array([])
     
     if (this.data.edit) {
+      let date = new Date(1970)
+      if(this.data.data.dateLimit){
+        date.setSeconds(this.data.data.dateLimit['seconds'])
+      }
       this.data.data.items.forEach(el => {
         this.itemsFormArray.push(this.fb.group({
           textInput: [''],
@@ -101,7 +105,7 @@ export class PackagesCreateEditComponent implements OnInit {
         dateType: [this.data.data.dateLimit ? this.dateType[0] : this.dateType[1], Validators.required],
         dateLimit: [
           {
-            value: this.data.data.dateLimit, 
+            value: this.data.data.dateLimit ? date : null, 
             disabled: this.data.data.dateLimit ? false : true,
           }, Validators.required],
         totalItems: [this.data.data.totalItems, [Validators.required, Validators.min(1)]],
