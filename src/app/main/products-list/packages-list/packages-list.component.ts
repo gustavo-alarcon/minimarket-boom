@@ -13,32 +13,36 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatTableDataSource } from '@angular/material/table';
 import { MatPaginator } from '@angular/material/paginator';
 
-import { Product } from 'src/app/core/models/product.model';
-import { ProductCreateEditComponent } from './product-create-edit/product-create-edit.component';
-import { ProductEditPromoComponent } from './product-edit-promo/product-edit-promo.component';
-import { ConfirmationDialogComponent } from '../confirmation-dialog/confirmation-dialog.component';
+import { Package } from 'src/app/core/models/package.model';
+import { PackagesCreateEditComponent } from '../packages-create-edit/packages-create-edit.component';
+import { ConfirmationDialogComponent } from '../../confirmation-dialog/confirmation-dialog.component';
+import { DatePipe } from '@angular/common';
+import { ProductEditPromoComponent } from '../product-edit-promo/product-edit-promo.component';
+
+
 @Component({
-  selector: 'app-products-list',
-  templateUrl: './products-list.component.html',
-  styleUrls: ['./products-list.component.scss']
+  selector: 'app-packages-list',
+  templateUrl: './packages-list.component.html',
+  styleUrls: ['./packages-list.component.scss']
 })
-export class ProductsListComponent implements OnInit {
+export class PackagesListComponent implements OnInit {
+
   //Forms
   categoryForm: FormControl;
   itemsFilterForm: FormControl;
   promoFilterForm: FormControl;
 
   //Table
-  productsTableDataSource = new MatTableDataSource<Product>();
-  productsDisplayedColumns: string[] = [
-    'index', 'photoURL', 'description', 'sku', 'category', 'price', 
-    'unitDescription', 'unitAbbreviation', 'unitWeight', 'sellMinimum', 'alertMinimum', 
-    'realStock', 'mermaStock', /*'virtualStock', */'published', 'actions'
+  packagesTableDataSource = new MatTableDataSource<Package>();
+  packagesDisplayedColumns: string[] = [
+    'index', 'photoURL', 'description', 'sku', 'dateLimit',
+    'price', 'unitDescription', 'unitAbbreviation', 
+    'published', 'items', 'actions'
   ]
 
-  productsObservable$: Observable<Product[]>
-  @ViewChild('productsPaginator', { static: false }) set content(paginator1: MatPaginator) {
-    this.productsTableDataSource.paginator = paginator1;
+  packagesObservable$: Observable<Package[]>
+  @ViewChild('packagesPaginator', { static: false }) set content(paginator1: MatPaginator) {
+    this.packagesTableDataSource.paginator = paginator1;
   }
 
   //Observables
@@ -59,7 +63,8 @@ export class ProductsListComponent implements OnInit {
     private dialog: MatDialog,
     public snackBar: MatSnackBar,
     private dbs: DatabaseService,
-    public auth: AuthService
+    public auth: AuthService,
+    public datePipe: DatePipe
   ) { }
 
   ngOnInit(): void {
@@ -74,58 +79,37 @@ export class ProductsListComponent implements OnInit {
   }
 
   initObservables() {
-    this.productsTableDataSource.filterPredicate =
-      (data: Product, filter: string) => {
-        let category = filter.trim().split('&+&')[0];   //category
-        let name = filter.trim().split('&+&')[1];       //product name
-        let promo = filter.trim().split('&+&')[2];                    //promo
-        return (data.category.match(new RegExp(category,'ig'))
-          && data.description.match(new RegExp(name, 'ig'))
+    this.packagesTableDataSource.filterPredicate =
+      (data: Package, filter: string) => {
+        let name = filter.trim().split('&+&')[0];                     //package name
+        let promo = filter.trim().split('&+&')[1];                    //promo
+        return (data.description.match(new RegExp(name, 'ig'))
           && (String(data.promo) == promo || promo == "false"))
       }
 
-    this.categoryObservable$ = combineLatest(
-      this.categoryForm.valueChanges.pipe(startWith('')), 
-      this.dbs.getProductsListCategoriesValueChanges()
-      ).pipe(share());
-
-    this.categoryList$ = this.categoryObservable$.pipe(map(([formValue, categories]) => {
-      let filter = categories.filter(el => el.match(new RegExp(formValue,'ig')));
-      if (!(filter.length == 1 && filter[0] === formValue) && formValue.length) {
-        this.categoryForm.setErrors({ invalid: true });
-      }
-      return filter;
-    }));
-
     this.filter$ = combineLatest(
-      this.categoryObservable$,
       this.itemsFilterForm.valueChanges.pipe(startWith('')),
       this.promoFilterForm.valueChanges.pipe(startWith(false)))
       .pipe(
-        map(([[categoryFormValue, categories], itemsFormValue, promoFormValue]) => {
-          this.productsTableDataSource.filter = categoryFormValue + '&+&' + itemsFormValue + '&+&' + promoFormValue;
+        map(([itemsFormValue, promoFormValue]) => {
+          this.packagesTableDataSource.filter = itemsFormValue + '&+&' + promoFormValue;
           return true
         })
       )
 
-    this.productsObservable$ = this.dbs.getProductsListValueChanges().pipe(
+    this.packagesObservable$ = this.dbs.getPackagesListValueChanges().pipe(
       tap(res => {
-        this.productsTableDataSource.data = res.map(el => {
-          el['virtualStock$'] = this.dbs.getVirtualStock(el).pipe(
-            map(prod => prod.reduce((a,b)=> a+b.quantity, 0))
-          );
-          return el
-        })
+        this.packagesTableDataSource.data = res;
       })
     )
   }
 
-  onPublish(product: Product, publish: boolean) {
-    let prod = product;
+  onPublish(pack: Package, publish: boolean) {
+    let prod = {...pack};
     prod.published = publish;
-    this.dbs.publishProduct(true, prod, null).commit().then(
+    this.dbs.publishPackage(true, prod, null).commit().then(
       res => {
-        this.snackBar.open('Producto editado satisfactoriamente.', 'Aceptar');
+        this.snackBar.open('Paquete editado satisfactoriamente.', 'Aceptar');
       },
       err => {
         this.snackBar.open('Ocurrió un error. Vuelva a intentarlo.', 'Aceptar');
@@ -134,7 +118,7 @@ export class ProductsListComponent implements OnInit {
 
   }
 
-  onDeleteItem(product: Product) {
+  onDeleteItem(pack: Package) {
     let dialogRef: MatDialogRef<ConfirmationDialogComponent>;
     dialogRef = this.dialog.open(ConfirmationDialogComponent, {
       closeOnNavigation: true,
@@ -142,8 +126,8 @@ export class ProductsListComponent implements OnInit {
       width: '360px',
       maxWidth: '360px',      
       data: {
-      warning: `El producto será borrado.`,
-      content: `¿Está seguro de borrar el producto ${product.description}?`,
+      warning: `El paquete será borrado.`,
+      content: `¿Está seguro de borrar el paquete ${pack.description}?`,
       noObservation: true,
       observation: null,
       title: 'Borrar',
@@ -156,7 +140,7 @@ export class ProductsListComponent implements OnInit {
       switchMap((answer: {action: string, lastObservation: string}) => 
         iif(
           () => {return answer.action =="confirm"},
-          this.dbs.deleteProduct(product),
+          this.dbs.deletePackage(pack),
           of(answer)
           )
       ))
@@ -167,7 +151,7 @@ export class ProductsListComponent implements OnInit {
         else{
           (<firebase.firestore.WriteBatch>answer).commit().then(
             res => {
-              this.snackBar.open('Producto eliminado satisfactoriamente.', 'Aceptar');
+              this.snackBar.open('Paquete eliminado satisfactoriamente.', 'Aceptar');
             },
             err => {
               this.snackBar.open('Ocurrió un error. Vuelva a intentarlo.', 'Aceptar');
@@ -181,18 +165,19 @@ export class ProductsListComponent implements OnInit {
 
   }
 
-  onPromo(product: Product) {
+  onPromo(pack: Package) {
     let dialogRef: MatDialogRef<ProductEditPromoComponent>;
     dialogRef = this.dialog.open(ProductEditPromoComponent, {
       width: '350px',
       data: {
-        data: product,
+        data: {...pack},
+        pack: true
       }
     });
     dialogRef.afterClosed().subscribe(res => {
       switch (res) {
         case true:
-          this.snackBar.open('El producto fue editado satisfactoriamente', 'Aceptar', { duration: 5000 });
+          this.snackBar.open('El paquete fue editado satisfactoriamente', 'Aceptar', { duration: 5000 });
           break;
         case false:
           this.snackBar.open('Ocurrió un error. Por favor, vuelva a intentarlo', 'Aceptar', { duration: 5000 });
@@ -203,20 +188,20 @@ export class ProductsListComponent implements OnInit {
     })
   }
 
-  onCreateEditItem(edit: boolean, product?: Product) {
-    let dialogRef: MatDialogRef<ProductCreateEditComponent>;
+  onCreateEditItem(edit: boolean, pack?: Package) {
+    let dialogRef: MatDialogRef<PackagesCreateEditComponent>;
     if (edit == true) {
-      dialogRef = this.dialog.open(ProductCreateEditComponent, {
+      dialogRef = this.dialog.open(PackagesCreateEditComponent, {
         width: '350px',
         data: {
-          data: product,
+          data: {...pack},
           edit: edit
         }
       });
       dialogRef.afterClosed().subscribe(res => {
         switch (res) {
           case true:
-            this.snackBar.open('El producto fue editado satisfactoriamente', 'Aceptar', { duration: 5000 });
+            this.snackBar.open('El paquete fue editado satisfactoriamente', 'Aceptar', { duration: 5000 });
             break;
           case false:
             this.snackBar.open('Ocurrió un error. Por favor, vuelva a intentarlo', 'Aceptar', { duration: 5000 });
@@ -227,7 +212,7 @@ export class ProductsListComponent implements OnInit {
       })
     }
     else {
-      dialogRef = this.dialog.open(ProductCreateEditComponent, {
+      dialogRef = this.dialog.open(PackagesCreateEditComponent, {
         width: '350px',
         data: {
           data: null,
@@ -237,7 +222,7 @@ export class ProductsListComponent implements OnInit {
       dialogRef.afterClosed().subscribe(res => {
         switch (res) {
           case true:
-            this.snackBar.open('El nuevo producto fue creado satisfactoriamente', 'Aceptar', { duration: 5000 });
+            this.snackBar.open('El nuevo paquete fue creado satisfactoriamente', 'Aceptar', { duration: 5000 });
             break;
           case false:
             this.snackBar.open('Ocurrió un error. Por favor, vuelva a intentarlo', 'Aceptar', { duration: 5000 });
@@ -252,28 +237,23 @@ export class ProductsListComponent implements OnInit {
   downloadXls(): void {
     let table_xlsx: any[] = [];
     let headersXlsx = [
-      'Descripcion', 'SKU', 'Categoría', 'Precio', 
-      'Descripción de Unidad', 'Abreviación', 'Peso (KG)', 'Stock Real', 'Mínimo de venta', 'Mínimio de alerta', 
-      'Stock de merma', 'Stock Virtual', 'Publicado'
+      'Descripcion', 'SKU', 'Fecha Límite', 'Precio', 
+      'Descripción de Unidad', 'Abreviación', 
+      'Publicado', 'Items'
     ]
 
     table_xlsx.push(headersXlsx);
 
-    this.productsTableDataSource.filteredData.forEach(product => {
+    this.packagesTableDataSource.filteredData.forEach(pack => {
       const temp = [
-       product.description, 
-       product.sku, 
-       product.category, 
-       "S/." +product.price,
-       product.unit.description,
-       product.unit.abbreviation,
-       product.unit.weight, 
-       product.realStock, 
-       product.sellMinimum, 
-       product.alertMinimum,  
-       product.mermaStock, 
-       0, //virtualStock
-       product.published ? "Sí":"No"
+        pack.description, 
+        pack.sku, 
+        pack.dateLimit ? this.getXlsDate(pack.dateLimit) : "Indefinida",
+        "S/." +pack.price.toFixed(2),
+        pack.unit.description,
+        pack.unit.abbreviation,
+        pack.published ? "Sí":"No",
+        "-"+pack.items.map(el => el.productsOptions.map(opt => opt.description).join("; ")).join(" -")
       ];
 
       table_xlsx.push(temp);
@@ -284,10 +264,16 @@ export class ProductsListComponent implements OnInit {
 
     /* generate workbook and add the worksheet */
     const wb: XLSX.WorkBook = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(wb, ws, 'Lista_de_productos');
+    XLSX.utils.book_append_sheet(wb, ws, 'Lista_de_paquetes');
 
     /* save to file */
-    const name = 'Lista_de_productos' + '.xlsx';
+    const name = 'Lista_de_paquetes' + '.xlsx';
     XLSX.writeFile(wb, name);
+  }
+
+  getXlsDate(date){
+    let dateObj = new Date(1970);
+    dateObj.setSeconds(date['seconds'])
+    return this.datePipe.transform(dateObj, 'dd/MM/yyyy');
   }
 }

@@ -8,9 +8,10 @@ import { Observable, concat, of, interval, BehaviorSubject } from 'rxjs';
 import { User } from '../models/user.model';
 import { AngularFireStorage } from '@angular/fire/storage';
 import { Recipe } from '../models/recipe.model';
-import { Unit } from '../models/unit.model';
+import { Unit, PackageUnit } from '../models/unit.model';
 import { Buy, BuyRequestedProduct } from '../models/buy.model';
 import * as firebase from 'firebase'
+import { Package } from '../models/package.model';
 
 @Injectable({
   providedIn: 'root'
@@ -34,6 +35,7 @@ export class DatabaseService {
   ) { }
 
   productsListRef = `db/distoProductos/productsList`;
+  packagesListRef = `db/distoProductos/packagesList`;
   recipesRef = `db/distoProductos/recipes`;
   buysRef = `db/distoProductos/buys`;
   salesRef = `db/distoProductos/sales`;
@@ -95,7 +97,8 @@ export class DatabaseService {
     return this.generalConfigDoc.valueChanges().pipe(shareReplay(1))
   }
 
-  //Products list
+  ////////////////////////////////////////////////////////////////////////////////
+  //Products list/////////////////////////////////////////////////////////////////
   getProductsList(): Observable<Product[]> {
     return this.afs.collection<Product>(this.productsListRef, ref => ref.orderBy("description", "asc"))
       .get().pipe(map((snap) => {
@@ -148,11 +151,11 @@ export class DatabaseService {
     return batch;
   }
 
-  editUnits(units: Unit[]): firebase.firestore.WriteBatch {
+  editUnits(units: Unit[] | PackageUnit[], packageUnit: boolean): firebase.firestore.WriteBatch {
     let unitsRef: AngularFirestoreDocument<GeneralConfig>
       = this.generalConfigDoc
     let batch = this.afs.firestore.batch();
-    batch.set(unitsRef.ref, { units }, { merge: true })
+    batch.set(unitsRef.ref, packageUnit ? {packagesUnits: units} : { units }, { merge: true })
     return batch;
   }
 
@@ -255,14 +258,13 @@ export class DatabaseService {
     return st.delete().pipe(takeLast(1));
   }
 
-  editProductPromo(productId: string, promo: boolean, promoData: Product['promoData']): firebase.firestore.WriteBatch {
+  editProductPromo(productId: string, promo: boolean, promoData: Product['promoData'] | Package['promoData'], pack?: boolean): firebase.firestore.WriteBatch {
     let productRef: DocumentReference;
-    let productData: Product['promoData'];
     let batch = this.afs.firestore.batch();
 
     //Editting
-    productRef = this.afs.firestore.collection(this.productsListRef).doc(productId);
-    productData = promoData;
+    productRef = this.afs.firestore.collection(
+      pack ? this.packagesListRef : this.productsListRef).doc(productId);
     batch.update(productRef, {
       promo,
       promoData: {
@@ -272,8 +274,139 @@ export class DatabaseService {
     });
     return batch;
   }
+  ////////////////////////////////////////////////////////////////////////////////
+  //Packages list/////////////////////////////////////////////////////////////////
+  getPackagesList(): Observable<Package[]> {
+    return this.afs.collection<Package>(this.packagesListRef, ref => ref.orderBy("description", "asc"))
+      .get().pipe(map((snap) => {
+        return snap.docs.map(el => <Package>el.data())
+      }));
+  }
 
-  //Products
+  getPackagesListValueChanges(): Observable<Package[]> {
+    return this.afs.collection<Package>(this.packagesListRef, ref => ref.orderBy("description", "asc"))
+      .valueChanges().pipe(
+        shareReplay(1)
+      );
+  }
+
+  getPackagesListUnitsValueChanges(): Observable<PackageUnit[]> {
+    return this.getGeneralConfigDoc().pipe(map(res => {
+      if (res) {
+        if (res.hasOwnProperty('packagesUnits')) {
+          return res.packagesUnits
+        }
+        else {
+          return []
+        }
+      } else {
+        return []
+      }
+    }), shareReplay(1))
+  }
+
+  createEditPackage(edit: boolean, pack: Package, oldPackage?: Package, photo?: File): Observable<firebase.firestore.WriteBatch> {
+    let packageRef: DocumentReference;
+    let packageData: Package;
+    let batch = this.afs.firestore.batch();
+
+    //Editting
+    if (edit) {
+      packageRef = this.afs.firestore.collection(this.packagesListRef).doc(oldPackage.id);
+      packageData = pack;
+      packageData.id = packageRef.id;
+      packageData.photoURL = oldPackage.photoURL;
+      packageData.promo = oldPackage.promo;
+    }
+    //creating
+    else {
+      packageRef = this.afs.firestore.collection(this.packagesListRef).doc();
+      packageData = pack;
+      packageData.id = packageRef.id;
+      packageData.photoURL = null;
+    }
+
+    //With or without photo
+    if (photo) {
+      if (edit) {
+        return concat(
+          this.deletePhotoPackage(oldPackage.photoPath).pipe(takeLast(1)),
+          this.uploadPhotoPackage(packageRef.id, photo).pipe(takeLast(1))
+        ).pipe(
+          takeLast(1),
+          map((res: string) => {
+            packageData.photoURL = res;
+            packageData.photoPath = `/packagesList/pictures/${packageRef.id}-${photo.name}`;
+            batch.set(packageRef, packageData, { merge: true });
+            return batch
+          })
+        )
+      }
+      else {
+        return this.uploadPhotoPackage(packageRef.id, photo).pipe(
+          takeLast(1),
+          map((res: string) => {
+            packageData.photoURL = res;
+            packageData.photoPath = `/packagesList/pictures/${packageRef.id}-${photo.name}`;
+            batch.set(packageRef, packageData, { merge: true });
+            return batch
+          })
+        )
+      }
+    }
+    else {
+      batch.set(packageRef, packageData, { merge: true });
+      return of(batch);
+    }
+  }
+
+  publishPackage(published: boolean, pack: Package, user: User): firebase.firestore.WriteBatch {
+    let packageRef: DocumentReference = this.afs.firestore.collection(this.packagesListRef).doc(pack.id);
+    let batch = this.afs.firestore.batch();
+    batch.update(packageRef, { published })
+    return batch;
+  }
+
+  deletePackage(pack: Package): Observable<firebase.firestore.WriteBatch> {
+    let packageRef: DocumentReference = this.afs.firestore.collection(this.packagesListRef).doc(pack.id)
+    let batch = this.afs.firestore.batch();
+    batch.delete(packageRef)
+    return this.deletePhotoPackage(pack.photoPath).pipe(
+      takeLast(1),
+      mapTo(batch)
+    )
+  }
+
+  uploadPhotoPackage(id: string, file: File): Observable<string | number> {
+    const path = `/packagesList/pictures/${id}-${file.name}`;
+
+    // Reference to storage bucket
+    const ref = this.storage.ref(path);
+
+    // The main task
+    let uploadingTask = this.storage.upload(path, file);
+
+    let snapshot$ = uploadingTask.percentageChanges()
+    let url$ = of('url!').pipe(
+      switchMap((res) => {
+        return <Observable<string>>ref.getDownloadURL();
+      }))
+
+    let upload$ = concat(
+      snapshot$,
+      interval(1000).pipe(take(2)),
+      url$)
+    return upload$;
+  }
+
+  deletePhotoPackage(path: string): Observable<any> {
+    let st = this.storage.ref(path);
+    return st.delete().pipe(takeLast(1));
+  }
+
+
+  ////////////////////////////////////////////////////////////////////////////////
+  //Products//////////////////////////////////////////////////////////////////////
   createEditRecipe(recipe: Recipe, edit: boolean): firebase.firestore.WriteBatch {
     let recipeRef: DocumentReference;
     let recipeData: Recipe = recipe;

@@ -20,7 +20,7 @@ const routes: Routes = [
       },
       {
         path: 'products-list',
-        loadChildren: () => import('./products-list/products-list.module').then(mod => mod.ProductsListModule),
+        loadChildren: () => import('./products-list/parent-list.module').then(mod => mod.ParentListModule),
         canActivate: [AuthGuard]
       },
       {

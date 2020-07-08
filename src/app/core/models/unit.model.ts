@@ -3,3 +3,8 @@ export interface Unit {
   abbreviation: string;
   weight: number;       //Peso en Kilos
 }
+
+export interface PackageUnit {
+  description: string;
+  abbreviation: string;
+}
