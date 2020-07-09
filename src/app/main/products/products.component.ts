@@ -50,7 +50,8 @@ export class ProductsComponent implements OnInit {
               select: el.name == route
             }
           })
-          return [...array, { name: 'paquetes', select: false }]
+          return array
+          //return [...array, { name: 'paquetes', select: false }]
         })
       )
 

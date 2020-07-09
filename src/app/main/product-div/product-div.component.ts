@@ -53,24 +53,24 @@ export class ProductDivComponent implements OnInit {
 
 
     this.dbs.total = this.dbs.order.map(el => this.giveProductPrice(el)).reduce((a, b) => a + b, 0)
-    /*
-        let stop = this.maxWeight
-        let realQuantity = this.dbs.order.map(el => {
-          if(el.product['package']){
-            el['chosenOptions'].map(item=>{
-              item.unit.weight
-            })
-          }else{
-           return el.quantity * el.product.unit.weight
-          }
-        })
-        let quantity = realQuantity.reduce((a, b) => a + b, 0)
-    
-        if (quantity >= stop) {
-          this.snackBar.open('Ha llegado al límite máximo de peso por pedido', 'Cerrar', {
-            duration: 3000
-          })
-        }*/
+
+    let stop = this.maxWeight
+    let realQuantity = this.dbs.order.map(el => {
+      if (el.product['package']) {
+        return el['chosenOptions'].map(item => {
+          return el.quantity * item.unit.weight
+        }).reduce((a, b) => a + b, 0)
+      } else {
+        return el.quantity * el.product.unit.weight
+      }
+    })
+    let quantity = realQuantity.reduce((a, b) => a + b, 0)
+
+    if (quantity >= stop) {
+      this.snackBar.open('Ha llegado al límite máximo de peso por pedido', 'Cerrar', {
+        duration: 3000
+      })
+    }
   }
 
   stopBuy(item: Product) {
