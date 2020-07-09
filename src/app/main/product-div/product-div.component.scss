@@ -5,7 +5,7 @@
     width: 100%;
 
     &--package{
-        height: 260px;
+        height: 280px;
     }
 
     &--product{
@@ -37,7 +37,7 @@
             min-height: 60px;
         }
         &--pack{
-            min-height: 0px;
+            min-height: 30px;
         }
     }
 
@@ -48,6 +48,7 @@
     &__title {
         font-size: 1em;
         font-weight: bold;
+        word-break: break-word;
     }
 
     &__provision {
@@ -96,11 +97,17 @@
         font-weight: bold;
     }
 
+    &__choose{
+        padding: 0 10px;
+        margin-top: 5px;
+        min-height: 100px;
+    }
+
     &__select {
         padding: 5px 10px;
         border-radius: 10px;
         border: 1px solid #267131;
         margin-bottom: 5px;
-        font-size: 0.8em;
+        font-size: 0.7em;
     }
 }

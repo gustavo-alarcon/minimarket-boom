@@ -31,7 +31,7 @@
                 </div>
                 <mat-divider class="w3-margin-bottom w3-hide-small"></mat-divider>
                 <div *ngIf="products$ | async as products">
-                    <div *ngIf="products.length > 0; else noResult" class="ms-flex" style="justify-content: space-between;">
+                    <div *ngIf="products.length > 0; else noResult" class="ms-flex" style="justify-content: space-evenly;">
                         <app-product-div [product]="product" [buttonAdd]="true" [maxWeight]="maxWeight"
                             [package]="product.package?true:false"
                             *ngFor="let product of products| paginate: { itemsPerPage: 12, currentPage: p }"

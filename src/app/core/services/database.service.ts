@@ -19,8 +19,9 @@ import { Package } from '../models/package.model';
 export class DatabaseService {
 
   public order: {
-    product: Product,
-    quantity: number
+    product: any,
+    quantity: number,
+    chosenOptions?: Product[]
   }[] = []
 
   public view = new BehaviorSubject<number>(1);
