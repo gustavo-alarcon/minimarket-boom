@@ -21,6 +21,17 @@
                 </div>
 
             </div>
+            <div *ngIf="item['chosenOptions']" style="margin-top: -4px;">
+                <div class="ms-flex ms-flex--center">
+                    <div style="width: 25%;"></div>
+                    <div style="width: 45%;">
+                        <div *ngFor="let prod of item['chosenOptions']" style="font-size:0.8em">
+                            1 {{getUnit(1, prod.unit)}} {{prod['description'] | titlecase}}
+                        </div>
+                    </div>
+                </div>
+
+            </div>
             <div *ngIf="item['product']['promo'] && item['quantity']>=item['product']['promoData']['quantity']"
                 style="margin-top: -4px;">
                 <div class="ms-flex ms-flex--center" *ngIf="item.product.promoData.quantity > 1">

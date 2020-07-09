@@ -15,26 +15,25 @@
                 <div *ngIf="product.realStock <= product.sellMinimum" class="product__provision">
                     En abastecimiento</div>
             </div>
-            <p [ngClass]="package?'product__paragraph product__paragraph--pack':'product__paragraph product__paragraph--prod'">{{product.additionalDescription}}</p>
-            <div *ngIf="package" style="padding: 0 10px; margin-top: 10px;">
-                <div *ngFor="let item of product['items']">
-                    <div class="product__select" style="border-color: silver;" *ngIf="item['productsOptions'].length == 1">
-                        {{item['productsOptions'][0]['description'] | titlecase}}
+            <p
+                [ngClass]="package?'product__paragraph product__paragraph--pack':'product__paragraph product__paragraph--prod'">
+                {{product.additionalDescription}}</p>
+            <div *ngIf="package" class="product__choose ms-flex ms-flex--center">
+                <div style="width: 100%;">
+                    <div *ngFor="let item of product['items']" >
+                        <div class="product__select" style="border-color: silver;"
+                            *ngIf="item['productsOptions'].length == 1">
+                            {{item['choose']['description'] | titlecase}} ({{item['choose'].unit.abbreviation}})
+                        </div>
+                        <mat-select class="product__select" *ngIf="item['productsOptions'].length > 1"
+                            [(value)]="item['choose']">
+                            <mat-option *ngFor="let status of item['productsOptions']" [value]="status">
+                                {{status['description'] | titlecase}} ({{status.unit.abbreviation}})
+                            </mat-option>
+                        </mat-select>
+    
                     </div>
-                    <mat-select class="product__select" *ngIf="item['productsOptions'].length > 1" [(value)]="item['choose']">
-                        <mat-option *ngFor="let status of item['productsOptions']" [value]="status">
-                            {{status['description'] | titlecase}}
-                        </mat-option>
-                    </mat-select>
-
                 </div>
-                <!--ol style="text-align:left">
-                    <li *ngFor="let item of product['items']">
-                        <span *ngFor="let option of item.productsOptions; let i = index">
-                            {{option.description |titlecase}}{{i+1 < item.productsOptions.length ? "; ":"."}}
-                        </span>
-                    </li>
-                </ol-->
             </div>
             <div *ngIf="!package" class="product__etiquet">Precio por {{product.unit.description}} (aprox
                 {{product.unit.abbreviation}})
@@ -63,7 +62,7 @@
                     </button>
                 </div>
                 <div *ngIf="package">
-                    <button mat-mini-fab color='accent' (click)="add(product)">
+                    <button mat-mini-fab color='accent' [disabled]="!stopBuy(product)" (click)="add(product)">
                         <mat-icon>add</mat-icon>
                     </button>
                 </div>

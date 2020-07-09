@@ -34,7 +34,6 @@ export class ProductDivComponent implements OnInit {
         quantity: 1,
         chosenOptions: item['items'].map(el => el['choose'])
       }
-
       this.dbs.order.push(newpackage)
     } else {
       let index = this.dbs.order.findIndex(el => el['product']['id'] == item['id'])
@@ -49,23 +48,21 @@ export class ProductDivComponent implements OnInit {
         this.dbs.order[index]['quantity']++
       }
     }
-    console.log(this.dbs.order);
-
-
     this.dbs.total = this.dbs.order.map(el => this.giveProductPrice(el)).reduce((a, b) => a + b, 0)
 
     let stop = this.maxWeight
     let realQuantity = this.dbs.order.map(el => {
       if (el.product['package']) {
-        return el['chosenOptions'].map(item => {
-          return el.quantity * item.unit.weight
+        return el['chosenOptions'].map(ol => {
+          return el.quantity * ol.unit.weight
         }).reduce((a, b) => a + b, 0)
       } else {
         return el.quantity * el.product.unit.weight
       }
     })
-    let quantity = realQuantity.reduce((a, b) => a + b, 0)
 
+    let quantity = realQuantity.reduce((a, b) => a + b, 0)
+    
     if (quantity >= stop) {
       this.snackBar.open('Ha llegado al límite máximo de peso por pedido', 'Cerrar', {
         duration: 3000
@@ -74,9 +71,28 @@ export class ProductDivComponent implements OnInit {
   }
 
   stopBuy(item: Product) {
-    let prod = item.unit.weight
+
+    let prod = 0
+    if (item['package']) {
+      prod = item['items'].map(el => {
+        return el['choose'].unit.weight
+      }).reduce((a, b) => a + b, 0)
+    } else {
+      prod = item.unit.weight
+    }
+
     let stop = this.maxWeight
-    let quantity = this.dbs.order.map(el => el.quantity * el.product.unit.weight).reduce((a, b) => a + b, 0)
+    let realQuantity = this.dbs.order.map(el => {
+      if (el.product['package']) {
+        return el['chosenOptions'].map(ol => {
+          return el.quantity * ol.unit.weight
+        }).reduce((a, b) => a + b, 0)
+      } else {
+        return el.quantity * el.product.unit.weight
+      }
+    })
+
+    let quantity = realQuantity.reduce((a, b) => a + b, 0)
 
     return stop - quantity >= prod
   }

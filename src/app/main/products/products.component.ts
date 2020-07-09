@@ -44,14 +44,13 @@ export class ProductsComponent implements OnInit {
     this.categoryList$ = combineLatest(
       this.route.fragment, this.dbs.getProductsListCategoriesValueChanges()).pipe(
         map(([route, categories]) => {
-          let array = categories.map(el => {
+          let array = [...categories, { name: 'paquetes' }].map(el => {
             return {
               name: el.name,
               select: el.name == route
             }
           })
           return array
-          //return [...array, { name: 'paquetes', select: false }]
         })
       )
 
@@ -67,8 +66,8 @@ export class ProductsComponent implements OnInit {
     ).pipe(
       map(([route, products, packages, search]) => {
         let publish = products.filter(el => route ? el.category == route : true).filter(el => el.published)
-        let packPublish = packages.filter(el => el.published).map(el=>{
-          el['items'] = el.items.map(el=>{
+        let packPublish = [...packages].filter(el => el.published).map(el => {
+          el['items'] = el.items.map(el => {
             return {
               ...el,
               choose: el.productsOptions[0]
@@ -78,14 +77,27 @@ export class ProductsComponent implements OnInit {
           return el
         })
         let any = route == 'paquetes' ? [].concat(packPublish, publish) : publish
-        //[].concat(packages, publish)
+
         if (this.dbs.order.length == 0 && localStorage.getItem('order')) {
+          console.log('here');
+          console.log();
+          
           let number = Number(localStorage.getItem('length'))
           for (let index = 0; index < number; index++) {
-            this.dbs.order[index] = {
-              product: products.filter(el => el.id == localStorage.getItem('order' + index))[0],
-              quantity: Number(localStorage.getItem('order' + index + 'q'))
+            if (localStorage.getItem('order' + index + 'chosen')) {
+              let chosen = localStorage.getItem('order' + index + 'chosen').split(',')
+              this.dbs.order[index] = {
+                product: packPublish.filter(el => el.id == localStorage.getItem('order' + index))[0],
+                quantity: Number(localStorage.getItem('order' + index + 'q')),
+                chosenOptions: products.filter(el => chosen.includes(el.id))
+              }
+            } else {
+              this.dbs.order[index] = {
+                product: products.filter(el => el.id == localStorage.getItem('order' + index))[0],
+                quantity: Number(localStorage.getItem('order' + index + 'q'))
+              }
             }
+
 
           }
 
@@ -142,6 +154,19 @@ export class ProductsComponent implements OnInit {
     this.dbs.order.forEach((el, i) => {
       localStorage.setItem('order' + i, el.product.id)
       localStorage.setItem('order' + i + 'q', el.quantity.toString())
+      if (el['chosenOptions']) {
+        let chosen = ''
+        let limit = el['chosenOptions'].length
+        el['chosenOptions'].forEach((ol, e) => {
+          if (e == limit - 1) {
+            chosen += ol.id
+          } else {
+            chosen += ol.id + ','
+          }
+        })
+        localStorage.setItem('order' + i + 'chosen', chosen)
+
+      }
     })
   }
 
@@ -162,7 +187,7 @@ export class ProductsComponent implements OnInit {
 
   shoppingCart() {
     this.dbs.view.next(2)
-
+  
   }
 
   back() {

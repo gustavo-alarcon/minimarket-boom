@@ -205,14 +205,13 @@ export class CreateCategoryComponent implements OnInit {
       return this.afs.firestore.runTransaction((transaction) => {
         return transaction.get(payRef).then((doc) => {
           if (!doc.exists) {
-            transaction.set(payRef, { payments: [] });
+            transaction.set(payRef, { categories: [] });
           }
+          const list = doc.data().categories ? doc.data().categories : [];
 
-          const payments = doc.data().payments ? doc.data().payments : [];
-
-          let ind = payments.findIndex(el => el.name == this.data.item.name)
-          payments[ind] = category
-          transaction.update(payRef, { payments: payments });
+          let ind = list.findIndex(el => el.name == this.data.item.name)
+          list[ind] = category
+          transaction.update(payRef, { categories: list });
 
         });
 
