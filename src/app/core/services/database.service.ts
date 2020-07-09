@@ -97,6 +97,12 @@ export class DatabaseService {
     return this.generalConfigDoc.valueChanges().pipe(shareReplay(1))
   }
 
+  getCategoriesDoc(): Observable<any> {
+    return this.generalConfigDoc.get().pipe(map((snap) => {
+      return snap.data()['categories']
+    }));
+  }
+
   ////////////////////////////////////////////////////////////////////////////////
   //Products list/////////////////////////////////////////////////////////////////
   getProductsList(): Observable<Product[]> {
@@ -113,7 +119,7 @@ export class DatabaseService {
       );
   }
 
-  getProductsListCategoriesValueChanges(): Observable<string[]> {
+  getProductsListCategoriesValueChanges(): Observable<any[]> {
     return this.getGeneralConfigDoc().pipe(map(res => {
       if (res) {
         if (res.hasOwnProperty('categories')) {

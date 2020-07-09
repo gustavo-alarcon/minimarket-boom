@@ -1,3 +1,4 @@
+import { Package } from './../../core/models/package.model';
 import { Router } from '@angular/router';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { DatabaseService } from 'src/app/core/services/database.service';
@@ -11,9 +12,10 @@ import { Component, OnInit, CUSTOM_ELEMENTS_SCHEMA, Input } from '@angular/core'
 })
 export class ProductDivComponent implements OnInit {
 
+  @Input() package: boolean
   @Input() product: Product
   @Input() maxWeight: number
-  @Input() buttonAdd: boolean = false
+  @Input() buttonAdd: boolean
   defaultImage = "../../../assets/images/Disto_Logo1.png";
 
   constructor(
@@ -78,7 +80,7 @@ export class ProductDivComponent implements OnInit {
   }
 
   navigate(name) {
-    this.router.navigate(['/main/products/recetas',name]);
+    this.router.navigate(['/main/products/recetas', name]);
   }
 
 }

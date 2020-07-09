@@ -50,19 +50,19 @@ export class CreatePayComponent implements OnInit {
   ) { }
 
   ngOnInit(): void {
-   if(this.data.edit){
-    this.payForm = this.fb.group({
-      name: [this.data.item.name, Validators.required],
-      account: [this.data.item.account, Validators.required],
-      photoURL: [this.data.item.photoURL, Validators.required],
-    })
-   }else{
-    this.payForm = this.fb.group({
-      name: [null, Validators.required],
-      account: [null, Validators.required],
-      photoURL: [null, Validators.required],
-    })
-   }
+    if (this.data.edit) {
+      this.payForm = this.fb.group({
+        name: [this.data.item.name, Validators.required],
+        account: [this.data.item.account, Validators.required],
+        photoURL: [this.data.item.photoURL, Validators.required],
+      })
+    } else {
+      this.payForm = this.fb.group({
+        name: [null, Validators.required],
+        account: [null, Validators.required],
+        photoURL: [null, Validators.required],
+      })
+    }
   }
 
   addNewPhoto(formControlName: string, image: File[]) {
@@ -136,7 +136,7 @@ export class CreatePayComponent implements OnInit {
           }
 
           const payments = doc.data().payments ? doc.data().payments : [];
-          payments.push(typePay);
+          payments.unshift(typePay);
           transaction.update(payRef, { payments: payments });
         });
 
@@ -158,7 +158,10 @@ export class CreatePayComponent implements OnInit {
     const payRef: DocumentReference = this.afs.firestore.collection(`/db/distoProductos/config/`).doc('generalConfig');
 
     if (photo) {
-      this.uploadPhoto(typePay.name, photo).pipe(
+      concat(
+        this.dbs.deletePhotoProduct(this.data.item.photoPath).pipe(takeLast(1)),
+        this.uploadPhoto(typePay.name, photo).pipe(takeLast(1))
+      ).pipe(
         takeLast(1),
       ).subscribe((res: string) => {
         typePay.photoURL = res;
@@ -225,24 +228,25 @@ export class CreatePayComponent implements OnInit {
 
     let newTypePay = this.payForm.value
 
-    if(this.data.edit){
+    if (this.data.edit) {
       if (this.payForm.get('photoURL').value != this.data.item.photoURL) {
-        this.editBanner(newTypePay,  this.photos.data.photoURL)
-      }else{
-        if(this.payForm.get('name').value != this.data.item.name || this.payForm.get('account').value != this.data.item.account){
+        this.editBanner(newTypePay, this.photos.data.photoURL)
+      } else {
+        if (this.payForm.get('name').value != this.data.item.name || this.payForm.get('account').value != this.data.item.account) {
+          newTypePay['photoPath'] = this.data.item['photoPath']
           this.editBanner(newTypePay)
-        }else{
+        } else {
           this.dialogRef.close()
-        } 
+        }
       }
 
-      
-    }else{
-    
+
+    } else {
+
       this.createBanner(newTypePay, this.photos.data.photoURL)
     }
 
-   
+
   }
 
 }

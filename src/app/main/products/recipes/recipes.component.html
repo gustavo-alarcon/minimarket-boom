@@ -1,16 +1,13 @@
 <div *ngIf="init$ | async as init">
     <div class="title-div">
-        <div>
-            <button mat-icon-button class="w3-hide-medium w3-hide-large" routerLink="/main/products">
+        <img src="../../../../assets/images/banner_recetas.png" style="width: 100%;" alt="">
+        <div class="title-div__image">
+            <button mat-icon-button class="w3-hide-medium w3-hide-large" (click)="retun()">
                 <mat-icon>keyboard_backspace</mat-icon>
             </button>
-            <button mat-mini-fab color='primary' class="w3-hide-small w3-margin-top w3-margin-left" routerLink="/main/products">
+            <button mat-mini-fab color='primary' class="w3-hide-small w3-margin-top w3-margin-left" (click)="retun()">
                 <mat-icon>keyboard_backspace</mat-icon>
             </button>
-        </div>
-        <div class="title-div__recipe">Recetas</div>
-        <div class="w3-margin-bottom ms-flex" style="justify-content: flex-end;">
-            <div class="title-div__product">{{init.title | titlecase}}</div>
         </div>
 
     </div>

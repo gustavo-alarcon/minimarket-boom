@@ -1,20 +1,14 @@
 .title-div {
     background: linear-gradient(180deg, rgba(255, 255, 255, 0.15) 0%, rgba(255, 255, 255, 0) 100%),
-        url(../../../../assets/images/recipes-title.png);
+        url(../../../../assets/images/banner_recetas.png);
     background-size: cover;
     box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+    position: relative;
 
-    &__recipe {
-        color: white;
-        text-transform: uppercase;
-        padding-right: 12vw;
-        font-weight: 900;
-        letter-spacing: 0.05em;
-        line-height: 1em;
-        font-family: Poppins;
-        text-align: right;
-        text-shadow: 1px 0 0 #5da92f, -1px 0 0 #5da92f, 0 1px 0 #5da92f, 0 -1px 0 #5da92f, 1px 1px #5da92f,
-            -1px -1px 0 #5da92f, 1px -1px 0 #5da92f, -1px 1px 0 #5da92f;
+    &__image{
+        width: 100%;
+        position: absolute;
+        top: 0;
     }
 
     &__product {
@@ -53,7 +47,6 @@ ul li::before {
 
 @media only screen and (min-width: 900px) {
     .title-div {
-        min-height: 240px;
         &__recipe {
             padding-top: 25px;
             padding-right: 12vw;
@@ -79,7 +72,6 @@ ul li::before {
 
 @media only screen and (max-width: 899px) and (min-width: 601px) {
     .title-div {
-        min-height: 220px;
         &__recipe {
             padding-top: 16px;
             font-size: 4.2em;
@@ -103,7 +95,6 @@ ul li::before {
 
 @media only screen and (max-width: 600px) and (min-width: 401px) {
     .title-div {
-        min-height: 220px;
         &__recipe {
             padding-top: 16px;
             font-size: 3.2em;
@@ -117,7 +108,6 @@ ul li::before {
 
 @media only screen and (max-width: 400px) {
     .title-div {
-        min-height: 160px;
         &__recipe {
             padding-top: 0;
             font-size: 3em;

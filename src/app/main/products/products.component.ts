@@ -1,3 +1,4 @@
+import { ActivatedRoute, Router } from '@angular/router';
 import { User } from 'src/app/core/models/user.model';
 import { AuthService } from 'src/app/core/services/auth.service';
 import { MatDialog } from '@angular/material/dialog';
@@ -16,14 +17,14 @@ import { LoginDialogComponent } from '../login-dialog/login-dialog.component';
 export class ProductsComponent implements OnInit {
   firstSale: boolean = false
 
-  products$: Observable<Product[]>
+  products$: Observable<any>
   init$: Observable<User>
-  categoryList$: Observable<string[]>
+  categoryList$: Observable<any[]>
 
   name: string = ''
   maxWeight: number = 3
 
-  searchForm: FormGroup
+  searchForm: FormControl = new FormControl('')
 
   defaultImage = "../../../assets/images/default-image.jpg";
 
@@ -34,32 +35,37 @@ export class ProductsComponent implements OnInit {
   constructor(
     public dbs: DatabaseService,
     private dialog: MatDialog,
-    private fb: FormBuilder,
-    public auth: AuthService
+    public auth: AuthService,
+    private router: Router,
+    private route: ActivatedRoute
   ) { }
 
   ngOnInit(): void {
-
-    this.searchForm = this.fb.group({
-      category: [''],
-      name: ['']
-    })
-
-    this.categoryList$ = this.dbs.getProductsListCategoriesValueChanges()
+    this.categoryList$ = combineLatest(
+      this.route.fragment, this.dbs.getProductsListCategoriesValueChanges()).pipe(
+        map(([route, categories]) => {
+          return categories.map(el => {
+            return {
+              name: el.name,
+              select: el.name == route
+            }
+          })
+        })
+      )
 
     this.products$ = combineLatest(
+      this.route.fragment,
       this.dbs.getProductsListValueChanges(),
-      this.searchForm.get('name').valueChanges.pipe(
+      this.dbs.getPackagesListValueChanges(),
+      this.searchForm.valueChanges.pipe(
         filter(input => input !== null),
         startWith<any>(''),
         map(value => value.toLowerCase())
-      ),
-      this.searchForm.get('category').valueChanges.pipe(
-        startWith<any>('Todos')
       )
     ).pipe(
-      map(([products, search, category]) => {
-        let publish = products.filter(el => el.published)
+      map(([route, products, packages, search]) => {
+        let publish = products.filter(el => route ? el.category == route : true).filter(el => el.published)
+        let any = [].concat(packages, publish)
         if (this.dbs.order.length == 0 && localStorage.getItem('order')) {
           let number = Number(localStorage.getItem('length'))
           for (let index = 0; index < number; index++) {
@@ -72,8 +78,7 @@ export class ProductsComponent implements OnInit {
 
           this.dbs.total = this.dbs.order.map(el => this.giveProductPrice(el)).reduce((a, b) => a + b, 0)
         }
-        return publish.filter(el => search ? el.description.toLowerCase().includes(search) : true)
-          .filter(el => category != 'Todos' ? el.category == category : true)
+        return any.filter(el => search ? el.description.toLowerCase().includes(search) : true)
       })
     )
 
@@ -84,9 +89,9 @@ export class ProductsComponent implements OnInit {
     ).pipe(
       map(([users, id, confi]) => {
         this.maxWeight = confi['maxWeight']
-        if(id){
+        if (id) {
           return users.filter(el => el.uid == id.uid)[0]
-        }else{
+        } else {
           return null
         }
       }),
@@ -157,5 +162,9 @@ export class ProductsComponent implements OnInit {
     localStorage.clear()
   }
 
+
+  navigate(name) {
+    this.router.navigate(['/main/products'], { fragment: name });
+  }
 
 }

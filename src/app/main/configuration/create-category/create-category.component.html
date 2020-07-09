@@ -12,7 +12,10 @@
             <mat-label>Nombre</mat-label>
             <input #input autocomplete="off" formControlName="name" type="text" matInput placeholder="Nombre">
             <mat-error>
-                Campo requerido
+                <span *ngIf="categoryForm.get('name').errors?.required">Campo requerido</span>
+                <span *ngIf="categoryForm.get('name').hasError('repeatedValidator')">
+                    Categoría Repetido
+                </span>
             </mat-error>
         </mat-form-field>
 

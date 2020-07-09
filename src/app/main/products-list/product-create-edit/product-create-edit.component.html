@@ -58,10 +58,6 @@
           <mat-autocomplete 
             autoActiveFirstOption   
             #categoryAutocomplete="matAutocomplete">
-            <mat-option (click)="onAddCategory()"
-              [value]="''">
-              <mat-icon>add_circle_outline</mat-icon>Nueva Categoria
-            </mat-option>
             <mat-option *ngFor="let category of categories"
               [value]="category">
               {{category}}
