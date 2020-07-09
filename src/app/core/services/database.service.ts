@@ -106,7 +106,7 @@ export class DatabaseService {
   ////////////////////////////////////////////////////////////////////////////////
   //Products list/////////////////////////////////////////////////////////////////
   getProductsList(): Observable<Product[]> {
-    return this.afs.collection<Product>(this.productsListRef, ref => ref.orderBy("description", "asc"))
+    return this.afs.collection<Product>(this.productsListRef, ref => ref.orderBy("createdAt", "desc"))
       .get().pipe(map((snap) => {
         return snap.docs.map(el => <Product>el.data())
       }));

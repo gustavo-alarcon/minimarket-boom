@@ -6,7 +6,7 @@
         <div class="w3-col s12 m10 l10">
             <div *ngIf="(dbs.view$|async)==1">
                 <div class="ms-flex" style="align-items: baseline;">
-                    <button mat-icon-button  routerLink="/main">
+                    <button mat-icon-button routerLink="/main">
                         <mat-icon>keyboard_backspace</mat-icon>
                     </button>
                     <div class="formFieldRounded search-form">
@@ -30,17 +30,25 @@
                         {{category['name'] | titlecase}}</button>
                 </div>
                 <mat-divider class="w3-margin-bottom w3-hide-small"></mat-divider>
-                <div *ngIf="products$ | async as products" class="ms-flex" style="justify-content: space-between;">
-                    <app-product-div [product]="product" [buttonAdd]="true" [maxWeight]="maxWeight"
-                        [package]="product.package?true:false"
-                        *ngFor="let product of products| paginate: { itemsPerPage: 12, currentPage: p }"
-                        class="product-div">
-                    </app-product-div>
+                <div *ngIf="products$ | async as products">
+                    <div *ngIf="products.length > 0; else noResult" class="ms-flex" style="justify-content: space-between;">
+                        <app-product-div [product]="product" [buttonAdd]="true" [maxWeight]="maxWeight"
+                            [package]="product.package?true:false"
+                            *ngFor="let product of products| paginate: { itemsPerPage: 12, currentPage: p }"
+                            class="product-div">
+                        </app-product-div>
 
-                    <div style="display: flex; width: 100%; justify-content: flex-end;" *ngIf="products.length > 12">
-                        <pagination-controls (pageChange)="p = $event" previousLabel="" nextLabel="" maxSize="6">
-                        </pagination-controls>
+                        <div style="display: flex; width: 100%; justify-content: flex-end;"
+                            *ngIf="products.length > 12">
+                            <pagination-controls (pageChange)="p = $event" previousLabel="" nextLabel="" maxSize="6">
+                            </pagination-controls>
+                        </div>
                     </div>
+                    <ng-template #noResult>
+                        <div class="w3-container w3-center w3-margin-top w3-margin-bottom">
+                            <p>Sin Resultados</p>
+                          </div>
+                    </ng-template>
                 </div>
                 <p *ngIf="init$ | async"></p>
             </div>
