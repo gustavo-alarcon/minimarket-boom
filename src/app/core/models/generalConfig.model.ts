@@ -1,7 +1,7 @@
 import { Unit, PackageUnit } from './unit.model';
 
 export interface GeneralConfig{
-  categories: string[];
+  categories: object[];
   units: Unit[];
   packagesUnits: PackageUnit[];
   salesRCounter: number;

@@ -9,6 +9,10 @@ const routes: Routes = [
     component: MainComponent,
     children: [
       {
+        path: '',
+        loadChildren: () => import('./categories/categories.module').then(mod => mod.CategoriesModule)
+      },
+      {
         path: 'products',
         loadChildren: () => import('./products/products.module').then(mod => mod.ProductsModule),
         canActivate: [AuthGuard]

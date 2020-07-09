@@ -1,13 +1,13 @@
 import { AuthService } from 'src/app/core/services/auth.service';
-import { tap, take, switchMap } from 'rxjs/operators';
-import { Observable } from 'rxjs';
+import { tap, take, switchMap, map } from 'rxjs/operators';
+import { Observable, combineLatest } from 'rxjs';
 import { DatabaseService } from './../../../core/services/database.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Recipe } from './../../../core/models/recipe.model';
 import { MatDialogRef, MatDialog } from '@angular/material/dialog';
 import { CreateEditRecipeComponent } from './../create-edit-recipe/create-edit-recipe.component';
 import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { Product } from 'src/app/core/models/product.model';
 import { DomSanitizer } from '@angular/platform-browser';
 
@@ -20,18 +20,28 @@ import { DomSanitizer } from '@angular/platform-browser';
 export class RecipesComponent implements OnInit {
   init$:Observable<{title: string, recipes: Recipe[]}>
 
+  category:string = ''
+
   constructor(
     private dbs: DatabaseService,
     private dialog: MatDialog,
     private snackBar: MatSnackBar,
     private route: ActivatedRoute,
     public sanitizer: DomSanitizer,
-    public auth: AuthService
+    public auth: AuthService,
+    private router: Router
   ) { }
 
   ngOnInit(): void {
-    this.init$ = this.route.params.pipe(
+    this.init$ = combineLatest(
+      this.route.params,
+      this.dbs.getProductsListValueChanges()
+      ).pipe(
       take(1),
+      map(([route,products])=>{
+        this.category = products.filter(el=>el.id == route.id).map(el=>el['category'])[0]
+        return route
+      }),
       switchMap(res => 
         this.dbs.getProductRecipesValueChanges(res.id),
         (productId, recipes) => {
@@ -95,6 +105,10 @@ export class RecipesComponent implements OnInit {
         }
       })
     }
+  }
+
+  retun() {
+    this.router.navigate(['/main/products'], { fragment: this.category });
   }
 
 }

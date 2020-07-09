@@ -1,12 +1,12 @@
 import { AngularFireStorage } from '@angular/fire/storage';
 import { AngularFirestore, DocumentReference } from '@angular/fire/firestore';
-import { take, switchMap, takeLast } from 'rxjs/operators';
+import { take, switchMap, takeLast, map } from 'rxjs/operators';
 import { Ng2ImgMaxService } from 'ng2-img-max';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { DatabaseService } from 'src/app/core/services/database.service';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { Observable, BehaviorSubject, of, concat } from 'rxjs';
-import { FormGroup, FormBuilder, Validators } from '@angular/forms';
+import { FormGroup, FormBuilder, Validators, AbstractControl } from '@angular/forms';
 import { Component, OnInit, Inject } from '@angular/core';
 @Component({
   selector: 'app-create-category',
@@ -56,11 +56,22 @@ export class CreateCategoryComponent implements OnInit {
       })
     } else {
       this.categoryForm = this.fb.group({
-        name: [null, Validators.required],
+        name: [null, [Validators.required], [this.repeatedValidator()]],
         photoURL: [null, Validators.required]
       })
     }
 
+
+  }
+
+  repeatedValidator() {
+    return (control: AbstractControl) => {
+      const value = control.value.toLowerCase();
+      return this.dbs.getCategoriesDoc().pipe(
+        map(res => {
+          return res.findIndex(el => el['name'].toLowerCase() == value) >= 0 ? { repeatedValidator: true } : null
+        }))
+    }
   }
 
   addNewPhoto(formControlName: string, image: File[]) {
@@ -95,7 +106,7 @@ export class CreateCategoryComponent implements OnInit {
   }
 
   uploadPhoto(id: string, file: File): Observable<string | number> {
-    const path = `/configuration/pictures/${id}-${file.name}`;
+    const path = `/categories/pictures/${id}-${file.name}`;
 
     // Reference to storage bucket
     const ref = this.storage.ref(path);
@@ -130,12 +141,12 @@ export class CreateCategoryComponent implements OnInit {
       return this.afs.firestore.runTransaction((transaction) => {
         return transaction.get(payRef).then((doc) => {
           if (!doc.exists) {
-            transaction.set(payRef, { Categories: [] });
+            transaction.set(payRef, { categories: [] });
           }
 
-          const list = doc.data().Categories ? doc.data().Categories : [];
+          const list = doc.data().categories ? doc.data().categories : [];
           list.push(categorie);
-          transaction.update(payRef, { Categories: list });
+          transaction.update(payRef, { categories: list });
         });
 
       }).then(() => {
@@ -156,7 +167,10 @@ export class CreateCategoryComponent implements OnInit {
     const payRef: DocumentReference = this.afs.firestore.collection(`/db/distoProductos/config/`).doc('generalConfig');
 
     if (photo) {
-      this.uploadPhoto(category.name, photo).pipe(
+      concat(
+        this.dbs.deletePhotoProduct(this.data.item.photoPath).pipe(takeLast(1)),
+        this.uploadPhoto(category.name, photo).pipe(takeLast(1))
+      ).pipe(
         takeLast(1),
       ).subscribe((res: string) => {
         category.photoURL = res;
@@ -165,14 +179,14 @@ export class CreateCategoryComponent implements OnInit {
           // This code may get re-run multiple times if there are conflicts.
           return transaction.get(payRef).then((doc) => {
             if (!doc.exists) {
-              transaction.set(payRef, { Categories: [] });
+              transaction.set(payRef, { categories: [] });
             }
 
-            const list = doc.data().Categories ? doc.data().Categories : [];
+            const list = doc.data().categories ? doc.data().categories : [];
 
             let ind = list.findIndex(el => el.name == this.data.item.name)
             list[ind] = category
-            transaction.update(payRef, { Categories: list });
+            transaction.update(payRef, { categories: list });
 
           });
 
@@ -221,24 +235,25 @@ export class CreateCategoryComponent implements OnInit {
     this.categoryForm.disable()
     this.loading.next(true)
 
-    let newTypePay = {
+    let newCategory = {
       name: this.categoryForm.value['name'],
       photoURL: this.categoryForm.value['photoURL'],
+      photoPath: this.data.item ? this.data.item['photoPath'] : '',
       index: this.data.index
     }
 
     if (this.data.edit) {
       if (this.categoryForm.get('photoURL').value != this.data.item.photoURL) {
-        this.editBanner(newTypePay, this.photos.data.photoURL)
+        this.editBanner(newCategory, this.photos.data.photoURL)
       } else {
         if (this.categoryForm.get('name').value != this.data.item.name) {
-          this.editBanner(newTypePay)
+          this.editBanner(newCategory)
         } else {
           this.dialogRef.close()
         }
       }
     } else {
-      this.createBanner(newTypePay, this.photos.data.photoURL)
+      this.createBanner(newCategory, this.photos.data.photoURL)
     }
 
   }

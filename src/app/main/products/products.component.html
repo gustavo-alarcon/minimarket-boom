@@ -1,12 +1,15 @@
 <div class="w3-section w3-margin-left w3-margin-right">
     <div class="w3-row">
         <div class="w3-col s0 m1 l1">
-            <p></p>
+            <p class="w3-hide-small"></p>
         </div>
         <div class="w3-col s12 m10 l10">
             <div *ngIf="(dbs.view$|async)==1">
                 <div class="ms-flex" style="align-items: baseline;">
-                    <div class="formFieldRounded">
+                    <button mat-icon-button  routerLink="/main">
+                        <mat-icon>keyboard_backspace</mat-icon>
+                    </button>
+                    <div class="formFieldRounded search-form">
                         <mat-form-field appearance="outline" class="search-input">
                             <mat-label>Buscar</mat-label>
                             <input [formControl]="searchForm" matInput placeholder="Buscar Producto" autocomplete="off">
@@ -20,6 +23,11 @@
                         <span style="font-size: 1em;" *ngIf="dbs.total>0"> S/.
                             {{dbs.total | number: '.2'}}</span>
                     </button>
+                </div>
+                <div *ngIf="categoryList$ | async as categories" class="w3-margin-bottom w3-hide-small">
+                    <button mat-stroked-button *ngFor="let category of categories" color="primary"
+                        [ngClass]="category['select']?'green category':'category'" (click)="navigate(category['name'])">
+                        {{category['name'] | titlecase}}</button>
                 </div>
                 <mat-divider class="w3-margin-bottom w3-hide-small"></mat-divider>
                 <div *ngIf="products$ | async as products" class="ms-flex" style="justify-content: space-between;">

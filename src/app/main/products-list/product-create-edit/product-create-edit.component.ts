@@ -78,16 +78,16 @@ export class ProductCreateEditComponent implements OnInit {
           asyncValidators: this.skuRepeatedValidator(this.dbs, this.data),
           updateOn: 'blur'
         }),
-        additionalDescription:[this.data.data.additionalDescription, Validators.required],
+        additionalDescription: [this.data.data.additionalDescription, Validators.required],
         category: [this.data.data.category, Validators.required],
         price: [this.data.data.price, [Validators.required, Validators.min(0)]],
         unit: [this.data.data.unit, Validators.required],
         realStock: [this.data.data.realStock, [Validators.required, Validators.min(0)]],
         mermaStock: [this.data.data.mermaStock, [Validators.required, Validators.min(0)]],
-        sellMinimum: [this.data.data.sellMinimum, 
-          [Validators.required, Validators.min(1), , this.minimumSellValidator()]],
-        alertMinimum: [this.data.data.alertMinimum, 
-          [Validators.required, Validators.min(1), , this.minimumSellValidator()]],
+        sellMinimum: [this.data.data.sellMinimum,
+        [Validators.required, Validators.min(1), , this.minimumSellValidator()]],
+        alertMinimum: [this.data.data.alertMinimum,
+        [Validators.required, Validators.min(1), , this.minimumSellValidator()]],
         photoURL: [this.data.data.photoURL, Validators.required],
       })
     }
@@ -103,21 +103,21 @@ export class ProductCreateEditComponent implements OnInit {
           asyncValidators: this.skuRepeatedValidator(this.dbs, this.data),
           updateOn: 'blur'
         }),
-        additionalDescription:[null, Validators.required],
+        additionalDescription: [null, Validators.required],
         category: [null, Validators.required],
         price: [null, [Validators.required, Validators.min(0)]],
         unit: [null, Validators.required],
         realStock: [0, [Validators.required, Validators.min(0)]],
         mermaStock: [0, [Validators.required, Validators.min(0)]],
-        sellMinimum: [0, 
+        sellMinimum: [0,
           [Validators.required, Validators.min(0), , this.minimumSellValidator()]],
-        alertMinimum: [0, 
+        alertMinimum: [0,
           [Validators.required, Validators.min(0), , this.minimumSellValidator()]],
         photoURL: [null, Validators.required],
       })
     }
   }
-  deb(){
+  deb() {
     //console.log(this.productForm);
   }
   initObservables() {
@@ -144,24 +144,26 @@ export class ProductCreateEditComponent implements OnInit {
       }))
 
     this.category$ = combineLatest(
-      this.productForm.get('category').valueChanges.pipe(startWith('')), 
-      this.dbs.getProductsListCategoriesValueChanges()
-      ).pipe(map(([formValue, categories]) => {
-        let filter = categories.filter(el => el.match(new RegExp(formValue,'ig')));
-        if (!(filter.length == 1 && filter[0] === formValue) && formValue.length) {
-          this.productForm.get('category').setErrors({ invalid: true });
-        }
-        return filter;
-      }))
+      this.productForm.get('category').valueChanges.pipe(startWith('')),
+      this.dbs.getProductsListCategoriesValueChanges().pipe(
+        map(res => res.map(el => el['name']))
+      )
+    ).pipe(map(([formValue, categories]) => {
+      let filter = categories.filter(el => el.match(new RegExp(formValue, 'ig')));
+      if (!(filter.length == 1 && filter[0] === formValue) && formValue.length) {
+        this.productForm.get('category').setErrors({ invalid: true });
+      }
+      return filter;
+    }))
 
     this.units$ = this.dbs.getProductsListUnitsValueChanges().pipe(
       take(1),
       tap(unit => {
-      if(this.data.edit){
-        let selectedUnit = unit.find(el => el.description == this.data.data.unit.description);
-        this.productForm.get('unit').setValue(selectedUnit)
-      }
-    }));
+        if (this.data.edit) {
+          let selectedUnit = unit.find(el => el.description == this.data.data.unit.description);
+          this.productForm.get('unit').setValue(selectedUnit)
+        }
+      }));
   }
 
   onAddCategory() {
@@ -181,7 +183,7 @@ export class ProductCreateEditComponent implements OnInit {
     let reader = new FileReader();
 
     this.photos.resizing$[formControlName].next(true);
-  
+
     this.ng2ImgMax.resizeImage(image[0], 10000, 426)
       .pipe(
         take(1)
@@ -232,7 +234,7 @@ export class ProductCreateEditComponent implements OnInit {
 
     this.dbs.createEditProduct(this.data.edit, product, this.data.data, this.photos.data.photoURL)
       .subscribe(batch => {
-        batch.commit().then(res => {      
+        batch.commit().then(res => {
           this.dialogRef.close(true);
         },
           err => {
@@ -244,59 +246,59 @@ export class ProductCreateEditComponent implements OnInit {
         });
   }
 
-  minimumSellValidator(){
-    return (control: AbstractControl): {'sellMinimumExceeded': boolean} => {
-      if(control.parent){
-        if(control.parent.get('sellMinimum').value >= control.parent.get('alertMinimum').value){
-            if(control.parent.get('sellMinimum').value && control.parent.get('alertMinimum').value){
-              return {'sellMinimumExceeded': true}
-            }
-            return null
-        } else{
+  minimumSellValidator() {
+    return (control: AbstractControl): { 'sellMinimumExceeded': boolean } => {
+      if (control.parent) {
+        if (control.parent.get('sellMinimum').value >= control.parent.get('alertMinimum').value) {
+          if (control.parent.get('sellMinimum').value && control.parent.get('alertMinimum').value) {
+            return { 'sellMinimumExceeded': true }
+          }
+          return null
+        } else {
           return null
         }
       } else {
         return null
       }
-      
+
     }
   }
 
-  descriptionRepeatedValidator(dbs: DatabaseService, data: {data: Product, edit: boolean}){
-    return (control: AbstractControl): Observable<{'descriptionRepeatedValidator': boolean}> => {
+  descriptionRepeatedValidator(dbs: DatabaseService, data: { data: Product, edit: boolean }) {
+    return (control: AbstractControl): Observable<{ 'descriptionRepeatedValidator': boolean }> => {
       const value = control.value.toUpperCase();
-      if(data.edit){
-        if(data.data.description.toUpperCase() == value){
+      if (data.edit) {
+        if (data.data.description.toUpperCase() == value) {
           return of(null)
         }
-        else{
+        else {
           return dbs.getProductsList().pipe(
-            map(res => !!res.find(el => el.description.toUpperCase() == value)  ? {descriptionRepeatedValidator: true} : null),)
-          }
+            map(res => !!res.find(el => el.description.toUpperCase() == value) ? { descriptionRepeatedValidator: true } : null))
         }
-      else{
+      }
+      else {
         return dbs.getProductsList().pipe(
-          map(res => !!res.find(el => el.description.toUpperCase() == value)  ? {descriptionRepeatedValidator: true} : null),)
-        }
+          map(res => !!res.find(el => el.description.toUpperCase() == value) ? { descriptionRepeatedValidator: true } : null))
+      }
     }
   }
 
-  skuRepeatedValidator(dbs: DatabaseService, data: {data: Product, edit: boolean}){
-    return (control: AbstractControl): Observable<{'skuRepeatedValidator': boolean}> => {
+  skuRepeatedValidator(dbs: DatabaseService, data: { data: Product, edit: boolean }) {
+    return (control: AbstractControl): Observable<{ 'skuRepeatedValidator': boolean }> => {
       const value = control.value.toUpperCase();
-      if(data.edit){
-        if(data.data.sku.toUpperCase() == value){
+      if (data.edit) {
+        if (data.data.sku.toUpperCase() == value) {
           return of(null)
         }
-        else{
+        else {
           return dbs.getProductsList().pipe(
-            map(res => !!res.find(el => el.sku.toUpperCase() == value)  ? {skuRepeatedValidator: true} : null),)
-          }
+            map(res => !!res.find(el => el.sku.toUpperCase() == value) ? { skuRepeatedValidator: true } : null))
         }
-      else{
+      }
+      else {
         return dbs.getProductsList().pipe(
-          map(res => !!res.find(el => el.sku.toUpperCase() == value)  ? {skuRepeatedValidator: true} : null),)
-        }
+          map(res => !!res.find(el => el.sku.toUpperCase() == value) ? { skuRepeatedValidator: true } : null))
+      }
     }
   }
 

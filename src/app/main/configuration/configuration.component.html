@@ -380,7 +380,7 @@
 
                     </mat-expansion-panel-header>
                     <mat-progress-bar *ngIf="loadingCategories$ | async" mode="indeterminate"></mat-progress-bar>
-                    <div>
+                    <div class="admin__container">
                         <button mat-raised-button color="accent" (click)="createCategory(null,false)">
                             Crear Categoría</button>
                         <div *ngIf="categories$ |async as images">
@@ -388,29 +388,29 @@
                                 <div *ngFor="let image of categories" class="banner__category border--primary">
                                     <img [defaultImage]="defaultImage" [lazyLoad]="image.photoURL" [offset]="100"
                                         class="banner__image">
-                                    <div class="row-category">
-                                        <p><strong>{{image.name}}</strong></p>
-                                            <span class="ms-fill"></span>
-                                            <button mat-icon-button color="primary"
-                                                (click)="createCategory(image, true)">
-                                                <mat-icon>edit</mat-icon>
-                                            </button>
-                                            <button mat-icon-button color="primary" style="margin-left: 10px;"
-                                                (click)="deleteCategory(image)">
-                                                <mat-icon>delete</mat-icon>
-                                            </button>
+                                    <div class="row-category" style="align-items: center; padding-left: 10px;">
+                                        <span><strong>{{image.name}}</strong></span>
+                                        <span class="ms-fill"></span>
+                                        <button mat-icon-button color="primary" (click)="createCategory(image, true)">
+                                            <mat-icon>edit</mat-icon>
+                                        </button>
+                                        <button mat-icon-button color="primary" style="margin-left: 10px;"
+                                            (click)="deleteCategory(image)">
+                                            <mat-icon>delete</mat-icon>
+                                        </button>
                                     </div>
 
 
                                 </div>
                             </div>
                             <div *ngIf="images.length" class="w3-margin-top w3-margin-bottom">
-                                <!--mat-progress-bar mode='indeterminate' *ngIf="(loading$ | async)==4"></mat-progress-bar-->
+                                <mat-progress-bar mode='indeterminate' *ngIf="loadingCategories$ | async">
+                                </mat-progress-bar>
                                 <div style="width: 100%;max-width: 500px;">
-                                    <div class="row-category"
-                                        style="justify-content: space-between; padding: 10px 0;">
+                                    <div class="row-category" style="justify-content: space-between; padding: 10px 0;">
                                         <span style="font-weight: 700;">Ordenar posición</span>
-                                        <button mat-raised-button color="primary" (click)="savePosition(images)">
+                                        <button mat-raised-button color="primary"
+                                            [disabled]="loadingCategories$ | async" (click)="savePosition(images)">
                                             <span>Guardar</span>
                                         </button>
                                     </div>
@@ -422,8 +422,8 @@
                                     </div>
                                 </div>
                                 <div class="w3-margin-top ms-flex" style="justify-content: space-between;">
-                                    <div *ngFor="let image of images" class="banner__frame" [ngStyle]="{'background-image': 'url(' + image['photoURL'] + ')'}">
-                                        <span class="banner__name">{{image['name']}}</span>
+                                    <div *ngFor="let image of images" class="banner__frame"
+                                        [ngStyle]="{'background-image': 'url(' + image['photoURL'] + ')'}">
                                     </div>
                                 </div>
                             </div>

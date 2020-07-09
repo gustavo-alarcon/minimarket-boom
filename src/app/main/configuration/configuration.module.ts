@@ -33,7 +33,9 @@ import { DragDropModule } from '@angular/cdk/drag-drop';
   declarations: [
     ConfigurationComponent,
     CreatePayComponent,
-    CreateUserComponent, AddUserComponent, CreateCategoryComponent
+    CreateUserComponent,
+    AddUserComponent,
+    CreateCategoryComponent
   ],
   imports: [
     CommonModule,

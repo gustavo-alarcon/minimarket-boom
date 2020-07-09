@@ -7,7 +7,7 @@ import { DatabaseService } from './../../core/services/database.service';
 import { User } from './../../core/models/user.model';
 import { AngularFirestore } from '@angular/fire/firestore';
 import { FormBuilder, FormGroup, Validators, AbstractControl, FormControl } from '@angular/forms';
-import { tap, filter, startWith, map } from 'rxjs/operators';
+import { tap, filter, startWith, map, takeLast } from 'rxjs/operators';
 import { Observable, combineLatest, BehaviorSubject, of } from 'rxjs';
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { MatTableDataSource } from '@angular/material/table';
@@ -151,23 +151,6 @@ export class ConfigurationComponent implements OnInit {
       })
     )
 
-    this.repeat$ = combineLatest(
-      this.dbs.getDistricts(),
-      this.districtForm.get('name').valueChanges.pipe(
-        startWith(''))
-    )
-      .pipe(
-        map(([array, district]) => {
-          if (array) {
-            return district ? array.map(el => el['name'].toLowerCase()).includes(district.toLowerCase()) : false
-          } else {
-            return false
-          }
-
-        })
-      )
-
-
 
     //Payments
     this.payment$ = this.dbs.getPayments().pipe(
@@ -192,7 +175,7 @@ export class ConfigurationComponent implements OnInit {
 
     //Categories
     this.categories$ = this.dbs.getGeneralConfigDoc().pipe(
-      map(el => el['Categories']),
+      map(el => el['categories']),
       tap(res => {
         if (res) {
           this.categories = res
@@ -317,28 +300,31 @@ export class ConfigurationComponent implements OnInit {
   deletePay(data) {
     this.loadingPayment.next(true)
     const payRef = this.af.firestore.collection(`/db/distoProductos/config/`).doc('generalConfig');
-    return this.af.firestore.runTransaction((transaction) => {
-      return transaction.get(payRef).then((doc) => {
-        if (!doc.exists) {
-          transaction.set(payRef, { payments: [] });
-        }
+    this.dbs.deletePhotoProduct(data.photoPath).pipe(takeLast(1)).subscribe(() => {
+      return this.af.firestore.runTransaction((transaction) => {
+        return transaction.get(payRef).then((doc) => {
+          if (!doc.exists) {
+            transaction.set(payRef, { payments: [] });
+          }
 
-        const payments = doc.data().payments ? doc.data().payments : [];
+          const payments = doc.data().payments ? doc.data().payments : [];
 
-        let ind = payments.findIndex(el => el.name == data.name)
-        payments.splice(ind, 1)
-        transaction.update(payRef, { payments: payments });
+          let ind = payments.findIndex(el => el.name == data.name)
+          payments.splice(ind, 1)
+          transaction.update(payRef, { payments: payments });
 
+        });
+
+      }).then(() => {
+        this.loadingPayment.next(false)
+        this.snackBar.open("Elemento eliminado", "Cerrar", {
+          duration: 4000
+        })
+      }).catch(function (error) {
+        console.log("Transaction failed: ", error);
       });
+    })
 
-    }).then(() => {
-      this.loadingPayment.next(false)
-      this.snackBar.open("Elemento eliminado", "Cerrar", {
-        duration: 4000
-      })
-    }).catch(function (error) {
-      console.log("Transaction failed: ", error);
-    });
   }
 
   //Categories
@@ -356,28 +342,32 @@ export class ConfigurationComponent implements OnInit {
   deleteCategory(data) {
     this.loadingCategories.next(true)
     const categoryRef = this.af.firestore.collection(`/db/distoProductos/config/`).doc('generalConfig');
-    return this.af.firestore.runTransaction((transaction) => {
-      return transaction.get(categoryRef).then((doc) => {
-        if (!doc.exists) {
-          transaction.set(categoryRef, { Categories: [] });
-        }
 
-        const list = doc.data().Categories ? doc.data().Categories : [];
+    this.dbs.deletePhotoProduct(data.photoPath).pipe(takeLast(1)).subscribe(() => {
+      return this.af.firestore.runTransaction((transaction) => {
+        return transaction.get(categoryRef).then((doc) => {
+          if (!doc.exists) {
+            transaction.set(categoryRef, { categories: [] });
+          }
 
-        let ind = list.findIndex(el => el.name == data.name)
-        list.splice(ind, 1)
-        transaction.update(categoryRef, { Categories: list });
+          const list = doc.data().categories ? doc.data().categories : [];
 
+          let ind = list.findIndex(el => el.name == data.name)
+          list.splice(ind, 1)
+          transaction.update(categoryRef, { categories: list });
+
+        });
+
+      }).then(() => {
+        this.loadingCategories.next(false)
+        this.snackBar.open("Elemento eliminado", "Cerrar", {
+          duration: 4000
+        })
+      }).catch(function (error) {
+        console.log("Transaction failed: ", error);
       });
+    })
 
-    }).then(() => {
-      this.loadingCategories.next(false)
-      this.snackBar.open("Elemento eliminado", "Cerrar", {
-        duration: 4000
-      })
-    }).catch(function (error) {
-      console.log("Transaction failed: ", error);
-    });
   }
 
   drop(array, event: CdkDragDrop<string[]>) {
@@ -385,19 +375,24 @@ export class ConfigurationComponent implements OnInit {
   }
 
   savePosition(array) {
-    let batch = this.af.firestore.batch();
 
-    array.forEach((el, i) => {
-      const ref = this.af.firestore.collection(`/db/mandaditos/banners`).doc(el['id']);
-      batch.update(ref, {
-        position: i
-      })
+    let newArray = array.map((el, i) => {
+      el['index'] = i + 1
+      return el
+    })
+
+    let batch = this.af.firestore.batch();
+    this.loadingCategories.next(true)
+    const ref = this.af.firestore.collection(`/db/distoProductos/config/`).doc('generalConfig');
+    batch.update(ref, {
+      categories: newArray
     })
 
     batch.commit().then(() => {
       this.snackBar.open("Cambios Guardados", "Cerrar", {
         duration: 6000
       })
+      this.loadingCategories.next(false)
       console.log('done');
 
     })

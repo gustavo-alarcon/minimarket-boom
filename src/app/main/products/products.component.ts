@@ -1,3 +1,4 @@
+import { ActivatedRoute, Router } from '@angular/router';
 import { User } from 'src/app/core/models/user.model';
 import { AuthService } from 'src/app/core/services/auth.service';
 import { MatDialog } from '@angular/material/dialog';
@@ -18,7 +19,7 @@ export class ProductsComponent implements OnInit {
 
   products$: Observable<any>
   init$: Observable<User>
-  categoryList$: Observable<string[]>
+  categoryList$: Observable<any[]>
 
   name: string = ''
   maxWeight: number = 3
@@ -34,13 +35,26 @@ export class ProductsComponent implements OnInit {
   constructor(
     public dbs: DatabaseService,
     private dialog: MatDialog,
-    public auth: AuthService
+    public auth: AuthService,
+    private router: Router,
+    private route: ActivatedRoute
   ) { }
 
   ngOnInit(): void {
-    this.categoryList$ = this.dbs.getProductsListCategoriesValueChanges()
+    this.categoryList$ = combineLatest(
+      this.route.fragment, this.dbs.getProductsListCategoriesValueChanges()).pipe(
+        map(([route, categories]) => {
+          return categories.map(el => {
+            return {
+              name: el.name,
+              select: el.name == route
+            }
+          })
+        })
+      )
 
     this.products$ = combineLatest(
+      this.route.fragment,
       this.dbs.getProductsListValueChanges(),
       this.dbs.getPackagesListValueChanges(),
       this.searchForm.valueChanges.pipe(
@@ -49,8 +63,8 @@ export class ProductsComponent implements OnInit {
         map(value => value.toLowerCase())
       )
     ).pipe(
-      map(([products, packages, search]) => {
-        let publish = products.filter(el => el.published)
+      map(([route, products, packages, search]) => {
+        let publish = products.filter(el => route ? el.category == route : true).filter(el => el.published)
         let any = [].concat(packages, publish)
         if (this.dbs.order.length == 0 && localStorage.getItem('order')) {
           let number = Number(localStorage.getItem('length'))
@@ -148,5 +162,9 @@ export class ProductsComponent implements OnInit {
     localStorage.clear()
   }
 
+
+  navigate(name) {
+    this.router.navigate(['/main/products'], { fragment: name });
+  }
 
 }

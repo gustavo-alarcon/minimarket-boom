@@ -13,6 +13,15 @@
     left: 15px;
 }
 
+.category{
+    margin-right: 8px;
+}
+
+.category.green{
+    color: white;
+    background: #5da92f;
+}
+
 .shopping-button {
     background: #fdd651;
     border-radius: 50%;
@@ -43,12 +52,11 @@
 }
 
 .search-form {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: baseline;
+    width: 80%;
 }
 
 .search-form .search-input {
+    width: 350px;
     margin-right: 16px;
 }
 
