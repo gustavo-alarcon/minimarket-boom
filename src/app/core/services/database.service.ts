@@ -615,8 +615,15 @@ export class DatabaseService {
     let requestedProductRef: DocumentReference;
 
     requestedProducts.forEach(product => {
-      requestedProductRef = this.afs.firestore.collection(this.productsListRef).doc(product.product.id)
-      batch.update(requestedProductRef, {realStock: firebase.firestore.FieldValue.increment(dec*product.quantity)});
+      if(!product.product.package){
+        requestedProductRef = this.afs.firestore.collection(this.productsListRef).doc(product.product.id)
+        batch.update(requestedProductRef, {realStock: firebase.firestore.FieldValue.increment(dec*product.quantity)});
+      } else {
+        product.chosenOptions.forEach(opt => {
+          requestedProductRef = this.afs.firestore.collection(this.productsListRef).doc(opt.id)
+          batch.update(requestedProductRef, {realStock: firebase.firestore.FieldValue.increment(dec*product.quantity)});
+        })
+      }
     })
 
     return batch;

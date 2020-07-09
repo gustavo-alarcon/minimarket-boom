@@ -12,6 +12,7 @@ import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { ConfirmationDialogComponent } from '../../confirmation-dialog/confirmation-dialog.component';
 import { SalesPhotoDialogComponent } from '../sales-photo-dialog/sales-photo-dialog.component';
 import { GeneralConfig } from 'src/app/core/models/generalConfig.model';
+import { Package } from 'src/app/core/models/package.model';
 
 @Component({
   selector: 'app-sales-detail',
@@ -31,7 +32,7 @@ export class SalesDetailComponent implements OnInit {
 
   searchProductControl: FormControl;
 
-  products$: Observable<Product[]>
+  products$: Observable<(Product | Package)[]>
   weight$: Observable<any>;
 
   @Input() sale: Sale
@@ -65,13 +66,20 @@ export class SalesDetailComponent implements OnInit {
 
     this.voucherCheckedForm = new FormControl(!!this.sale.voucherChecked, Validators.requiredTrue);
 
-
     this.sale.requestedProducts.forEach((product, index) => {
       (<FormArray>this.productForm.get('productList')).insert(index, 
-        this.fb.group({
-          product: [product.product, Validators.required],
-          quantity: [product.quantity, Validators.required],
-        })
+        product.product.package ? 
+          this.fb.group({
+            product: [product.product, Validators.required],
+            quantity: [product.quantity, Validators.required],
+            chosenOptions: this.fb.array(
+              product.chosenOptions.map(opt => new FormControl(opt))
+            )
+          }) :
+          this.fb.group({
+            product: [product.product, Validators.required],
+            quantity: [product.quantity, Validators.required],
+          })
         )
     })
 
@@ -120,7 +128,10 @@ export class SalesDetailComponent implements OnInit {
     //Search Product
     this.products$ = combineLatest(
       this.searchProductControl.valueChanges.pipe(startWith("")),
-      this.dbs.getProductsListValueChanges(),
+      combineLatest(this.dbs.getProductsListValueChanges(), this.dbs.getPackagesListValueChanges()
+        ).pipe(map(([prod, pack])=> [...prod, ...pack].sort((a,b) => 
+          a.description > b.description ? 1 : a.description < b.description ? -1 : 0))
+        ),
       this.dbs.getGeneralConfigDoc()).pipe(
         map(([formValue, productsList, generalConfig])=> {
 
@@ -134,29 +145,47 @@ export class SalesDetailComponent implements OnInit {
           if(typeof formValue === 'string'){
             return products.filter(el => el.description.match(new RegExp(formValue, 'ig')))
           } else {
+
             let product: SaleRequestedProducts = {
-              product: (<Product>formValue),
-              quantity: 1
+              product: (<Product | Package>formValue),
+              quantity: 1,
+              chosenOptions: !(<Product | Package>formValue).package ? null : 
+                new Array((<Package>formValue).totalItems)
             };
 
             if(this.getTotalWeight()+ this.giveProductWeight(product) > generalConfig.maxWeight){
               this.snackBar.open("Lo sentimos, exceso de peso.", "Aceptar")
               this.searchProductControl.setValue("")
-              return products
+              return productsList
             } else {
-              (<FormArray>this.productForm.get('productList')).insert(0, this.fb.group({
-                product: [product.product, Validators.required],
-                quantity: [product.quantity, Validators.required],
-              }))
+
+              (<FormArray>this.productForm.get('productList')).insert(0, 
+                product.product.package ? 
+                  this.fb.group({
+                    product: [product.product, Validators.required],
+                    quantity: [product.quantity, Validators.required],
+                    chosenOptions: this.fb.array(
+                      product.product.items.map(item => 
+                        item.productsOptions.length != 1 ? new FormControl()
+                          : new FormControl(item.productsOptions[0])
+                        )
+                    )
+                  }) :
+                  this.fb.group({
+                    product: [product.product, Validators.required],
+                    quantity: [product.quantity, Validators.required],
+                  })
+                )
+
               this.searchProductControl.setValue("")
               return productsList.filter(el => !this.productForm.get('productList').value.find(
               (product: SaleRequestedProducts) => product.product.id == el.id
             ))
             }
-            return []
           }
         })
       )
+
     
     this.weight$ = combineLatest(
       (<Observable<[SaleRequestedProducts[], SaleRequestedProducts[]]>>(<FormArray>this.productForm.get('productList')).valueChanges
@@ -164,7 +193,7 @@ export class SalesDetailComponent implements OnInit {
       this.dbs.getGeneralConfigDoc()
     ).pipe(
       filter(([[prev, curr], config])=> this.getTotalWeight() > config.maxWeight ? true : false),
-      tap(([[prev, curr], config])=> {
+      map(([[prev, curr], config])=> {
 
         let changedItemIndex = curr.findIndex(currEl => { 
           if(prev.find(prevEl => prevEl.product.id == currEl.product.id)){
@@ -174,13 +203,31 @@ export class SalesDetailComponent implements OnInit {
             return false
           }
          });
-
-        //console.log(changedItemIndex);
+         
+        console.log('again?');
 
         let foundPreviousItem = prev.find((prevEl) => curr[changedItemIndex].product.id == prevEl.product.id);
-        this.snackBar.open("No puede aumentar la cantidad. Exceso de peso.", "Aceptar");
-         (<FormArray>this.productForm.get('productList'))
-          .controls[changedItemIndex].get('quantity').setValue(foundPreviousItem.quantity)
+
+        if(!foundPreviousItem.product.package){
+          this.snackBar.open("No puede aumentar la cantidad. Exceso de peso.", "Aceptar");
+          (<FormArray>this.productForm.get('productList'))
+          .controls[changedItemIndex].get('quantity').setValue(foundPreviousItem.quantity);
+        } else {
+          console.log(foundPreviousItem.chosenOptions)
+          console.log(curr[changedItemIndex].chosenOptions);
+          if(curr[changedItemIndex].chosenOptions == foundPreviousItem.chosenOptions){
+            this.snackBar.open("No puede aumentar la cantidad. Exceso de peso.", "Aceptar");
+            (<FormArray>this.productForm.get('productList'))
+              .controls[changedItemIndex].get('quantity').setValue(foundPreviousItem.quantity);
+          }
+          else {
+            this.snackBar.open("No puede seleccionar producto. Exceso de peso.", "Aceptar");
+            (<FormArray>(<FormArray>this.productForm.get('productList'))
+              .controls[changedItemIndex].get('chosenOptions')).setValue(foundPreviousItem.chosenOptions);
+          }
+          
+        }
+         
       })
     )
   }
@@ -620,10 +667,18 @@ export class SalesDetailComponent implements OnInit {
     (<FormArray>this.productForm.get('productList')).controls.forEach(formGroup => {
       //If product quantity is 0, we don't need to save it again
       if(formGroup.get('quantity').value){
-        requestedProducts.push({
-          quantity: formGroup.get('quantity').value,
-          product: formGroup.get('product').value
-        });
+        if(!(<Product | Package>formGroup.get('product').value).package){
+          requestedProducts.push({
+            quantity: formGroup.get('quantity').value,
+            product: formGroup.get('product').value
+          });
+        } else {
+          requestedProducts.push({
+            quantity: formGroup.get('quantity').value,
+            product: formGroup.get('product').value,
+            chosenOptions: formGroup.get('chosenOptions').value
+          });
+        }
       }
     });
     return requestedProducts
@@ -643,7 +698,23 @@ export class SalesDetailComponent implements OnInit {
   }
 
   giveProductWeight(item: SaleRequestedProducts): number {
-    return item.product.unit.weight*item.quantity;
+    if(!item.product.package){
+      return (<Product>item.product).unit.weight*item.quantity;
+    } else {
+      return item.chosenOptions.map((opt, index) => {
+        //if it has a valid chosen product, we use the weight
+        if(opt){
+          return opt.unit.weight;
+        } 
+        //If it doesn't have a chosen product, we calculate the minimum
+        //of the respective options.
+        else {
+          return Math.min(
+            ...(<Package>item.product).items[index].productsOptions.map(prod => prod.unit.weight)
+            )
+        }
+      }).reduce((a,b)=> a + b, 0)*item.quantity
+    }
   }
 
   getTotalPrice(): number{

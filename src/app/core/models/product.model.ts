@@ -2,6 +2,7 @@ import { User } from './user.model';
 import { Unit } from './unit.model';
 
 export interface Product {
+  package?: false;
   id: string;
   description: string;
   additionalDescription: string;

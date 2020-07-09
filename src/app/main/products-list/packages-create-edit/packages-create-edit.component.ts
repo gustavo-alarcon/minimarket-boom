@@ -303,7 +303,7 @@ export class PackagesCreateEditComponent implements OnInit {
       photoPath: this.data.edit ? this.data.data.photoPath : null,
       promo: this.data.edit ? this.data.data.promo : false,
       promoData: this.data.edit ? this.data.data.promoData : null,
-      published: /*this.data.edit ? this.data.data.published : null*/ true,
+      published: this.data.edit ? this.data.data.published : null,
       createdAt: this.data.edit ? this.data.data.createdAt : new Date(),
       createdBy: this.data.edit ? this.data.data.createdBy : user,
       editedAt: this.data.edit ? new Date() : null,

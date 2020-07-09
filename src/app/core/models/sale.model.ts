@@ -1,5 +1,6 @@
 import { User } from 'src/app/core/models/user.model';
 import { Product } from './product.model';
+import { Package } from './package.model';
 export class saleStatusOptions {
   requested = 'Solicitado';
   attended = 'Atendido';
@@ -16,8 +17,12 @@ type FilterFlags<Base, Condition, Data> =
   ;
 
 export interface SaleRequestedProducts {
-  product: Product;
-  quantity: number;
+  product: Product | Package;
+  quantity: number;               
+  //If "product" is a package, we will have to specify the chosen products
+  //for each field in package.items. chosenOptions will contain the
+  //chosen products in the same order as each field in package.items.
+  chosenOptions?: Product[];
 }
 
 export interface Sale {
@@ -49,7 +54,8 @@ export interface Sale {
   //a formulario de ventas.
   status: saleStatusOptions[keyof saleStatusOptions]
 
-  requestedProducts: SaleRequestedProducts[];
+  requestedProducts: SaleRequestedProducts[];     
+  
 
   deliveryPrice: number;
   total: number;
