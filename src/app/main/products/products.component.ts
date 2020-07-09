@@ -44,18 +44,19 @@ export class ProductsComponent implements OnInit {
     this.categoryList$ = combineLatest(
       this.route.fragment, this.dbs.getProductsListCategoriesValueChanges()).pipe(
         map(([route, categories]) => {
-          return categories.map(el => {
+          let array = categories.map(el => {
             return {
               name: el.name,
               select: el.name == route
             }
           })
+          return [...array, { name: 'paquetes', select: false }]
         })
       )
 
     this.products$ = combineLatest(
       this.route.fragment,
-      this.dbs.getProductsListValueChanges(),
+      this.dbs.getProductsList(),
       this.dbs.getPackagesListValueChanges(),
       this.searchForm.valueChanges.pipe(
         filter(input => input !== null),
@@ -65,7 +66,18 @@ export class ProductsComponent implements OnInit {
     ).pipe(
       map(([route, products, packages, search]) => {
         let publish = products.filter(el => route ? el.category == route : true).filter(el => el.published)
-        let any = [].concat(packages, publish)
+        let packPublish = packages.filter(el => el.published).map(el=>{
+          el['items'] = el.items.map(el=>{
+            return {
+              ...el,
+              choose: el.productsOptions[0]
+            }
+          })
+
+          return el
+        })
+        let any = route == 'paquetes' ? [].concat(packPublish, publish) : publish
+        //[].concat(packages, publish)
         if (this.dbs.order.length == 0 && localStorage.getItem('order')) {
           let number = Number(localStorage.getItem('length'))
           for (let index = 0; index < number; index++) {
@@ -78,6 +90,8 @@ export class ProductsComponent implements OnInit {
 
           this.dbs.total = this.dbs.order.map(el => this.giveProductPrice(el)).reduce((a, b) => a + b, 0)
         }
+
+
         return any.filter(el => search ? el.description.toLowerCase().includes(search) : true)
       })
     )

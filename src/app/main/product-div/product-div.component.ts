@@ -28,28 +28,49 @@ export class ProductDivComponent implements OnInit {
   }
 
   add(item) {
-    let index = this.dbs.order.findIndex(el => el['product']['id'] == item['id'])
-
-    if (index == -1) {
-      let newproduct = {
+    if (this.package) {
+      let newpackage = {
         product: item,
-        quantity: 1
+        quantity: 1,
+        chosenOptions: item['items'].map(el => el['choose'])
       }
-      this.dbs.order.push(newproduct)
+
+      this.dbs.order.push(newpackage)
     } else {
-      this.dbs.order[index]['quantity']++
+      let index = this.dbs.order.findIndex(el => el['product']['id'] == item['id'])
+
+      if (index == -1) {
+        let newproduct = {
+          product: item,
+          quantity: 1
+        }
+        this.dbs.order.push(newproduct)
+      } else {
+        this.dbs.order[index]['quantity']++
+      }
     }
+    console.log(this.dbs.order);
+
 
     this.dbs.total = this.dbs.order.map(el => this.giveProductPrice(el)).reduce((a, b) => a + b, 0)
-
-    let stop = this.maxWeight
-    let quantity = this.dbs.order.map(el => el.quantity * el.product.unit.weight).reduce((a, b) => a + b, 0)
-
-    if (quantity >= stop) {
-      this.snackBar.open('Ha llegado al límite máximo de peso por pedido', 'Cerrar', {
-        duration: 3000
-      })
-    }
+    /*
+        let stop = this.maxWeight
+        let realQuantity = this.dbs.order.map(el => {
+          if(el.product['package']){
+            el['chosenOptions'].map(item=>{
+              item.unit.weight
+            })
+          }else{
+           return el.quantity * el.product.unit.weight
+          }
+        })
+        let quantity = realQuantity.reduce((a, b) => a + b, 0)
+    
+        if (quantity >= stop) {
+          this.snackBar.open('Ha llegado al límite máximo de peso por pedido', 'Cerrar', {
+            duration: 3000
+          })
+        }*/
   }
 
   stopBuy(item: Product) {
