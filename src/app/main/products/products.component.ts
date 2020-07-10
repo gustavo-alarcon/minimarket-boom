@@ -44,7 +44,7 @@ export class ProductsComponent implements OnInit {
     this.categoryList$ = combineLatest(
       this.route.fragment, this.dbs.getProductsListCategoriesValueChanges()).pipe(
         map(([route, categories]) => {
-          let array = [...categories, { name: 'paquetes' }].map(el => {
+          let array = [...categories].map(el => {
             return {
               name: el.name,
               select: el.name == route
@@ -75,12 +75,11 @@ export class ProductsComponent implements OnInit {
           })
 
           return el
-        })
-        let any = route == 'paquetes' ? [].concat(packPublish, publish) : publish
+        }).filter(el => route ? el.category == route : true)
+
+        let any = [].concat(packPublish, publish)
 
         if (this.dbs.order.length == 0 && localStorage.getItem('order')) {
-          console.log('here');
-          console.log();
           
           let number = Number(localStorage.getItem('length'))
           for (let index = 0; index < number; index++) {
@@ -97,8 +96,6 @@ export class ProductsComponent implements OnInit {
                 quantity: Number(localStorage.getItem('order' + index + 'q'))
               }
             }
-
-
           }
 
           this.dbs.total = this.dbs.order.map(el => this.giveProductPrice(el)).reduce((a, b) => a + b, 0)
@@ -124,12 +121,13 @@ export class ProductsComponent implements OnInit {
       }),
       tap(res => {
         if (res) {
-          if (res['salesCount']) {
+          if (res['contact']) {
             this.firstSale = false
             this.name = res.name.split(' ')[0]
             this.dbs.delivery = res.contact.district.delivery
           } else {
             this.firstSale = true
+            this.dbs.delivery = 4
           }
         }
       })

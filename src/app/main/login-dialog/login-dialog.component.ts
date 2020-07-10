@@ -119,7 +119,7 @@ export class LoginDialogComponent implements OnInit {
           // Email sent.
 
           this.snackbar.open(
-            'Se envió un correo para restaurar su contraseña',
+            'Se envió un correo para restaurar su contraseña, sino aparece revise correo no deseado',
             'Cerrar',
             { duration: 6000, }
           );

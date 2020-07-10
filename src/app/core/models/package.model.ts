@@ -9,7 +9,8 @@ export interface Package {
   additionalDescription: string;
   sku: string;
   price: number;      //Should this price be with IGV?
-  unit: PackageUnit;       
+  unit: PackageUnit;  
+  category:string;     
   photoURL: string;
   photoPath: string;
 
