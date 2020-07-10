@@ -38,3 +38,29 @@
         height: 120px;
     }
 }
+
+.fly-button {
+    position: fixed;
+    bottom: 15px;
+    left: 15px;
+}
+
+.shopping-button {
+    background: #fdd651;
+    border-radius: 50%;
+    text-align: center;
+    padding: 16px 20px;
+    cursor: pointer;
+    box-shadow: 0px 3px 5px -1px rgba(0, 0, 0, 0.2), 0px 6px 10px 0px rgba(0, 0, 0, 0.14),
+        0px 1px 18px 0px rgba(0, 0, 0, 0.12);
+
+    &__icon {
+        font-size: 2em;
+    }
+
+    &__total {
+        margin-top: -3px;
+        font-size: 0.9em;
+        font-weight: bold;
+    }
+}
