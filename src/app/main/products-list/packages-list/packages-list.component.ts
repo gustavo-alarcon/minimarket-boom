@@ -35,8 +35,8 @@ export class PackagesListComponent implements OnInit {
   //Table
   packagesTableDataSource = new MatTableDataSource<Package>();
   packagesDisplayedColumns: string[] = [
-    'index', 'photoURL', 'description', 'sku', 'dateLimit',
-    'price', 'unitDescription', 'unitAbbreviation', 
+    'index', 'photoURL', 'description', 'sku', 'category', 'dateLimit',
+    'price', 'unitDescription', 'unitAbbreviation',
     'published', 'items', 'actions'
   ]
 
@@ -105,7 +105,7 @@ export class PackagesListComponent implements OnInit {
   }
 
   onPublish(pack: Package, publish: boolean) {
-    let prod = {...pack};
+    let prod = { ...pack };
     prod.published = publish;
     this.dbs.publishPackage(true, prod, null).commit().then(
       res => {
@@ -124,31 +124,31 @@ export class PackagesListComponent implements OnInit {
       closeOnNavigation: true,
       disableClose: true,
       width: '360px',
-      maxWidth: '360px',      
+      maxWidth: '360px',
       data: {
-      warning: `El paquete será borrado.`,
-      content: `¿Está seguro de borrar el paquete ${pack.description}?`,
-      noObservation: true,
-      observation: null,
-      title: 'Borrar',
-      titleIcon: 'done_all'
+        warning: `El paquete será borrado.`,
+        content: `¿Está seguro de borrar el paquete ${pack.description}?`,
+        noObservation: true,
+        observation: null,
+        title: 'Borrar',
+        titleIcon: 'done_all'
       }
     })
 
     dialogRef.afterClosed().pipe(
       take(1),
-      switchMap((answer: {action: string, lastObservation: string}) => 
+      switchMap((answer: { action: string, lastObservation: string }) =>
         iif(
-          () => {return answer.action =="confirm"},
+          () => { return answer.action == "confirm" },
           this.dbs.deletePackage(pack),
           of(answer)
-          )
+        )
       ))
-      .subscribe((answer: {action: string, lastObservation: string} | firebase.firestore.WriteBatch) => {
-        if((<Object>answer).hasOwnProperty("action")){
+      .subscribe((answer: { action: string, lastObservation: string } | firebase.firestore.WriteBatch) => {
+        if ((<Object>answer).hasOwnProperty("action")) {
           //We don't do anything, as the action was cancelled,
         }
-        else{
+        else {
           (<firebase.firestore.WriteBatch>answer).commit().then(
             res => {
               this.snackBar.open('Paquete eliminado satisfactoriamente.', 'Aceptar');
@@ -159,9 +159,9 @@ export class PackagesListComponent implements OnInit {
           )
         }
       },
-      err => {
-        this.snackBar.open('Ocurrió un error. Vuelva a intentarlo.', 'Aceptar');
-      })
+        err => {
+          this.snackBar.open('Ocurrió un error. Vuelva a intentarlo.', 'Aceptar');
+        })
 
   }
 
@@ -170,7 +170,7 @@ export class PackagesListComponent implements OnInit {
     dialogRef = this.dialog.open(ProductEditPromoComponent, {
       width: '350px',
       data: {
-        data: {...pack},
+        data: { ...pack },
         pack: true
       }
     });
@@ -194,7 +194,7 @@ export class PackagesListComponent implements OnInit {
       dialogRef = this.dialog.open(PackagesCreateEditComponent, {
         width: '350px',
         data: {
-          data: {...pack},
+          data: { ...pack },
           edit: edit
         }
       });
@@ -237,8 +237,8 @@ export class PackagesListComponent implements OnInit {
   downloadXls(): void {
     let table_xlsx: any[] = [];
     let headersXlsx = [
-      'Descripcion', 'SKU', 'Fecha Límite', 'Precio', 
-      'Descripción de Unidad', 'Abreviación', 
+      'Descripcion', 'SKU', 'Fecha Límite', 'Precio',
+      'Descripción de Unidad', 'Abreviación',
       'Publicado', 'Items'
     ]
 
@@ -246,14 +246,14 @@ export class PackagesListComponent implements OnInit {
 
     this.packagesTableDataSource.filteredData.forEach(pack => {
       const temp = [
-        pack.description, 
-        pack.sku, 
+        pack.description,
+        pack.sku,
         pack.dateLimit ? this.getXlsDate(pack.dateLimit) : "Indefinida",
-        "S/." +pack.price.toFixed(2),
+        "S/." + pack.price.toFixed(2),
         pack.unit.description,
         pack.unit.abbreviation,
-        pack.published ? "Sí":"No",
-        "-"+pack.items.map(el => el.productsOptions.map(opt => opt.description).join("; ")).join(" -")
+        pack.published ? "Sí" : "No",
+        "-" + pack.items.map(el => el.productsOptions.map(opt => opt.description).join("; ")).join(" -")
       ];
 
       table_xlsx.push(temp);
@@ -271,7 +271,7 @@ export class PackagesListComponent implements OnInit {
     XLSX.writeFile(wb, name);
   }
 
-  getXlsDate(date){
+  getXlsDate(date) {
     let dateObj = new Date(1970);
     dateObj.setSeconds(date['seconds'])
     return this.datePipe.transform(dateObj, 'dd/MM/yyyy');

@@ -34,6 +34,7 @@ export class PackagesCreateEditComponent implements OnInit {
   descriptionFormatting$: Observable<string>
   skuFormatting$: Observable<string>
   units$: Observable<PackageUnit[]>
+  category$: Observable<string[]>
   dateType$: Observable<boolean>
   totalItems$: Observable<number>
   productsList$: Observable<Product[]>
@@ -102,6 +103,7 @@ export class PackagesCreateEditComponent implements OnInit {
         }),
         unit: [this.data.data.unit, Validators.required],
         price: [this.data.data.price, [Validators.required, Validators.min(0)]],
+        category: [this.data.data.category, Validators.required],
         dateType: [this.data.data.dateLimit ? this.dateType[0] : this.dateType[1], Validators.required],
         dateLimit: [
           {
@@ -128,6 +130,7 @@ export class PackagesCreateEditComponent implements OnInit {
         }),
         unit: [null, Validators.required],
         price: [0, [Validators.required, Validators.min(0)]],
+        category: [null, Validators.required],
         dateType: [null, Validators.required],
         dateLimit: [
           {
@@ -177,6 +180,19 @@ export class PackagesCreateEditComponent implements OnInit {
         this.packageForm.get('unit').setValue(selectedUnit)
       }
     }));
+
+    this.category$ = combineLatest(
+      this.packageForm.get('category').valueChanges.pipe(startWith('')),
+      this.dbs.getProductsListCategoriesValueChanges().pipe(
+        map(res => res.map(el => el['name']))
+      )
+    ).pipe(map(([formValue, categories]) => {
+      let filter = categories.filter(el => el.match(new RegExp(formValue, 'ig')));
+      if (!(filter.length == 1 && filter[0] === formValue) && formValue.length) {
+        this.packageForm.get('category').setErrors({ invalid: true });
+      }
+      return filter;
+    }))
 
     this.dateType$ = this.packageForm.get('dateType').valueChanges.pipe(
       startWith(this.packageForm.get('dateType').value),
@@ -295,6 +311,7 @@ export class PackagesCreateEditComponent implements OnInit {
       sku: this.packageForm.get('sku').value,
       price: this.packageForm.get('price').value,
       unit: this.packageForm.get('unit').value,
+      category: this.packageForm.get('category').value,
       dateLimit: this.packageForm.get('dateType').value == this.dateType[0] ? 
         this.packageForm.get('dateLimit').value : null,
       totalItems: this.packageForm.get('totalItems').value,
