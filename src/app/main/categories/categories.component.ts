@@ -20,7 +20,7 @@ export class CategoriesComponent implements OnInit {
 
   constructor(
     private router: Router,
-    private dbs: DatabaseService
+    public dbs: DatabaseService
   ) { }
 
   ngOnInit(): void {
@@ -37,5 +37,11 @@ export class CategoriesComponent implements OnInit {
 
   navigate(name) {
     this.router.navigate(['/main/products'], { fragment: name });
+  }
+
+  shoppingCart() {
+    this.router.navigate(['/main/products']);
+    this.dbs.view.next(2)
+  
   }
 }

@@ -70,6 +70,7 @@ export class ShoppingCartComponent implements OnInit {
     if (this.order.length == 0) {
       this.dbs.view.next(1)
       this.dbs.total = this.total
+      localStorage.clear()
     }
 
 

@@ -54,7 +54,10 @@
             </div>
             <div *ngIf="(dbs.view$|async)==2" style="max-width: 400px;">
                 <div class="ms-flex ms-flex--center">
-                    <button mat-icon-button style="margin-left: -10px; margin-top: -10px;" (click)="back()">
+                    <button mat-icon-button class="w3-hide-small"  style="margin-left: -10px; margin-top: -10px;" (click)="back(false)">
+                        <mat-icon>keyboard_backspace</mat-icon>
+                    </button>
+                    <button mat-icon-button class="w3-hide-large w3-hide-medium" style="margin-left: -10px; margin-top: -10px;" (click)="back(true)">
                         <mat-icon>keyboard_backspace</mat-icon>
                     </button>
                     <h2 class="title2 w3-margin-left">Lista de compras 🛒</h2>
