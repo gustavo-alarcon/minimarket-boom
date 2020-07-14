@@ -389,12 +389,12 @@
                                     <img [defaultImage]="defaultImage" [lazyLoad]="image.photoURL" [offset]="100"
                                         class="banner__image">
                                     <div class="row-category" style="align-items: center; padding-left: 10px;">
-                                        <span><strong>{{image.name}}</strong></span>
+                                        <span style="font-size: 0.8em;"><strong>{{image.name}}</strong></span>
                                         <span class="ms-fill"></span>
                                         <button mat-icon-button color="primary" (click)="createCategory(image, true)">
                                             <mat-icon>edit</mat-icon>
                                         </button>
-                                        <button mat-icon-button color="primary" style="margin-left: 10px;"
+                                        <button mat-icon-button color="primary" style="margin-left: 5px;"
                                             (click)="deleteCategory(image)">
                                             <mat-icon>delete</mat-icon>
                                         </button>
@@ -422,8 +422,9 @@
                                     </div>
                                 </div>
                                 <div class="w3-margin-top ms-flex" style="justify-content: space-between;">
-                                    <div *ngFor="let image of images" class="banner__frame"
-                                        [ngStyle]="{'background-image': 'url(' + image['photoURL'] + ')'}">
+                                    <div *ngFor="let image of images" class="banner__frame">
+                                        <img [defaultImage]="defaultImage" [lazyLoad]="image['photoURL']" [offset]="100"
+                                            class="category-img">
                                     </div>
                                 </div>
                             </div>

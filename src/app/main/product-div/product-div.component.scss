@@ -49,6 +49,9 @@
         font-size: 1em;
         font-weight: bold;
         word-break: break-word;
+        &--prod{
+            width: 70%;
+        }
     }
 
     &__provision {

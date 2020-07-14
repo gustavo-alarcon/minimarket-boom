@@ -5,7 +5,7 @@
         </div>
         <div class="product__descrip">
             <div class="ms-flex product__container">
-                <div class="product__title">{{product.description | titlecase}}</div>
+                <div [ngClass]="package?'product__title':'product__title product__title--prod'">{{product.description | titlecase}}</div>
                 <button *ngIf="!package" mat-icon-button style="border: 1px dashed #565656; font-size: 1.3em;"
                     (click)="navigate(product.id)">
                     🍴

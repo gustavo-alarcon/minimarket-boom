@@ -1,6 +1,6 @@
 {
   "hosting": {
-    "site":"other-disto",
+    "site":"disto-productos",
     "public": "dist/disto-productos",
     "ignore": [
       "firebase.json",
