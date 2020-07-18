@@ -50,7 +50,7 @@ export class AddUserComponent implements OnInit {
         map(value => typeof value === 'string' ? value.toLowerCase() : value.email.toLowerCase()))
     ).pipe(
       map(([users, name]) => {
-        let noAdmins = users.filter(el => !el['admin'])
+        let noAdmins = users.filter(el => !el['role'])
         return name ? noAdmins.filter(option => option['email'].toLowerCase().includes(name)) : noAdmins;
       })
     );
@@ -73,8 +73,8 @@ export class AddUserComponent implements OnInit {
 
   save() {
     this.userForm.markAsPending();
-    this.userForm.disable()
-    this.loading.next(true)
+    this.userForm.disable();
+    this.loading.next(true);
     const ref: DocumentReference = this.afs.firestore.collection(`users`).doc(this.selectedUser.uid);
     const batch = this.afs.firestore.batch();
 

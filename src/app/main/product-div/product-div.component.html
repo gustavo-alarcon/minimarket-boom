@@ -71,7 +71,7 @@
                 OFERTA: {{product.promoData.quantity}} x S/.
                 {{product.promoData.promoPrice | number: '.2'}}
             </div>
-            <div *ngIf="product.promo && product.promoData.quantity == 1" style="color: #eb5757;font-size: 0.7em;">
+            <div *ngIf="product.promo && product.promoData.quantity == 1"  class="product__priceBefore" style="">
                 Antes S/. {{product.price | number: '.2'}}
             </div>
         </div>

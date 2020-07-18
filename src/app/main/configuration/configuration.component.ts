@@ -91,6 +91,22 @@ export class ConfigurationComponent implements OnInit {
   p2: number = 1;
   p3: number = 1;
 
+  openingFormGroup: FormGroup;
+  opening$: Observable<{ opening: string, closing: string }[]>
+
+  loadingOpening = new BehaviorSubject<boolean>(true);
+  loadingOpening$ = this.loadingOpening.asObservable();
+
+  days: Array<string> = [
+    'monday',
+    'tuesday',
+    'wednesday',
+    'thursday',
+    'friday',
+    'saturday',
+    'sunday'
+  ]
+
   constructor(
     private fb: FormBuilder,
     private af: AngularFirestore,
@@ -105,6 +121,23 @@ export class ConfigurationComponent implements OnInit {
     this.searchForm = this.fb.group({
       name: null,
       permits: null
+    })
+
+    this.openingFormGroup = this.fb.group({
+      monday_opening: ['00:00', Validators.required],
+      monday_closing: ['00:00', Validators.required],
+      tuesday_opening: ['00:00', Validators.required],
+      tuesday_closing: ['00:00', Validators.required],
+      wednesday_opening: ['00:00', Validators.required],
+      wednesday_closing: ['00:00', Validators.required],
+      thursday_opening: ['00:00', Validators.required],
+      thursday_closing: ['00:00', Validators.required],
+      friday_opening: ['00:00', Validators.required],
+      friday_closing: ['00:00', Validators.required],
+      saturday_opening: ['00:00', Validators.required],
+      saturday_closing: ['00:00', Validators.required],
+      sunday_opening: ['00:00', Validators.required],
+      sunday_closing: ['00:00', Validators.required]
     })
 
     this.admins$ = combineLatest(
@@ -182,6 +215,17 @@ export class ConfigurationComponent implements OnInit {
           this.indCategory = res.length + 1
         }
         this.loadingCategories.next(false)
+      })
+    )
+
+    this.opening$ = this.dbs.getGeneralConfigDoc().pipe(
+      map(el => el['opening']),
+      tap(res => {
+        res.forEach((element, index) => {
+          this.openingFormGroup.get(`${this.days[index]}_opening`).setValue(element['opening']);
+          this.openingFormGroup.get(`${this.days[index]}_closing`).setValue(element['closing']);
+        });
+        this.loadingOpening.next(false)
       })
     )
   }
@@ -396,6 +440,58 @@ export class ConfigurationComponent implements OnInit {
       console.log('done');
 
     })
+  }
+
+  saveOpening(): void {
+
+    let openingArray =
+      [
+        {
+          opening: this.openingFormGroup.value['monday_opening'],
+          closing: this.openingFormGroup.value['monday_closing']
+        },
+        {
+          opening: this.openingFormGroup.value['tuesday_opening'],
+          closing: this.openingFormGroup.value['tuesday_closing']
+        },
+        {
+          opening: this.openingFormGroup.value['wednesday_opening'],
+          closing: this.openingFormGroup.value['wednesday_closing']
+        },
+        {
+          opening: this.openingFormGroup.value['thursday_opening'],
+          closing: this.openingFormGroup.value['thursday_closing']
+        },
+        {
+          opening: this.openingFormGroup.value['friday_opening'],
+          closing: this.openingFormGroup.value['friday_closing']
+        },
+        {
+          opening: this.openingFormGroup.value['saturday_opening'],
+          closing: this.openingFormGroup.value['saturday_closing']
+        },
+        {
+          opening: this.openingFormGroup.value['sunday_opening'],
+          closing: this.openingFormGroup.value['sunday_closing']
+        }
+      ];
+    let batch = this.af.firestore.batch();
+
+    this.loadingOpening.next(true);
+    const ref = this.af.firestore.collection(`/db/distoProductos/config/`).doc('generalConfig');
+
+    batch.update(ref, {
+      opening: openingArray
+    })
+
+    batch.commit().then(() => {
+      this.snackBar.open("Cambios Guardados", "Cerrar", {
+        duration: 6000
+      })
+      this.loadingCategories.next(false);
+      // console.log('done');
+    })
+
   }
 
 }

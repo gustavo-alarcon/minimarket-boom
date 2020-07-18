@@ -40,6 +40,30 @@
     }
 }
 
+.opening {
+    display: flex;
+    align-items: baseline;
+    max-width: 350px;
+
+    &__day {
+        font-size: 1em;
+        font-weight: bold;
+        margin-right: 2em;
+    }
+
+    &__dash {
+        margin: 0em 1.5em;
+    }
+
+    &__input {
+        width: 100px
+    }
+
+    &__fill {
+        flex: auto 1 0;
+    }
+}
+
 .row-category {
     display: flex;
     flex-wrap: wrap;

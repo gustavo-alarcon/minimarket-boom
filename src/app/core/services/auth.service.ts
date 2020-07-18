@@ -41,8 +41,9 @@ export class AuthService {
           if (user) {
             this.updateUserData(user);
             return this.afs.collection('users').doc<User>(user.uid)
-              .get().pipe(
-                map((res) => res.data())
+              .valueChanges().pipe(
+                // map((res) => res.data())
+                map((res) => res)
               );
           } else {
             return of(null);

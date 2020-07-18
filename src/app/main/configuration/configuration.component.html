@@ -128,6 +128,110 @@
                 <mat-expansion-panel class="w3-margin-bottom">
                     <mat-expansion-panel-header>
                         <mat-panel-title>
+                            <h4 class="admin__title">Horario de atención</h4>
+                        </mat-panel-title>
+
+                    </mat-expansion-panel-header>
+                    <mat-progress-bar *ngIf="loadingOpening$ | async" mode="indeterminate"></mat-progress-bar>
+                    <div class="admin__container">
+                        <form [formGroup]="openingFormGroup">
+                            <div class="formFieldRounded" *ngIf="opening$ | async">
+                                <div class="opening">
+                                    <p class="opening__day">Lunes:</p>
+                                    <span class="opening__fill"></span>
+                                    <mat-form-field class="opening__input" appearance="outline">
+                                        <input matInput type="time" formControlName="monday_opening" autocomplete="off">
+                                    </mat-form-field>
+                                    <span class="opening__dash"> - </span>
+                                    <mat-form-field class="opening__input" appearance="outline">
+                                        <input matInput type="time" formControlName="monday_closing" autocomplete="off">
+                                    </mat-form-field>
+                                </div>
+
+                                <div class="opening">
+                                    <p class="opening__day">Martes:</p>
+                                    <span class="opening__fill"></span>
+                                    <mat-form-field class="opening__input" appearance="outline">
+                                        <input matInput type="time" formControlName="tuesday_opening" autocomplete="off">
+                                    </mat-form-field>
+                                    <span class="opening__dash"> - </span>
+                                    <mat-form-field class="opening__input" appearance="outline">
+                                        <input matInput type="time" formControlName="tuesday_closing" autocomplete="off">
+                                    </mat-form-field>
+                                </div>
+
+                                <div class="opening">
+                                    <p class="opening__day">Miércoles:</p>
+                                    <span class="opening__fill"></span>
+                                    <mat-form-field class="opening__input" appearance="outline">
+                                        <input matInput type="time" formControlName="wednesday_opening" autocomplete="off">
+                                    </mat-form-field>
+                                    <span class="opening__dash"> - </span>
+                                    <mat-form-field class="opening__input" appearance="outline">
+                                        <input matInput type="time" formControlName="wednesday_closing" autocomplete="off">
+                                    </mat-form-field>
+                                </div>
+
+                                <div class="opening">
+                                    <p class="opening__day">Jueves:</p>
+                                    <span class="opening__fill"></span>
+                                    <mat-form-field class="opening__input" appearance="outline">
+                                        <input matInput type="time" formControlName="thursday_opening" autocomplete="off">
+                                    </mat-form-field>
+                                    <span class="opening__dash"> - </span>
+                                    <mat-form-field class="opening__input" appearance="outline">
+                                        <input matInput type="time" formControlName="thursday_closing" autocomplete="off">
+                                    </mat-form-field>
+                                </div>
+
+                                <div class="opening">
+                                    <p class="opening__day">Viernes:</p>
+                                    <span class="opening__fill"></span>
+                                    <mat-form-field class="opening__input" appearance="outline">
+                                        <input matInput type="time" formControlName="friday_opening" autocomplete="off">
+                                    </mat-form-field>
+                                    <span class="opening__dash"> - </span>
+                                    <mat-form-field class="opening__input" appearance="outline">
+                                        <input matInput type="time" formControlName="friday_closing" autocomplete="off">
+                                    </mat-form-field>
+                                </div>
+
+                                <div class="opening">
+                                    <p class="opening__day">Sábado:</p>
+                                    <span class="opening__fill"></span>
+                                    <mat-form-field class="opening__input" appearance="outline">
+                                        <input matInput type="time" formControlName="saturday_opening" autocomplete="off">
+                                    </mat-form-field>
+                                    <span class="opening__dash"> - </span>
+                                    <mat-form-field class="opening__input" appearance="outline">
+                                        <input matInput type="time" formControlName="saturday_closing" autocomplete="off">
+                                    </mat-form-field>
+                                </div>
+
+                                <div class="opening">
+                                    <p class="opening__day">Domingo:</p>
+                                    <span class="opening__fill"></span>
+                                    <mat-form-field class="opening__input" appearance="outline">
+                                        <input matInput type="time" formControlName="sunday_opening" autocomplete="off">
+                                    </mat-form-field>
+                                    <span class="opening__dash"> - </span>
+                                    <mat-form-field class="opening__input" appearance="outline">
+                                        <input matInput type="time" formControlName="sunday_closing" autocomplete="off">
+                                    </mat-form-field>
+                                </div>
+
+                                <button mat-raised-button class="mat-normal" [disabled]="!weightForm.valid"
+                                    color="accent" (click)="saveOpening()">Guardar</button>
+                            </div>
+                        </form>
+                    </div>
+
+
+                </mat-expansion-panel>
+
+                <mat-expansion-panel class="w3-margin-bottom">
+                    <mat-expansion-panel-header>
+                        <mat-panel-title>
                             <h4 class="admin__title">Distritos</h4>
                         </mat-panel-title>
 

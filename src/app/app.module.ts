@@ -25,6 +25,9 @@ import { MAT_DATE_LOCALE as MAT_DATE_LOCALESAT } from 'saturn-datepicker';
 import { MAT_DATE_LOCALE } from '@angular/material/core';
 
 import { DatePipe } from '@angular/common';
+import { DatabaseService } from './core/services/database.service';
+import { AuthGuard } from './core/auth.guard';
+import { OpeningGuard } from './core/opening.guard';
 
 @NgModule({
   declarations: [
@@ -45,6 +48,9 @@ import { DatePipe } from '@angular/common';
   ],
   providers: [
     AuthService,
+    DatabaseService,
+    AuthGuard,
+    OpeningGuard,
     DatePipe,
     { provide: MAT_SNACK_BAR_DEFAULT_OPTIONS, useValue: { duration: 5000 } },
     { provide: MAT_DATE_LOCALE, useValue: 'en-GB'},

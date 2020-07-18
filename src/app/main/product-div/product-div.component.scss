@@ -1,7 +1,8 @@
 .product {
     border-radius: 20px;
-    box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+    box-shadow: 0px 8px 8px rgba(0, 0, 0, 0.25);
     padding: 5px 12px 12px 12px;
+    border: 1px solid #f0f0f0;
     width: 100%;
 
     &--package{
@@ -112,5 +113,16 @@
         border: 1px solid #267131;
         margin-bottom: 5px;
         font-size: 0.7em;
+    }
+
+    &__priceBefore {
+        background-color: #eb5757;
+        color: #fff;
+        font-weight: bold;
+        padding: 0.1em 0.6em;
+        font-weight: 500;
+        width: fit-content;
+        border-radius: 10px;
+        font-size: 0.8em;
     }
 }

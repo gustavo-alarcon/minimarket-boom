@@ -30,10 +30,16 @@ export class DatabaseService {
   public total: number = 0
   public delivery: number = 0
 
+  // public opening = new BehaviorSubject<Array<{ opening: string, closing: string }>>([]);
+  public opening$: Observable<Array<{ opening: string, closing: string }>>;
+  
+  ;
   constructor(
     private afs: AngularFirestore,
     private storage: AngularFireStorage,
-  ) { }
+  ) {
+    this.opening$ = this.getOpening();
+  }
 
   productsListRef = `db/distoProductos/productsList`;
   packagesListRef = `db/distoProductos/packagesList`;
@@ -42,6 +48,14 @@ export class DatabaseService {
   salesRef = `db/distoProductos/sales`;
   configRef = `db/distoProductos/config`;
   generalConfigDoc = this.afs.collection(this.configRef).doc<GeneralConfig>('generalConfig');
+
+  getOpening(): Observable<Array<{ opening: string, closing: string }>> {
+    return this.afs.collection(this.configRef).doc('generalConfig').valueChanges()
+      .pipe(
+        map(res => res['opening']),
+        shareReplay(1)
+      )
+  }
 
   getCurrentMonthOfViewDate(): { from: Date, to: Date } {
     const date = new Date();
@@ -81,7 +95,7 @@ export class DatabaseService {
   }
 
   getUsers(): Observable<User[]> {
-    return this.afs.collection<User>(`/users`, ref => ref.orderBy("displayName", 'asc'))
+    return this.afs.collection<User>(`/users`, ref => ref.orderBy("email", 'asc'))
       .valueChanges().pipe(
         shareReplay(1)
       );
@@ -162,7 +176,7 @@ export class DatabaseService {
     let unitsRef: AngularFirestoreDocument<GeneralConfig>
       = this.generalConfigDoc
     let batch = this.afs.firestore.batch();
-    batch.set(unitsRef.ref, packageUnit ? {packagesUnits: units} : { units }, { merge: true })
+    batch.set(unitsRef.ref, packageUnit ? { packagesUnits: units } : { units }, { merge: true })
     return batch;
   }
 
@@ -458,8 +472,8 @@ export class DatabaseService {
     return upload$;
   }
 
-  getProductRecipesValueChanges(productId: string): Observable<Recipe[]>{
-    return this.afs.collection<Recipe>(this.recipesRef, 
+  getProductRecipesValueChanges(productId: string): Observable<Recipe[]> {
+    return this.afs.collection<Recipe>(this.recipesRef,
       ref => ref.where("productsId", "array-contains", productId)).valueChanges()
   }
 
@@ -581,7 +595,7 @@ export class DatabaseService {
       .valueChanges();
   }
 
-  onSaveSale(sale: Sale): Observable<firebase.firestore.WriteBatch>{
+  onSaveSale(sale: Sale): Observable<firebase.firestore.WriteBatch> {
     let saleRef: DocumentReference = this.afs.firestore.collection(this.salesRef).doc(sale.id);
     let saleData: Sale = sale;
     let batch = this.afs.firestore.batch()
@@ -590,39 +604,40 @@ export class DatabaseService {
     return of(batch);
   }
 
-  onUpdateSaleVoucher(saleId: string, voucher: boolean, user: User, photos?: Sale['voucher']): firebase.firestore.WriteBatch{
+  onUpdateSaleVoucher(saleId: string, voucher: boolean, user: User, photos?: Sale['voucher']): firebase.firestore.WriteBatch {
     let saleRef: DocumentReference = this.afs.firestore.collection(this.salesRef).doc(saleId);
     let batch = this.afs.firestore.batch();
-    if(photos){
-      if(photos.length){
+    if (photos) {
+      if (photos.length) {
         batch.update(saleRef, {
-          voucherActionAt: new Date(), 
-          voucherActionBy: user, 
-          voucherChecked: voucher, 
+          voucherActionAt: new Date(),
+          voucherActionBy: user,
+          voucherChecked: voucher,
           voucher: photos,
           editedAt: new Date(),
-          editedBy: user})
+          editedBy: user
+        })
       }
     } else {
-      batch.update(saleRef, {voucherActionAt: new Date(), voucherActionBy: user, voucherChecked: voucher})
+      batch.update(saleRef, { voucherActionAt: new Date(), voucherActionBy: user, voucherChecked: voucher })
     }
     return batch
   }
 
-  onUpdateStock(requestedProducts: Sale['requestedProducts'], 
-    batch: firebase.firestore.WriteBatch, decrease: boolean){
-      
+  onUpdateStock(requestedProducts: Sale['requestedProducts'],
+    batch: firebase.firestore.WriteBatch, decrease: boolean) {
+
     let dec = decrease ? -1 : 1;
     let requestedProductRef: DocumentReference;
 
     requestedProducts.forEach(product => {
-      if(!product.product.package){
+      if (!product.product.package) {
         requestedProductRef = this.afs.firestore.collection(this.productsListRef).doc(product.product.id)
-        batch.update(requestedProductRef, {realStock: firebase.firestore.FieldValue.increment(dec*product.quantity)});
+        batch.update(requestedProductRef, { realStock: firebase.firestore.FieldValue.increment(dec * product.quantity) });
       } else {
         product.chosenOptions.forEach(opt => {
           requestedProductRef = this.afs.firestore.collection(this.productsListRef).doc(opt.id)
-          batch.update(requestedProductRef, {realStock: firebase.firestore.FieldValue.increment(dec*product.quantity)});
+          batch.update(requestedProductRef, { realStock: firebase.firestore.FieldValue.increment(dec * product.quantity) });
         })
       }
     })
@@ -648,7 +663,7 @@ export class DatabaseService {
   }
 
   getConfiUsers(): Observable<User[]> {
-    return this.afs.collection<User>(`/users`, ref => ref.where("admin", '==', true))
+    return this.afs.collection<User>(`/users`, ref => ref.where("role", '>=', ''))
       .valueChanges().pipe(
         shareReplay(1)
       );
