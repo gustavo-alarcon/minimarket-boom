@@ -49,7 +49,8 @@ export class ProductDivComponent implements OnInit {
       }
     }
     this.dbs.total = this.dbs.order.map(el => this.giveProductPrice(el)).reduce((a, b) => a + b, 0)
-
+    this.dbs.sum.next(this.dbs.order.map(el => this.giveProductPrice(el)).reduce((a, b) => a + b, 0))
+    
     let stop = this.maxWeight
     let realQuantity = this.dbs.order.map(el => {
       if (el.product['package']) {

@@ -21,7 +21,7 @@
                         style="height: 40px; padding: 0 20px;" (click)="dbs.total>0?shoppingCart():''">
                         <span style="font-size: 1.5em;">🛒</span>
                         <span style="font-size: 1em;" *ngIf="dbs.total>0"> S/.
-                            {{dbs.total | number: '.2'}}</span>
+                            {{(dbs.sum$ | async) | number: '.2'}}</span>
                     </button>
                 </div>
                 <div *ngIf="categoryList$ | async as categories" class="w3-margin-bottom w3-hide-small">
@@ -132,7 +132,7 @@
             <span class="shopping-button__icon">🛒</span>
             <div class="shopping-button__total">
                 <span style="font-size: 0.7em">S/. </span>
-                {{dbs.total | number: '.2'}}</div>
+                {{(dbs.sum$ | async) | number: '.2'}}</div>
         </div>
     </div>
 </div>

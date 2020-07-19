@@ -23,6 +23,9 @@ export class PurchaseComponent implements OnInit {
   loading = new BehaviorSubject<boolean>(false);
   loading$ = this.loading.asObservable();
 
+  loadingbar = new BehaviorSubject<boolean>(true);
+  loadingbar$ = this.loadingbar.asObservable();
+
   userData$: Observable<any>
   user: User = null
 
@@ -76,6 +79,7 @@ export class PurchaseComponent implements OnInit {
 
     this.init$ = this.dbs.getGeneralConfigDoc().pipe(
       tap(res => {
+        this.loadingbar.next(false)
         this.payType = res['payments']
         this.districts = res['districts']
       })
@@ -220,7 +224,6 @@ export class PurchaseComponent implements OnInit {
   }
 
   updateUser() {
-    console.log(this.user);
     this.user.name = this.firstFormGroup.get('name').value
     this.user.lastName1 = this.firstFormGroup.get('lastname1').value
     this.user.lastName2 = this.firstFormGroup.get('lastname2').value

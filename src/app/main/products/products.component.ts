@@ -23,6 +23,7 @@ export class ProductsComponent implements OnInit {
 
   name: string = ''
   maxWeight: number = 3
+  total$:Observable<number>
 
   searchForm: FormControl = new FormControl('')
 
@@ -59,7 +60,7 @@ export class ProductsComponent implements OnInit {
     this.products$ = combineLatest(
       this.route.fragment,
       this.dbs.getProductsList(),
-      this.dbs.getPackagesListValueChanges(),
+      this.dbs.getPackagesList(),
       this.searchForm.valueChanges.pipe(
         filter(input => input !== null),
         startWith<any>(''),
@@ -103,7 +104,6 @@ export class ProductsComponent implements OnInit {
           this.dbs.total = this.dbs.order.map(el => this.giveProductPrice(el)).reduce((a, b) => a + b, 0)
         }
 
-
         return any.filter(el => search ? el.description.toLowerCase().includes(search) : true)
       })
     )
@@ -123,12 +123,16 @@ export class ProductsComponent implements OnInit {
       }),
       tap(res => {
         if (res) {
-          if (res['contact']) {
+          if(res['salesCount']){
             this.firstSale = false
+          }else{
+            this.firstSale = true
+          }
+
+          if (res['contact']) {
             this.name = res.name.split(' ')[0]
             this.dbs.delivery = res.contact.district.delivery
-          } else {
-            this.firstSale = true
+          } else {           
             this.dbs.delivery = 4
           }
         }
@@ -137,7 +141,7 @@ export class ProductsComponent implements OnInit {
 
     this.dbs.total = this.dbs.order.map(el => this.giveProductPrice(el)).reduce((a, b) => a + b, 0)
    
-
+      
   }
 
 
