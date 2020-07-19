@@ -60,7 +60,7 @@
                     <mat-error>Campo requerido</mat-error>
                 </mat-form-field>
 
-                <mat-form-field  class="w3-block w3-margin-bottom" appearance="outline">
+                <mat-form-field class="w3-block w3-margin-bottom" appearance="outline">
                     <mat-select [compareWith]="compareObjects" formControlName="district" placeholder="Distrito">
                         <mat-option *ngFor="let district of districts" [value]="district"
                             (click)="changeDelivery(district)">

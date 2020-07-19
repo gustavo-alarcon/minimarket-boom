@@ -13,6 +13,16 @@ import { AuthService } from './services/auth.service';
 })
 export class OpeningGuard implements CanActivateChild {
 
+  daysArray: Array<string> = [
+    'Lunes',
+    'Martes',
+    'Miércoles',
+    'Jueves',
+    'Viernes',
+    'Sábado',
+    'Domingo'
+  ];
+
   constructor(
     private router: Router,
     private dbs: DatabaseService,
@@ -43,6 +53,7 @@ export class OpeningGuard implements CanActivateChild {
             // Calculating the actual decimal time based in hours
             let now = new Date();
             let day = now.getDay();
+            let dayIndex = day - 1;
             let hours = now.getHours();
             let minutes = now.getMinutes();
             let seconds = now.getSeconds();
@@ -50,13 +61,13 @@ export class OpeningGuard implements CanActivateChild {
             let time = this.timeConverter(hours, minutes, seconds);
 
             // Getting the opening time for the actual day adn calculating the time
-            let opening_hours = parseInt(res[day - 1]['opening'].split(':')[0]);
-            let opening_minutes = parseInt(res[day - 1]['opening'].split(':')[1]);
+            let opening_hours = parseInt(res[dayIndex]['opening'].split(':')[0]);
+            let opening_minutes = parseInt(res[dayIndex]['opening'].split(':')[1]);
 
             let opening_time = this.timeConverter(opening_hours, opening_minutes, 0);
 
-            let closing_hours = parseInt(res[day - 1]['closing'].split(':')[0]);
-            let closing_minutes = parseInt(res[day - 1]['closing'].split(':')[1]);
+            let closing_hours = parseInt(res[dayIndex]['closing'].split(':')[0]);
+            let closing_minutes = parseInt(res[dayIndex]['closing'].split(':')[1]);
 
             let closing_time = this.timeConverter(closing_hours, closing_minutes, 0);
 
@@ -67,13 +78,34 @@ export class OpeningGuard implements CanActivateChild {
               isOpen = true;
             } else {
               if (time < opening_time) {
-                this.snackbar.open(`Lo sentimos, estaremos atendiendo de ${res[day - 1]['opening']} a ${res[day - 1]['closing']}`, 'Aceptar', {
+                this.snackbar.open(`Lo sentimos, comenzaremos a atender de ${res[day - 1]['opening']} a ${res[day - 1]['closing']}`, 'Aceptar', {
                   duration: 6000
                 })
               }
 
               if (time > closing_time) {
-                this.snackbar.open(`Lo sentimos, estaremos atendiendo mañana de ${res[day]['opening']} a ${res[day]['closing']}`, 'Aceptar', {
+                //check for availability on next day
+                let found = false;
+                let next_opening_hours;
+                let next_opening_minutes;
+                let next_opening_time;
+
+                while (!found) {
+                  dayIndex = (dayIndex + 1) % 6;
+                  
+                  next_opening_hours = parseInt(res[dayIndex]['opening'].split(':')[0]);
+                  next_opening_minutes = parseInt(res[dayIndex]['opening'].split(':')[1]);
+
+                  next_opening_time = this.timeConverter(next_opening_hours, next_opening_minutes, 0);
+
+                  
+                  if (next_opening_time > 0) {
+                    console.log('Found' + dayIndex);
+                    found = true
+                  }
+                }
+
+                this.snackbar.open(`Lo sentimos, estaremos atendiendo el ${this.daysArray[dayIndex]} de ${res[dayIndex]['opening']} a ${res[dayIndex]['closing']}`, 'Aceptar', {
                   duration: 6000
                 })
               }

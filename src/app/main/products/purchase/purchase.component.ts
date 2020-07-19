@@ -91,8 +91,8 @@ export class PurchaseComponent implements OnInit {
       this.dbs.getUsers(),
       this.auth.user$
     ).pipe(
-      map(([users, id]) => {
-        return users.filter(el => el.uid == id.uid)[0]
+      map(([users, user]) => {
+        return users.filter(el => el.uid === user.uid)[0]
       }),
       tap(res => {
         this.user = res
@@ -220,19 +220,39 @@ export class PurchaseComponent implements OnInit {
   }
 
   updateUser() {
+    console.log(this.user);
     this.user.name = this.firstFormGroup.get('name').value
     this.user.lastName1 = this.firstFormGroup.get('lastname1').value
     this.user.lastName2 = this.firstFormGroup.get('lastname2').value
     this.user.dni = this.firstFormGroup.get('dni').value
-    this.user.contact.phone = this.firstFormGroup.get('phone').value
+
+    if (!this.user.contact) {
+      this.user['contact'] = {
+        address: '',
+        district: {
+          delivery: 0,
+          name: ''
+        },
+        coord: {
+          lat: 0,
+          lng: 0
+        },
+        reference: '',
+        phone: 0
+      }
+    }
+
     this.user.contact.address = this.secondFormGroup.get('address').value
+    this.user.contact.phone = this.firstFormGroup.get('phone').value
     this.user.contact.district = this.secondFormGroup.get('district').value
     this.user.contact.reference = this.secondFormGroup.get('ref').value
     this.user.contact.coord.lat = this.latitud
     this.user.contact.coord.lng = this.longitud
+
+
   }
 
-  openSale(){
+  openSale() {
     this.dialog.open(SaleDialogComponent, {
       data: {
         name: this.firstFormGroup.value['name'],
@@ -241,7 +261,7 @@ export class PurchaseComponent implements OnInit {
       }
     })
   }
-  
+
   save() {
     this.loading.next(true)
     this.firstFormGroup.markAsPending()

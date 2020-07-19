@@ -54,7 +54,7 @@
                             <mat-icon class="menu__icon">local_offer</mat-icon>
                             Lista de Productos
                         </button>
-                        <button mat-button class="w3-block menu__button" *ngIf="user?.admin" routerLink="sales"
+                        <button mat-button class="w3-block menu__button" *ngIf="user?.admin || user?.seller" routerLink="sales"
                             (click)="toggleSideMenu()">
                             <mat-icon class="menu__icon">assignment</mat-icon>
                             Ventas
@@ -100,7 +100,7 @@
                         width:100%;
                         font-size: small">
                         <p>
-                            V1.1.1r
+                            V1.1.2r
                         </p>
                     </div>
 
