@@ -29,24 +29,22 @@
         <app-sales-master
           style="width: 700px;"
           [totalPriceSubject]="totalPriceSubj"
+          [locationSubject]="locationSubject"
           [detailSubject]="detailSubject">
         </app-sales-master>
 
         <div *ngIf="detail$ | async as detail"
           class="shadow-color"
-          style="padding: 32px; border-radius: 10px;">
-          <app-sales-detail class="animated fadeIn"
-            style="width: 435px"
-            [sale]="detail"
-            [detailSubject]="detailSubject">
-          </app-sales-detail>
-
-          <!-- <app-sale-confirmed-detail class="animated fadeIn "
-            style="width:700px; margin-left: 32px"
-            *ngIf="detail.status == 'Confirmado' || detail.status == 'En reparto' || detail.status == 'Entregado'"
-            [sale]="detail"
-            [detailSubject]="detailSubject">
-          </app-sale-confirmed-detail> -->
+          style="padding: 32px; border-radius: 10px;"
+          [ngStyle]="{'padding-top': (locationPadding$ | async)}">
+          <div>
+            <app-sales-detail 
+              class="animated fadeIn"
+              style="width: 435px"
+              [sale]="detail"
+              [detailSubject]="detailSubject">
+            </app-sales-detail>
+          </div>
         </div>
         
       </div>
@@ -54,7 +52,8 @@
       <div class="containerMobile">
         <ng-template #master>
           <app-sales-master style="width:100%" 
-          [totalPriceSubject]="totalPriceSubj"
+            [totalPriceSubject]="totalPriceSubj"
+            [locationSubject]="locationSubject"
             [detailSubject]="detailSubject">
           </app-sales-master>
         </ng-template>
@@ -66,12 +65,6 @@
               [detailSubject]="detailSubject">
           </app-sales-detail>
 
-          <!-- <app-sale-confirmed-detail class="animated fadeIn "
-              style="width:100%; min-width:300px"
-              *ngIf="detail.status == 'Confirmado' || detail.status == 'En reparto' || detail.status == 'Entregado'"
-              [sale]="detail"
-              [detailSubject]="detailSubject">
-          </app-sale-confirmed-detail> -->
         </ng-container>
       </div>
 

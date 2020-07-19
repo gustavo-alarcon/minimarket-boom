@@ -16,7 +16,8 @@ import { SalesAddressDialogComponent } from '../sales-address-dialog/sales-addre
   styleUrls: ['./sales-master.component.scss']
 })
 export class SalesMasterComponent implements OnInit {
-  @Input() detailSubject: BehaviorSubject<Sale>
+  @Input() detailSubject: BehaviorSubject<Sale>;
+  @Input() locationSubject: BehaviorSubject<Number>;
   @Input() totalPriceSubject: BehaviorSubject<number>;
 
   defaultImage = '../../../../assets/images/no-image.png'
@@ -98,9 +99,11 @@ export class SalesMasterComponent implements OnInit {
 
 
 
-  onSelectDetail(data: Sale) {
+  onSelectDetail(data: Sale, salesFiltered: Sale[]) {
     this.detailSubject.next(undefined);
+    let index = salesFiltered.findIndex(el => el.id == data.id);
     setTimeout(() => {
+      this.locationSubject.next(index);
       this.detailSubject.next(data);
     }, 4);
   }

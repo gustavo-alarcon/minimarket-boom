@@ -97,7 +97,7 @@
             class="list-parent-container "
             [class.shadow-color]="(detailSubject | async)?.id == sale.id">
 
-          <div matRipple class="list-container background-color" (click)="onSelectDetail(sale)">
+          <div matRipple class="list-container background-color" (click)="onSelectDetail(sale, salesFiltered)">
                 <div class="general">
                     <div style="font-size: 24px;">
                         <b>#{{sale.correlativeType}}{{getCorrelative(sale.correlative)}}</b>
