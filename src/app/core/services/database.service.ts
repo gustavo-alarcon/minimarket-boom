@@ -27,6 +27,9 @@ export class DatabaseService {
   public view = new BehaviorSubject<number>(1);
   public view$ = this.view.asObservable();
 
+  public sum = new BehaviorSubject<number>(0);
+  public sum$ = this.sum.asObservable();
+
   public total: number = 0
   public delivery: number = 0
 
@@ -112,6 +115,12 @@ export class DatabaseService {
     return this.generalConfigDoc.valueChanges().pipe(shareReplay(1))
   }
 
+  getStaticConfigDoc(): Observable<GeneralConfig> {
+    return this.afs.collection(this.configRef).doc('generalConfig').get().pipe(map((snap) => {
+      return <GeneralConfig>snap.data()
+    }));
+  }
+
   getCategoriesDoc(): Observable<any> {
     return this.generalConfigDoc.get().pipe(map((snap) => {
       return snap.data()['categories']
@@ -121,7 +130,7 @@ export class DatabaseService {
   ////////////////////////////////////////////////////////////////////////////////
   //Products list/////////////////////////////////////////////////////////////////
   getProductsList(): Observable<Product[]> {
-    return this.afs.collection<Product>(this.productsListRef, ref => ref.orderBy("createdAt", "desc"))
+    return this.afs.collection<Product>(this.productsListRef, ref => ref.orderBy("description", "asc"))
       .get().pipe(map((snap) => {
         return snap.docs.map(el => <Product>el.data())
       }));
