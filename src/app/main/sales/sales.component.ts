@@ -21,8 +21,10 @@ export class SalesComponent implements OnInit {
   ngOnInit(): void {
     this.locationPadding$ = this.locationSubject.asObservable().pipe(
       map(location => {
-        let x = 180+180*location;
-        if(location > 1){
+        let aux = location+1 > 10 ? (location % 10) : location;
+        console.log(aux);
+        let x = 180+180*aux;
+        if(aux > 1){
           return x.toFixed(0)+"px"
         } else {
           return "32px"
