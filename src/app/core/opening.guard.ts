@@ -53,7 +53,7 @@ export class OpeningGuard implements CanActivateChild {
             // Calculating the actual decimal time based in hours
             let now = new Date();
             let day = now.getDay();
-            let dayIndex = day - 1;
+            let dayIndex = (day - 1) < 0 ? 6 : (day - 1);
             let hours = now.getHours();
             let minutes = now.getMinutes();
             let seconds = now.getSeconds();
@@ -78,7 +78,7 @@ export class OpeningGuard implements CanActivateChild {
               isOpen = true;
             } else {
               if (time < opening_time) {
-                this.snackbar.open(`Lo sentimos, comenzaremos a atender de ${res[day - 1]['opening']} a ${res[day - 1]['closing']}`, 'Aceptar', {
+                this.snackbar.open(`😢 Lo sentimos cheese lover 💚, comenzaremos a atender de ⌚ ${res[day - 1]['opening']} a ${res[day - 1]['closing']}`, 'Aceptar', {
                   duration: 6000
                 })
               }
@@ -91,7 +91,7 @@ export class OpeningGuard implements CanActivateChild {
                 let next_opening_time;
 
                 while (!found) {
-                  dayIndex = (dayIndex + 1) % 6;
+                  dayIndex = (dayIndex + 1) % 7;
                   
                   next_opening_hours = parseInt(res[dayIndex]['opening'].split(':')[0]);
                   next_opening_minutes = parseInt(res[dayIndex]['opening'].split(':')[1]);
@@ -100,12 +100,12 @@ export class OpeningGuard implements CanActivateChild {
 
                   
                   if (next_opening_time > 0) {
-                    console.log('Found' + dayIndex);
-                    found = true
+                    console.log('Found ' + dayIndex);
+                    found = true;
                   }
                 }
 
-                this.snackbar.open(`Lo sentimos, estaremos atendiendo el ${this.daysArray[dayIndex]} de ${res[dayIndex]['opening']} a ${res[dayIndex]['closing']}`, 'Aceptar', {
+                this.snackbar.open(`😢 Lo sentimos cheese lover 💚, estaremos atendiendo el 📅 ${this.daysArray[dayIndex]} de ⌚ ${res[dayIndex]['opening']} a ${res[dayIndex]['closing']}`, 'Aceptar', {
                   duration: 6000
                 })
               }
