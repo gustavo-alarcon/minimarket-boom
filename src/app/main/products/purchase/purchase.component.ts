@@ -113,17 +113,10 @@ export class PurchaseComponent implements OnInit {
       photoURL: [null]
     });
 
-    this.userData$ = combineLatest(
-      this.dbs.getUsers(),
-      this.auth.user$
-    ).pipe(
-      take(1),
-      map(([users, user]) => {
-        return users.filter(el => el.uid === user.uid)[0]
-      }),
+    this.userData$ = this.auth.user$.pipe(
       tap(res => {
         this.user = res
-        if (res['name']) {
+        if (res['contact']) {
           this.firstFormGroup = this.fb.group({
             email: [res['email'], [Validators.required, Validators.email]],
             dni: [res['dni'], [Validators.required, Validators.minLength(8)]],
@@ -298,20 +291,26 @@ export class PurchaseComponent implements OnInit {
   }
 
   prueba() {
-    if (this.payFormGroup.valid) {
-      if (!this.payFormGroup.value['photoURL']) {
-        this.snackbar.open('Por favor adjunte una imagen de su voucher de pago', 'cerrar')
+    this.updateUser()
+    if (this.firstFormGroup.valid && this.secondFormGroup.valid) {
+      if (this.payFormGroup.valid) {
+        if (!this.payFormGroup.value['photoURL']) {
+          this.snackbar.open('Por favor adjunte una imagen de su voucher de pago', 'cerrar')
+        } else {
+          this.save()
+        }
       } else {
-        this.save()
+        this.payFormGroup.markAllAsTouched()
       }
     } else {
-      this.payFormGroup.markAllAsTouched()
+      this.snackbar.open('Parece que hubo un problema, complete todos los campos anteriores', 'cerrar')
     }
+
   }
 
   save() {
     this.loading.next(true)
-    this.updateUser()
+
 
     const saleCount = this.af.firestore.collection(`/db/distoProductos/config/`).doc('generalConfig');
     const saleRef = this.af.firestore.collection(`/db/distoProductos/sales`).doc();
