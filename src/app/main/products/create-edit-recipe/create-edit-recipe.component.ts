@@ -2,7 +2,7 @@ import { Component, OnInit, ViewChild, Inject, Renderer2 } from '@angular/core';
 import { Observable, of, BehaviorSubject, combineLatest } from 'rxjs';
 import { FormGroup, FormBuilder, Validators, AbstractControl } from '@angular/forms';
 import { map, tap, filter, startWith, distinctUntilChanged } from 'rxjs/operators';
-import {COMMA, ENTER} from '@angular/cdk/keycodes';
+import { COMMA, ENTER } from '@angular/cdk/keycodes';
 
 import { DatabaseService } from 'src/app/core/services/database.service';
 import { MAT_DIALOG_DATA, MatDialogRef, MatDialog } from '@angular/material/dialog';
@@ -38,7 +38,7 @@ export class CreateEditRecipeComponent implements OnInit {
     private dbs: DatabaseService,
     private snackBar: MatSnackBar,
     private renderer: Renderer2,
-    @Inject(MAT_DIALOG_DATA) public data: { data: Recipe, edit: boolean }
+    @Inject(MAT_DIALOG_DATA) public data: { data: Recipe, edit: boolean, product: Product }
   ) { }
 
   ngOnInit() {
@@ -46,7 +46,7 @@ export class CreateEditRecipeComponent implements OnInit {
     this.initObservables();
   }
 
-  initForms(){
+  initForms() {
     if (this.data.edit) {
       this.inputsFormGroup = this.fb.group({
         textInput: [''],
@@ -67,7 +67,7 @@ export class CreateEditRecipeComponent implements OnInit {
     else {
       this.inputsFormGroup = this.fb.group({
         textInput: [''],
-        product: [[], this.recipe2ProductsValidator()]
+        product: [[this.data.product], this.recipe2ProductsValidator()]
       })
       this.recipeForm = this.fb.group({
         name: this.fb.control(null, {
@@ -83,7 +83,7 @@ export class CreateEditRecipeComponent implements OnInit {
     }
   }
 
-  initObservables(){
+  initObservables() {
     this.nameFormatting$ = this.recipeForm.get('name').valueChanges.pipe(
       distinctUntilChanged(),
       filter((desc: string) => {
@@ -98,61 +98,61 @@ export class CreateEditRecipeComponent implements OnInit {
     this.productsList$ = this.dbs.getProductsListValueChanges();
 
     this.productsListAutocomplete$ = combineLatest(
-      this.inputsFormGroup.get('textInput').valueChanges.pipe(startWith('')), 
+      this.inputsFormGroup.get('textInput').valueChanges.pipe(startWith('')),
       this.productsList$
-      ).pipe(map(([formValue, products]) => {
-        let filter = products.filter(el => el.description.match(new RegExp(formValue,'ig')));
-        return filter;
-      }))
+    ).pipe(map(([formValue, products]) => {
+      let filter = products.filter(el => el.description.match(new RegExp(formValue, 'ig')));
+      return filter;
+    }))
   }
 
   //Text input
-  onAddInput(){
+  onAddInput() {
     let inputList = <string[]>this.recipeForm.get('inputs').value;
     inputList.unshift(this.recipeForm.get('addInputs').value);
     this.recipeForm.get('inputs').setValue(inputList);
     this.recipeForm.get('addInputs').setValue("");
   }
 
-  onRemoveInput(input: string){
+  onRemoveInput(input: string) {
     let inputList = (<string[]>this.recipeForm.get('inputs').value).filter(el => el != input);
     this.recipeForm.get('inputs').setValue(inputList);
     this.recipeForm.get('addInputs').updateValueAndValidity();
   }
- 
+
   //matChip
-  onRemoveProduct(product: Product){
+  onRemoveProduct(product: Product) {
     let removedList = (<Product[]>this.inputsFormGroup.get('product').value).filter(
       el => el.id != product.id
     )
     this.inputsFormGroup.get('product').setValue(removedList)
   }
 
-  onAddProduct(auto: MatAutocomplete, event: MatChipInputEvent){
+  onAddProduct(auto: MatAutocomplete, event: MatChipInputEvent) {
     let options = auto.options;
-    if(options.length){
+    if (options.length) {
       //(options.first.value);
       this.onSelectProduct(options.first.value)
     }
     event.input.value = "";
   }
 
-  onSelectProduct(product: Product){
+  onSelectProduct(product: Product) {
     let initList = (<Product[]>this.inputsFormGroup.get('product').value);
-    if(!initList.find(el => el.id == product.id)){
+    if (!initList.find(el => el.id == product.id)) {
       initList.unshift(product)
       this.inputsFormGroup.get('product').setValue(initList);
     }
     this.inputsFormGroup.get('textInput').setValue("");
   }
 
-  recipe2InputsValidator(){
-    return (control: AbstractControl): {'recipe2InputsValidator': boolean} => {
-      if(control){
-        if(control.parent){
+  recipe2InputsValidator() {
+    return (control: AbstractControl): { 'recipe2InputsValidator': boolean } => {
+      if (control) {
+        if (control.parent) {
           let inputs = <string[]>control.parent.get('inputs').value;
-          if(inputs.length<2){
-            return {recipe2InputsValidator: true}
+          if (inputs.length < 2) {
+            return { recipe2InputsValidator: true }
           }
         }
       }
@@ -160,20 +160,20 @@ export class CreateEditRecipeComponent implements OnInit {
     }
   }
 
-  recipe2ProductsValidator(){
-    return (control: AbstractControl): {'recipe2ProductsValidator': boolean} => {
-      if(control){
+  recipe2ProductsValidator() {
+    return (control: AbstractControl): { 'recipe2ProductsValidator': boolean } => {
+      if (control) {
         let products = <Product[]>control.value;
         //console.log(products);
-        if(!products.length){
-          return {recipe2ProductsValidator: true}
+        if (!products.length) {
+          return { recipe2ProductsValidator: true }
         }
       }
       return null
     }
   }
 
-  deb(){
+  deb() {
     //console.log(this.recipeForm);
     //console.log(this.inputsFormGroup);
   }
@@ -183,7 +183,7 @@ export class CreateEditRecipeComponent implements OnInit {
     return input.description;
   }
 
-  onSubmit(user: User){
+  onSubmit(user: User) {
     this.recipeForm.markAsPending();
 
     let recipe: Recipe = {
@@ -202,31 +202,31 @@ export class CreateEditRecipeComponent implements OnInit {
 
     this.dbs.createEditRecipe(recipe, this.data.edit)
       .commit().then(
-        res => {      
+        res => {
           this.dialogRef.close(true);
         },
         err => {
           this.dialogRef.close(false);
         })
-      
+
   }
 
-  recipeNameRepeatedValidator(dbs: DatabaseService, data: {data: Recipe, edit: boolean}){
-    return (control: AbstractControl): Observable<{'nameRepeatedValidator': boolean}> => {
+  recipeNameRepeatedValidator(dbs: DatabaseService, data: { data: Recipe, edit: boolean }) {
+    return (control: AbstractControl): Observable<{ 'nameRepeatedValidator': boolean }> => {
       const value = control.value.toUpperCase();
-      if(data.edit){
-        if(data.data.name.toUpperCase() == value){
+      if (data.edit) {
+        if (data.data.name.toUpperCase() == value) {
           return of(null)
         }
-        else{
+        else {
           return dbs.getRecipes().pipe(
-            map(res => !!res.find(el => el.name.toUpperCase() == value)  ? {nameRepeatedValidator: true} : null),)
-          }
+            map(res => !!res.find(el => el.name.toUpperCase() == value) ? { nameRepeatedValidator: true } : null))
         }
-      else{
+      }
+      else {
         return dbs.getRecipes().pipe(
-          map(res => !!res.find(el => el.name.toUpperCase() == value)  ? {nameRepeatedValidator: true} : null),)
-        }
+          map(res => !!res.find(el => el.name.toUpperCase() == value) ? { nameRepeatedValidator: true } : null))
+      }
     }
   }
 }

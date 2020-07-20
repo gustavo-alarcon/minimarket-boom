@@ -47,8 +47,8 @@ export class PurchaseComponent implements OnInit {
 
   now: Date
 
-  latitud: number = -16.3988900
-  longitud: number = -71.5350000
+  latitud: number = -12.046301
+  longitud: number = -77.031027
 
   showPhoto: boolean = false
   photos: {
@@ -110,13 +110,14 @@ export class PurchaseComponent implements OnInit {
     this.payFormGroup = this.fb.group({
       pay: [null, [Validators.required]],
       typePay: [null, [Validators.required]],
-      photoURL: [null, [Validators.required]]
+      photoURL: [null]
     });
 
     this.userData$ = combineLatest(
       this.dbs.getUsers(),
       this.auth.user$
     ).pipe(
+      take(1),
       map(([users, user]) => {
         return users.filter(el => el.uid === user.uid)[0]
       }),
@@ -134,15 +135,24 @@ export class PurchaseComponent implements OnInit {
 
           this.firstFormGroup.get('email').disable()
 
-          this.secondFormGroup = this.fb.group({
-            address: [res.contact.address, [Validators.required]],
-            district: [res.contact.district, [Validators.required]],
-            ref: [res.contact.reference, [Validators.required]]
-          });
+          if (this.districts.find(el => el.name == res.contact.district.name)) {
+            this.secondFormGroup = this.fb.group({
+              address: [res.contact.address, [Validators.required]],
+              district: [res.contact.district, [Validators.required]],
+              ref: [res.contact.reference, [Validators.required]]
+            });
+            this.changeDelivery(res.contact.district)
+          } else {
+            this.secondFormGroup = this.fb.group({
+              address: [res.contact.address, [Validators.required]],
+              district: [null, [Validators.required]],
+              ref: [res.contact.reference, [Validators.required]]
+            });
+          }
 
           this.latitud = res.contact.coord.lat
           this.longitud = res.contact.coord.lng
-          this.changeDelivery(res.contact.district)
+
         } else {
           this.firstSale = true
 
@@ -287,10 +297,20 @@ export class PurchaseComponent implements OnInit {
     })
   }
 
+  prueba() {
+    if (this.payFormGroup.valid) {
+      if (!this.payFormGroup.value['photoURL']) {
+        this.snackbar.open('Por favor adjunte una imagen de su voucher de pago', 'cerrar')
+      } else {
+        this.save()
+      }
+    } else {
+      this.payFormGroup.markAllAsTouched()
+    }
+  }
+
   save() {
     this.loading.next(true)
-    this.firstFormGroup.markAsPending()
-    this.secondFormGroup.markAsPending()
     this.updateUser()
 
     const saleCount = this.af.firestore.collection(`/db/distoProductos/config/`).doc('generalConfig');
@@ -376,18 +396,32 @@ export class PurchaseComponent implements OnInit {
         });
 
       }).then(() => {
-        this.dialog.open(SaleDialogComponent, {
-          data: {
-            name: this.firstFormGroup.value['name'],
-            number: newSale.correlative,
-            email: this.user.email
-          }
-        })
+        this.dbs.order.forEach((order, ind) => {
+          const ref = this.af.firestore.collection(`/db/distoProductos/productsList`).doc(order.product.id);
+          this.af.firestore.runTransaction((transaction) => {
+            // This code may get re-run multiple times if there are conflicts.
+            return transaction.get(ref).then((prodDoc) => {
+              let newStock = prodDoc.data().realStock - order.quantity;
+              transaction.update(ref, { realStock: newStock });
+            });
+          }).then(() => {
+            if (ind == this.dbs.order.length - 1) {
+              this.dialog.open(SaleDialogComponent, {
+                data: {
+                  name: this.firstFormGroup.value['name'],
+                  number: newSale.correlative,
+                  email: this.user.email
+                }
+              })
 
-        this.dbs.order = []
-        this.dbs.total = 0
-        this.dbs.view.next(1)
-        this.loading.next(false)
+              this.dbs.order = []
+              this.dbs.total = 0
+              this.dbs.view.next(1)
+              this.loading.next(false)
+            }
+
+          })
+        })
       }).catch(function (error) {
         console.log("Transaction failed: ", error);
       });

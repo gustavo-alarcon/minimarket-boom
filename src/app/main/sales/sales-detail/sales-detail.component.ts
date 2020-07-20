@@ -39,7 +39,7 @@ export class SalesDetailComponent implements OnInit {
   @Input() detailSubject: BehaviorSubject<Sale>
 
   saleStatusOptions = new saleStatusOptions();
-  
+
   constructor(
     private fb: FormBuilder,
     private dbs: DatabaseService,
@@ -54,9 +54,9 @@ export class SalesDetailComponent implements OnInit {
     this.initObservables()
   }
 
-  
 
-  initForm(){
+
+  initForm() {
     this.searchProductControl = new FormControl("")
 
     this.productForm = this.fb.group({
@@ -67,8 +67,8 @@ export class SalesDetailComponent implements OnInit {
     this.voucherCheckedForm = new FormControl(!!this.sale.voucherChecked, Validators.requiredTrue);
 
     this.sale.requestedProducts.forEach((product, index) => {
-      (<FormArray>this.productForm.get('productList')).insert(index, 
-        product.product.package ? 
+      (<FormArray>this.productForm.get('productList')).insert(index,
+        product.product.package ?
           this.fb.group({
             product: [product.product, Validators.required],
             quantity: [product.quantity, Validators.required],
@@ -80,142 +80,142 @@ export class SalesDetailComponent implements OnInit {
             product: [product.product, Validators.required],
             quantity: [product.quantity, Validators.required],
           })
-        )
+      )
     })
 
     this.confirmedRequestForm = this.fb.group({
       // desiredDate: [this.getDateFromDB(this.sale.requestDate)],
       assignedDate: [
         !this.sale.confirmedRequestData ? null :
-        this.getDateFromDB(this.sale.confirmedRequestData.assignedDate),
+          this.getDateFromDB(this.sale.confirmedRequestData.assignedDate),
         Validators.required],
       observation: [
         !this.sale.confirmedRequestData ? null :
-        this.sale.confirmedRequestData.observation],
+          this.sale.confirmedRequestData.observation],
     })
 
     this.confirmedDocumentForm = this.fb.group({
       document: [this.sale.document],
       documentNumber: [
-        !this.sale.confirmedDocumentData ? null : 
-        this.sale.confirmedDocumentData.documentNumber,
+        !this.sale.confirmedDocumentData ? null :
+          this.sale.confirmedDocumentData.documentNumber,
         Validators.required
       ]
     })
 
     this.confirmedDeliveryForm = this.fb.group({
       deliveryType: [
-        !this.sale.confirmedDeliveryData ? false : 
-        this.sale.confirmedDeliveryData.deliveryType == "Biker" ?
-        false : true
+        !this.sale.confirmedDeliveryData ? false :
+          this.sale.confirmedDeliveryData.deliveryType == "Biker" ?
+            false : true
       ],
       deliveryBusiness: [
-        !this.sale.confirmedDeliveryData ? null : 
-        this.sale.confirmedDeliveryData.deliveryBusiness
+        !this.sale.confirmedDeliveryData ? null :
+          this.sale.confirmedDeliveryData.deliveryBusiness
       ],
     })
   }
 
   //initRequestConfirmed
 
-  getDateFromDB(date: Date){
+  getDateFromDB(date: Date) {
     let parsedDate = new Date(1970);
     parsedDate.setSeconds(date['seconds'])
     return parsedDate
   }
 
-  initObservables(){
+  initObservables() {
     //Search Product
     this.products$ = combineLatest(
       this.searchProductControl.valueChanges.pipe(startWith("")),
       combineLatest(this.dbs.getProductsListValueChanges(), this.dbs.getPackagesListValueChanges()
-        ).pipe(map(([prod, pack])=> [...prod, ...pack].sort((a,b) => 
-          a.description > b.description ? 1 : a.description < b.description ? -1 : 0))
-        ),
+      ).pipe(map(([prod, pack]) => [...prod, ...pack].sort((a, b) =>
+        a.description > b.description ? 1 : a.description < b.description ? -1 : 0))
+      ),
       this.dbs.getGeneralConfigDoc()).pipe(
-        map(([formValue, productsList, generalConfig])=> {
+        map(([formValue, productsList, generalConfig]) => {
 
           //console.log(formValue);
 
-          let products = !productsList.length ? [] : 
+          let products = !productsList.length ? [] :
             productsList.filter(el => !this.productForm.get('productList').value.find(
               (product: SaleRequestedProducts) => product.product.id == el.id
             ))
 
-          if(typeof formValue === 'string'){
+          if (typeof formValue === 'string') {
             return products.filter(el => el.description.match(new RegExp(formValue, 'ig')))
           } else {
 
             let product: SaleRequestedProducts = {
               product: (<Product | Package>formValue),
               quantity: 1,
-              chosenOptions: !(<Product | Package>formValue).package ? null : 
+              chosenOptions: !(<Product | Package>formValue).package ? null :
                 new Array((<Package>formValue).totalItems)
             };
 
-            if(this.getTotalWeight()+ this.giveProductWeight(product) > generalConfig.maxWeight){
+            if (this.getTotalWeight() + this.giveProductWeight(product) > generalConfig.maxWeight) {
               this.snackBar.open("Lo sentimos, exceso de peso.", "Aceptar")
               this.searchProductControl.setValue("")
               return productsList
             } else {
 
-              (<FormArray>this.productForm.get('productList')).insert(0, 
-                product.product.package ? 
+              (<FormArray>this.productForm.get('productList')).insert(0,
+                product.product.package ?
                   this.fb.group({
                     product: [product.product, Validators.required],
                     quantity: [product.quantity, Validators.required],
                     chosenOptions: this.fb.array(
-                      product.product.items.map(item => 
+                      product.product.items.map(item =>
                         item.productsOptions.length != 1 ? new FormControl()
                           : new FormControl(item.productsOptions[0])
-                        )
+                      )
                     )
                   }) :
                   this.fb.group({
                     product: [product.product, Validators.required],
                     quantity: [product.quantity, Validators.required],
                   })
-                )
+              )
 
               this.searchProductControl.setValue("")
               return productsList.filter(el => !this.productForm.get('productList').value.find(
-              (product: SaleRequestedProducts) => product.product.id == el.id
-            ))
+                (product: SaleRequestedProducts) => product.product.id == el.id
+              ))
             }
           }
         })
       )
 
-    
+
     this.weight$ = combineLatest(
       (<Observable<[SaleRequestedProducts[], SaleRequestedProducts[]]>>(<FormArray>this.productForm.get('productList')).valueChanges
-      .pipe(startWith(this.productForm.get('productList').value), pairwise())),
+        .pipe(startWith(this.productForm.get('productList').value), pairwise())),
       this.dbs.getGeneralConfigDoc()
     ).pipe(
-      filter(([[prev, curr], config])=> this.getTotalWeight() > config.maxWeight ? true : false),
-      map(([[prev, curr], config])=> {
+      filter(([[prev, curr], config]) => this.getTotalWeight() > config.maxWeight ? true : false),
+      map(([[prev, curr], config]) => {
 
-        let changedItemIndex = curr.findIndex(currEl => { 
-          if(prev.find(prevEl => prevEl.product.id == currEl.product.id)){
-            return (this.giveProductWeight(currEl) != 
-            this.giveProductWeight(prev.find(prevEl => prevEl.product.id == currEl.product.id)))
+        let changedItemIndex = curr.findIndex(currEl => {
+          if (prev.find(prevEl => prevEl.product.id == currEl.product.id)) {
+            return (this.giveProductWeight(currEl) !=
+              this.giveProductWeight(prev.find(prevEl => prevEl.product.id == currEl.product.id)))
           } else {
             return false
           }
-         });
-         
+        });
+
         console.log('again?');
 
         let foundPreviousItem = prev.find((prevEl) => curr[changedItemIndex].product.id == prevEl.product.id);
 
-        if(!foundPreviousItem.product.package){
+        if (!foundPreviousItem.product.package) {
           this.snackBar.open("No puede aumentar la cantidad. Exceso de peso.", "Aceptar");
           (<FormArray>this.productForm.get('productList'))
-          .controls[changedItemIndex].get('quantity').setValue(foundPreviousItem.quantity);
+            .controls[changedItemIndex].get('quantity').setValue(foundPreviousItem.quantity);
         } else {
           console.log(foundPreviousItem.chosenOptions)
           console.log(curr[changedItemIndex].chosenOptions);
-          if(curr[changedItemIndex].chosenOptions == foundPreviousItem.chosenOptions){
+          if (curr[changedItemIndex].chosenOptions == foundPreviousItem.chosenOptions) {
             this.snackBar.open("No puede aumentar la cantidad. Exceso de peso.", "Aceptar");
             (<FormArray>this.productForm.get('productList'))
               .controls[changedItemIndex].get('quantity').setValue(foundPreviousItem.quantity);
@@ -225,35 +225,35 @@ export class SalesDetailComponent implements OnInit {
             (<FormArray>(<FormArray>this.productForm.get('productList'))
               .controls[changedItemIndex].get('chosenOptions')).setValue(foundPreviousItem.chosenOptions);
           }
-          
+
         }
-         
+
       })
     )
   }
 
-  onDeleteProduct(index: number){
+  onDeleteProduct(index: number) {
     (<FormArray>this.productForm.get('productList')).removeAt(index);
   }
 
-  confirmVoucherChecked(event: MouseEvent, user: User){
+  confirmVoucherChecked(event: MouseEvent, user: User) {
     event.preventDefault();
     this.loading$.next(true)
     let dialogRef: MatDialogRef<ConfirmationDialogComponent>;
 
-    if(this.voucherCheckedForm.value){
+    if (this.voucherCheckedForm.value) {
       dialogRef = this.dialog.open(ConfirmationDialogComponent, {
         closeOnNavigation: false,
         disableClose: true,
         width: '360px',
-        maxWidth: '360px',      
+        maxWidth: '360px',
         data: {
-        warning: `Cancelar Voucher.`,
-        content: `¿Está seguro de deshacer la validación del Voucher?`,
-        noObservation: true,
-        observation: null,
-        title: 'Deshacer',
-        titleIcon: 'warning'
+          warning: `Cancelar Voucher.`,
+          content: `¿Está seguro de deshacer la validación del Voucher?`,
+          noObservation: true,
+          observation: null,
+          title: 'Deshacer',
+          titleIcon: 'warning'
         }
       })
     } else {
@@ -261,34 +261,34 @@ export class SalesDetailComponent implements OnInit {
         closeOnNavigation: false,
         disableClose: true,
         width: '360px',
-        maxWidth: '360px',      
+        maxWidth: '360px',
         data: {
-        warning: `Confirmar Voucher.`,
-        content: `¿Está seguro de confirmar la validación del Voucher?`,
-        noObservation: true,
-        observation: null,
-        title: 'Confirmar',
-        titleIcon: 'warning'
+          warning: `Confirmar Voucher.`,
+          content: `¿Está seguro de confirmar la validación del Voucher?`,
+          noObservation: true,
+          observation: null,
+          title: 'Confirmar',
+          titleIcon: 'warning'
         }
       })
     }
 
     dialogRef.afterClosed().pipe(
       take(1),
-      switchMap((answer: {action: string, lastObservation: string}) => iif(
+      switchMap((answer: { action: string, lastObservation: string }) => iif(
         //condition
-        () => {return answer.action =="confirm"},
+        () => { return answer.action == "confirm" },
         //confirmed
         of(this.dbs.onUpdateSaleVoucher(this.sale.id, !this.voucherCheckedForm.value, user)).pipe(
           switchMap(
             batch => {
-                            
+
               return batch.commit().then(
                 res => {
                   this.voucherCheckedForm.setValue(!this.voucherCheckedForm.value);
                   this.snackBar.open('El pedido fue editado satisfactoriamente', 'Aceptar');
                 },
-                err=> {
+                err => {
                   throwError(err)
                 }
               )
@@ -299,7 +299,7 @@ export class SalesDetailComponent implements OnInit {
       ))).subscribe(
         () => {
           this.loading$.next(false)
-         },
+        },
         err => {
           this.loading$.next(false)
           console.log(err);
@@ -307,11 +307,11 @@ export class SalesDetailComponent implements OnInit {
         },
         () => {
           this.loading$.next(false)
-         }
+        }
       )
   }
 
-  checkVouchers(user: User){
+  checkVouchers(user: User) {
     let dialogRef: MatDialogRef<SalesPhotoDialogComponent>
     dialogRef = this.dialog.open(SalesPhotoDialogComponent, {
       width: '350px',
@@ -324,23 +324,23 @@ export class SalesDetailComponent implements OnInit {
     dialogRef.afterClosed().pipe(
       take(1)).subscribe(
         (newSale: Sale) => {
-          if(newSale){
+          if (newSale) {
             this.detailSubject.next(newSale);
           }
-         }
+        }
       )
   }
 
   //newStatus will work as an old status when we edit (deshacer)
   //edit=true for deschacer
-  onSubmitForm(newStatus: Sale['status'], user: User, edit?: boolean){
+  onSubmitForm(newStatus: Sale['status'], user: User, edit?: boolean) {
     this.loading$.next(true);
     let downNewStatus = edit ? this.onEditSaleGetNewStatus(newStatus, user) : null;
-    let sale = edit ? this.onGetUpdatedSale(downNewStatus,user) : this.onGetUpdatedSale(newStatus,user);
+    let sale = edit ? this.onGetUpdatedSale(downNewStatus, user) : this.onGetUpdatedSale(newStatus, user);
 
     of(!!edit).pipe(
       switchMap(edit => {
-        if(!edit){
+        if (!edit) {
           return this.upgradeConfirmation(newStatus)
         } else {
           return this.downgradeConfirmation(downNewStatus)
@@ -348,7 +348,7 @@ export class SalesDetailComponent implements OnInit {
       }),
       switchMap(answer => iif(
         //condition
-        () => {return answer.action =="confirm"},
+        () => { return answer.action == "confirm" },
         //confirmed
         this.dbs.onSaveSale(sale).pipe(
           switchMap(
@@ -356,31 +356,8 @@ export class SalesDetailComponent implements OnInit {
               //If we are editting it (deshacer), and we are returning from
               //confirmedDocument to confirmedRequest, we should refill the 
               //lost stock
-              if(edit){
-                if(downNewStatus == this.saleStatusOptions.confirmedRequest &&
-                    newStatus != this.saleStatusOptions.cancelled){
-                  this.onUpdateStock(this.getSaleRequestedProducts(), batch, false)
-                } else {
-                  //If we are returning fron cancelled to any of the ones bellow,
-                  //We should take out from stock
-                  if( newStatus == this.saleStatusOptions.cancelled &&
-                      downNewStatus == this.saleStatusOptions.confirmedDocument
-                    ){
-                      //Recall that when we edit (deshacer) newStatus will work as the past status
-                      this.onUpdateStock(this.getSaleRequestedProducts(), batch, true)
-                    }
-                }
-              } else {
-                //WE are not editting, but we are confirming document, so we
-                //should take out stock
-                if(newStatus == this.saleStatusOptions.confirmedDocument){
-                  this.onUpdateStock(this.getSaleRequestedProducts(), batch, true)
-                } else {
-                  if(newStatus == this.saleStatusOptions.cancelled && 
-                      this.sale.status == this.saleStatusOptions.confirmedDocument){
-                    this.onUpdateStock(this.getSaleRequestedProducts(), batch, false)
-                  }
-                }
+              if (newStatus == this.saleStatusOptions.cancelled) {
+                this.onUpdateStock(this.getSaleRequestedProducts(), batch, false)
               }
               // //If we are editting it (deshacer), and we are returning from
               // //confirmedDelivery to confirmedDocument, we should refill the 
@@ -417,7 +394,7 @@ export class SalesDetailComponent implements OnInit {
                   this.snackBar.open('El pedido fue editado satisfactoriamente', 'Aceptar');
                   this.detailSubject.next(sale);
                 },
-                err=> {
+                err => {
                   throwError(err)
                 }
               )
@@ -426,7 +403,7 @@ export class SalesDetailComponent implements OnInit {
         ),
         //dismissed
         empty()
-        )
+      )
       )
     ).subscribe(
       () => {
@@ -443,14 +420,14 @@ export class SalesDetailComponent implements OnInit {
     )
   }
 
-  onEditSaleGetNewStatus(pastStatus: Sale['status'], user: User): Sale['status']{
-    switch(pastStatus){
+  onEditSaleGetNewStatus(pastStatus: Sale['status'], user: User): Sale['status'] {
+    switch (pastStatus) {
       case this.saleStatusOptions.attended:
-          return  this.saleStatusOptions.requested
+        return this.saleStatusOptions.requested
       case this.saleStatusOptions.confirmedRequest:
-          return  this.saleStatusOptions.attended
+        return this.saleStatusOptions.attended
       case this.saleStatusOptions.confirmedDocument:
-          return  this.saleStatusOptions.confirmedRequest
+        return this.saleStatusOptions.confirmedRequest
       // case this.saleStatusOptions.confirmedDelivery:
       //   //we should refill stock here
       //     return  this.saleStatusOptions.confirmedDocument
@@ -463,25 +440,25 @@ export class SalesDetailComponent implements OnInit {
       case this.saleStatusOptions.cancelled:
         //We don't include a finished data, 
         //because a finished sale can not be cancelled
-        if(this.sale.finishedData){
+        if (this.sale.finishedData) {
           // return this.saleStatusOptions.finished
         } else {
-          if(this.sale.driverAssignedData){
-              // return  this.saleStatusOptions.driverAssigned
+          if (this.sale.driverAssignedData) {
+            // return  this.saleStatusOptions.driverAssigned
           } else {
-            if(this.sale.confirmedDeliveryData){
-                // return  this.saleStatusOptions.confirmedDelivery
+            if (this.sale.confirmedDeliveryData) {
+              // return  this.saleStatusOptions.confirmedDelivery
             } else {
-              if(this.sale.confirmedDocumentData){
-                  return  this.saleStatusOptions.confirmedDocument
+              if (this.sale.confirmedDocumentData) {
+                return this.saleStatusOptions.confirmedDocument
               } else {
-                if(this.sale.confirmedRequestData){
-                    return  this.saleStatusOptions.confirmedRequest
+                if (this.sale.confirmedRequestData) {
+                  return this.saleStatusOptions.confirmedRequest
                 } else {
-                  if(this.sale.attendedData){
-                      return  this.saleStatusOptions.attended
+                  if (this.sale.attendedData) {
+                    return this.saleStatusOptions.attended
                   } else {
-                      return  this.saleStatusOptions.requested
+                    return this.saleStatusOptions.requested
                   }
                 }
               }
@@ -492,24 +469,24 @@ export class SalesDetailComponent implements OnInit {
     }
   }
 
-  downgradeConfirmation(newStatus: Sale['status']): 
-  Observable<{action: string, lastObservation: string}>{
+  downgradeConfirmation(newStatus: Sale['status']):
+    Observable<{ action: string, lastObservation: string }> {
     let dialogRef: MatDialogRef<ConfirmationDialogComponent>;
 
-    if(newStatus == this.saleStatusOptions.confirmedRequest){
+    if (newStatus == this.saleStatusOptions.confirmedRequest) {
       dialogRef = this.dialog.open(ConfirmationDialogComponent, {
         closeOnNavigation: false,
         disableClose: true,
         width: '360px',
-        maxWidth: '360px',      
+        maxWidth: '360px',
         data: {
-        warning: `La solicitud será editada.`,
-        content: `¿Está seguro de regresar la solicitud al estado <b>'${newStatus}'</b>?
+          warning: `La solicitud será editada.`,
+          content: `¿Está seguro de regresar la solicitud al estado <b>'${newStatus}'</b>?
           Con esta acción, se reestablecerá el stock correspondiente.`,
-        noObservation: true,
-        observation: null,
-        title: 'Deshacer',
-        titleIcon: 'warning'
+          noObservation: true,
+          observation: null,
+          title: 'Deshacer',
+          titleIcon: 'warning'
         }
       })
     } else {
@@ -517,14 +494,14 @@ export class SalesDetailComponent implements OnInit {
         closeOnNavigation: false,
         disableClose: true,
         width: '360px',
-        maxWidth: '360px',      
+        maxWidth: '360px',
         data: {
-        warning: `La solicitud será editada.`,
-        content: `¿Está seguro de regresar la solicitud al estado <b>'${newStatus}'</b>?`,
-        noObservation: true,
-        observation: null,
-        title: 'Deshacer',
-        titleIcon: 'warning'
+          warning: `La solicitud será editada.`,
+          content: `¿Está seguro de regresar la solicitud al estado <b>'${newStatus}'</b>?`,
+          noObservation: true,
+          observation: null,
+          title: 'Deshacer',
+          titleIcon: 'warning'
         }
       })
     }
@@ -532,41 +509,41 @@ export class SalesDetailComponent implements OnInit {
     return dialogRef.afterClosed().pipe(take(1))
   }
 
-  upgradeConfirmation(newStatus: Sale['status']): 
-  Observable<{action: string, lastObservation: string}>{
+  upgradeConfirmation(newStatus: Sale['status']):
+    Observable<{ action: string, lastObservation: string }> {
     let dialogRef: MatDialogRef<ConfirmationDialogComponent>;
 
-    if(newStatus == this.saleStatusOptions.confirmedDocument){
+    if (newStatus == this.saleStatusOptions.confirmedDocument) {
       dialogRef = this.dialog.open(ConfirmationDialogComponent, {
         closeOnNavigation: false,
         disableClose: true,
         width: '360px',
-        maxWidth: '360px',      
+        maxWidth: '360px',
         data: {
-        warning: `La solicitud será actualizada.`,
-        content: `¿Está seguro de actualizar la solicitud al estado <b>'${newStatus}'</b>?
+          warning: `La solicitud será actualizada.`,
+          content: `¿Está seguro de actualizar la solicitud al estado <b>'${newStatus}'</b>?
           Con esta acción, se descontará el stock correspondiente.`,
-        noObservation: true,
-        observation: null,
-        title: 'Actualizar',
-        titleIcon: 'warning'
+          noObservation: true,
+          observation: null,
+          title: 'Actualizar',
+          titleIcon: 'warning'
         }
       })
-    } else { 
-      if(newStatus == this.saleStatusOptions.cancelled){
+    } else {
+      if (newStatus == this.saleStatusOptions.cancelled) {
         dialogRef = this.dialog.open(ConfirmationDialogComponent, {
           closeOnNavigation: false,
           disableClose: true,
           width: '360px',
-          maxWidth: '360px',      
+          maxWidth: '360px',
           data: {
-          warning: `La solicitud será anulada.`,
-          content: `¿Está seguro de <b>cancelar</b> la solicitud? Si la solicitud
+            warning: `La solicitud será anulada.`,
+            content: `¿Está seguro de <b>cancelar</b> la solicitud? Si la solicitud
           se encuentra en estado 'Comprobante Confirmado' se repondrá el stock correspondiente`,
-          noObservation: true,
-          observation: null,
-          title: 'Anular',
-          titleIcon: 'warning'
+            noObservation: true,
+            observation: null,
+            title: 'Anular',
+            titleIcon: 'warning'
           }
         })
       } else {
@@ -574,14 +551,14 @@ export class SalesDetailComponent implements OnInit {
           closeOnNavigation: false,
           disableClose: true,
           width: '360px',
-          maxWidth: '360px',      
+          maxWidth: '360px',
           data: {
-          warning: `La solicitud será actualizada.`,
-          content: `¿Está seguro de actualizar la solicitud al estado <b>'${newStatus}'</b>?`,
-          noObservation: true,
-          observation: null,
-          title: 'Actualizar',
-          titleIcon: 'warning'
+            warning: `La solicitud será actualizada.`,
+            content: `¿Está seguro de actualizar la solicitud al estado <b>'${newStatus}'</b>?`,
+            noObservation: true,
+            observation: null,
+            title: 'Actualizar',
+            titleIcon: 'warning'
           }
         })
       }
@@ -590,7 +567,7 @@ export class SalesDetailComponent implements OnInit {
     return dialogRef.afterClosed().pipe(take(1))
   }
 
-  onGetUpdatedSale(newStatus: Sale['status'], user: User): Sale{
+  onGetUpdatedSale(newStatus: Sale['status'], user: User): Sale {
     let date = new Date()
     this.productForm.markAsPending();
 
@@ -607,25 +584,25 @@ export class SalesDetailComponent implements OnInit {
     };
 
     sale.requestedProducts = this.getSaleRequestedProducts();
-    if(newStatus == this.saleStatusOptions.cancelled){
+    if (newStatus == this.saleStatusOptions.cancelled) {
       sale.cancelledData = {
         cancelledAt: date,
         cancelledBy: user
       }
     } else {
       sale.cancelledData = null;
-      if(/*newStatus == this.saleStatusOptions.confirmedDelivery*/ false){
+      if (/*newStatus == this.saleStatusOptions.confirmedDelivery*/ false) {
         sale.confirmedDeliveryData = {
           confirmedAt: date,
           confirmedBy: user,
-          deliveryType: this.confirmedDeliveryForm.get("deliveryType").value ? 
-                        "Moto" : "Biker",
+          deliveryType: this.confirmedDeliveryForm.get("deliveryType").value ?
+            "Moto" : "Biker",
           deliveryBusiness: this.confirmedDeliveryForm.get("deliveryBusiness").value
         }
-      } else{
+      } else {
         //Confirmed Document
-        sale.confirmedDeliveryData= null
-        if(newStatus == this.saleStatusOptions.confirmedDocument){
+        sale.confirmedDeliveryData = null
+        if (newStatus == this.saleStatusOptions.confirmedDocument) {
           sale.confirmedDocumentData = {
             documentNumber: this.confirmedDocumentForm.get('documentNumber').value,
             confirmedBy: user,
@@ -633,8 +610,8 @@ export class SalesDetailComponent implements OnInit {
           }
         } else {
           //Confirmed Request
-          sale.confirmedDocumentData= null
-          if(newStatus == this.saleStatusOptions.confirmedRequest){
+          sale.confirmedDocumentData = null
+          if (newStatus == this.saleStatusOptions.confirmedRequest) {
             sale.confirmedRequestData = {
               assignedDate: this.confirmedRequestForm.get('assignedDate').value,
               requestedProductsId: sale.requestedProducts.map(el => el.product.id),
@@ -645,7 +622,7 @@ export class SalesDetailComponent implements OnInit {
           } else {
             //ATTENDED
             sale.confirmedRequestData = null
-            if(newStatus == this.saleStatusOptions.attended){
+            if (newStatus == this.saleStatusOptions.attended) {
               sale.attendedData = {
                 attendedAt: date,
                 attendedBy: user
@@ -658,16 +635,16 @@ export class SalesDetailComponent implements OnInit {
     return sale;
   }
 
-  onUpdateStock(requestedProducts: Sale['requestedProducts'], batch: firebase.firestore.WriteBatch, decrease: boolean){
+  onUpdateStock(requestedProducts: Sale['requestedProducts'], batch: firebase.firestore.WriteBatch, decrease: boolean) {
     this.dbs.onUpdateStock(requestedProducts, batch, decrease)
   }
 
-  getSaleRequestedProducts(): Sale['requestedProducts']{
+  getSaleRequestedProducts(): Sale['requestedProducts'] {
     let requestedProducts: Sale['requestedProducts'] = [];
     (<FormArray>this.productForm.get('productList')).controls.forEach(formGroup => {
       //If product quantity is 0, we don't need to save it again
-      if(formGroup.get('quantity').value){
-        if(!(<Product | Package>formGroup.get('product').value).package){
+      if (formGroup.get('quantity').value) {
+        if (!(<Product | Package>formGroup.get('product').value).package) {
           requestedProducts.push({
             quantity: formGroup.get('quantity').value,
             product: formGroup.get('product').value
@@ -684,59 +661,59 @@ export class SalesDetailComponent implements OnInit {
     return requestedProducts
   }
 
-  giveProductPrice(item: SaleRequestedProducts): number{
-    if(item.product.promo){
-      let promTotalQuantity = Math.floor(item.quantity/item.product.promoData.quantity);
+  giveProductPrice(item: SaleRequestedProducts): number {
+    if (item.product.promo) {
+      let promTotalQuantity = Math.floor(item.quantity / item.product.promoData.quantity);
       let promTotalPrice = promTotalQuantity * item.product.promoData.promoPrice;
       let noPromTotalQuantity = item.quantity % item.product.promoData.quantity;
       let noPromTotalPrice = noPromTotalQuantity * item.product.price;
       return promTotalPrice + noPromTotalPrice;
     }
-    else{
-      return item.quantity*item.product.price
+    else {
+      return item.quantity * item.product.price
     }
   }
 
   giveProductWeight(item: SaleRequestedProducts): number {
-    if(!item.product.package){
-      return (<Product>item.product).unit.weight*item.quantity;
+    if (!item.product.package) {
+      return (<Product>item.product).unit.weight * item.quantity;
     } else {
       return item.chosenOptions.map((opt, index) => {
         //if it has a valid chosen product, we use the weight
-        if(opt){
+        if (opt) {
           return opt.unit.weight;
-        } 
+        }
         //If it doesn't have a chosen product, we calculate the minimum
         //of the respective options.
         else {
           return Math.min(
             ...(<Package>item.product).items[index].productsOptions.map(prod => prod.unit.weight)
-            )
+          )
         }
-      }).reduce((a,b)=> a + b, 0)*item.quantity
+      }).reduce((a, b) => a + b, 0) * item.quantity
     }
   }
 
-  getTotalPrice(): number{
+  getTotalPrice(): number {
     let items: SaleRequestedProducts[] = this.productForm.get('productList').value;
-    return items.reduce((a,b)=> a + this.giveProductPrice(b), 0)
+    return items.reduce((a, b) => a + this.giveProductPrice(b), 0)
   }
 
   getTotalWeight(): number {
     let items: SaleRequestedProducts[] = this.productForm.get('productList').value;
-    return items.reduce((a,b)=> a + this.giveProductWeight(b), 0)
+    return items.reduce((a, b) => a + this.giveProductWeight(b), 0)
   }
 
   displayFn(input: Product) {
     if (!input) return '';
     return input.description;
   }
-  
-  onFloor(el: number, el2: number): number{
-    return Math.floor(el/el2);
+
+  onFloor(el: number, el2: number): number {
+    return Math.floor(el / el2);
   }
 
-  getCorrelative(corr: number){
+  getCorrelative(corr: number) {
     return corr.toString().padStart(4, '0')
   }
 }
