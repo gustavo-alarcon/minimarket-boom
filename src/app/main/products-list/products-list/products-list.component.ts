@@ -17,6 +17,7 @@ import { Product } from 'src/app/core/models/product.model';
 import { ProductCreateEditComponent } from '../product-create-edit/product-create-edit.component';
 import { ProductEditPromoComponent } from '../product-edit-promo/product-edit-promo.component';
 import { ConfirmationDialogComponent } from '../../confirmation-dialog/confirmation-dialog.component';
+import { Category } from 'src/app/core/models/category.model';
 
 
 @Component({
@@ -34,8 +35,8 @@ export class ProductsListComponent implements OnInit {
   //Table
   productsTableDataSource = new MatTableDataSource<Product>();
   productsDisplayedColumns: string[] = [
-    'index', 'photoURL', 'description', 'sku', 'category', 'price', 
-    'unitDescription', 'unitAbbreviation', 'unitWeight', 'sellMinimum', 'alertMinimum', 
+    'index', 'photoURL', 'description', 'sku', 'category', 'price',
+    'unitDescription', 'unitAbbreviation', 'unitWeight', 'sellMinimum', 'alertMinimum',
     'realStock', 'mermaStock', /*'virtualStock', */'published', 'actions'
   ]
 
@@ -45,8 +46,8 @@ export class ProductsListComponent implements OnInit {
   }
 
   //Observables
-  categoryObservable$: Observable<[any, string[]]>
-  categoryList$: Observable<string[]>
+  categoryObservable$: Observable<[any, Category[]]>
+  categoryList$: Observable<Category[]>
   filter$: Observable<boolean>
 
 
@@ -55,7 +56,9 @@ export class ProductsListComponent implements OnInit {
 
   //noResult
   noResult$: Observable<string>;
-  noResultImage: string = ''
+  noResultImage: string = '';
+
+  categorySelected: boolean  = false;
 
   constructor(
     private fb: FormBuilder,
@@ -82,18 +85,26 @@ export class ProductsListComponent implements OnInit {
         let category = filter.trim().split('&+&')[0];   //category
         let name = filter.trim().split('&+&')[1];       //product name
         let promo = filter.trim().split('&+&')[2];                    //promo
-        return (data.category.match(new RegExp(category,'ig'))
+        return (data.category.match(new RegExp(category, 'ig'))
           && data.description.match(new RegExp(name, 'ig'))
           && (String(data.promo) == promo || promo == "false"))
       }
 
     this.categoryObservable$ = combineLatest(
-      this.categoryForm.valueChanges.pipe(startWith('')), 
+      this.categoryForm.valueChanges.pipe(startWith('')),
       this.dbs.getProductsListCategoriesValueChanges()
-      ).pipe(share());
+    ).pipe(share());
 
     this.categoryList$ = this.categoryObservable$.pipe(map(([formValue, categories]) => {
-      let filter = categories.filter(el => el.match(new RegExp(formValue,'ig')));
+      // sanitazing form input
+      let cleanFormValue = formValue.name ? formValue.name : '';
+      // Flagging category selection
+      this.categorySelected = formValue.name ? true : false;
+
+      let filter = categories.filter(el => {
+        return el.name.toLocaleLowerCase().includes(cleanFormValue.toLocaleLowerCase());
+      });
+
       if (!(filter.length == 1 && filter[0] === formValue) && formValue.length) {
         this.categoryForm.setErrors({ invalid: true });
       }
@@ -101,12 +112,12 @@ export class ProductsListComponent implements OnInit {
     }));
 
     this.filter$ = combineLatest(
-      this.categoryObservable$,
+      this.categoryList$,
       this.itemsFilterForm.valueChanges.pipe(startWith('')),
       this.promoFilterForm.valueChanges.pipe(startWith(false)))
       .pipe(
-        map(([[categoryFormValue, categories], itemsFormValue, promoFormValue]) => {
-          this.productsTableDataSource.filter = categoryFormValue + '&+&' + itemsFormValue + '&+&' + promoFormValue;
+        map(([categorySelected, itemsFormValue, promoFormValue]) => {
+          this.productsTableDataSource.filter = (categorySelected.length > 1 ? '' : categorySelected[0].name) + '&+&' + itemsFormValue + '&+&' + promoFormValue;
           return true
         })
       )
@@ -115,20 +126,56 @@ export class ProductsListComponent implements OnInit {
       tap(res => {
         this.productsTableDataSource.data = res.map(el => {
           el['virtualStock$'] = this.dbs.getVirtualStock(el).pipe(
-            map(prod => prod.reduce((a,b)=> a+b.quantity, 0))
+            map(prod => prod.reduce((a, b) => a + b.quantity, 0))
           );
           return el
         })
       })
     )
+
+
+  }
+
+  showCategory(category: any): string | null {
+    return category ? category.name : null
   }
 
   onPublish(product: Product, publish: boolean) {
-    let prod = {...product};
+    let prod = { ...product };
     prod.published = publish;
-    this.dbs.publishProduct(true, prod, null).commit().then(
+    this.dbs.publishProduct(publish, prod, null).commit().then(
       res => {
         this.snackBar.open('Producto editado satisfactoriamente.', 'Aceptar');
+      },
+      err => {
+        this.snackBar.open('Ocurrió un error. Vuelva a intentarlo.', 'Aceptar');
+      }
+    )
+
+  }
+
+  increasePriority(product: Product) {
+    let prod = { ...product };
+    prod.priority++;
+    console.log(prod.priority);
+    this.dbs.increasePriority(prod).commit().then(
+      res => {
+        this.snackBar.open('Prioridad incrementada', 'Aceptar');
+      },
+      err => {
+        this.snackBar.open('Ocurrió un error. Vuelva a intentarlo.', 'Aceptar');
+      }
+    )
+
+  }
+
+  decreasePriority(product: Product) {
+    let prod = { ...product };
+    prod.priority--;
+    console.log(prod.priority);
+    this.dbs.decreasePriority(prod).commit().then(
+      res => {
+        this.snackBar.open('Prioridad reducida', 'Aceptar');
       },
       err => {
         this.snackBar.open('Ocurrió un error. Vuelva a intentarlo.', 'Aceptar');
@@ -143,31 +190,31 @@ export class ProductsListComponent implements OnInit {
       closeOnNavigation: true,
       disableClose: true,
       width: '360px',
-      maxWidth: '360px',      
+      maxWidth: '360px',
       data: {
-      warning: `El producto será borrado.`,
-      content: `¿Está seguro de borrar el producto ${product.description}?`,
-      noObservation: true,
-      observation: null,
-      title: 'Borrar',
-      titleIcon: 'done_all'
+        warning: `El producto será borrado.`,
+        content: `¿Está seguro de borrar el producto ${product.description}?`,
+        noObservation: true,
+        observation: null,
+        title: 'Borrar',
+        titleIcon: 'done_all'
       }
     })
 
     dialogRef.afterClosed().pipe(
       take(1),
-      switchMap((answer: {action: string, lastObservation: string}) => 
+      switchMap((answer: { action: string, lastObservation: string }) =>
         iif(
-          () => {return answer.action =="confirm"},
+          () => { return answer.action == "confirm" },
           this.dbs.deleteProduct(product),
           of(answer)
-          )
+        )
       ))
-      .subscribe((answer: {action: string, lastObservation: string} | firebase.firestore.WriteBatch) => {
-        if((<Object>answer).hasOwnProperty("action")){
+      .subscribe((answer: { action: string, lastObservation: string } | firebase.firestore.WriteBatch) => {
+        if ((<Object>answer).hasOwnProperty("action")) {
           //We don't do anything, as the action was cancelled,
         }
-        else{
+        else {
           (<firebase.firestore.WriteBatch>answer).commit().then(
             res => {
               this.snackBar.open('Producto eliminado satisfactoriamente.', 'Aceptar');
@@ -178,9 +225,9 @@ export class ProductsListComponent implements OnInit {
           )
         }
       },
-      err => {
-        this.snackBar.open('Ocurrió un error. Vuelva a intentarlo.', 'Aceptar');
-      })
+        err => {
+          this.snackBar.open('Ocurrió un error. Vuelva a intentarlo.', 'Aceptar');
+        })
 
   }
 
@@ -189,7 +236,7 @@ export class ProductsListComponent implements OnInit {
     dialogRef = this.dialog.open(ProductEditPromoComponent, {
       width: '350px',
       data: {
-        data: {...product},
+        data: { ...product },
       }
     });
     dialogRef.afterClosed().subscribe(res => {
@@ -212,7 +259,7 @@ export class ProductsListComponent implements OnInit {
       dialogRef = this.dialog.open(ProductCreateEditComponent, {
         width: '350px',
         data: {
-          data: {...product},
+          data: { ...product },
           edit: edit
         }
       });
@@ -255,8 +302,8 @@ export class ProductsListComponent implements OnInit {
   downloadXls(): void {
     let table_xlsx: any[] = [];
     let headersXlsx = [
-      'Descripcion', 'SKU', 'Categoría', 'Precio', 
-      'Descripción de Unidad', 'Abreviación', 'Peso (KG)', 'Stock Real', 'Mínimo de venta', 'Mínimio de alerta', 
+      'Descripcion', 'SKU', 'Categoría', 'Precio',
+      'Descripción de Unidad', 'Abreviación', 'Peso (KG)', 'Stock Real', 'Mínimo de venta', 'Mínimio de alerta',
       'Stock de merma', 'Stock Virtual', 'Publicado'
     ]
 
@@ -264,19 +311,19 @@ export class ProductsListComponent implements OnInit {
 
     this.productsTableDataSource.filteredData.forEach(product => {
       const temp = [
-       product.description, 
-       product.sku, 
-       product.category, 
-       "S/." +product.price,
-       product.unit.description,
-       product.unit.abbreviation,
-       product.unit.weight, 
-       product.realStock, 
-       product.sellMinimum, 
-       product.alertMinimum,  
-       product.mermaStock, 
-       0, //virtualStock
-       product.published ? "Sí":"No"
+        product.description,
+        product.sku,
+        product.category,
+        "S/." + product.price,
+        product.unit.description,
+        product.unit.abbreviation,
+        product.unit.weight,
+        product.realStock,
+        product.sellMinimum,
+        product.alertMinimum,
+        product.mermaStock,
+        0, //virtualStock
+        product.published ? "Sí" : "No"
       ];
 
       table_xlsx.push(temp);

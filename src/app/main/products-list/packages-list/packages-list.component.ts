@@ -18,6 +18,7 @@ import { PackagesCreateEditComponent } from '../packages-create-edit/packages-cr
 import { ConfirmationDialogComponent } from '../../confirmation-dialog/confirmation-dialog.component';
 import { DatePipe } from '@angular/common';
 import { ProductEditPromoComponent } from '../product-edit-promo/product-edit-promo.component';
+import { Category } from 'src/app/core/models/category.model';
 
 
 @Component({
@@ -46,8 +47,8 @@ export class PackagesListComponent implements OnInit {
   }
 
   //Observables
-  categoryObservable$: Observable<[any, string[]]>
-  categoryList$: Observable<string[]>
+  categoryObservable$: Observable<[any, Category[]]>
+  categoryList$: Observable<Category[]>
   filter$: Observable<boolean>
 
 
@@ -56,7 +57,9 @@ export class PackagesListComponent implements OnInit {
 
   //noResult
   noResult$: Observable<string>;
-  noResultImage: string = ''
+  noResultImage: string = '';
+
+  categorySelected: boolean = false;
 
   constructor(
     private fb: FormBuilder,
@@ -81,18 +84,42 @@ export class PackagesListComponent implements OnInit {
   initObservables() {
     this.packagesTableDataSource.filterPredicate =
       (data: Package, filter: string) => {
-        let name = filter.trim().split('&+&')[0];                     //package name
-        let promo = filter.trim().split('&+&')[1];                    //promo
-        return (data.description.match(new RegExp(name, 'ig'))
+        let category = filter.trim().split('&+&')[0];   //category
+        let name = filter.trim().split('&+&')[1];       //package name
+        let promo = filter.trim().split('&+&')[2];                    //promo
+        return (data.category.match(new RegExp(category, 'ig'))
+          && data.description.match(new RegExp(name, 'ig'))
           && (String(data.promo) == promo || promo == "false"))
       }
 
+    this.categoryObservable$ = combineLatest(
+      this.categoryForm.valueChanges.pipe(startWith('')),
+      this.dbs.getProductsListCategoriesValueChanges()
+    ).pipe(share());
+
+    this.categoryList$ = this.categoryObservable$.pipe(map(([formValue, categories]) => {
+      // sanitazing form input
+      let cleanFormValue = formValue.name ? formValue.name : '';
+      // Flagging category selection
+      this.categorySelected = formValue.name ? true : false;
+
+      let filter = categories.filter(el => {
+        return el.name.toLocaleLowerCase().includes(cleanFormValue.toLocaleLowerCase());
+      });
+
+      if (!(filter.length == 1 && filter[0] === formValue) && formValue.length) {
+        this.categoryForm.setErrors({ invalid: true });
+      }
+      return filter;
+    }));
+
     this.filter$ = combineLatest(
+      this.categoryList$,
       this.itemsFilterForm.valueChanges.pipe(startWith('')),
       this.promoFilterForm.valueChanges.pipe(startWith(false)))
       .pipe(
-        map(([itemsFormValue, promoFormValue]) => {
-          this.packagesTableDataSource.filter = itemsFormValue + '&+&' + promoFormValue;
+        map(([categorySelected, itemsFormValue, promoFormValue]) => {
+          this.packagesTableDataSource.filter = (categorySelected.length > 1 ? '' : categorySelected[0].name) + '&+&' + itemsFormValue + '&+&' + promoFormValue;
           return true
         })
       )
@@ -104,12 +131,46 @@ export class PackagesListComponent implements OnInit {
     )
   }
 
+  showCategory(category: any): string | null {
+    return category ? category.name : null
+  }
+
   onPublish(pack: Package, publish: boolean) {
     let prod = { ...pack };
     prod.published = publish;
     this.dbs.publishPackage(true, prod, null).commit().then(
       res => {
         this.snackBar.open('Paquete editado satisfactoriamente.', 'Aceptar');
+      },
+      err => {
+        this.snackBar.open('Ocurrió un error. Vuelva a intentarlo.', 'Aceptar');
+      }
+    )
+
+  }
+
+  increasePriority(product: Package) {
+    let prod = { ...product };
+    prod.priority++;
+    console.log(prod.priority);
+    this.dbs.increasePriority(prod).commit().then(
+      res => {
+        this.snackBar.open('Prioridad incrementada', 'Aceptar');
+      },
+      err => {
+        this.snackBar.open('Ocurrió un error. Vuelva a intentarlo.', 'Aceptar');
+      }
+    )
+
+  }
+
+  decreasePriority(product: Package) {
+    let prod = { ...product };
+    prod.priority--;
+    console.log(prod.priority);
+    this.dbs.decreasePriority(prod).commit().then(
+      res => {
+        this.snackBar.open('Prioridad reducida', 'Aceptar');
       },
       err => {
         this.snackBar.open('Ocurrió un error. Vuelva a intentarlo.', 'Aceptar');

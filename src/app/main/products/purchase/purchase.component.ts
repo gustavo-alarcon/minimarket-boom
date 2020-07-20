@@ -80,8 +80,30 @@ export class PurchaseComponent implements OnInit {
     this.init$ = this.dbs.getGeneralConfigDoc().pipe(
       tap(res => {
         this.loadingbar.next(false)
-        this.payType = res['payments']
-        this.districts = res['districts']
+        this.payType = res['payments'].sort((a, b) => {
+          const nameA = a.name;
+          const nameB = b.name;
+
+          let comparison = 0;
+          if (nameA > nameB) {
+            comparison = 1;
+          } else if (nameA < nameB) {
+            comparison = -1;
+          }
+          return comparison;
+        });
+        this.districts = res['districts'].sort((a, b) => {
+          const nameA = a.name;
+          const nameB = b.name;
+
+          let comparison = 0;
+          if (nameA > nameB) {
+            comparison = 1;
+          } else if (nameA < nameB) {
+            comparison = -1;
+          }
+          return comparison;
+        });
       })
     )
 

@@ -243,6 +243,12 @@
                           Publicar
                         </button>
                       </ng-template>
+                      <button mat-menu-item (click)="increasePriority()">
+                        <mat-icon>add</mat-icon> Prioridad
+                      </button>
+                      <button mat-menu-item (click)="reducePriority()">
+                        <mat-icon>remove</mat-icon> Prioridad
+                      </button>
                       <button mat-menu-item (click)="onCreateEditItem(true, raw)">
                         Editar
                       </button>

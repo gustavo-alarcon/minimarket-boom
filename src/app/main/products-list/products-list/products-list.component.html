@@ -12,12 +12,12 @@
       <mat-icon matPrefix></mat-icon>
       <mat-icon matSuffix>arrow_drop_down</mat-icon>
       <input [formControl]="categoryForm" [matAutocomplete]="categoryAutocomplete" type="text" matInput>
-      <mat-autocomplete autoActiveFirstOption #categoryAutocomplete="matAutocomplete">
+      <mat-autocomplete autoActiveFirstOption #categoryAutocomplete="matAutocomplete" [displayWith]="showCategory">
         <mat-option [value]="''">
           Todos
         </mat-option>
         <mat-option *ngFor="let category of categories" [value]="category">
-          {{category}}
+          {{category.name}}
         </mat-option>
       </mat-autocomplete>
       <mat-error>
@@ -222,22 +222,34 @@
               class="w3-center w3-padding w3-border-left w3-border-lightgrey">Acciones</th>
             <td style="padding:0px 24px" *matCellDef="let raw" class="w3-border-left w3-border-lightgrey">
               <mat-menu #rawMenu="matMenu">
-                <button mat-menu-item (click)="onPromo(raw)">
-                  Promoción
+                <button class="w3-small" mat-menu-item (click)="onPromo(raw)">
+                  <mat-icon>local_offer</mat-icon> Promoción
                 </button>
-                <button *ngIf="raw?.published else publish" mat-menu-item (click)="onPublish(raw, false)">
-                  Ocultar
+                <button class="w3-small" *ngIf="raw?.published else publish" mat-menu-item
+                  (click)="onPublish(raw, false)">
+                  <mat-icon>visibility_off</mat-icon> Ocultar
                 </button>
                 <ng-template #publish>
-                  <button mat-menu-item (click)="onPublish(raw, true)">
-                    Publicar
+                  <button class="w3-small" mat-menu-item (click)="onPublish(raw, true)">
+                    <mat-icon>visibility</mat-icon> Publicar
                   </button>
                 </ng-template>
-                <button mat-menu-item (click)="onCreateEditItem(true, raw)">
-                  Editar
+                <div [matTooltipDisabled]="categorySelected" matTooltip="Primero seleccione una categoría">
+                  <button class="w3-small" mat-menu-item (click)="increasePriority(raw)" [disabled]="!categorySelected">
+                    <mat-icon>add</mat-icon> Prioridad
+                  </button>
+                </div>
+                <div [matTooltipDisabled]="categorySelected" matTooltip="Primero seleccione una categoría">
+                  <button class="w3-small" mat-menu-item (click)="decreasePriority(raw)" [disabled]="!categorySelected"
+                    [matTooltipDisabled]="categorySelected" matTooltip="Primero seleccione una categoría">
+                    <mat-icon>remove</mat-icon> Prioridad
+                  </button>
+                </div>
+                <button class="w3-small" mat-menu-item (click)="onCreateEditItem(true, raw)">
+                  <mat-icon>edit</mat-icon> Editar
                 </button>
-                <button mat-menu-item (click)="onDeleteItem(raw)">
-                  Borrar
+                <button class="w3-small" mat-menu-item (click)="onDeleteItem(raw)">
+                  <mat-icon>delete</mat-icon> Borrar
                 </button>
               </mat-menu>
               <ng-container *ngIf="(auth.user$ | async) as user">

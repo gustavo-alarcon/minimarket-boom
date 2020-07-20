@@ -17,11 +17,12 @@ export interface Package {
   promo: boolean;           //Indicates wheter there is a promo
   promoData?: PromoData;
   published?: boolean;
+  priority?: number;
 
   dateLimit: Date;      //In the case of "indefinido", will be null
 
   totalItems: number;
-  items: PackageItems[] 
+  items: PackageItems[];
 
   createdAt: Date;
   createdBy: User;

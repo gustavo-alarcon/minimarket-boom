@@ -36,6 +36,7 @@ import { PackagesConfigUnitsComponent } from './packages-config-units/packages-c
 import { PackagesListComponent } from './packages-list/packages-list.component';
 import { ProductsListComponent } from './products-list/products-list.component';
 import { ParentListComponent } from './parent-list.component';
+import { MatTooltipModule } from '@angular/material/tooltip';
 
 
 
@@ -75,7 +76,8 @@ import { ParentListComponent } from './parent-list.component';
     SatDatepickerModule,
     SatNativeDateModule,
     MatChipsModule,
-    MatTabsModule
+    MatTabsModule,
+    MatTooltipModule
   ],
   providers: [
     ProductCreateEditComponent,

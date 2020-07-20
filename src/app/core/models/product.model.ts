@@ -20,6 +20,7 @@ export interface Product {
   promo: boolean;           //Indicates wheter there is a promo
   promoData?: PromoData;
   published?: boolean;
+  priority?: number;
   createdAt: Date;
   createdBy: User;
   editedAt: Date;

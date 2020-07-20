@@ -35,7 +35,7 @@ export class DatabaseService {
 
   // public opening = new BehaviorSubject<Array<{ opening: string, closing: string }>>([]);
   public opening$: Observable<Array<{ opening: string, closing: string }>>;
-  
+
   ;
   constructor(
     private afs: AngularFirestore,
@@ -130,14 +130,14 @@ export class DatabaseService {
   ////////////////////////////////////////////////////////////////////////////////
   //Products list/////////////////////////////////////////////////////////////////
   getProductsList(): Observable<Product[]> {
-    return this.afs.collection<Product>(this.productsListRef, ref => ref.orderBy("description", "asc"))
+    return this.afs.collection<Product>(this.productsListRef, ref => ref.orderBy("priority", "desc"))
       .get().pipe(map((snap) => {
         return snap.docs.map(el => <Product>el.data())
       }));
   }
 
   getProductsListValueChanges() {
-    return this.afs.collection<Product>(this.productsListRef, ref => ref.orderBy("description", "asc"))
+    return this.afs.collection<Product>(this.productsListRef, ref => ref.orderBy("priority", "desc"))
       .valueChanges().pipe(
         shareReplay(1)
       );
@@ -247,7 +247,23 @@ export class DatabaseService {
   publishProduct(published: boolean, product: Product, user: User): firebase.firestore.WriteBatch {
     let productRef: DocumentReference = this.afs.firestore.collection(this.productsListRef).doc(product.id);
     let batch = this.afs.firestore.batch();
-    batch.update(productRef, { published })
+    batch.update(productRef, { published: published })
+    return batch;
+  }
+
+  increasePriority(product: Product | Package): firebase.firestore.WriteBatch {
+    // works with both products and packages 
+    let productRef: DocumentReference = product.package ? this.afs.firestore.collection(this.packagesListRef).doc(product.id) : this.afs.firestore.collection(this.productsListRef).doc(product.id);
+    let batch = this.afs.firestore.batch();
+    batch.update(productRef, { priority: product.priority })
+    return batch;
+  }
+
+  decreasePriority(product: Product | Package): firebase.firestore.WriteBatch {
+    // works with both products and packages
+    let productRef: DocumentReference = product.package ? this.afs.firestore.collection(this.packagesListRef).doc(product.id) : this.afs.firestore.collection(this.productsListRef).doc(product.id);
+    let batch = this.afs.firestore.batch();
+    batch.update(productRef, { priority: product.priority })
     return batch;
   }
 
@@ -307,14 +323,14 @@ export class DatabaseService {
   ////////////////////////////////////////////////////////////////////////////////
   //Packages list/////////////////////////////////////////////////////////////////
   getPackagesList(): Observable<Package[]> {
-    return this.afs.collection<Package>(this.packagesListRef, ref => ref.orderBy("description", "asc"))
+    return this.afs.collection<Package>(this.packagesListRef, ref => ref.orderBy("priority", "desc"))
       .get().pipe(map((snap) => {
         return snap.docs.map(el => <Package>el.data())
       }));
   }
 
   getPackagesListValueChanges(): Observable<Package[]> {
-    return this.afs.collection<Package>(this.packagesListRef, ref => ref.orderBy("description", "asc"))
+    return this.afs.collection<Package>(this.packagesListRef, ref => ref.orderBy("priority", "desc"))
       .valueChanges().pipe(
         shareReplay(1)
       );
@@ -659,6 +675,20 @@ export class DatabaseService {
     return this.afs.collection(`/db/distoProductos/config`).doc('generalConfig').valueChanges()
       .pipe(
         map(res => res['districts']),
+        map(res => {
+          return res.sort((a, b) => {
+            const nameA = a.name;
+            const nameB = b.name;
+
+            let comparison = 0;
+            if (nameA > nameB) {
+              comparison = 1;
+            } else if (nameA < nameB) {
+              comparison = -1;
+            }
+            return comparison;
+          });
+        }),
         shareReplay(1)
       )
   }
@@ -667,6 +697,20 @@ export class DatabaseService {
     return this.afs.collection(`/db/distoProductos/config`).doc('generalConfig').valueChanges()
       .pipe(
         map(res => res['payments']),
+        map(res => {
+          return res.sort((a, b) => {
+            const nameA = a.name;
+            const nameB = b.name;
+
+            let comparison = 0;
+            if (nameA > nameB) {
+              comparison = 1;
+            } else if (nameA < nameB) {
+              comparison = -1;
+            }
+            return comparison;
+          });
+        }),
         shareReplay(1)
       )
   }

@@ -226,6 +226,7 @@ export class ProductCreateEditComponent implements OnInit {
       promo: this.data.edit ? this.data.data.promo : false,
       promoData: this.data.edit ? this.data.data.promoData : null,
       published: this.data.edit ? this.data.data.published : null,
+      priority: this.data.edit ? this.data.data.priority : 1,
       createdAt: this.data.edit ? this.data.data.createdAt : new Date(),
       createdBy: this.data.edit ? this.data.data.createdBy : user,
       editedAt: this.data.edit ? new Date() : null,
