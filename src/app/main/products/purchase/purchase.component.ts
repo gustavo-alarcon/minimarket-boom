@@ -113,14 +113,7 @@ export class PurchaseComponent implements OnInit {
       photoURL: [null]
     });
 
-    this.userData$ = combineLatest(
-      this.dbs.getUsers(),
-      this.auth.user$
-    ).pipe(
-      take(1),
-      map(([users, user]) => {
-        return users.filter(el => el.uid === user.uid)[0]
-      }),
+    this.userData$ = this.auth.user$.pipe(
       tap(res => {
         this.user = res
         if (res['contact']) {

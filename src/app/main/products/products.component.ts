@@ -109,14 +109,13 @@ export class ProductsComponent implements OnInit {
     )
 
     this.init$ = combineLatest(
-      this.dbs.getUsers(),
       this.auth.user$,
       this.dbs.getGeneralConfigDoc()
     ).pipe(
-      map(([users, id, confi]) => {
+      map(([user, confi]) => {
         this.maxWeight = confi['maxWeight']
-        if (id) {
-          return users.filter(el => el.uid == id.uid)[0]
+        if (user) {
+          return user
         } else {
           return null
         }
