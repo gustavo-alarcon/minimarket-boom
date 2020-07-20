@@ -409,7 +409,7 @@ export class DatabaseService {
   publishPackage(published: boolean, pack: Package, user: User): firebase.firestore.WriteBatch {
     let packageRef: DocumentReference = this.afs.firestore.collection(this.packagesListRef).doc(pack.id);
     let batch = this.afs.firestore.batch();
-    batch.update(packageRef, { published })
+    batch.update(packageRef, { published: published })
     return batch;
   }
 

@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { Sale, SaleRequestedProducts } from 'src/app/core/models/sale.model';
 import { map } from 'rxjs/operators';
+import { AuthService } from 'src/app/core/services/auth.service';
 
 @Component({
   selector: 'app-sales',
@@ -16,7 +17,9 @@ export class SalesComponent implements OnInit {
   locationPadding$: Observable<string>;
 
   totalPriceSubj: BehaviorSubject<number> = new BehaviorSubject(0)
-  constructor() { }
+  constructor(
+    public auth: AuthService
+  ) { }
 
   ngOnInit(): void {
     this.locationPadding$ = this.locationSubject.asObservable().pipe(

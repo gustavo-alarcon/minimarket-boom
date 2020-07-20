@@ -138,7 +138,7 @@ export class PackagesListComponent implements OnInit {
   onPublish(pack: Package, publish: boolean) {
     let prod = { ...pack };
     prod.published = publish;
-    this.dbs.publishPackage(true, prod, null).commit().then(
+    this.dbs.publishPackage(publish, prod, null).commit().then(
       res => {
         this.snackBar.open('Paquete editado satisfactoriamente.', 'Aceptar');
       },
