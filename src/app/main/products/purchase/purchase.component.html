@@ -69,6 +69,7 @@
                         </mat-option>
                     </mat-select>
                     <mat-hint>El precio de delivery dependerá del distrito de destino</mat-hint>
+                    <mat-error>Campo requerido</mat-error>
                 </mat-form-field>
 
                 <mat-form-field class="w3-block" appearance="outline">
@@ -113,6 +114,7 @@
                                 <span>{{type.name}}</span>
                             </mat-option>
                         </mat-select>
+                        <mat-error>Campo requerido</mat-error>
                     </mat-form-field>
                     <div class="w3-margin-bottom account" *ngIf="payFormGroup.get('pay').value as pay">
                         <img class="example-option-img" height="30" aria-hidden [src]="pay['photoURL']"
@@ -134,6 +136,7 @@
                                 {{type}}
                             </mat-option>
                         </mat-select>
+                        <mat-error>Campo requerido</mat-error>
                     </mat-form-field>
                     <div class="w3-margin-bottom">
                         <div class="w3-margin-bottom" style="position: relative;"
@@ -165,6 +168,7 @@
                         <div class="voucher" (click)="photoURL.click()">
                             Agregar foto de voucher de pago
                         </div>
+                        <mat-hint>*Campo requerido</mat-hint>
 
                         <mat-progress-bar *ngIf="photos?.resizing$.photoURL | async" style="width:100%"
                             mode="indeterminate">
@@ -181,8 +185,8 @@
                     </button>
                     <span class="ms-fill"></span>
                 </div>
-                <button mat-raised-button color="accent" type="button" (click)="save()" [disabled]="!payFormGroup.valid"
-                    class="w3-block w3-margin-top" style=" font-weight: bold;">
+                <button mat-raised-button color="accent" type="submit" (click)="prueba()" class="w3-block w3-margin-top"
+                    style=" font-weight: bold;">
                     Finalizar Compra
                 </button>
             </div>

@@ -18,9 +18,11 @@ import { DomSanitizer } from '@angular/platform-browser';
   styleUrls: ['./recipes.component.scss']
 })
 export class RecipesComponent implements OnInit {
-  init$:Observable<{title: string, recipes: Recipe[]}>
+  init$: Observable<{ title: string, recipes: Recipe[] }>
 
-  category:string = ''
+  category: string = ''
+
+  product: Product = null
 
   constructor(
     private dbs: DatabaseService,
@@ -36,16 +38,19 @@ export class RecipesComponent implements OnInit {
     this.init$ = combineLatest(
       this.route.params,
       this.dbs.getProductsListValueChanges()
-      ).pipe(
+    ).pipe(
       take(1),
-      map(([route,products])=>{
-        this.category = products.filter(el=>el.id == route.id).map(el=>el['category'])[0]
+      map(([route, products]) => {
+        this.category = products.filter(el => el.id == route.id).map(el => el['category'])[0]
+        this.product = products.filter(el => el.id == route.id)[0]
+        console.log(this.product);
+        
         return route
       }),
-      switchMap(res => 
+      switchMap(res =>
         this.dbs.getProductRecipesValueChanges(res.id),
         (productId, recipes) => {
-          if(recipes.length){
+          if (recipes.length) {
             let title = (<Product>recipes[0].products.find(el => el.id == <string>productId.id)).description;
             return {
               title,
@@ -68,7 +73,8 @@ export class RecipesComponent implements OnInit {
         width: '350px',
         data: {
           data: recipe,
-          edit: edit
+          edit: edit,
+          product: this.product
         }
       });
       dialogRef.afterClosed().subscribe(res => {
@@ -89,7 +95,8 @@ export class RecipesComponent implements OnInit {
         width: '350px',
         data: {
           data: null,
-          edit: edit
+          edit: edit,
+          product: this.product
         }
       });
       dialogRef.afterClosed().subscribe(res => {
