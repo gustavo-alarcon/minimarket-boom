@@ -31,6 +31,8 @@ export class PurchaseComponent implements OnInit {
 
   init$: Observable<any>
 
+  order:Array<any>
+
   name: boolean = false
   total: number = 0
   delivery: number = 4
@@ -175,6 +177,34 @@ export class PurchaseComponent implements OnInit {
 
     this.delivery = this.dbs.delivery
     this.total = this.dbs.total
+
+    let newOrder:any = this.dbs.order.map(order => {
+      if (order['chosenOptions']) {
+        return order['chosenOptions'].map(el=>{
+          return {
+            product: el,
+            quantity: 1*order.quantity
+          }
+        })
+      } else {
+        return [order]
+      }
+    })
+
+
+    this.order = newOrder.reduce((a, b) => a.concat(b), []).map((el, index, array) => {
+      let counter = 0
+      array.forEach(al => {
+        if (al.product['id'] == el.product['id']) {
+          counter++
+        }
+      })
+
+      el['quantity'] = counter
+      return el
+    }).filter((dish, index, array) => array.findIndex(el => el.product['id'] === dish.product['id']) === index)
+   
+    
   }
 
   changeDelivery(district) {
@@ -395,7 +425,9 @@ export class PurchaseComponent implements OnInit {
         });
 
       }).then(() => {
-        this.dbs.order.forEach((order, ind) => {
+        
+        this.order.forEach((order, ind) => {
+         
           const ref = this.af.firestore.collection(`/db/distoProductos/productsList`).doc(order.product.id);
           this.af.firestore.runTransaction((transaction) => {
             // This code may get re-run multiple times if there are conflicts.
