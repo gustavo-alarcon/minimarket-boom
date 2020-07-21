@@ -46,7 +46,7 @@ export class OpeningGuard implements CanActivateChild {
         return this.dbs.opening$.pipe(
           map(res => {
 
-            if (user?.admin) {
+            if (user?.admin || user?.seller || user?.accountant || user?.logistic) {
               return true
             }
 
