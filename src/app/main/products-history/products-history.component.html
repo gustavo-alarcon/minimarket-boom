@@ -15,8 +15,8 @@
                 <div *ngIf="init$ | async as sales">
                     <div class="w3-hide-small w3-hide-medium" style="display: flex;">
                         <div style="width: 70%">
-                            <mat-card *ngFor="let sale of sales| paginate: { itemsPerPage: 6, currentPage: p }" class="card-record  w3-margin-bottom"
-                                (click)="showList(sale,false)">
+                            <mat-card *ngFor="let sale of sales| paginate: { itemsPerPage: 6, currentPage: p }"
+                                class="card-record  w3-margin-bottom" (click)="showList(sale,false)">
                                 <div class="ms-flex ms-flex--center" style="justify-content: space-between">
                                     <div class="corr">#{{sale.correlativeType}}{{("000"+sale.correlative).slice(-4)}}
                                     </div>
@@ -35,22 +35,22 @@
                                         <mat-icon *ngIf="sale.voucherChecked">done</mat-icon>
                                     </div>
                                     <div>
-                                        <div class="total">S/. {{(sale.total + sale.deliveryPrice) | number: '.2'}}
+                                        <div class="total">S/.
+                                            {{(getTotal(sale.requestedProducts) + sale.deliveryPrice) | number: '.2'}}
                                         </div>
                                     </div>
                                 </div>
 
                             </mat-card>
-                            <div style="display: flex; width: 100%; justify-content: flex-end;"
-                                        *ngIf="sales.length>6">
-                                        <pagination-controls (pageChange)="p = $event" previousLabel="" nextLabel=""
-                                            maxSize="6">
-                                        </pagination-controls>
-                                    </div>
+                            <div style="display: flex; width: 100%; justify-content: flex-end;" *ngIf="sales.length>6">
+                                <pagination-controls (pageChange)="p = $event" previousLabel="" nextLabel=""
+                                    maxSize="6">
+                                </pagination-controls>
+                            </div>
                         </div>
                         <mat-card *ngIf="chooseSale" class="ticket ticket--small">
                             <div class="ms-flex ms-flex--center">
-                                <h2 class="title2">Compra 
+                                <h2 class="title2">Compra
                                     #{{chooseSale.correlativeType}}{{("000"+chooseSale.correlative).slice(-4)}}
                                     🛒</h2>
                                 <span class="ms-fill"></span>
@@ -65,14 +65,15 @@
                         </mat-card>
                     </div>
                     <div class="w3-hide-large ">
-                        <mat-card *ngFor="let sale of sales| paginate: { itemsPerPage: 6, currentPage: p1 }" class="card-record  w3-margin-bottom"
-                            (click)="showList(sale,true)">
+                        <mat-card *ngFor="let sale of sales| paginate: { itemsPerPage: 6, currentPage: p1 }"
+                            class="card-record  w3-margin-bottom" (click)="showList(sale,true)">
                             <div class="ms-flex ms-flex--center">
                                 <div>
                                     <div class="corr">#{{sale.correlativeType}}{{("000"+sale.correlative).slice(-4)}}
                                     </div>
                                     <div class="dates">
-                                        <div matTooltip="Fecha Solicitada">🛍️ {{sale['createdAt'].toMillis() | date: 'dd-MMM-yyyy' }}</div>
+                                        <div matTooltip="Fecha Solicitada">🛍️
+                                            {{sale['createdAt'].toMillis() | date: 'dd-MMM-yyyy' }}</div>
                                         <div matTooltip="Fecha Asignada" *ngIf="sale.confirmedRequestData">📦
                                             {{sale.confirmedRequestData['assignedDate'].toMillis() | date: 'dd-MMM-yyyy' }}
                                         </div>
@@ -93,12 +94,10 @@
                                 </div>
                             </div>
                         </mat-card>
-                        <div style="display: flex; width: 100%; justify-content: flex-end;"
-                        *ngIf="sales.length>6">
-                        <pagination-controls (pageChange)="p1 = $event" previousLabel="" nextLabel=""
-                            maxSize="6">
-                        </pagination-controls>
-                    </div>
+                        <div style="display: flex; width: 100%; justify-content: flex-end;" *ngIf="sales.length>6">
+                            <pagination-controls (pageChange)="p1 = $event" previousLabel="" nextLabel="" maxSize="6">
+                            </pagination-controls>
+                        </div>
                     </div>
 
                 </div>

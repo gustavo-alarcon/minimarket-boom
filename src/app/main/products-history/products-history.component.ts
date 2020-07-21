@@ -65,6 +65,27 @@ export class ProductsHistoryComponent implements OnInit {
     )
   }
 
+  getTotal(order){
+    return order.map(el => this.giveProductPrice(el)).reduce((a, b) => a + b, 0)
+  }
+
+  roundNumber(number) {
+    return Number(parseFloat(number).toFixed(1));
+  }
+
+  giveProductPrice(item) {
+    if (item.product.promo) {
+      let promTotalQuantity = Math.floor(item.quantity / item.product.promoData.quantity);
+      let promTotalPrice = promTotalQuantity * item.product.promoData.promoPrice;
+      let noPromTotalQuantity = item.quantity % item.product.promoData.quantity;
+      let noPromTotalPrice = noPromTotalQuantity * item.product.price;
+      return this.roundNumber(promTotalPrice + noPromTotalPrice);
+    }
+    else {
+      return this.roundNumber(item.quantity * item.product.price)
+    }
+  }
+
   getFilterTime(el, time) {
     let date = el.toMillis()
     let begin = time.begin.getTime()

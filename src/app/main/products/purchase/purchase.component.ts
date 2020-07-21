@@ -109,6 +109,21 @@ export class PurchaseComponent implements OnInit {
       })
     )
 
+    this.firstFormGroup = this.fb.group({
+      email: [null, [Validators.required, Validators.email]],
+      dni: [null, [Validators.required, Validators.minLength(8)]],
+      name: [null, [Validators.required]],
+      lastname1: [null, [Validators.required]],
+      lastname2: [null, [Validators.required]],
+      phone: [null, [Validators.required, Validators.minLength(6)]],
+    });
+
+    this.secondFormGroup = this.fb.group({
+      address: [null, [Validators.required]],
+      district: [null, [Validators.required]],
+      ref: [null, [Validators.required]]
+    });
+
     this.payFormGroup = this.fb.group({
       pay: [null, [Validators.required]],
       typePay: [null, [Validators.required]],
@@ -162,11 +177,6 @@ export class PurchaseComponent implements OnInit {
 
           this.firstFormGroup.get('email').disable()
 
-          this.secondFormGroup = this.fb.group({
-            address: [null, [Validators.required]],
-            district: [null, [Validators.required]],
-            ref: [null, [Validators.required]]
-          });
 
           if (res['displayName']) {
             this.name = true
@@ -176,7 +186,7 @@ export class PurchaseComponent implements OnInit {
     )
 
     this.delivery = this.dbs.delivery
-    this.total = this.dbs.total
+    this.total = this.dbs.order.map(el => this.giveProductPrice(el)).reduce((a, b) => a + b, 0)
 
     let newOrder:any = this.dbs.order.map(order => {
       if (order['chosenOptions']) {
@@ -205,6 +215,19 @@ export class PurchaseComponent implements OnInit {
     }).filter((dish, index, array) => array.findIndex(el => el.product['id'] === dish.product['id']) === index)
    
     
+  }
+
+  giveProductPrice(item) {
+    if (item.product.promo) {
+      let promTotalQuantity = Math.floor(item.quantity / item.product.promoData.quantity);
+      let promTotalPrice = promTotalQuantity * item.product.promoData.promoPrice;
+      let noPromTotalQuantity = item.quantity % item.product.promoData.quantity;
+      let noPromTotalPrice = noPromTotalQuantity * item.product.price;
+      return Number((promTotalPrice + noPromTotalPrice).toFixed(1));
+    }
+    else {
+      return Number((item.quantity * item.product.price).toFixed(1));
+    }
   }
 
   changeDelivery(district) {
