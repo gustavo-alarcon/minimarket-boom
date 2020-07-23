@@ -250,11 +250,10 @@ export class ConfigurationComponent implements OnInit {
     const batch = this.af.firestore.batch()
     const ref = this.af.firestore.collection(`users`).doc(user.uid);
     batch.update(ref, {
-      admin: false,
       seller: false,
       logistic: false,
       accountant: false,
-      confi: false,
+      admin: false,
       role: null
     })
     batch.commit().then(() => {

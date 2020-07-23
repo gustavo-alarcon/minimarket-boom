@@ -105,7 +105,7 @@ export class CreateUserComponent implements OnInit {
       seller: this.userForm.get('permits').value == 'Vendedora',
       logistic: this.userForm.get('permits').value == 'Logística',
       accountant: this.userForm.get('permits').value == 'Contabilidad',
-      confi: this.userForm.get('permits').value == 'Administrador'
+      admin: this.userForm.get('permits').value == 'Administrador'
     }
 
     batch.update(ref, updateData)
@@ -159,11 +159,10 @@ export class CreateUserComponent implements OnInit {
             email: this.userForm.get('email').value,
             password: this.userForm.get('pass').value,
             role: this.userForm.get('permits').value,
-            admin: true,
             seller: this.userForm.get('permits').value == 'Vendedora',
             logistic: this.userForm.get('permits').value == 'Logística',
             accountant: this.userForm.get('permits').value == 'Contabilidad',
-            confi: this.userForm.get('permits').value == 'Administrador',
+            admin: this.userForm.get('permits').value == 'Administrador',
             uid: res['uid'],
             createdAt: new Date(),
           }
