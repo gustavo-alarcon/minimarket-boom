@@ -1,0 +1,63 @@
+<div mat-dialog-title>
+    <h2 class="title-dialog" style="font-size:1.2em">
+        <mat-icon style="vertical-align:middle; margin-right: 8px;">account_circle</mat-icon>
+        Agregar Usuario
+    </h2>
+    <mat-divider></mat-divider>
+</div>
+<mat-dialog-content style="max-width: 350px;">
+    <mat-progress-bar mode='indeterminate' *ngIf="loading$ | async"></mat-progress-bar>
+    <form [formGroup]="userForm">
+        <mat-form-field class="w3-block" appearance="outline">
+            <input matInput type="text" formControlName="email" placeholder="Seleccione..."
+                [matAutocomplete]="autoSupervisor" autocomplete="off">
+            <mat-icon matSuffix>arrow_drop_down</mat-icon>
+            <mat-autocomplete #autoSupervisor="matAutocomplete" [displayWith]="showSelectedUser">
+                <mat-option *ngFor="let option of filteredUsers$ | async" [value]="option" (click)="selectUser(option)">
+                    <span>{{option['email']}}</span>
+                </mat-option>
+            </mat-autocomplete>
+            <mat-error>
+                <span *ngIf="userForm.get('email').errors?.required">Usuario requerido</span>
+                <span *ngIf="userForm.get('email').hasError('emailRepeatedValidator')">
+                    Usuario no válido.</span>
+            </mat-error>
+            <span style="font-size: 0.75em; color: lightslategray;">** Lista de usuarios <strong>SIN</strong> rol asignado</span>
+        </mat-form-field>
+
+
+        <mat-form-field class="w3-block" appearance="outline" class="w3-block">
+            <mat-label>Nombre</mat-label>
+            <input #input autocomplete="off" formControlName="name" type="text" matInput placeholder="Nombre">
+            <mat-error>
+                Campo requerido
+            </mat-error>
+        </mat-form-field>
+        <mat-form-field class="w3-block" appearance="outline" class="w3-block">
+            <mat-label>Apellido</mat-label>
+            <input #input autocomplete="off" formControlName="lastname" type="text" matInput placeholder="Nombre">
+            <mat-error>
+                Campo requerido
+            </mat-error>
+        </mat-form-field>
+
+        <mat-form-field class="w3-block" appearance="outline">
+            <mat-label>Cargo</mat-label>
+            <mat-select formControlName="permits">
+                <mat-option *ngFor="let unit of permits" [value]="unit">
+                    {{unit}}
+                </mat-option>
+            </mat-select>
+            <mat-error>
+                Campo requerido
+            </mat-error>
+        </mat-form-field>
+
+    </form>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+    <button mat-raised-button class="w3-margin-right buttonNoRounded" mat-dialog-close>Cancelar</button>
+    <button mat-raised-button class="buttonNoRounded" color="accent" (click)="save()" type="button"
+        [disabled]="userForm.status != 'VALID'">Guardar</button>
+</mat-dialog-actions>

@@ -1,0 +1,79 @@
+<mat-card [ngClass]="package?'product product--package w3-margin-bottom':'product product--product w3-margin-bottom'">
+    <div class="ms-flex product__container">
+        <div class="product__image-div">
+            <img [defaultImage]="defaultImage" [lazyLoad]="product.photoURL" [offset]="100" class="product__image">
+        </div>
+        <div class="product__descrip">
+            <div class="ms-flex product__container">
+                <div [ngClass]="package?'product__title':'product__title product__title--prod'">{{product.description | titlecase}}</div>
+                <button *ngIf="!package" mat-icon-button style="border: 1px dashed #565656; font-size: 1.3em;"
+                    (click)="navigate(product.id)">
+                    🍴
+                </button>
+            </div>
+            <div *ngIf="!package">
+                <div *ngIf="product.realStock <= product.sellMinimum" class="product__provision">
+                    En abastecimiento</div>
+            </div>
+            <p
+                [ngClass]="package?'product__paragraph product__paragraph--pack':'product__paragraph product__paragraph--prod'">
+                {{product.additionalDescription}}</p>
+            <div *ngIf="package" class="product__choose ms-flex ms-flex--center">
+                <div style="width: 100%;">
+                    <div *ngFor="let item of product['items']" >
+                        <div class="product__select" style="border-color: silver;"
+                            *ngIf="item['productsOptions'].length == 1">
+                            {{item['choose']['description'] | titlecase}} ({{item['choose'].unit.abbreviation}})
+                        </div>
+                        <mat-select class="product__select" *ngIf="item['productsOptions'].length > 1"
+                            [(value)]="item['choose']">
+                            <mat-option *ngFor="let status of item['productsOptions']" [value]="status">
+                                {{status['description'] | titlecase}} ({{status.unit.abbreviation}})
+                            </mat-option>
+                        </mat-select>
+    
+                    </div>
+                </div>
+            </div>
+            <div *ngIf="!package" class="product__etiquet">Precio por {{product.unit.description}} (aprox
+                {{product.unit.abbreviation}})
+            </div>
+            <div class="ms-flex product__container">
+                <div>
+                    <div class="ms-flex" style="align-items: flex-end;">
+
+                        <div *ngIf="!product.promo || product.promoData.quantity > 1" class="product__price">
+                            <span style="font-size: 0.65em">S/. </span>
+                            <span>{{product.price | number: '.2'}}</span>
+                        </div>
+                        <div *ngIf="product.promo && product.promoData.quantity == 1" class="product__price">
+                            <span style="font-size: 0.65em">S/. </span>
+                            <span>{{product.promoData.promoPrice | number: '.2'}}</span>
+                        </div>
+                        <div class="product__percent" *ngIf="product.promo && product.promoData.quantity == 1">
+                            -{{getdiscount(product)}}%
+                        </div>
+                    </div>
+                </div>
+                <div *ngIf="!package">
+                    <button *ngIf="product.realStock > product.sellMinimum" mat-mini-fab color='accent'
+                        [disabled]="!stopBuy(product)" (click)="add(product)">
+                        <mat-icon>add</mat-icon>
+                    </button>
+                </div>
+                <div *ngIf="package">
+                    <button mat-mini-fab color='accent' [disabled]="!stopBuy(product)" (click)="add(product)">
+                        <mat-icon>add</mat-icon>
+                    </button>
+                </div>
+            </div>
+            <div *ngIf="product.promo && product.promoData.quantity > 1" class="w3-center product__promo">
+                OFERTA: {{product.promoData.quantity}} x S/.
+                {{product.promoData.promoPrice | number: '.2'}}
+            </div>
+            <div *ngIf="product.promo && product.promoData.quantity == 1"  class="product__priceBefore" style="">
+                Antes S/. {{product.price | number: '.2'}}
+            </div>
+        </div>
+    </div>
+</mat-card>

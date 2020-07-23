@@ -1,0 +1,549 @@
+<div class="w3-section w3-margin-left w3-margin-right">
+    <div class="w3-row">
+        <div class="w3-col s0 m1 l1">
+            <p class="w3-hide-small"></p>
+        </div>
+        <div class="w3-col s12 m10 l10">
+            <h2 class="title">
+                <mat-icon style="vertical-align: middle; margin-right: 8px;">settings</mat-icon>Configuración
+            </h2>
+            <mat-divider></mat-divider>
+
+            <div class="w3-margin-top">
+                <mat-expansion-panel class="w3-margin-bottom">
+                    <mat-expansion-panel-header>
+                        <mat-panel-title>
+                            <h4 class="admin__title">Niveles de Usuario</h4>
+                        </mat-panel-title>
+                    </mat-expansion-panel-header>
+
+                    <div class="admin__container">
+                        <div class="w3-margin-bottom">
+                            <button mat-raised-button color="accent" class="w3-margin-right"
+                                (click)="createUser(null,false)">
+                                Crear Usuario</button>
+                            <button mat-raised-button color="accent" (click)="addAdmin()">Agregar Usuario</button>
+                        </div>
+                        <div>
+                            <form class="detail-form formFieldRounded" [formGroup]="searchForm">
+                                <mat-form-field class="admin__input w3-small" appearance="outline">
+                                    <mat-label>Buscar</mat-label>
+                                    <input matInput type="text" placeholder="Escriba..." formControlName="name"
+                                        autocomplete="off">
+                                    <mat-icon matPrefix>search</mat-icon>
+                                </mat-form-field>
+
+                                <mat-form-field class="admin__input w3-small" appearance="outline">
+                                    <mat-icon matPrefix></mat-icon>
+                                    <mat-label>Cargo</mat-label>
+                                    <mat-select formControlName="permits">
+                                        <mat-option *ngFor="let unit of permits" [value]="unit">
+                                            {{unit}}
+                                        </mat-option>
+                                    </mat-select>
+                                </mat-form-field>
+                            </form>
+                        </div>
+                        <div *ngIf="admins$ | async as adminList">
+                            <mat-progress-bar *ngIf="loadingAdmin$ | async" mode="indeterminate"></mat-progress-bar>
+                            <div class="w3-hide-small">
+                                <table mat-table [dataSource]="dataSource" matSort class="ms-table">
+                                    <ng-container class=" w3-center" matColumnDef="index">
+                                        <th *matHeaderCellDef class="w3-center ms-table__th" style="width: 10%;">
+                                            N°
+                                        </th>
+                                        <td mat-cell *matCellDef="let element; let i = index"
+                                            class="w3-center ms-table__td">
+                                            {{element['index']}}
+                                        </td>
+                                    </ng-container>
+
+                                    <ng-container class=" w3-center" matColumnDef="name">
+                                        <th *matHeaderCellDef class="w3-center ms-table__th">Nombre
+                                        </th>
+                                        <td mat-cell *matCellDef="let element" class="ms-table__td">
+                                            {{element['completeName']}}
+                                        </td>
+                                    </ng-container>
+
+                                    <ng-container class=" w3-center" matColumnDef="email">
+                                        <th *matHeaderCellDef class="w3-center ms-table__th">Email
+                                        </th>
+                                        <td mat-cell *matCellDef="let element" class="ms-table__td">
+                                            {{element['email']}}
+                                        </td>
+                                    </ng-container>
+                                    <ng-container class=" w3-center" matColumnDef="role">
+                                        <th *matHeaderCellDef class="w3-center ms-table__th">Cargo
+                                        </th>
+                                        <td mat-cell *matCellDef="let element" class="ms-table__td w3-center">
+                                            {{element['role']}}
+                                        </td>
+                                    </ng-container>
+
+                                    <ng-container class="w3-center" matColumnDef="delete" sticky>
+                                        <th *matHeaderCellDef style="padding-left:0.5em;"
+                                            class="w3-center ms-table__th">
+                                            Acciones</th>
+                                        <td mat-cell *matCellDef="let element" class="ms-table__td w3-center">
+                                            <button mat-icon-button type="button" (click)="createUser(element,true)">
+                                                <mat-icon>edit</mat-icon>
+                                            </button>
+                                            <button mat-icon-button type="button" (click)="deleteAdmin(element)">
+                                                <mat-icon>delete</mat-icon>
+                                            </button>
+                                        </td>
+                                    </ng-container>
+                                    <tr mat-header-row *matHeaderRowDef="displayedColumns; sticky: true"></tr>
+                                    <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+
+                                </table>
+                                <mat-paginator #paginatorAdmin style="background: transparent;"
+                                    [pageSizeOptions]="[5, 10, 20]" showFirstLastButtons>
+                                </mat-paginator>
+                            </div>
+                            <div class="w3-hide-large w3-hide-medium w3-margin-top">
+                                <ul class="admin__list">
+                                    <li *ngFor="let user of adminList| paginate: { itemsPerPage: 5, currentPage: p1 }"
+                                        class="admin__item">
+                                        <div style="width: 80%;">
+                                            <div style="font-weight: 900;">{{user['completeName']}}</div>
+                                            <mat-hint>{{user['role']}}</mat-hint>
+                                        </div>
+                                        <button mat-icon-button type="button" (click)="deleteAdmin(user)">
+                                            <mat-icon>delete</mat-icon>
+                                        </button>
+                                    </li>
+                                </ul>
+                                <div style="display: flex; width: 100%; justify-content: flex-end;">
+                                    <pagination-controls (pageChange)="p1 = $event" previousLabel="" nextLabel=""
+                                        maxSize="6">
+                                    </pagination-controls>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </mat-expansion-panel>
+
+                <mat-expansion-panel class="w3-margin-bottom">
+                    <mat-expansion-panel-header>
+                        <mat-panel-title>
+                            <h4 class="admin__title">Horario de atención</h4>
+                        </mat-panel-title>
+
+                    </mat-expansion-panel-header>
+                    <mat-progress-bar *ngIf="loadingOpening$ | async" mode="indeterminate"></mat-progress-bar>
+                    <div class="admin__container">
+                        <form [formGroup]="openingFormGroup">
+                            <div class="formFieldRounded" *ngIf="opening$ | async">
+                                <div class="opening">
+                                    <p class="opening__day">Lunes:</p>
+                                    <span class="opening__fill"></span>
+                                    <mat-form-field class="opening__input" appearance="outline">
+                                        <input matInput type="time" formControlName="monday_opening" autocomplete="off">
+                                    </mat-form-field>
+                                    <span class="opening__dash"> - </span>
+                                    <mat-form-field class="opening__input" appearance="outline">
+                                        <input matInput type="time" formControlName="monday_closing" autocomplete="off">
+                                    </mat-form-field>
+                                </div>
+
+                                <div class="opening">
+                                    <p class="opening__day">Martes:</p>
+                                    <span class="opening__fill"></span>
+                                    <mat-form-field class="opening__input" appearance="outline">
+                                        <input matInput type="time" formControlName="tuesday_opening" autocomplete="off">
+                                    </mat-form-field>
+                                    <span class="opening__dash"> - </span>
+                                    <mat-form-field class="opening__input" appearance="outline">
+                                        <input matInput type="time" formControlName="tuesday_closing" autocomplete="off">
+                                    </mat-form-field>
+                                </div>
+
+                                <div class="opening">
+                                    <p class="opening__day">Miércoles:</p>
+                                    <span class="opening__fill"></span>
+                                    <mat-form-field class="opening__input" appearance="outline">
+                                        <input matInput type="time" formControlName="wednesday_opening" autocomplete="off">
+                                    </mat-form-field>
+                                    <span class="opening__dash"> - </span>
+                                    <mat-form-field class="opening__input" appearance="outline">
+                                        <input matInput type="time" formControlName="wednesday_closing" autocomplete="off">
+                                    </mat-form-field>
+                                </div>
+
+                                <div class="opening">
+                                    <p class="opening__day">Jueves:</p>
+                                    <span class="opening__fill"></span>
+                                    <mat-form-field class="opening__input" appearance="outline">
+                                        <input matInput type="time" formControlName="thursday_opening" autocomplete="off">
+                                    </mat-form-field>
+                                    <span class="opening__dash"> - </span>
+                                    <mat-form-field class="opening__input" appearance="outline">
+                                        <input matInput type="time" formControlName="thursday_closing" autocomplete="off">
+                                    </mat-form-field>
+                                </div>
+
+                                <div class="opening">
+                                    <p class="opening__day">Viernes:</p>
+                                    <span class="opening__fill"></span>
+                                    <mat-form-field class="opening__input" appearance="outline">
+                                        <input matInput type="time" formControlName="friday_opening" autocomplete="off">
+                                    </mat-form-field>
+                                    <span class="opening__dash"> - </span>
+                                    <mat-form-field class="opening__input" appearance="outline">
+                                        <input matInput type="time" formControlName="friday_closing" autocomplete="off">
+                                    </mat-form-field>
+                                </div>
+
+                                <div class="opening">
+                                    <p class="opening__day">Sábado:</p>
+                                    <span class="opening__fill"></span>
+                                    <mat-form-field class="opening__input" appearance="outline">
+                                        <input matInput type="time" formControlName="saturday_opening" autocomplete="off">
+                                    </mat-form-field>
+                                    <span class="opening__dash"> - </span>
+                                    <mat-form-field class="opening__input" appearance="outline">
+                                        <input matInput type="time" formControlName="saturday_closing" autocomplete="off">
+                                    </mat-form-field>
+                                </div>
+
+                                <div class="opening">
+                                    <p class="opening__day">Domingo:</p>
+                                    <span class="opening__fill"></span>
+                                    <mat-form-field class="opening__input" appearance="outline">
+                                        <input matInput type="time" formControlName="sunday_opening" autocomplete="off">
+                                    </mat-form-field>
+                                    <span class="opening__dash"> - </span>
+                                    <mat-form-field class="opening__input" appearance="outline">
+                                        <input matInput type="time" formControlName="sunday_closing" autocomplete="off">
+                                    </mat-form-field>
+                                </div>
+
+                                <button mat-raised-button class="mat-normal" [disabled]="!weightForm.valid"
+                                    color="accent" (click)="saveOpening()">Guardar</button>
+                            </div>
+                        </form>
+                    </div>
+
+
+                </mat-expansion-panel>
+
+                <mat-expansion-panel class="w3-margin-bottom">
+                    <mat-expansion-panel-header>
+                        <mat-panel-title>
+                            <h4 class="admin__title">Distritos</h4>
+                        </mat-panel-title>
+
+                    </mat-expansion-panel-header>
+
+                    <div class="admin__container">
+                        <div>
+                            <form class="detail-form formFieldRounded" [formGroup]="districtForm">
+                                <mat-form-field class="admin__input w3-small" appearance="outline">
+                                    <mat-icon matPrefix></mat-icon>
+                                    <mat-label>Distrito</mat-label>
+                                    <input matInput type="text" placeholder="Escriba..." formControlName="name"
+                                        autocomplete="off">
+                                    <mat-error>
+                                        <span *ngIf="districtForm.get('name').errors?.required">Campo requerido</span>
+                                        <span *ngIf="districtForm.get('name').hasError('repeatedValidator')">
+                                            Distrito Repetido
+                                        </span>
+                                    </mat-error>
+                                </mat-form-field>
+
+                                <mat-form-field class="admin__input w3-small" appearance="outline">
+                                    <mat-icon matPrefix></mat-icon>
+                                    <mat-label>Delivery</mat-label>
+                                    <input matInput type="number" placeholder="Costo Delivery (S/.)"
+                                        formControlName="delivery" autocomplete="off">
+                                    <mat-error>Campo requerido</mat-error>
+                                </mat-form-field>
+
+                                <button mat-raised-button color="accent"
+                                    class="w3-block mat-normal w3-hide-large w3-hide-medium" (click)="addDistrict()"
+                                    [disabled]="!districtForm.valid">
+                                    <mat-icon>add</mat-icon> Agregar
+                                </button>
+
+                                <button mat-mini-fab color="accent" class="w3-hide-small mat-normal"
+                                    (click)="addDistrict()" [disabled]="!districtForm.valid">
+                                    <mat-icon>add</mat-icon>
+                                </button>
+
+                            </form>
+
+                        </div>
+
+                        <div *ngIf="districts$ | async ">
+                            <mat-progress-bar *ngIf="loadingDistrict$ | async" mode="indeterminate"></mat-progress-bar>
+                            <div class="w3-hide-small ">
+                                <table mat-table [dataSource]="dataSource3" matSort class="ms-table">
+
+                                    <ng-container class=" w3-center" matColumnDef="name">
+                                        <th *matHeaderCellDef class="w3-cente ms-table__th">Nombre
+                                        </th>
+                                        <td mat-cell *matCellDef="let element" class="ms-table__td">
+                                            {{element['name']}}
+                                        </td>
+                                    </ng-container>
+
+                                    <ng-container class=" w3-center" matColumnDef="delivery">
+                                        <th *matHeaderCellDef class="w3-center ms-table__th">Delivery
+                                        </th>
+                                        <td mat-cell *matCellDef="let element" class="ms-table__td w3-center">
+                                            S/. {{element['delivery'] | number: '.2'}}
+                                        </td>
+                                    </ng-container>
+
+                                    <ng-container class="w3-center" matColumnDef="delete" sticky>
+                                        <th *matHeaderCellDef style="padding-left:0.5em;"
+                                            class="w3-center ms-table__th">
+                                            Acciones</th>
+                                        <td mat-cell *matCellDef="let element" class="w3-center ms-table__td">
+                                            <button mat-icon-button (click)="editDistrict(element)">
+                                                <mat-icon>edit</mat-icon>
+                                            </button>
+                                            <button mat-icon-button (click)="deleteDistrict(element)">
+                                                <mat-icon>delete</mat-icon>
+                                            </button>
+                                        </td>
+                                    </ng-container>
+                                    <tr mat-header-row *matHeaderRowDef="displayedColumns3; sticky: true"></tr>
+                                    <tr mat-row *matRowDef="let row; columns: displayedColumns3;"></tr>
+
+                                </table>
+                                <mat-paginator #paginatorDistrict style="background: transparent;"
+                                    [pageSizeOptions]="[5, 10, 20]" showFirstLastButtons>
+                                </mat-paginator>
+                            </div>
+                            <div class="w3-hide-large w3-hide-medium">
+                                <ul class="admin__list" style="padding-inline-start: 0px;">
+                                    <li *ngFor="let user of existDistrict| paginate: { itemsPerPage: 5, currentPage: p3 }"
+                                        class="admin__item">
+                                        <div style="width: 100%; font-weight: 900;">
+                                            {{user['name']}}
+                                        </div>
+                                        <div style="font-weight: 900;">S/. {{user['delivery'] | number: '.2'}}</div>
+                                        <div>
+                                            <button type="button" mat-icon-button (click)="editDistrict(user)">
+                                                <mat-icon>edit</mat-icon>
+                                            </button>
+                                            <button type="button" mat-icon-button (click)="deleteDistrict(user)">
+                                                <mat-icon>delete</mat-icon>
+                                            </button>
+                                        </div>
+
+                                    </li>
+                                </ul>
+                                <div style="display: flex; width: 100%; justify-content: flex-end;"
+                                    *ngIf="existDistrict.length > 5">
+                                    <pagination-controls (pageChange)="p3 = $event" previousLabel="" nextLabel=""
+                                        maxSize="6">
+                                    </pagination-controls>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </mat-expansion-panel>
+
+                <mat-expansion-panel class="w3-margin-bottom">
+                    <mat-expansion-panel-header>
+                        <mat-panel-title>
+                            <h4 class="admin__title">Peso máximo por pedido</h4>
+                        </mat-panel-title>
+
+                    </mat-expansion-panel-header>
+                    <mat-progress-bar *ngIf="loadingWeight$ | async" mode="indeterminate"></mat-progress-bar>
+                    <div class="admin__container">
+                        <div class="formFieldRounded" *ngIf="weight$ | async">
+
+                            <mat-form-field class="admin__input" appearance="outline">
+                                <mat-icon matPrefix></mat-icon>
+                                <input matInput type="number" placeholder="Escriba..." [formControl]="weightForm"
+                                    autocomplete="off">
+                                <span matSuffix style="vertical-align: super;">KG</span>
+                            </mat-form-field>
+                            <button mat-raised-button class="mat-normal" [disabled]="!weightForm.valid" color="accent"
+                                (click)="saveWeight()">Guardar</button>
+                        </div>
+
+                    </div>
+
+
+                </mat-expansion-panel>
+
+                <mat-expansion-panel class="w3-margin-bottom">
+                    <mat-expansion-panel-header>
+                        <mat-panel-title>
+                            <h4 class="admin__title">Tipo de Pagos</h4>
+                        </mat-panel-title>
+
+                    </mat-expansion-panel-header>
+
+                    <div class="admin__container">
+                        <button mat-raised-button color="accent" [disabled]="(loadingPayment$ | async)"
+                            (click)="createPay(null,false)">Crear</button>
+                        <div *ngIf="payment$ | async as pays">
+                            <mat-progress-bar *ngIf="loadingPayment$ | async" mode="indeterminate"></mat-progress-bar>
+                            <div class="w3-hide-small ">
+                                <table mat-table [dataSource]="dataSourcePay" matSort class="ms-table">
+
+                                    <ng-container class=" w3-center" matColumnDef="name">
+                                        <th *matHeaderCellDef class="w3-cente ms-table__th">Nombre
+                                        </th>
+                                        <td mat-cell *matCellDef="let element" class="w3-center ms-table__td">
+                                            {{element['name'] | uppercase}}
+                                        </td>
+                                    </ng-container>
+
+                                    <ng-container class=" w3-center" matColumnDef="account">
+                                        <th *matHeaderCellDef class="w3-center ms-table__th">N° de cuenta
+                                        </th>
+                                        <td mat-cell *matCellDef="let element" class="ms-table__td w3-center">
+                                            {{element['account']}}
+                                        </td>
+                                    </ng-container>
+
+                                    <ng-container class=" w3-center" matColumnDef="icon">
+                                        <th *matHeaderCellDef class="w3-center ms-table__th">Icono
+                                        </th>
+                                        <td mat-cell *matCellDef="let element" class="ms-table__td w3-center">
+                                            <img style="width: 100px;max-height: 50px;object-fit: contain;"
+                                                [src]="element.photoURL" alt="icon">
+                                        </td>
+                                    </ng-container>
+
+                                    <ng-container class="w3-center" matColumnDef="actions" sticky>
+                                        <th *matHeaderCellDef style="padding-left:0.5em;"
+                                            class="w3-center ms-table__th">
+                                            Acciones</th>
+                                        <td mat-cell *matCellDef="let element" class="w3-center ms-table__td">
+                                            <button mat-icon-button (click)="createPay(element, true)"
+                                                [disabled]="(loadingPayment$ | async)">
+                                                <mat-icon>edit</mat-icon>
+                                            </button>
+                                            <button mat-icon-button (click)="deletePay(element)"
+                                                [disabled]="(loadingPayment$ | async)">
+                                                <mat-icon>delete</mat-icon>
+                                            </button>
+                                        </td>
+                                    </ng-container>
+                                    <tr mat-header-row *matHeaderRowDef="displayedPayColumns; sticky: true"></tr>
+                                    <tr mat-row *matRowDef="let row; columns: displayedPayColumns;"></tr>
+
+                                </table>
+                                <mat-paginator #paginatorPayment style="background: transparent;"
+                                    [pageSizeOptions]="[5, 10, 20]" showFirstLastButtons>
+                                </mat-paginator>
+                            </div>
+                            <div class="w3-hide-large w3-hide-medium">
+                                <ul class="admin__list" style="padding-inline-start: 0px;">
+                                    <li *ngFor="let element of pays| paginate: { itemsPerPage: 5, currentPage: p3 }"
+                                        class="admin__item">
+                                        <div style="width: 100%;" class="ms-flex ms-flex--center">
+                                            <div style="font-weight: 900;">{{element['name'] | uppercase}}</div>
+                                            <span class="ms-fill"></span>
+                                            <img style="width: 100px;max-height: 40px;object-fit: contain;"
+                                                [src]="element.photoURL" alt="icon">
+                                        </div>
+                                        <div style="font-weight: 900;">{{element['account']}}</div>
+                                        <div>
+                                            <button mat-icon-button (click)="createPay(element, true)"
+                                                [disabled]="(loadingPayment$ | async)">
+                                                <mat-icon>edit</mat-icon>
+                                            </button>
+                                            <button mat-icon-button (click)="deletePay(element)"
+                                                [disabled]="(loadingPayment$ | async)">
+                                                <mat-icon>delete</mat-icon>
+                                            </button>
+                                        </div>
+
+                                    </li>
+                                </ul>
+                                <div style="display: flex; width: 100%; justify-content: flex-end;"
+                                    *ngIf="pays.length > 5">
+                                    <pagination-controls (pageChange)="p3 = $event" previousLabel="" nextLabel=""
+                                        maxSize="6">
+                                    </pagination-controls>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+
+                </mat-expansion-panel>
+
+                <mat-expansion-panel class="w3-margin-bottom">
+                    <mat-expansion-panel-header>
+                        <mat-panel-title>
+                            <h4 class="admin__title">Categorías</h4>
+                        </mat-panel-title>
+
+                    </mat-expansion-panel-header>
+                    <mat-progress-bar *ngIf="loadingCategories$ | async" mode="indeterminate"></mat-progress-bar>
+                    <div class="admin__container">
+                        <button mat-raised-button color="accent" (click)="createCategory(null,false)">
+                            Crear Categoría</button>
+                        <div *ngIf="categories$ |async as images">
+                            <div class="w3-margin-top row-category">
+                                <div *ngFor="let image of categories" class="banner__category border--primary">
+                                    <img [defaultImage]="defaultImage" [lazyLoad]="image.photoURL" [offset]="100"
+                                        class="banner__image">
+                                    <div class="row-category" style="align-items: center; padding-left: 10px;">
+                                        <span style="font-size: 0.8em;"><strong>{{image.name}}</strong></span>
+                                        <span class="ms-fill"></span>
+                                        <button mat-icon-button color="primary" (click)="createCategory(image, true)">
+                                            <mat-icon>edit</mat-icon>
+                                        </button>
+                                        <button mat-icon-button color="primary" style="margin-left: 5px;"
+                                            (click)="deleteCategory(image)">
+                                            <mat-icon>delete</mat-icon>
+                                        </button>
+                                    </div>
+
+
+                                </div>
+                            </div>
+                            <div *ngIf="images.length" class="w3-margin-top w3-margin-bottom">
+                                <mat-progress-bar mode='indeterminate' *ngIf="loadingCategories$ | async">
+                                </mat-progress-bar>
+                                <div style="width: 100%;max-width: 500px;">
+                                    <div class="row-category" style="justify-content: space-between; padding: 10px 0;">
+                                        <span style="font-weight: 700;">Ordenar posición</span>
+                                        <button mat-raised-button color="primary"
+                                            [disabled]="loadingCategories$ | async" (click)="savePosition(images)">
+                                            <span>Guardar</span>
+                                        </button>
+                                    </div>
+                                    <div cdkDropList class="banner__list border--primary"
+                                        (cdkDropListDropped)="drop(images,$event)">
+                                        <mat-card class="banner__box" *ngFor="let image of images" cdkDrag>
+                                            {{image['name']}}
+                                        </mat-card>
+                                    </div>
+                                </div>
+                                <div class="w3-margin-top ms-flex" style="justify-content: space-between;">
+                                    <div *ngFor="let image of images" class="banner__frame">
+                                        <img [defaultImage]="defaultImage" [lazyLoad]="image['photoURL']" [offset]="100"
+                                            class="category-img">
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+
+                    </div>
+
+
+                </mat-expansion-panel>
+            </div>
+
+        </div>
+        <div class="w3-col s0 m1 l1">
+            <p></p>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,12 @@
+.title-login {
+    font-family: Raleway;
+    font-size: 1em;
+    font-weight: 700;
+    width: 80%;
+}
+
+@media (max-width: 600px) {
+    .title-login {
+        font-size: 0.8em;
+    }
+}
