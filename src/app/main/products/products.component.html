@@ -102,12 +102,12 @@
                 </div>
                 <p *ngIf="firstSale">Hola cheese lover, gracias por tu preferencia. Comencemos anotando tus datos</p>
                 <p *ngIf="!firstSale">Gracias por volver a comprar nuestros productos</p>
-                <div class="ms-flex w3-hide-small w3-hide-medium " style="align-items: baseline;">
+                <div class="container w3-hide-small w3-hide-medium " style="align-items: baseline;">
                     <div style="max-width: 420px;">
                         <app-purchase></app-purchase>
                     </div>
                     <span class="ms-fill"></span>
-                    <mat-card style="width: 400px; padding: 0 16px;">
+                    <mat-card style="min-width: 400px; padding: 0 16px; margin: 0 2em;">
                         <app-shopping-cart [delivery]="dbs.delivery" [order]="dbs.order" [modified]="false">
                         </app-shopping-cart>
                     </mat-card>
