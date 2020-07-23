@@ -23,7 +23,7 @@ export class ProductsComponent implements OnInit {
 
   name: string = ''
   maxWeight: number = 3
-  total$:Observable<number>
+  total$: Observable<number>
 
   searchForm: FormControl = new FormControl('')
 
@@ -83,7 +83,7 @@ export class ProductsComponent implements OnInit {
         let any = [].concat(packPublish, publish)
 
         if (this.dbs.order.length == 0 && localStorage.getItem('order')) {
-          
+
           let number = Number(localStorage.getItem('length'))
           for (let index = 0; index < number; index++) {
             if (localStorage.getItem('order' + index + 'chosen')) {
@@ -102,6 +102,7 @@ export class ProductsComponent implements OnInit {
           }
 
           this.dbs.total = this.dbs.order.map(el => this.giveProductPrice(el)).reduce((a, b) => a + b, 0)
+          this.dbs.sum.next(this.dbs.total)
         }
 
         return any.filter(el => search ? el.description.toLowerCase().includes(search) : true)
@@ -122,16 +123,16 @@ export class ProductsComponent implements OnInit {
       }),
       tap(res => {
         if (res) {
-          if(res['salesCount']){
+          if (res['salesCount']) {
             this.firstSale = false
-          }else{
+          } else {
             this.firstSale = true
           }
 
           if (res['contact']) {
             this.name = res.name.split(' ')[0]
             this.dbs.delivery = res.contact.district.delivery
-          } else {           
+          } else {
             this.dbs.delivery = 4
           }
         }
@@ -139,8 +140,8 @@ export class ProductsComponent implements OnInit {
     )
 
     this.dbs.total = this.dbs.order.map(el => this.giveProductPrice(el)).reduce((a, b) => a + b, 0)
-   
-      
+
+
   }
 
 
@@ -190,11 +191,11 @@ export class ProductsComponent implements OnInit {
   }
 
   shoppingCart() {
-    this.dbs.view.next(2) 
+    this.dbs.view.next(2)
   }
 
   back(route) {
-    if(route){
+    if (route) {
       this.router.navigate(['/main']);
     }
     this.dbs.view.next(1)
