@@ -31,7 +31,7 @@ export class PurchaseComponent implements OnInit {
 
   init$: Observable<any>
 
-  order:Array<any>
+  order: Array<any>
 
   name: boolean = false
   total: number = 0
@@ -76,6 +76,8 @@ export class PurchaseComponent implements OnInit {
   ) { }
 
   ngOnInit(): void {
+    console.log(this.dbs.order);
+
     let date = new Date()
     this.now = new Date(date.getTime() + (345600000))
 
@@ -186,35 +188,10 @@ export class PurchaseComponent implements OnInit {
     )
 
     this.delivery = this.dbs.delivery
-    this.total = this.dbs.order.map(el => this.giveProductPrice(el)).reduce((a, b) => a + b, 0)
-
-    let newOrder:any = this.dbs.order.map(order => {
-      if (order['chosenOptions']) {
-        return order['chosenOptions'].map(el=>{
-          return {
-            product: el,
-            quantity: 1*order.quantity
-          }
-        })
-      } else {
-        return [order]
-      }
-    })
+    this.total = [...this.dbs.order].map(el => this.giveProductPrice(el)).reduce((a, b) => a + b, 0)
 
 
-    this.order = newOrder.reduce((a, b) => a.concat(b), []).map((el, index, array) => {
-      let counter = 0
-      array.forEach(al => {
-        if (al.product['id'] == el.product['id']) {
-          counter++
-        }
-      })
 
-      el['quantity'] = counter
-      return el
-    }).filter((dish, index, array) => array.findIndex(el => el.product['id'] === dish.product['id']) === index)
-   
-    
   }
 
   giveProductPrice(item) {
@@ -364,7 +341,6 @@ export class PurchaseComponent implements OnInit {
   save() {
     this.loading.next(true)
 
-
     const saleCount = this.af.firestore.collection(`/db/distoProductos/config/`).doc('generalConfig');
     const saleRef = this.af.firestore.collection(`/db/distoProductos/sales`).doc();
 
@@ -448,18 +424,41 @@ export class PurchaseComponent implements OnInit {
         });
 
       }).then(() => {
-        
+        let copy = [...this.dbs.order]
+        let newOrder: any = [...copy].map(order => {
+          if (order['chosenOptions']) {
+            return order['chosenOptions'].map(el => {
+              return {
+                product: el,
+                quantity: 1 * order.quantity
+              }
+            })
+          } else {
+            return [order]
+          }
+        })
+
+        this.order = newOrder.reduce((a, b) => a.concat(b), []).map((el, index, array) => {
+          let counter = 0
+          array.forEach(al => {
+            if (al.product['id'] == el.product['id']) {
+              counter++
+            }
+          })
+
+          el['quantity'] = counter
+          return el
+        }).filter((dish, index, array) => array.findIndex(el => el.product['id'] === dish.product['id']) === index)
+
         this.order.forEach((order, ind) => {
-         
           const ref = this.af.firestore.collection(`/db/distoProductos/productsList`).doc(order.product.id);
           this.af.firestore.runTransaction((transaction) => {
-            // This code may get re-run multiple times if there are conflicts.
             return transaction.get(ref).then((prodDoc) => {
               let newStock = prodDoc.data().realStock - order.quantity;
               transaction.update(ref, { realStock: newStock });
             });
           }).then(() => {
-            if (ind == this.dbs.order.length - 1) {
+            if (ind == this.order.length - 1) {
               this.dialog.open(SaleDialogComponent, {
                 data: {
                   name: this.firstFormGroup.value['name'],

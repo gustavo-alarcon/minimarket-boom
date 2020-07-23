@@ -14,7 +14,6 @@ export interface User {
   seller?: boolean;
   logistic?: boolean;
   accountant?: boolean;
-  confi?:boolean;
   role?: string;
   lastLogin?: Date;
   contact?: {
