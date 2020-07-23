@@ -7,4 +7,5 @@ export interface GeneralConfig{
   salesRCounter: number;
   buysCounter: number;
   maxWeight: number;
+  lastVersion: string;
 }

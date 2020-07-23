@@ -1,7 +1,7 @@
 import { DatabaseService } from 'src/app/core/services/database.service';
 import { FormBuilder, FormGroup, Validators, AbstractControl, FormControl } from '@angular/forms';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { map, startWith, tap, debounceTime, take, switchMap } from 'rxjs/operators';
+import { map, startWith, tap, debounceTime, take, switchMap, mapTo } from 'rxjs/operators';
 import { MatDialogRef } from '@angular/material/dialog';
 import { AuthService } from 'src/app/core/services/auth.service';
 import { Observable, of, combineLatest } from 'rxjs';
@@ -13,6 +13,7 @@ import { Component, OnInit } from '@angular/core';
   styleUrls: ['./login-dialog.component.scss']
 })
 export class LoginDialogComponent implements OnInit {
+  version$: Observable<string>
   auth$: Observable<any>
   dataFormGroup: FormGroup;
 
@@ -32,6 +33,9 @@ export class LoginDialogComponent implements OnInit {
   ) { }
 
   ngOnInit() {
+    this.version$ = this.dbs.getGeneralConfigDoc().pipe(
+      mapTo(this.dbs.version))
+
     this.dataFormGroup = this.fb.group({
       email: [null, [Validators.required, Validators.email], [this.emailRepeatedValidator()]],
       pass: [null, [Validators.required, Validators.minLength(6)]]

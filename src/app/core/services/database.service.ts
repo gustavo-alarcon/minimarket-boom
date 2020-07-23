@@ -2,7 +2,7 @@ import { Sale, saleStatusOptions } from './../models/sale.model';
 import { Injectable } from '@angular/core';
 import { AngularFirestore, AngularFirestoreCollection, DocumentReference, AngularFirestoreDocument } from '@angular/fire/firestore';
 import { Product } from '../models/product.model';
-import { shareReplay, map, takeLast, switchMap, take, mapTo } from 'rxjs/operators';
+import { shareReplay, map, takeLast, switchMap, take, mapTo, tap } from 'rxjs/operators';
 import { GeneralConfig } from '../models/generalConfig.model';
 import { Observable, concat, of, interval, BehaviorSubject } from 'rxjs';
 import { User } from '../models/user.model';
@@ -17,6 +17,7 @@ import { Package } from '../models/package.model';
   providedIn: 'root'
 })
 export class DatabaseService {
+  public version: string = 'V1.1.16r'
 
   public order: {
     product: any,
@@ -112,7 +113,13 @@ export class DatabaseService {
   }
 
   getGeneralConfigDoc(): Observable<GeneralConfig> {
-    return this.generalConfigDoc.valueChanges().pipe(shareReplay(1))
+    return this.generalConfigDoc.valueChanges().pipe(
+      tap(conf => {
+        if(conf.lastVersion != this.version){
+          alert(`Hay una nueva versión disponible (${conf.lastVersion}). \nPor favor, actualice la página.`)
+        }
+      }),
+      shareReplay(1))
   }
 
   getStaticConfigDoc(): Observable<GeneralConfig> {
