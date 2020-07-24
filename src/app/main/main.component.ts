@@ -13,7 +13,7 @@ import { mapTo } from 'rxjs/operators';
   styleUrls: ['./main.component.scss']
 })
 export class MainComponent implements OnInit {
-  version$: Observable<string>
+  version: string
 
   openedMenu: boolean = false;
 
@@ -25,8 +25,7 @@ export class MainComponent implements OnInit {
   ) { }
 
   ngOnInit(): void {
-    this.version$ = this.dbs.getGeneralConfigDoc().pipe(
-      mapTo(this.dbs.version))
+    this.version = this.dbs.version;
   }
 
   toggleSideMenu(): void {

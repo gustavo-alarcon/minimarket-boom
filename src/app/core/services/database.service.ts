@@ -17,7 +17,7 @@ import { Package } from '../models/package.model';
   providedIn: 'root'
 })
 export class DatabaseService {
-  public version: string = 'V1.1.16r'
+  public version: string = 'V1.1.17r'
 
   public order: {
     product: any,
@@ -114,11 +114,6 @@ export class DatabaseService {
 
   getGeneralConfigDoc(): Observable<GeneralConfig> {
     return this.generalConfigDoc.valueChanges().pipe(
-      tap(conf => {
-        if(conf.lastVersion != this.version){
-          alert(`Hay una nueva versión disponible (${conf.lastVersion}). \nPor favor, actualice la página.`)
-        }
-      }),
       shareReplay(1))
   }
 

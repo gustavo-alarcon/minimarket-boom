@@ -8,7 +8,7 @@ import { map, filter, mapTo } from 'rxjs/operators';
   styleUrls: ['./login.component.scss']
 })
 export class LoginComponent implements OnInit {
-  version$: Observable<string>
+  version: string
 
   image: string = '../../assets/images/Disto_Logo1.png'
 
@@ -17,8 +17,7 @@ export class LoginComponent implements OnInit {
   ) { }
 
   ngOnInit(): void {
-    this.version$ = this.dbs.getGeneralConfigDoc().pipe(
-      mapTo(this.dbs.version))
+    this.version = this.dbs.version
   }
 
 }

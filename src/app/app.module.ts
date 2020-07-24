@@ -28,11 +28,16 @@ import { DatePipe } from '@angular/common';
 import { DatabaseService } from './core/services/database.service';
 import { AuthGuard } from './core/auth.guard';
 import { OpeningGuard } from './core/opening.guard';
+import { UpdateDialogComponent } from './shared-dialogs/update-dialog/update-dialog.component';
+import { MatDialogModule } from '@angular/material/dialog';
+import { MatDividerModule } from '@angular/material/divider';
+import { MatIconModule } from '@angular/material/icon';
 
 @NgModule({
   declarations: [
     AppComponent,
     LoginComponent,
+    UpdateDialogComponent,
   ],
   imports: [
     BrowserModule,
@@ -44,7 +49,10 @@ import { OpeningGuard } from './core/opening.guard';
     AngularFireStorageModule,
     LazyLoadImageModule,
     MatSnackBarModule,
-    MatButtonModule
+    MatButtonModule,
+    MatDialogModule,
+    MatDividerModule,
+    MatIconModule
   ],
   providers: [
     AuthService,
@@ -55,6 +63,9 @@ import { OpeningGuard } from './core/opening.guard';
     { provide: MAT_SNACK_BAR_DEFAULT_OPTIONS, useValue: { duration: 5000 } },
     { provide: MAT_DATE_LOCALE, useValue: 'en-GB'},
     { provide: MAT_DATE_LOCALESAT, useValue: 'en-GB'}
+  ],
+  entryComponents: [
+    UpdateDialogComponent
   ],
   bootstrap: [AppComponent]
 })

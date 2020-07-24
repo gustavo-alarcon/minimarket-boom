@@ -1,3 +1,4 @@
 <div [class.dark-theme]="themeService.darkTheme$ | async">
+  <ng-container *ngIf="version$ | async"></ng-container>
   <router-outlet></router-outlet>
 </div>

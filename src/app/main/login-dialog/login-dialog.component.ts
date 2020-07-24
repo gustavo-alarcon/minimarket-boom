@@ -13,7 +13,7 @@ import { Component, OnInit } from '@angular/core';
   styleUrls: ['./login-dialog.component.scss']
 })
 export class LoginDialogComponent implements OnInit {
-  version$: Observable<string>
+  version: string
   auth$: Observable<any>
   dataFormGroup: FormGroup;
 
@@ -33,8 +33,7 @@ export class LoginDialogComponent implements OnInit {
   ) { }
 
   ngOnInit() {
-    this.version$ = this.dbs.getGeneralConfigDoc().pipe(
-      mapTo(this.dbs.version))
+    this.version = this.dbs.version;
 
     this.dataFormGroup = this.fb.group({
       email: [null, [Validators.required, Validators.email], [this.emailRepeatedValidator()]],
