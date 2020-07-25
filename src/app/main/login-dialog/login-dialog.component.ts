@@ -94,13 +94,13 @@ export class LoginDialogComponent implements OnInit {
 
   emailRepeatedValidator() {
     return (control: AbstractControl) => {
-      const value = control.value.toLowerCase();
+      const value = control.value;
       return this.dbs.getUsersStatic().pipe(
         map(res => {
           if (this.register) {
-            return res.find(el => el.email.toLowerCase() == value) ? null : { emailRepeatedValidator: true }
+            return res.find(el => el.email == value) ? null : { emailRepeatedValidator: true }
           } else {
-            return res.find(el => el.email.toLowerCase() == value) ? { emailRepeatedValidator: true } : null
+            return res.find(el => el.email == value) ? { emailRepeatedValidator: true } : null
           }
         }))
     }
