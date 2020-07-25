@@ -42,7 +42,7 @@ export class ProductsComponent implements OnInit {
   ) { }
 
   ngOnInit(): void {
-    this.dbs.delivery = 4
+    this.dbs.delivery = 6
 
     this.categoryList$ = combineLatest(
       this.route.fragment, this.dbs.getProductsListCategoriesValueChanges()).pipe(
@@ -133,7 +133,7 @@ export class ProductsComponent implements OnInit {
             this.name = res.name.split(' ')[0]
             this.dbs.delivery = res.contact.district.delivery
           } else {
-            this.dbs.delivery = 4
+            this.dbs.delivery = 6
           }
         }
       })
