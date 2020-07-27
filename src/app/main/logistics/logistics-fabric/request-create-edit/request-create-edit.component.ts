@@ -53,7 +53,7 @@ export class RequestCreateEditComponent implements OnInit {
     this.requestFormGroup = this.fb.group({
       product: ["", [Validators.required, this.productObjectValidator()]],
       quantity: [0, [Validators.required, Validators.min(0.01)]],
-      unitPrice: [0, [Validators.required, Validators.min(0.01)]],
+      // unitPrice: [0, [Validators.required, Validators.min(0.01)]],
       desiredDate: [null, Validators.required]
     })
   }
@@ -106,14 +106,14 @@ export class RequestCreateEditComponent implements OnInit {
         productDescription: product.description,
         quantity: this.requestFormGroup.get('quantity').value,
         unit: product.unit,
-        unitPrice: this.requestFormGroup.get('unitPrice').value
+        unitPrice: 0 //this.requestFormGroup.get('unitPrice').value
       })
       this.selectedProducts.next(selProds);
     }
     this.requestFormGroup.setValue({
       product: "",
       quantity: 0,
-      unitPrice: 0,
+      // unitPrice: 0,
       desiredDate: null,
     });
     this.requestFormGroup.markAsUntouched();
