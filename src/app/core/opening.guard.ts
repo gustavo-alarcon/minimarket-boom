@@ -60,7 +60,7 @@ export class OpeningGuard implements CanActivateChild {
 
             let time = this.timeConverter(hours, minutes, seconds);
 
-            // Getting the opening time for the actual day adn calculating the time
+            // Getting the opening time for the actual day and calculating the time
             let opening_hours = parseInt(res[dayIndex]['opening'].split(':')[0]);
             let opening_minutes = parseInt(res[dayIndex]['opening'].split(':')[1]);
 
@@ -100,7 +100,7 @@ export class OpeningGuard implements CanActivateChild {
 
                   
                   if (next_opening_time > 0) {
-                    console.log('Found ' + dayIndex);
+                    // console.log('Found ' + dayIndex);
                     found = true;
                   }
                 }
