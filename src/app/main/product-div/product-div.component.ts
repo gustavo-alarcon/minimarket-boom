@@ -1,4 +1,4 @@
-import { Package } from './../../core/models/package.model';
+import { Package } from 'src/app/core/models/package.model';
 import { Router } from '@angular/router';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { DatabaseService } from 'src/app/core/services/database.service';
@@ -46,12 +46,12 @@ export class ProductDivComponent implements OnInit {
         this.dbs.order.push(newproduct)
       } else {
         this.dbs.order[index]['quantity']++
-      }    
+      }
     }
-    
+
     this.dbs.total = [...this.dbs.order].map(el => this.giveProductPrice(el)).reduce((a, b) => a + b, 0)
     this.dbs.sum.next([...this.dbs.order].map(el => this.giveProductPrice(el)).reduce((a, b) => a + b, 0))
-    
+
     let stop = this.maxWeight
     let realQuantity = this.dbs.order.map(el => {
       if (el.product['package']) {
@@ -64,7 +64,7 @@ export class ProductDivComponent implements OnInit {
     })
 
     let quantity = realQuantity.reduce((a, b) => a + b, 0)
-    
+
     if (quantity >= stop) {
       this.snackBar.open('Ha llegado al límite máximo de peso por pedido', 'Cerrar', {
         duration: 3000
@@ -122,4 +122,13 @@ export class ProductDivComponent implements OnInit {
     this.router.navigate(['/main/products/recetas', name]);
   }
 
+  optionDisabled(product: Product): boolean {
+    let stock = product.realStock <= product.sellMinimum
+    return !product.published || stock
+  }
+
+  packageDisabled(pack): boolean {
+    let disabled = pack.items.filter(el => !el.choose)
+    return disabled.length > 0
+  }
 }
