@@ -49,7 +49,7 @@
                             <mat-icon class="menu__icon">settings</mat-icon>
                             Configuración
                         </button>
-                        <button mat-button class="w3-block menu__button" *ngIf="user?.admin || user?.seller"
+                        <button mat-button class="w3-block menu__button" *ngIf="user?.admin || user?.seller || user?.logistic"
                             routerLink="products-list" (click)="toggleSideMenu()">
                             <mat-icon class="menu__icon">local_offer</mat-icon>
                             Lista de Productos
@@ -86,7 +86,7 @@
                 </div>
 
 
-                <div class="meraki">
+                <div class="meraki animate fadeInRight">
                     <div style="text-align: center">Desarrollado por
                         <a href="https://meraki-s.com" target="_blank">
                             <img src="../../assets/images/negativo.png" class="meraki__logo"

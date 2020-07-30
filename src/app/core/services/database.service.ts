@@ -17,7 +17,7 @@ import { Package } from '../models/package.model';
   providedIn: 'root'
 })
 export class DatabaseService {
-  public version: string = 'V1.1.17r'
+  public version: string = 'V1.1.23r'
 
   public order: {
     product: any,
@@ -32,7 +32,7 @@ export class DatabaseService {
   public sum$ = this.sum.asObservable();
 
   public total: number = 0
-  public delivery: number = 0
+  public delivery: number = 6
 
   // public opening = new BehaviorSubject<Array<{ opening: string, closing: string }>>([]);
   public opening$: Observable<Array<{ opening: string, closing: string }>>;

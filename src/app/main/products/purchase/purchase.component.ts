@@ -35,7 +35,7 @@ export class PurchaseComponent implements OnInit {
 
   name: boolean = false
   total: number = 0
-  delivery: number = 4
+  delivery: number = 6
 
   firstFormGroup: FormGroup;
   secondFormGroup: FormGroup;
