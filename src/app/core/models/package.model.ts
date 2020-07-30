@@ -31,7 +31,8 @@ export interface Package {
 }
 
 export interface PackageItems {
-  productsOptions: Product[]
+  productsOptions: Product[],
+  choose?:Product
 }
 
 interface PromoData {

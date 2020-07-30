@@ -41,7 +41,7 @@
         </mat-error>
     </mat-form-field>
 
-    <mat-form-field style="margin-bottom: 8px; display:block"
+    <!-- <mat-form-field style="margin-bottom: 8px; display:block"
       appearance="outline">
         <mat-label>Precio Unitario</mat-label>
         <input formControlName="unitPrice" #unitPrice
@@ -51,7 +51,7 @@
             <span *ngIf="requestFormGroup.get('unitPrice').errors?.required">Campo requerido</span>
             <span *ngIf="requestFormGroup.get('unitPrice').errors?.min">El peso debe ser mayor a 0.</span>
         </mat-error>
-    </mat-form-field>
+    </mat-form-field> -->
 
     <mat-form-field style="margin-bottom: 8px; display:block"
       appearance="outline">
@@ -74,7 +74,7 @@
     <table *ngIf="selectedProducts$ | async as selProds else cargando">
       <tr *ngFor="let product of selProds">
         <td>{{product.productDescription}}</td>
-        <td>{{product.unitPrice | currency:'S/.'}}</td>
+        <!-- <td>{{product.unitPrice | currency:'S/.'}}</td> -->
         <td>{{product.quantity}}({{product.unit.abbreviation}})</td>
         <td>{{product.desiredDate | date:'d/MM/yy'}}</td>
         <td>

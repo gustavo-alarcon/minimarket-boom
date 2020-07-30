@@ -223,11 +223,11 @@ export class SalesMasterComponent implements OnInit {
             sale.cancelledData.cancelledBy.name + " " + sale.cancelledData.cancelledBy.lastName1 : sale.cancelledData.cancelledBy.name :
             (sale.cancelledData.cancelledBy.displayName ? sale.cancelledData.cancelledBy.displayName : "Sin nombre") : "---",
         sale.cancelledData ? this.getXlsDate(sale.cancelledData.cancelledAt) : "---",
-        "S/. " + (this.giveTotalPrice(sale) - this.giveTotalPrice(sale) / 1.18 * 0.18).toFixed(2),
-        "S/. " + (this.giveTotalPrice(sale) / 1.18 * 0.18).toFixed(2),
-        "S/. " + (this.giveTotalPrice(sale)).toFixed(2),
-        "S/. " + (sale.deliveryPrice).toFixed(2),
-        "S/. " + (this.giveTotalPrice(sale) + sale.deliveryPrice).toFixed(2),
+        (this.giveTotalPrice(sale) - this.giveTotalPrice(sale) / 1.18 * 0.18).toFixed(2), //Soles
+        (this.giveTotalPrice(sale) / 1.18 * 0.18).toFixed(2),
+        (this.giveTotalPrice(sale)).toFixed(2),
+        (sale.deliveryPrice).toFixed(2),
+        (this.giveTotalPrice(sale) + sale.deliveryPrice).toFixed(2),
       ];
       //      'Producto', 'Cantidad', 'Precio'
 
@@ -254,7 +254,7 @@ export class SalesMasterComponent implements OnInit {
             prod.quantity,
             prod.product.unit.weight,
             (prod.quantity * prod.product.unit.weight),
-            "S/. " + this.givePrice(prod).toFixed(2)
+            this.givePrice(prod).toFixed(2) //Soles
           ]
           table_xlsx.push(temp2);
         } else {
@@ -266,7 +266,7 @@ export class SalesMasterComponent implements OnInit {
                 prod.quantity,
                 el.unit.weight,
                 (prod.quantity * el.unit.weight),
-                "S/. " + this.givePrice(prod).toFixed(2)
+                this.givePrice(prod).toFixed(2)
               ]
               table_xlsx.push(temp2);
             }
@@ -345,7 +345,7 @@ export class SalesMasterComponent implements OnInit {
   }
 
   giveTotalSalesPrice(sales: Sale[]): number {
-    return sales.reduce((a, b) => a + this.giveTotalPrice(b), 0)
+    return sales.reduce((a, b) => a + (this.giveTotalPrice(b)+b.deliveryPrice), 0)
   }
 }
 

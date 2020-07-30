@@ -42,7 +42,7 @@ export class ProductsComponent implements OnInit {
   ) { }
 
   ngOnInit(): void {
-    this.dbs.delivery = 4
+    this.dbs.delivery = 6
 
     this.categoryList$ = combineLatest(
       this.route.fragment, this.dbs.getProductsListCategoriesValueChanges()).pipe(
@@ -71,9 +71,15 @@ export class ProductsComponent implements OnInit {
         let publish = products.filter(el => route ? el.category == route : true).filter(el => el.published)
         let packPublish = [...packages].filter(el => el.published).map(el => {
           el['items'] = el.items.map(el => {
+            let options = [...el.productsOptions].map(ul => {
+              let productOp = products.filter(lo => lo.id == ul.id)[0]
+              return productOp
+            })
+
+            let select = options.filter(lu => (lu.realStock >= lu.sellMinimum) && lu.published)[0]
             return {
-              ...el,
-              choose: el.productsOptions[0]
+              productsOptions: options,
+              choose: select
             }
           })
 
@@ -105,6 +111,9 @@ export class ProductsComponent implements OnInit {
           this.dbs.sum.next(this.dbs.total)
         }
 
+        console.log(any);
+
+
         return any.filter(el => search ? el.description.toLowerCase().includes(search) : true)
       })
     )
@@ -133,7 +142,7 @@ export class ProductsComponent implements OnInit {
             this.name = res.name.split(' ')[0]
             this.dbs.delivery = res.contact.district.delivery
           } else {
-            this.dbs.delivery = 4
+            this.dbs.delivery = 6
           }
         }
       })
