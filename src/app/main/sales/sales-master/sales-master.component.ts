@@ -227,7 +227,7 @@ export class SalesMasterComponent implements OnInit {
         (this.giveTotalPrice(sale) / 1.18 * 0.18).toFixed(2),
         (this.giveTotalPrice(sale)).toFixed(2),
         (sale.deliveryPrice).toFixed(2),
-        (this.giveTotalPrice(sale) + sale.deliveryPrice).toFixed(2),
+        "="+(this.giveTotalPrice(sale) + sale.deliveryPrice).toFixed(2),
       ];
       //      'Producto', 'Cantidad', 'Precio'
 
@@ -345,7 +345,7 @@ export class SalesMasterComponent implements OnInit {
   }
 
   giveTotalSalesPrice(sales: Sale[]): number {
-    return sales.reduce((a, b) => a + this.giveTotalPrice(b), 0)
+    return sales.reduce((a, b) => a + (this.giveTotalPrice(b)+b.deliveryPrice), 0)
   }
 }
 
