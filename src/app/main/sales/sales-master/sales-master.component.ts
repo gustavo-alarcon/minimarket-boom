@@ -227,7 +227,7 @@ export class SalesMasterComponent implements OnInit {
         (this.giveTotalPrice(sale) / 1.18 * 0.18).toFixed(2),
         (this.giveTotalPrice(sale)).toFixed(2),
         (sale.deliveryPrice).toFixed(2),
-        "="+(this.giveTotalPrice(sale) + sale.deliveryPrice).toFixed(2),
+        (this.giveTotalPrice(sale) + sale.deliveryPrice).toFixed(2),
       ];
       //      'Producto', 'Cantidad', 'Precio'
 
@@ -266,7 +266,7 @@ export class SalesMasterComponent implements OnInit {
                 prod.quantity,
                 el.unit.weight,
                 (prod.quantity * el.unit.weight),
-                "S/. " + this.givePrice(prod).toFixed(2)
+                this.givePrice(prod).toFixed(2)
               ]
               table_xlsx.push(temp2);
             }
