@@ -32,9 +32,11 @@ export class SalesMasterComponent implements OnInit {
 
   date: FormControl;
   statusForm: FormControl;
+  search: FormControl;
 
-  sales$: Observable<Sale[]>
-  status: string[] = []
+  sales$: Observable<Sale[]>;
+  status: string[] = [];
+  search$: Observable<string>;
 
   constructor(
     private dbs: DatabaseService,
@@ -58,6 +60,7 @@ export class SalesMasterComponent implements OnInit {
     this.status = Object.values(new saleStatusOptions())
 
     this.statusForm = new FormControl('Todos')
+    this.search = new FormControl('');
   }
 
   initObservables() {
@@ -73,24 +76,47 @@ export class SalesMasterComponent implements OnInit {
       })
     );
 
+    this.search$ = this.search.valueChanges;
+
 
     this.salesFiltered$ = combineLatest(
+      this.search$.pipe(startWith('')),
       this.sales$,
       this.statusForm.valueChanges.pipe(startWith('Todos')))
       .pipe(
-        map(([sales, saleState]) => {
-          //console.log(sales);
+        map(([search, sales, saleState]) => {
           let order = sales.sort((a, b) => Number(b.correlative) - Number(a.correlative))
           if (saleState == 'Todos') {
             if (this.totalPriceSubject) {
               this.totalPriceSubject.next(this.giveTotalSalesPrice(order))
             }
-            return order
+
+            return order.filter(el => {
+              return el.correlative.toString().includes(search) ||
+                el.user.email?.includes(search.toLowerCase()) ||
+                el.user.name?.toLowerCase().includes(search.toLowerCase()) ||
+                el.user.lastName1?.toLowerCase().includes(search.toLowerCase()) ||
+                el.user.lastName2?.toLowerCase().includes(search.toLowerCase()) ||
+                el.user.displayName?.toLowerCase().includes(search.toLowerCase()) ||
+                el.user.dni?.toString().toLowerCase().includes(search.toLowerCase())
+            });
+
           } else {
             if (this.totalPriceSubject) {
               this.totalPriceSubject.next(this.giveTotalSalesPrice(order.filter(el => el.status == saleState)))
             }
-            return order.filter(el => el.status == saleState);
+            return order.filter(el => {
+              return el.status == saleState && (
+                el.correlative.toString().includes(search) ||
+                el.user.email?.includes(search.toLowerCase()) ||
+                el.user.name?.toLowerCase().includes(search.toLowerCase()) ||
+                el.user.lastName1?.toLowerCase().includes(search.toLowerCase()) ||
+                el.user.lastName2?.toLowerCase().includes(search.toLowerCase()) ||
+                el.user.displayName?.toLowerCase().includes(search.toLowerCase()) ||
+                el.user.dni?.toString().toLowerCase().includes(search.toLowerCase())
+              )
+            }
+            );
           }
         }),
         shareReplay(1)
@@ -185,11 +211,11 @@ export class SalesMasterComponent implements OnInit {
           (sale.user.displayName ? sale.user.displayName : "Sin nombre"),
         sale.user.dni ? sale.user.dni : "Sin DNI",
         sale.user.email,
-        sale.location.address?sale.location.phone:'',
+        sale.location.address ? sale.location.phone : '',
         sale.status,
-        sale.location.address?sale.location.address:'',
-        sale.location.address?sale.location.district['name']:'',
-        sale.location.address?sale.location.reference:'',
+        sale.location.address ? sale.location.address : '',
+        sale.location.address ? sale.location.district['name'] : '',
+        sale.location.address ? sale.location.reference : '',
         (this.giveTotalPrice(sale) + sale.deliveryPrice).toFixed(2),
         '',
         typeof sale.payType == 'string' ? sale.payType : sale.payType.name,
@@ -345,7 +371,7 @@ export class SalesMasterComponent implements OnInit {
   }
 
   giveTotalSalesPrice(sales: Sale[]): number {
-    return sales.reduce((a, b) => a + (this.giveTotalPrice(b)+b.deliveryPrice), 0)
+    return sales.reduce((a, b) => a + (this.giveTotalPrice(b) + b.deliveryPrice), 0)
   }
 }
 
