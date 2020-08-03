@@ -435,8 +435,8 @@ export class SalesDetailComponent implements OnInit {
       // //we return it to confirmedDelivery
       // case this.saleStatusOptions.driverAssigned:
       //     return  this.saleStatusOptions.confirmedDocument
-      // case this.saleStatusOptions.finished:
-      //     return  this.saleStatusOptions.confirmedDocument
+      case this.saleStatusOptions.finished:
+        return this.saleStatusOptions.confirmedDocument
       case this.saleStatusOptions.cancelled:
         //We don't include a finished data, 
         //because a finished sale can not be cancelled
@@ -610,7 +610,7 @@ export class SalesDetailComponent implements OnInit {
           }
         } else {
           //Confirmed Request
-          sale.confirmedDocumentData = null
+          // sale.confirmedDocumentData = null
           if (newStatus == this.saleStatusOptions.confirmedRequest) {
             sale.confirmedRequestData = {
               assignedDate: this.confirmedRequestForm.get('assignedDate').value,
@@ -619,9 +619,15 @@ export class SalesDetailComponent implements OnInit {
               confirmedBy: user,
               confirmedAt: date,
             }
+          } else if (newStatus == this.saleStatusOptions.finished) {
+            sale.finishedData = {
+              finishedAt: date,
+              finishedBy: user,
+              observation: this.confirmedRequestForm.get('observation').value
+            }
           } else {
             //ATTENDED
-            sale.confirmedRequestData = null
+            // sale.confirmedRequestData = null
             if (newStatus == this.saleStatusOptions.attended) {
               sale.attendedData = {
                 attendedAt: date,
