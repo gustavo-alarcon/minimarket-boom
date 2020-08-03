@@ -149,7 +149,7 @@
                             color="primary"
                             (click)="onDeleteProduct(i)">
                             remove_circle
-                        </mat-icon>
+                        </mat-icon> 
                     </td>
                 </div>
                 
@@ -398,13 +398,13 @@
         <b>Confirmar comprobante</b>
     </button>
 
-    <!-- <button *ngIf="sale.status == saleStatusOptions.confirmedDocument" 
+    <button *ngIf="sale.status == saleStatusOptions.confirmedDocument" 
         class="w3-block w3-margin-top" mat-raised-button 
         color="accent" type="button" 
-        (click)="onSubmitForm(saleStatusOptions.confirmedDelivery, user)" 
+        (click)="onSubmitForm(saleStatusOptions.finished, user)" 
         [disabled]="loading$ | async">
-        <b>Confirmar delivery</b>
-    </button> -->
+        <b>Confirmar entrega</b>
+    </button>
 
     <ng-container *ngIf="weight$ | async"></ng-container>
 

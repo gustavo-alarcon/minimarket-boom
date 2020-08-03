@@ -157,8 +157,8 @@
                     </div>
                     <div class="overflow_container">
                         <mat-icon>chrome_reader_mode</mat-icon>
-                        <b *ngIf="sale.location?.phone else noNumber">
-                            {{sale.location?.phone}}
+                        <b *ngIf="sale.user?.dni else noNumber">
+                            {{sale.user.dni}}
                         </b>
                         <ng-template #noNumber>
                             <b>00000000</b>
