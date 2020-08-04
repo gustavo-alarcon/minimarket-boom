@@ -1,0 +1,17 @@
+<div mat-dialog-title>
+    <h2 class="title-dialog" style="font-size:1.2em">
+        <mat-icon style="vertical-align:middle; margin-right: 8px;">account_circle</mat-icon>
+        Borrar usuario
+    </h2>
+    <mat-divider></mat-divider>
+</div>
+<mat-dialog-content style="max-width: 350px;">
+    <mat-progress-bar mode='indeterminate' *ngIf="loading$ | async"></mat-progress-bar>
+    <p>¿Está seguro de borrar al usuario <strong>{{data.completeName ? data.completeName : (data.displayName ? data.displayName : '---')}}</strong> ?</p>
+    <p class="warning">* Este cambio es irreversible *</p>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+    <button mat-raised-button class="w3-margin-right buttonNoRounded" mat-dialog-close>Cancelar</button>
+    <button mat-raised-button class="buttonNoRounded" color="warn" (click)="delete()" type="button">Borrar</button>
+</mat-dialog-actions>

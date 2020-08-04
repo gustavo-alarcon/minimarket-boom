@@ -10,10 +10,6 @@ const cors = require('cors')({ origin: true });
 //  response.send("Hello from Firebase!");
 // });
 
-exports.helloWorld = functions.https.onRequest((request, response) => {
-  response.send("Hello from Firebase!");
-});
-
 let app = admin.initializeApp();
 
 exports.msCreateUser = functions.https.onRequest((req, res) => {

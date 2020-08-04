@@ -1,0 +1,170 @@
+<div style="height: 100%; padding: 0 16px" class="w3-section w3-margin-left w3-margin-right animated fadeInUp delay-2">
+    <div style="padding: 0 3vw;">
+        <h2 class="title">
+            <mat-icon style="margin-right: 8px;">account_circle</mat-icon>Lista de Cliente
+        </h2>
+        <mat-divider></mat-divider>
+        <div style="margin-top: 1em;">
+            <div>
+                <!-- Actions -->
+                <div class="w3-margin actionsContainer formFieldRounded">
+
+                    <ng-container>
+                        <mat-form-field color="primary" class="content w3-small" appearance="outline">
+                            <mat-label>Buscar</mat-label>
+                            <mat-icon matPrefix class="w3-margin-right">search</mat-icon>
+                            <input [formControl]="searchFormControl" matInput type="text" placeholder="Escriba..."
+                                autocomplete="off">
+                            <mat-hint>Puede buscar por nombre, apellido, dni o correo electrónico</mat-hint>
+                        </mat-form-field>
+                    </ng-container>
+
+                    <button mat-raised-button style="height: 45px;" (click)="downloadXls()" color="accent">
+                        Descargar Excel
+                    </button>
+
+                </div>
+
+                <!-- Table -->
+                <div *ngIf="customers$ | async; else default">
+                    <!-- Desktop -->
+                    <div *ngIf="customersDataSource.filteredData.length else default"
+                        style="border-radius: 10px 10px 10px 10px; margin-top: 2em;">
+                        <div style="overflow:auto; border-radius: 10px 10px 0px 0px;">
+                            <table mat-table [dataSource]="customersDataSource" matSort style="width: 100%">
+
+                                <ng-container matColumnDef="index">
+                                    <th *matHeaderCellDef
+                                        style=" font-size: 0.9em;padding:0px 1em; font-weight: 500; color: #828282; "
+                                        class="w3-padding">N°</th>
+                                    <td style="padding:0px 25px;" *matCellDef="let raw; let i = index">
+                                        {{1 + i + (customersPaginator.pageIndex * customersPaginator.pageSize)}}
+                                    </td>
+                                </ng-container>
+
+                                <ng-container matColumnDef="email" sticky>
+                                    <th *matHeaderCellDef
+                                        style=" font-size: 0.9em;padding:0px 1em; font-weight: 500; color: #828282; "
+                                        class="w3-padding">
+                                        Correo
+                                    </th>
+                                    <td style="padding:0px 8px" *matCellDef="let raw">
+                                        {{raw.email ? raw.email : '---'}}
+                                    </td>
+                                </ng-container>
+
+                                <ng-container matColumnDef="displayName">
+                                    <th *matHeaderCellDef
+                                        style=" font-size: 0.9em;padding:0px 1em; font-weight: 500; color: #828282; "
+                                        class="w3-padding ">
+                                        Nombre completo
+                                    </th>
+                                    <td style="padding:0px 8px" *matCellDef="let raw">
+                                        {{raw.completeName ? raw.completeName : (raw.displayName ? raw.displayName : '---')}}
+                                    </td>
+                                </ng-container>
+
+                                <ng-container matColumnDef="dni">
+                                    <th *matHeaderCellDef
+                                        style=" font-size: 0.9em;padding:0px 1em; font-weight: 500; color: #828282; "
+                                        class="w3-padding  ">
+                                        DNI
+                                    </th>
+                                    <td style="padding:0px 8px;" *matCellDef="let raw">
+                                        {{raw.dni ? raw.dni : '---'}}
+                                    </td>
+                                </ng-container>
+
+                                <ng-container matColumnDef="phone">
+                                    <th *matHeaderCellDef
+                                        style=" font-size: 0.9em;padding:0px 1em; font-weight: 500; color: #828282; "
+                                        class="w3-padding  ">
+                                        Teléfono
+                                    </th>
+                                    <td style="padding:0px 8px;" *matCellDef="let raw">
+                                        {{raw.contact?.phone ? raw.contact.phone : '---'}}
+                                    </td>
+                                </ng-container>
+
+                                <ng-container matColumnDef="address">
+                                    <th *matHeaderCellDef
+                                        style=" font-size: 0.9em;padding:0px 1em; font-weight: 500; color: #828282; "
+                                        class="w3-padding " matTooltipPosition="above">
+                                        Dirección
+                                    </th>
+                                    <td style="padding:0px 8px" *matCellDef="let raw">
+                                        {{raw.contact?.address ? raw.contact.address : '---'}}
+                                    </td>
+                                </ng-container>
+
+                                <ng-container matColumnDef="district">
+                                    <th *matHeaderCellDef
+                                        style=" font-size: 0.9em;padding:0px 1em; font-weight: 500; color: #828282; "
+                                        class="w3-padding  ">
+                                        Distrito
+                                    </th>
+                                    <td style="padding:0px 8px" *matCellDef="let raw">
+                                        {{raw.contact?.district?.name ? raw.contact.district.name : '---'}}
+                                    </td>
+                                </ng-container>
+
+                                <ng-container matColumnDef="salesCount">
+                                    <th *matHeaderCellDef
+                                        style=" font-size: 0.9em;padding:0px 1em; font-weight: 500; color: #828282; "
+                                        class="w3-padding  ">
+                                        Pedidos realizados
+                                    </th>
+                                    <td style="padding:0px 8px" class="w3-center" *matCellDef="let raw">
+                                        {{raw.salesCount ? raw.salesCount : 0}}
+                                    </td>
+                                </ng-container>
+
+                                <ng-container matColumnDef="actions" stickyEnd>
+                                    <th *matHeaderCellDef
+                                        style=" font-size: 0.9em;padding:0px 1em; font-weight: 500; color: #828282; "
+                                        class="w3-padding w3-border-left w3-border-lightgrey">Acciones</th>
+                                    <td style="padding:0px 24px" *matCellDef="let raw"
+                                        class="w3-border-left w3-border-lightgrey">
+                                        <mat-menu #rawMenu="matMenu">
+                                            <button class="w3-small" mat-menu-item (click)="editUser(raw)">
+                                                <mat-icon>edit</mat-icon> Editar
+                                            </button>
+                                            <!-- <button class="w3-small" mat-menu-item (click)="suspendUser(raw)">
+                                                <mat-icon>app_blocking</mat-icon> Suspender
+                                            </button> -->
+                                            <button class="w3-small" mat-menu-item (click)="deleteUser(raw)">
+                                                <mat-icon>delete</mat-icon> Borrar
+                                            </button>
+                                        </mat-menu>
+                                        <ng-container *ngIf="(auth.user$ | async) as user">
+                                            <button mat-icon-button [matMenuTriggerFor]="rawMenu"
+                                                [disabled]="user.accountant || user.logistic">
+                                                <mat-icon>more_vert</mat-icon>
+                                            </button>
+                                        </ng-container>
+                                    </td>
+                                </ng-container>
+
+                                <tr mat-header-row *matHeaderRowDef="customersDisplayedColumns; sticky: true"
+                                    style="text-align-last: center;">
+                                </tr>
+                                <tr mat-row *matRowDef="let row; columns: customersDisplayedColumns;"></tr>
+
+                            </table>
+                            <mat-paginator #customersPaginator style="border-radius: 0px 0px 10px 10px"
+                                [pageSizeOptions]="[5, 10, 20]" showFirstLastButtons></mat-paginator>
+                        </div>
+
+                    </div>
+                </div>
+
+            </div>
+
+            <ng-template #default>
+                <div class="w3-container w3-center w3-margin-top w3-margin-bottom">
+                    <p>Sin Resultados</p>
+                </div>
+            </ng-template>
+        </div>
+    </div>
+</div>

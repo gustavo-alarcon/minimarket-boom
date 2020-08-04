@@ -111,7 +111,7 @@ export class ProductsComponent implements OnInit {
           this.dbs.sum.next(this.dbs.total)
         }
 
-        console.log(any);
+        // console.log(any);
 
 
         return any.filter(el => search ? el.description.toLowerCase().includes(search) : true)

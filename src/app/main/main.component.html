@@ -50,6 +50,11 @@
                             Configuración
                         </button>
                         <button mat-button class="w3-block menu__button" *ngIf="user?.admin || user?.seller || user?.logistic"
+                            routerLink="customers" (click)="toggleSideMenu()">
+                            <mat-icon class="menu__icon">account_circle</mat-icon>
+                            Clientes
+                        </button>
+                        <button mat-button class="w3-block menu__button" *ngIf="user?.admin || user?.seller || user?.logistic"
                             routerLink="products-list" (click)="toggleSideMenu()">
                             <mat-icon class="menu__icon">local_offer</mat-icon>
                             Lista de Productos
