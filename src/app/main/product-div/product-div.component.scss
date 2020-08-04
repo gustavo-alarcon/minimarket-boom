@@ -6,7 +6,7 @@
     width: 100%;
 
     &--package{
-        height: 320px;
+        max-height: 450px;
     }
 
     &--product{
@@ -17,6 +17,7 @@
         justify-content: space-between;
         align-items: center;
         height: 100%;
+        // margin: 1em 0em;
     }
 
     &__image-div {
