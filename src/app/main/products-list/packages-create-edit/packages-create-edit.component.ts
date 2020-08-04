@@ -29,7 +29,7 @@ export class PackagesCreateEditComponent implements OnInit {
   dateType = ["Definida", "Indefinida"];
   itemsFormArray: FormArray;
   dateLimit = new Date(Date.now() + 8.64e+7)
-  maxItems = Array.from(Array(3), (_, i) => i + 1);
+  maxItems = Array.from(Array(8), (_, i) => i + 1);
 
   descriptionFormatting$: Observable<string>
   skuFormatting$: Observable<string>
