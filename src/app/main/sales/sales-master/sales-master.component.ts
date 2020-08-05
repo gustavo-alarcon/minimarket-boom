@@ -32,9 +32,11 @@ export class SalesMasterComponent implements OnInit {
 
   date: FormControl;
   statusForm: FormControl;
+  search: FormControl;
 
-  sales$: Observable<Sale[]>
-  status: string[] = []
+  sales$: Observable<Sale[]>;
+  status: string[] = [];
+  search$: Observable<string>;
 
   constructor(
     private dbs: DatabaseService,
@@ -58,6 +60,7 @@ export class SalesMasterComponent implements OnInit {
     this.status = Object.values(new saleStatusOptions())
 
     this.statusForm = new FormControl('Todos')
+    this.search = new FormControl('');
   }
 
   initObservables() {
@@ -73,24 +76,47 @@ export class SalesMasterComponent implements OnInit {
       })
     );
 
+    this.search$ = this.search.valueChanges;
+
 
     this.salesFiltered$ = combineLatest(
+      this.search$.pipe(startWith('')),
       this.sales$,
       this.statusForm.valueChanges.pipe(startWith('Todos')))
       .pipe(
-        map(([sales, saleState]) => {
-          //console.log(sales);
+        map(([search, sales, saleState]) => {
           let order = sales.sort((a, b) => Number(b.correlative) - Number(a.correlative))
           if (saleState == 'Todos') {
             if (this.totalPriceSubject) {
               this.totalPriceSubject.next(this.giveTotalSalesPrice(order))
             }
-            return order
+
+            return order.filter(el => {
+              return el.correlative.toString().includes(search) ||
+                el.user.email?.includes(search.toLowerCase()) ||
+                el.user.name?.toLowerCase().includes(search.toLowerCase()) ||
+                el.user.lastName1?.toLowerCase().includes(search.toLowerCase()) ||
+                el.user.lastName2?.toLowerCase().includes(search.toLowerCase()) ||
+                el.user.displayName?.toLowerCase().includes(search.toLowerCase()) ||
+                el.user.dni?.toString().toLowerCase().includes(search.toLowerCase())
+            });
+
           } else {
             if (this.totalPriceSubject) {
               this.totalPriceSubject.next(this.giveTotalSalesPrice(order.filter(el => el.status == saleState)))
             }
-            return order.filter(el => el.status == saleState);
+            return order.filter(el => {
+              return el.status == saleState && (
+                el.correlative.toString().includes(search) ||
+                el.user.email?.includes(search.toLowerCase()) ||
+                el.user.name?.toLowerCase().includes(search.toLowerCase()) ||
+                el.user.lastName1?.toLowerCase().includes(search.toLowerCase()) ||
+                el.user.lastName2?.toLowerCase().includes(search.toLowerCase()) ||
+                el.user.displayName?.toLowerCase().includes(search.toLowerCase()) ||
+                el.user.dni?.toString().toLowerCase().includes(search.toLowerCase())
+              )
+            }
+            );
           }
         }),
         shareReplay(1)
@@ -171,8 +197,8 @@ export class SalesMasterComponent implements OnInit {
       //'Fecha de Entrega',
       'Usuario de Anulación',
       'Fecha de Anulación',
-      'Sub Total', 'IGV', 'Total', 'Delivery', 'Total + Delivery',
-      'Producto o Paquete', 'Cantidad', 'Peso Unitario', 'Peso Total', 'Precio']
+      'Sub Total', 'IGV', 'Total', 'Delivery', 'Total con Delivery',
+      'Paquete', 'Descripción', 'Cantidad', 'Peso Unitario', 'Peso Total', 'Precio Total']
 
     table_xlsx.push(headersXlsx);
 
@@ -185,44 +211,44 @@ export class SalesMasterComponent implements OnInit {
           (sale.user.displayName ? sale.user.displayName : "Sin nombre"),
         sale.user.dni ? sale.user.dni : "Sin DNI",
         sale.user.email,
-        sale.location.address?sale.location.phone:'',
+        sale.location.address ? sale.location.phone : '',
         sale.status,
-        sale.location.address?sale.location.address:'',
-        sale.location.address?sale.location.district['name']:'',
-        sale.location.address?sale.location.reference:'',
+        sale.location.address ? sale.location.address : '',
+        sale.location.address ? sale.location.district['name'] : '',
+        sale.location.address ? sale.location.reference : '',
         (this.giveTotalPrice(sale) + sale.deliveryPrice).toFixed(2),
         '',
         typeof sale.payType == 'string' ? sale.payType : sale.payType.name,
-        sale.createdAt ? this.getXlsDate(sale.createdAt) : "---",
-        //sale.requestDate ? this.getXlsDate(sale.requestDate) : "---",
+        sale.createdAt ? this.getXlsDate(sale.createdAt) : "-",
+        //sale.requestDate ? this.getXlsDate(sale.requestDate) : "-",
         sale.attendedData ?
           sale.attendedData.attendedBy.name ? sale.attendedData.attendedBy.lastName1 ? sale.attendedData.attendedBy.lastName2 ?
             sale.attendedData.attendedBy.name + " " + sale.attendedData.attendedBy.lastName1 + " " + sale.attendedData.attendedBy.lastName2 :
             sale.attendedData.attendedBy.name + " " + sale.attendedData.attendedBy.lastName1 : sale.attendedData.attendedBy.name :
-            (sale.attendedData.attendedBy.displayName ? sale.attendedData.attendedBy.displayName : "Sin nombre") : "---",
-        sale.attendedData ? this.getXlsDate(sale.attendedData.attendedAt) : "---",
+            (sale.attendedData.attendedBy.displayName ? sale.attendedData.attendedBy.displayName : "Sin nombre") : "-",
+        sale.attendedData ? this.getXlsDate(sale.attendedData.attendedAt) : "-",
         sale.confirmedRequestData ?
           sale.confirmedRequestData.confirmedBy.name ? sale.confirmedRequestData.confirmedBy.lastName1 ? sale.confirmedRequestData.confirmedBy.lastName2 ?
             sale.confirmedRequestData.confirmedBy.name + " " + sale.confirmedRequestData.confirmedBy.lastName1 + " " + sale.confirmedRequestData.confirmedBy.lastName2 :
             sale.confirmedRequestData.confirmedBy.name + " " + sale.confirmedRequestData.confirmedBy.lastName1 : sale.confirmedRequestData.confirmedBy.name :
-            (sale.confirmedRequestData.confirmedBy.displayName ? sale.confirmedRequestData.confirmedBy.displayName : "Sin nombre") : "---",
-        sale.confirmedRequestData ? this.getXlsDate(sale.confirmedRequestData.confirmedAt) : "---",
-        sale.confirmedRequestData ? this.getXlsDate(sale.confirmedRequestData.assignedDate) : "---",
+            (sale.confirmedRequestData.confirmedBy.displayName ? sale.confirmedRequestData.confirmedBy.displayName : "Sin nombre") : "-",
+        sale.confirmedRequestData ? this.getXlsDate(sale.confirmedRequestData.confirmedAt) : "-",
+        sale.confirmedRequestData ? this.getXlsDate(sale.confirmedRequestData.assignedDate) : "-",
         sale.confirmedDocumentData ?
           sale.confirmedDocumentData.confirmedBy.name ? sale.confirmedDocumentData.confirmedBy.lastName1 ? sale.confirmedDocumentData.confirmedBy.lastName2 ?
             sale.confirmedDocumentData.confirmedBy.name + " " + sale.confirmedDocumentData.confirmedBy.lastName1 + " " + sale.confirmedDocumentData.confirmedBy.lastName2 :
             sale.confirmedDocumentData.confirmedBy.name + " " + sale.confirmedDocumentData.confirmedBy.lastName1 : sale.confirmedDocumentData.confirmedBy.name :
-            (sale.confirmedDocumentData.confirmedBy.displayName ? sale.confirmedDocumentData.confirmedBy.displayName : "Sin nombre") : "---",
-        sale.confirmedDocumentData ? this.getXlsDate(sale.confirmedDocumentData.confirmedAt) : "---",
-        //sale.confirmedDeliveryData ? this.getXlsDate(sale.confirmedDeliveryData.confirmedAt) : "---",
-        //sale.driverAssignedData ? this.getXlsDate(sale.driverAssignedData.assignedAt) : "---",
-        //sale.finishedData ? this.getXlsDate(sale.finishedData.finishedAt) : "---",
+            (sale.confirmedDocumentData.confirmedBy.displayName ? sale.confirmedDocumentData.confirmedBy.displayName : "Sin nombre") : "-",
+        sale.confirmedDocumentData ? this.getXlsDate(sale.confirmedDocumentData.confirmedAt) : "-",
+        //sale.confirmedDeliveryData ? this.getXlsDate(sale.confirmedDeliveryData.confirmedAt) : "-",
+        //sale.driverAssignedData ? this.getXlsDate(sale.driverAssignedData.assignedAt) : "-",
+        //sale.finishedData ? this.getXlsDate(sale.finishedData.finishedAt) : "-",
         sale.cancelledData ?
           sale.cancelledData.cancelledBy.name ? sale.cancelledData.cancelledBy.lastName1 ? sale.cancelledData.cancelledBy.lastName2 ?
             sale.cancelledData.cancelledBy.name + " " + sale.cancelledData.cancelledBy.lastName1 + " " + sale.cancelledData.cancelledBy.lastName2 :
             sale.cancelledData.cancelledBy.name + " " + sale.cancelledData.cancelledBy.lastName1 : sale.cancelledData.cancelledBy.name :
-            (sale.cancelledData.cancelledBy.displayName ? sale.cancelledData.cancelledBy.displayName : "Sin nombre") : "---",
-        sale.cancelledData ? this.getXlsDate(sale.cancelledData.cancelledAt) : "---",
+            (sale.cancelledData.cancelledBy.displayName ? sale.cancelledData.cancelledBy.displayName : "Sin nombre") : "-",
+        sale.cancelledData ? this.getXlsDate(sale.cancelledData.cancelledAt) : "-",
         (this.giveTotalPrice(sale) - this.giveTotalPrice(sale) / 1.18 * 0.18).toFixed(2), //Soles
         (this.giveTotalPrice(sale) / 1.18 * 0.18).toFixed(2),
         (this.giveTotalPrice(sale)).toFixed(2),
@@ -231,7 +257,7 @@ export class SalesMasterComponent implements OnInit {
       ];
       //      'Producto', 'Cantidad', 'Precio'
 
-      sale.requestedProducts.forEach(prod => {
+      sale.requestedProducts.forEach(prod => {       
         // console.log(prod);
 
         // let temp2 = [
@@ -250,6 +276,7 @@ export class SalesMasterComponent implements OnInit {
         if (!prod.product.package) {
           temp2 = [
             ...temp,
+            '-',
             prod.product.description,
             prod.quantity,
             prod.product.unit.weight,
@@ -262,7 +289,8 @@ export class SalesMasterComponent implements OnInit {
             if (el) {
               temp2 = [
                 ...temp,
-                prod.product.description + "( " + el.description + " )",
+                prod.product.description,
+                el.description,
                 prod.quantity,
                 el.unit.weight,
                 (prod.quantity * el.unit.weight),
@@ -345,7 +373,7 @@ export class SalesMasterComponent implements OnInit {
   }
 
   giveTotalSalesPrice(sales: Sale[]): number {
-    return sales.reduce((a, b) => a + (this.giveTotalPrice(b)+b.deliveryPrice), 0)
+    return sales.reduce((a, b) => a + (this.giveTotalPrice(b) + b.deliveryPrice), 0)
   }
 }
 

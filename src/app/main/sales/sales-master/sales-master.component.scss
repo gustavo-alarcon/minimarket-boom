@@ -87,7 +87,18 @@
   align-self: center;
 }
 
+.search {
+  line-height: 17px;
+  width: 100%;
+  margin-left: 16px;
+}
+
 @media (max-width: 601px) {
+  .search {
+    margin-left: 0;
+    margin: 1.5em 0em;
+  }
+
   .actionsContainer {
     width: 100%;
     margin-right: 0;

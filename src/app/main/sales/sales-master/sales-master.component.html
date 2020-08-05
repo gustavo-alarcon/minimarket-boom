@@ -2,8 +2,7 @@
   <!-- Actions form -->
   <div class="actionsContainer formFieldRounded"
     style="margin-right: 16px;">
-      <mat-form-field style="margin: 16px 16px 16px 0"
-        class="content" appearance="outline">
+      <mat-form-field class="content" appearance="outline">
           <input readonly matInput placeholder="FECHA / PERIODO" [formControl]="date" [satDatepicker]="picker">
           <sat-datepicker #picker [rangeMode]="true"></sat-datepicker>
           <sat-datepicker-toggle matSuffix [for]="picker"></sat-datepicker-toggle>
@@ -24,9 +23,16 @@
               Descargar Excel
           </button>
       </ng-container>
-      <!-- <div class="subtotal marginTotal" style="font-size: large">Venta total:
-          {{getTotalPrice(salesFiltered$ | async) | currency:'S/. '}}</div> -->
+      <mat-form-field hintLabel="Correlativo, nombre, apellido, correo o DNI" class="search" appearance="outline">
+          <mat-icon matPrefix>search</mat-icon>
+          <input matInput placeholder="Buscar" [formControl]="search" autocomplete="off">
+          <mat-hint align="end"><strong>{{(salesFiltered$ | async)?.length}}</strong> resultados</mat-hint>
+      </mat-form-field>
   </div>
+  <!-- <div class="actionsContainer formFieldRounded"
+    style="margin-right: 16px;">
+      
+  </div> -->
 
 
   <ng-container *ngIf="salesFiltered$ | async as salesFiltered">
@@ -120,11 +126,11 @@
                     <div matTooltip="Fecha Solicitada">
                         <mat-icon style="font-size:20px;"
                             color="primary">assignment_turned_in</mat-icon>
-                        {{sale.createdAt['seconds']*1000 | date:'dd/MM/yyyy'}}
+                        {{sale.createdAt['seconds']*1000 | date:'dd/MM/yyyy'}} <small>{{sale.createdAt['seconds']*1000 | date:'h:mm a'}}</small>
                     </div>
                     <div matTooltip="Fecha Asignada">
                         <mat-icon style="font-size:20px;"
-                            color="primary">assignment_turned_in</mat-icon>
+                            color="primary">directions_bike</mat-icon>
                         <span *ngIf="sale.confirmedRequestData else noConfirmedRequest">
                             {{sale.confirmedRequestData?.assignedDate['seconds']*1000 | date:'dd/MM/yyyy'}}
                         </span>
@@ -151,8 +157,8 @@
                     </div>
                     <div class="overflow_container">
                         <mat-icon>chrome_reader_mode</mat-icon>
-                        <b *ngIf="sale.location?.phone else noNumber">
-                            {{sale.location?.phone}}
+                        <b *ngIf="sale.user?.dni else noNumber">
+                            {{sale.user.dni}}
                         </b>
                         <ng-template #noNumber>
                             <b>00000000</b>

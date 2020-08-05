@@ -1,6 +1,7 @@
 import { User } from 'src/app/core/models/user.model';
 import { Product } from './product.model';
 import { Package } from './package.model';
+
 export class saleStatusOptions {
   requested = 'Solicitado';
   attended = 'Atendido';
@@ -8,7 +9,7 @@ export class saleStatusOptions {
   confirmedDocument = 'Comprobante Confirmado';
   // confirmedDelivery = 'Delivery Confirmado';
   // driverAssigned = 'Conductor Asignado';
-  // finished = 'Entregado';
+  finished = 'Entregado';
   cancelled = 'Anulado'
 }
 

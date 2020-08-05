@@ -1,0 +1,77 @@
+<div mat-dialog-title>
+    <h2 class="title-dialog" style="font-size:1.2em">
+        <mat-icon style="vertical-align:middle; margin-right: 8px;">account_circle</mat-icon>
+        Editar Usuario
+    </h2>
+    <mat-divider></mat-divider>
+</div>
+<mat-dialog-content style="max-width: 350px;">
+    <mat-progress-bar mode='indeterminate' *ngIf="loading$ | async"></mat-progress-bar>
+    <form [formGroup]="userForm">
+
+        <mat-form-field class="w3-block" appearance="outline">
+            <mat-label>Correo</mat-label>
+            <input matInput type="text" formControlName="email" placeholder="Correo electrónico" autocomplete="off">
+        </mat-form-field>
+
+        <mat-form-field class="w3-block" appearance="outline" class="w3-block">
+            <mat-label>Nombre</mat-label>
+            <input autocomplete="off" formControlName="name" type="text" matInput placeholder="Nombre">
+            <mat-error>
+                Campo requerido
+            </mat-error>
+        </mat-form-field>
+
+        <mat-form-field class="w3-block" appearance="outline" class="w3-block">
+            <mat-label>Apellido Paterno</mat-label>
+            <input autocomplete="off" formControlName="lastname1" type="text" matInput placeholder="Apellido parterno">
+            <mat-error>
+                Campo requerido
+            </mat-error>
+        </mat-form-field>
+
+        <mat-form-field class="w3-block" appearance="outline" class="w3-block">
+            <mat-label>Apellido Materno</mat-label>
+            <input autocomplete="off" formControlName="lastname2" type="text" matInput placeholder="Apellido materno">
+            <mat-error>
+                Campo requerido
+            </mat-error>
+        </mat-form-field>
+
+        <mat-form-field class="w3-block" appearance="outline" class="w3-block">
+            <mat-label>DNI</mat-label>
+            <input autocomplete="off" formControlName="dni" type="tel" matInput placeholder="DNI">
+        </mat-form-field>
+
+        <mat-form-field class="w3-block" appearance="outline" class="w3-block">
+            <mat-label>Teléfono</mat-label>
+            <input autocomplete="off" formControlName="phone" type="tel" matInput placeholder="Teléfono">
+        </mat-form-field>
+
+        <mat-form-field class="w3-block" appearance="outline" class="w3-block">
+            <mat-label>Dirección</mat-label>
+            <input autocomplete="off" formControlName="address" type="text" matInput placeholder="Dirección">
+        </mat-form-field>
+
+        <mat-form-field class="w3-block" appearance="outline" class="w3-block">
+            <mat-label>Distrito</mat-label>
+            <input autocomplete="off" formControlName="district" type="text" matInput placeholder="Nombre"
+                [matAutocomplete]="autoDistrict">
+            <mat-autocomplete #autoDistrict [displayWith]="showDistrict">
+                <mat-option *ngFor="let district of filteredDistricts$ | async" [value]="district">
+                    {{district.name}}
+                </mat-option>
+            </mat-autocomplete>
+            <mat-hint>Precio:
+                {{(this.userForm.value['district'] ? this.userForm.value['district']['delivery'] : 0) | currency : 'S/.'}}
+            </mat-hint>
+        </mat-form-field>
+
+    </form>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+    <button mat-raised-button class="w3-margin-right buttonNoRounded" mat-dialog-close>Cancelar</button>
+    <button mat-raised-button class="buttonNoRounded" color="accent" (click)="save()" type="button"
+        [disabled]="userForm.status != 'VALID'">Guardar</button>
+</mat-dialog-actions>
