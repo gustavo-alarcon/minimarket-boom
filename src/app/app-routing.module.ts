@@ -12,7 +12,7 @@ const routes: Routes = [
   {
     path: 'main',
     loadChildren: () => import('./main/main.module').then(mod => mod.MainModule),
-    // canActivateChild: [OpeningGuard]
+    canActivateChild: [OpeningGuard]
   },
   { path: '',   redirectTo: '/login', pathMatch: 'full' },
   { path: '**', component: LoginComponent},
