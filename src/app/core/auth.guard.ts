@@ -33,13 +33,15 @@ export class AuthGuard implements CanActivate {
             return true;
           case 'products-history':
             return true;
-          case 'products-list':
+          case 'customers':
             return user ? (!!user.admin || !!user.seller) : false;
+          case 'products-list':
+            return user ? (!!user.admin || !!user.seller || !!user.logistic) : false;
           case 'sales':
             return user ? (!!user.admin || !!user.seller) : false;
           case 'logistics':
             return user ? (!!user.admin || !!user.logistic) : false;
-          case 'configuracion':
+          case 'configuration':
             return user ? !!user.admin : false;
           default:
             return true;
