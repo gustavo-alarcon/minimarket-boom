@@ -6,7 +6,7 @@ import { map, startWith, filter, tap } from 'rxjs/operators';
 import { FormControl } from '@angular/forms';
 import { DatabaseService } from 'src/app/core/services/database.service';
 import { Observable, combineLatest } from 'rxjs';
-import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
+import { Component, OnInit} from '@angular/core';
 import { Product } from 'src/app/core/models/product.model';
 import { LoginDialogComponent } from '../login-dialog/login-dialog.component';
 @Component({
@@ -29,8 +29,8 @@ export class ProductsComponent implements OnInit {
 
   defaultImage = "../../../assets/images/default-image.jpg";
 
-  @ViewChild("movilForm", { static: false }) searchbar: ElementRef;
-  @ViewChild("slogan", { static: false }) slogan: ElementRef;
+  user:User = null
+
 
   p: number = 1;
   constructor(
@@ -111,9 +111,6 @@ export class ProductsComponent implements OnInit {
           this.dbs.sum.next(this.dbs.total)
         }
 
-        // console.log(any);
-
-
         return any.filter(el => search ? el.description.toLowerCase().includes(search) : true)
       })
     )
@@ -132,6 +129,7 @@ export class ProductsComponent implements OnInit {
       }),
       tap(res => {
         if (res) {
+          this.user = res
           if (res['salesCount']) {
             this.firstSale = false
           } else {

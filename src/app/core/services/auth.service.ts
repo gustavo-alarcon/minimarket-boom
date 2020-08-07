@@ -1,3 +1,4 @@
+import { DatabaseService } from 'src/app/core/services/database.service';
 import { Injectable } from '@angular/core';
 import { Observable, of } from 'rxjs';
 // import { auth } from "firebase/app";
@@ -29,7 +30,8 @@ export class AuthService {
     private afs: AngularFirestore,
     private router: Router,
     public snackbar: MatSnackBar,
-    private platform: Platform
+    private platform: Platform,
+    private dbs: DatabaseService
   ) {
 
     this.afAuth.setPersistence('local');
@@ -61,7 +63,7 @@ export class AuthService {
     return this.afAuth.createUserWithEmailAndPassword(data.email, data.pass);
   }
 
-  public resetPassword(email:string){
+  public resetPassword(email: string) {
     return this.afAuth.sendPasswordResetEmail(email)
   }
 
@@ -109,6 +111,7 @@ export class AuthService {
   public logout(): void {
     this.afAuth.signOut().finally(() => {
       this.router.navigateByUrl('/login');
+      this.dbs.view.next(1)
     });
   }
 

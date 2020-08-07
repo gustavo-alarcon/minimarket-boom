@@ -10,7 +10,7 @@ import { Observable, BehaviorSubject, forkJoin, combineLatest } from 'rxjs';
 import { AuthService } from 'src/app/core/services/auth.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Input } from '@angular/core';
 
 @Component({
   selector: 'app-purchase',
@@ -18,6 +18,9 @@ import { Component, OnInit } from '@angular/core';
   styleUrls: ['./purchase.component.scss']
 })
 export class PurchaseComponent implements OnInit {
+
+  user: User = null
+
   firstSale: boolean = false
 
   loading = new BehaviorSubject<boolean>(false);
@@ -27,7 +30,6 @@ export class PurchaseComponent implements OnInit {
   loadingbar$ = this.loadingbar.asObservable();
 
   userData$: Observable<any>
-  user: User = null
 
   init$: Observable<any>
 
@@ -76,8 +78,6 @@ export class PurchaseComponent implements OnInit {
   ) { }
 
   ngOnInit(): void {
-    console.log(this.dbs.order);
-
     let date = new Date()
     this.now = new Date(date.getTime() + (345600000))
 
@@ -132,66 +132,71 @@ export class PurchaseComponent implements OnInit {
       photoURL: [null]
     });
 
-    this.userData$ = this.auth.user$.pipe(
-      tap(res => {
-        this.user = res
-        if (res['contact']) {
-          this.firstFormGroup = this.fb.group({
-            email: [res['email'], [Validators.required, Validators.email]],
-            dni: [res['dni'], [Validators.required, Validators.minLength(8)]],
-            name: [res['name'], [Validators.required]],
-            lastname1: [res['lastName1'], [Validators.required]],
-            lastname2: [res['lastName2'], [Validators.required]],
-            phone: [res.contact.phone, [Validators.required, Validators.minLength(6)]],
-          });
-
-          this.firstFormGroup.get('email').disable()
-
-          if (this.districts.find(el => el.name == res.contact.district.name)) {
-            this.secondFormGroup = this.fb.group({
-              address: [res.contact.address, [Validators.required]],
-              district: [res.contact.district, [Validators.required]],
-              ref: [res.contact.reference, [Validators.required]]
-            });
-            this.changeDelivery(res.contact.district)
-          } else {
-            this.secondFormGroup = this.fb.group({
-              address: [res.contact.address, [Validators.required]],
-              district: [null, [Validators.required]],
-              ref: [res.contact.reference, [Validators.required]]
-            });
-          }
-
-          this.latitud = res.contact.coord.lat
-          this.longitud = res.contact.coord.lng
-
-        } else {
-          this.firstSale = true
-
-          this.firstFormGroup = this.fb.group({
-            email: [res['email'], [Validators.required, Validators.email]],
-            dni: [null, [Validators.required, Validators.minLength(8)]],
-            name: [res['displayName'], [Validators.required]],
-            lastname1: [null, [Validators.required]],
-            lastname2: [null, [Validators.required]],
-            phone: [null, [Validators.required, Validators.minLength(6)]],
-          });
-
-          this.firstFormGroup.get('email').disable()
-
-
-          if (res['displayName']) {
-            this.name = true
-          }
-        }
-      })
-    )
+    
 
     this.delivery = this.dbs.delivery
     this.total = [...this.dbs.order].map(el => this.giveProductPrice(el)).reduce((a, b) => a + b, 0)
 
+    this.userData$ = this.auth.user$.pipe(
+      tap(res=>{
+       this.user = res
+        this.getData()
+        
+      })
+    )
 
 
+  }
+
+  getData(){
+    if (this.user) {
+      if (this.user['contact']) {
+        this.firstFormGroup = this.fb.group({
+          email: [this.user['email'], [Validators.required, Validators.email]],
+          dni: [this.user['dni'], [Validators.required, Validators.minLength(8)]],
+          name: [this.user['name'], [Validators.required]],
+          lastname1: [this.user['lastName1'], [Validators.required]],
+          lastname2: [this.user['lastName2'], [Validators.required]],
+          phone: [this.user.contact.phone, [Validators.required, Validators.minLength(6)]],
+        });
+
+        if (this.districts.find(el => el.name == this.user.contact.district.name)) {
+          this.secondFormGroup = this.fb.group({
+            address: [this.user.contact.address, [Validators.required]],
+            district: [this.user.contact.district, [Validators.required]],
+            ref: [this.user.contact.reference, [Validators.required]]
+          });
+          this.changeDelivery(this.user.contact.district)
+        } else {
+          this.secondFormGroup = this.fb.group({
+            address: [this.user.contact.address, [Validators.required]],
+            district: [null, [Validators.required]],
+            ref: [this.user.contact.reference, [Validators.required]]
+          });
+        }
+
+        this.latitud = this.user.contact.coord.lat
+        this.longitud = this.user.contact.coord.lng
+
+      } else {
+        this.firstSale = true
+
+        this.firstFormGroup = this.fb.group({
+          email: [this.user['email'], [Validators.required, Validators.email]],
+          dni: [null, [Validators.required, Validators.minLength(8)]],
+          name: [this.user['displayName'], [Validators.required]],
+          lastname1: [null, [Validators.required]],
+          lastname2: [null, [Validators.required]],
+          phone: [null, [Validators.required, Validators.minLength(6)]],
+        });
+
+        this.firstFormGroup.get('email').disable()
+
+        if (this.user['displayName']) {
+          this.name = true
+        }
+      }
+    }
   }
 
   giveProductPrice(item) {

@@ -1,6 +1,7 @@
 <mat-progress-bar *ngIf="loadingbar$ | async" mode="indeterminate"></mat-progress-bar>
 <div *ngIf="init$ | async">
-    <mat-horizontal-stepper *ngIf="userData$ | async" linear #stepper class="ms-stepper">
+    <p *ngIf="userData$ | async"></p>
+    <mat-horizontal-stepper linear #stepper class="ms-stepper">
         <mat-step label="📝" [stepControl]="firstFormGroup" [completed]="firstFormGroup.valid">
             <h2 class="subtitle">Datos personales</h2>
             <form [formGroup]="firstFormGroup">
