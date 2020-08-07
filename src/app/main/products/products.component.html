@@ -63,7 +63,6 @@
                         </div>
                     </div>
                 </ng-template>
-                <p *ngIf="init$ | async"></p>
             </div>
             <div *ngIf="(dbs.view$|async)==2" style="max-width: 400px;">
                 <div class="ms-flex ms-flex--center">
@@ -93,7 +92,7 @@
                 </ng-template>
             </div>
             <div *ngIf="(dbs.view$|async)==3">
-                <div class="ms-flex ms-flex--center" *ngIf="init$ | async as user">
+                <div class="ms-flex ms-flex--center">
                     <button mat-icon-button style="margin-left: -10px; margin-top: -10px;" (click)="shoppingCart()">
                         <mat-icon>keyboard_backspace</mat-icon>
                     </button>
@@ -102,26 +101,25 @@
                 </div>
                 <p *ngIf="firstSale">Hola cheese lover, gracias por tu preferencia. Comencemos anotando tus datos</p>
                 <p *ngIf="!firstSale">Gracias por volver a comprar nuestros productos</p>
-                <div class="container w3-hide-small w3-hide-medium " style="align-items: baseline;">
-                    <div style="max-width: 420px;">
+                <div class="container " style="align-items: baseline;">
+                    <div style="width:100%;max-width: 420px;">
                         <app-purchase></app-purchase>
                     </div>
                     <span class="ms-fill"></span>
-                    <mat-card style="min-width: 400px; padding: 0 16px; margin: 0 2em;">
+                    <mat-card class="w3-hide-small w3-hide-medium"
+                        style="min-width: 400px; padding: 0 16px; margin: 0 2em;">
                         <app-shopping-cart [delivery]="dbs.delivery" [order]="dbs.order" [modified]="false">
                         </app-shopping-cart>
                     </mat-card>
 
                 </div>
 
-                <app-purchase class="w3-hide-large"></app-purchase>
-
             </div>
 
-
+            <p *ngIf="init$ | async"></p>
         </div>
         <div class="w3-col s0 m1 l1">
-            <p></p>
+            <p class="w3-hide-small"></p>
         </div>
     </div>
 
