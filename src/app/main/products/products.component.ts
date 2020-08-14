@@ -106,7 +106,7 @@ export class ProductsComponent implements OnInit {
               }
             }
           }
-
+          this.dbs.view.next(2)
           this.dbs.total = this.dbs.order.map(el => this.giveProductPrice(el)).reduce((a, b) => a + b, 0)
           this.dbs.sum.next(this.dbs.total)
         }
