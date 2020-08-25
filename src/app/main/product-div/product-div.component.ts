@@ -25,6 +25,7 @@ export class ProductDivComponent implements OnInit {
   ) { }
 
   ngOnInit(): void {
+    console.log(this.product);
   }
 
   add(item) {
@@ -130,5 +131,6 @@ export class ProductDivComponent implements OnInit {
   packageDisabled(pack): boolean {
     let disabled = pack.items.filter(el => !el.choose)
     return disabled.length > 0
+    // return false
   }
 }

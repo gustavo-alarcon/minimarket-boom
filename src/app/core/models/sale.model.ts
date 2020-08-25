@@ -39,7 +39,7 @@ export interface Sale {
   location: {
     address: string,
     district: any,
-    coord: {
+    coord?: {
       lat: number,
       lng: number,
     },

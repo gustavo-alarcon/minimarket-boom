@@ -76,7 +76,8 @@ export class ProductsComponent implements OnInit {
               return productOp
             })
 
-            let select = options.filter(lu => (lu.realStock >= lu.sellMinimum) && lu.published)[0]
+            // let select = options.filter(lu => (lu.realStock >= lu.sellMinimum) && lu.published)[0]
+            let select = options.filter(lu => (lu?.realStock >= lu?.sellMinimum))[0]
             return {
               productsOptions: options,
               choose: select
