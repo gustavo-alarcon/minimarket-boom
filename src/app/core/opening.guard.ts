@@ -7,6 +7,7 @@ import { map, switchMap } from 'rxjs/operators';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { AuthService } from './services/auth.service';
+import { StoreClosedDialogComponent } from '../shared-dialogs/store-closed-dialog/store-closed-dialog.component';
 
 @Injectable({
   providedIn: 'root'
@@ -27,7 +28,8 @@ export class OpeningGuard implements CanActivateChild {
     private router: Router,
     private dbs: DatabaseService,
     private auth: AuthService,
-    private snackbar: MatSnackBar
+    private snackbar: MatSnackBar,
+    private dialog: MatDialog
   ) { }
 
   timeConverter(hours: number, minutes: number, seconds: number): number {
@@ -78,9 +80,8 @@ export class OpeningGuard implements CanActivateChild {
               isOpen = true;
             } else {
               if (time < opening_time) {
-                this.snackbar.open(`😢 Lo sentimos cheese lover 💚, comenzaremos a atender de ⌚ ${res[day - 1]['opening']} a ${res[day - 1]['closing']}`, 'Aceptar', {
-                  duration: 6000
-                })
+                // this.snackbar.open(`😢 Lo sentimos cheese lover 💚, comenzaremos a tomar pedidos de ⌚ ${res[day - 1]['opening']} a ${res[day - 1]['closing']}`, 'Aceptar')
+                this.dialog.open(StoreClosedDialogComponent);
               }
 
               if (time > closing_time) {
@@ -92,31 +93,33 @@ export class OpeningGuard implements CanActivateChild {
 
                 while (!found) {
                   dayIndex = (dayIndex + 1) % 7;
-                  
+
                   next_opening_hours = parseInt(res[dayIndex]['opening'].split(':')[0]);
                   next_opening_minutes = parseInt(res[dayIndex]['opening'].split(':')[1]);
 
                   next_opening_time = this.timeConverter(next_opening_hours, next_opening_minutes, 0);
 
-                  
+
                   if (next_opening_time > 0) {
                     // console.log('Found ' + dayIndex);
                     found = true;
                   }
                 }
 
-                this.snackbar.open(`😢 Lo sentimos cheese lover 💚, estaremos atendiendo el 📅 ${this.daysArray[dayIndex]} de ⌚ ${res[dayIndex]['opening']} a ${res[dayIndex]['closing']}`, 'Aceptar', {
-                  duration: 6000
-                })
+                // this.snackbar.open(`😢 Lo sentimos cheese lover 💚, estaremos tomando pedidods el 📅 ${this.daysArray[dayIndex]} de ⌚ ${res[dayIndex]['opening']} a ${res[dayIndex]['closing']}`, 'Aceptar')
+                this.dialog.open(StoreClosedDialogComponent);
               }
             }
 
             return isOpen;
           }),
           tap(res => {
+            this.dbs.isOpen = res;
+
             if (!res) {
-              this.router.navigate(['/login']);
+              this.router.navigate(['/main']);
             }
+
           })
         );
       })

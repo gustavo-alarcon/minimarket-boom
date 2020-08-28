@@ -32,12 +32,15 @@ import { UpdateDialogComponent } from './shared-dialogs/update-dialog/update-dia
 import { MatDialogModule } from '@angular/material/dialog';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatIconModule } from '@angular/material/icon';
+import { StoreClosedDialogComponent } from './shared-dialogs/store-closed-dialog/store-closed-dialog.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     LoginComponent,
     UpdateDialogComponent,
+    StoreClosedDialogComponent,
+    StoreClosedDialogComponent
   ],
   imports: [
     BrowserModule,

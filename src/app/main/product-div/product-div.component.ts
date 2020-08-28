@@ -4,6 +4,8 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { DatabaseService } from 'src/app/core/services/database.service';
 import { Product } from 'src/app/core/models/product.model';
 import { Component, OnInit, CUSTOM_ELEMENTS_SCHEMA, Input } from '@angular/core';
+import { MatDialog } from '@angular/material/dialog';
+import { StoreClosedDialogComponent } from 'src/app/shared-dialogs/store-closed-dialog/store-closed-dialog.component';
 
 @Component({
   selector: 'app-product-div',
@@ -21,14 +23,20 @@ export class ProductDivComponent implements OnInit {
   constructor(
     public dbs: DatabaseService,
     private router: Router,
-    private snackBar: MatSnackBar
+    private snackBar: MatSnackBar,
+    private dialog: MatDialog
   ) { }
 
   ngOnInit(): void {
-    console.log(this.product);
+    // console.log(this.product);
   }
 
   add(item) {
+    if (!this.dbs.isOpen) {
+      this.dialog.open(StoreClosedDialogComponent);
+      return;
+    }
+
     if (this.package) {
       let newpackage = {
         product: item,
@@ -67,8 +75,8 @@ export class ProductDivComponent implements OnInit {
     let quantity = realQuantity.reduce((a, b) => a + b, 0)
 
     if (quantity >= stop) {
-      this.snackBar.open('Ha llegado al límite máximo de peso por pedido', 'Cerrar', {
-        duration: 3000
+      this.snackBar.open('🤯 Ha llegado al límite máximo de peso por pedido 🧀', 'Aceptar', {
+        duration: 6000
       })
     }
   }

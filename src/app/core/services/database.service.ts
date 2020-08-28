@@ -17,7 +17,8 @@ import { Package } from '../models/package.model';
   providedIn: 'root'
 })
 export class DatabaseService {
-  public version: string = 'V1.1.29r'
+  public version: string = 'V1.1.31r';
+  public isOpen: boolean = false;
 
   public order: {
     product: any,
@@ -36,8 +37,7 @@ export class DatabaseService {
 
   // public opening = new BehaviorSubject<Array<{ opening: string, closing: string }>>([]);
   public opening$: Observable<Array<{ opening: string, closing: string }>>;
-
-  ;
+  
   constructor(
     private afs: AngularFirestore,
     private storage: AngularFireStorage,
