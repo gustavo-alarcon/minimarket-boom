@@ -28,6 +28,7 @@ export class AuthGuard implements CanActivate {
         if (childComponent.startsWith('products')) {
           childComponent = 'products';
         }
+        
         switch (childComponent) {
           case 'products':
             return true;
