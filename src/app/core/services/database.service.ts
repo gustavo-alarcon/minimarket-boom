@@ -17,8 +17,9 @@ import { Package } from '../models/package.model';
   providedIn: 'root'
 })
 export class DatabaseService {
-  public version: string = 'V1.1.31r';
+  public version: string = 'V1.1.35r';
   public isOpen: boolean = false;
+  public isAdmin: boolean = false;
 
   public order: {
     product: any,

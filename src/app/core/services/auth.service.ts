@@ -43,10 +43,11 @@ export class AuthService {
           if (user) {
             this.updateUserData(user);
             return this.afs.collection('users').doc<User>(user.uid)
-              .valueChanges().pipe(
-                // map((res) => res.data())
-                map((res) => res)
-              );
+              .valueChanges()
+              // .pipe(
+              //   // map((res) => res.data())
+              //   map((res) => res)
+              // );
           } else {
             return of(null);
           }
