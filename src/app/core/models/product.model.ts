@@ -5,7 +5,7 @@ export interface Product {
   package?: false;
   id: string;
   description: string;
-  additionalDescription: string;
+  additionalDescription?: string;
   sku: string;
   category: string;   
   price: number;      //Should this price be with IGV?
