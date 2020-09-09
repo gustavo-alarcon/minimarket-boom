@@ -78,16 +78,16 @@ export class ProductCreateEditComponent implements OnInit {
           asyncValidators: this.skuRepeatedValidator(this.dbs, this.data),
           updateOn: 'blur'
         }),
-        additionalDescription: [this.data.data.additionalDescription, Validators.required],
+        additionalDescription: [this.data.data.additionalDescription],
         category: [this.data.data.category, Validators.required],
         price: [this.data.data.price, [Validators.required, Validators.min(0)]],
         unit: [this.data.data.unit, Validators.required],
         realStock: [this.data.data.realStock, [Validators.required, Validators.min(0)]],
         mermaStock: [this.data.data.mermaStock, [Validators.required, Validators.min(0)]],
         sellMinimum: [this.data.data.sellMinimum,
-        [Validators.required, Validators.min(1), , this.minimumSellValidator()]],
+        [Validators.required, Validators.min(0), , this.minimumSellValidator()]],
         alertMinimum: [this.data.data.alertMinimum,
-        [Validators.required, Validators.min(1), , this.minimumSellValidator()]],
+        [Validators.required, Validators.min(0), , this.minimumSellValidator()]],
         photoURL: [this.data.data.photoURL, Validators.required],
       })
     }
