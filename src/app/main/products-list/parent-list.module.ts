@@ -37,6 +37,8 @@ import { PackagesListComponent } from './packages-list/packages-list.component';
 import { ProductsListComponent } from './products-list/products-list.component';
 import { ParentListComponent } from './parent-list.component';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { ProductEntryComponent } from './product-entry/product-entry.component';
 
 
 
@@ -51,7 +53,8 @@ import { MatTooltipModule } from '@angular/material/tooltip';
     ProductConfigUnitsComponent,
     PackagesCreateEditComponent,
     PackagesConfigUnitsComponent,
-    PackagesListComponent
+    PackagesListComponent,
+    ProductEntryComponent
   ],
   imports: [
     CommonModule,
@@ -77,7 +80,8 @@ import { MatTooltipModule } from '@angular/material/tooltip';
     SatNativeDateModule,
     MatChipsModule,
     MatTabsModule,
-    MatTooltipModule
+    MatTooltipModule,
+    MatProgressSpinnerModule
   ],
   providers: [
     ProductCreateEditComponent,
