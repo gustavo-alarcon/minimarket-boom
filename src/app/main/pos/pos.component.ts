@@ -14,6 +14,7 @@ import { PosFinishComponent } from './pos-finish/pos-finish.component';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Platform } from '@angular/cdk/platform';
 import { AngularFirestore } from '@angular/fire/firestore';
+import { ProductCreateEditComponent } from '../products-list/product-create-edit/product-create-edit.component';
 
 @Component({
   selector: 'app-pos',
@@ -53,11 +54,12 @@ export class PosComponent implements OnInit {
     this.dbs.changeTitle('Punto de Venta');
 
     this.productList$ =
-      this.dbs.getProductsList()
+      this.dbs.getProductsListValueChanges()
         .pipe(
           tap(res => {
             if (res) {
               this.productList = res;
+              console.log('Products ready!');
             }
           })
         )
@@ -240,9 +242,16 @@ export class PosComponent implements OnInit {
   addProduct(): void {
 
     if (this.dbs.tabs.length === 0) {
-      this.snackbar.open("Debe agregar un ticket primero!", "Aceptar", {
+      this.snackbar.open("Agregando nuevo ticket", "Aceptar", {
         duration: 6000
       });
+
+      this.addTicket();
+
+      setTimeout(() => {
+        this.addProduct();
+      }, 1000);
+
       return;
     }
 
@@ -309,6 +318,23 @@ export class PosComponent implements OnInit {
         this.snackbar.open("Producto NO REGISTRADO", "Aceptar", {
           duration: 4000
         });
+
+        this.dialog.open(ProductCreateEditComponent, {
+          data: {
+            data: null,
+            edit: false
+          }
+        }).afterClosed()
+          .pipe(take(1))
+          .subscribe(res => {
+            if (res) {
+              setTimeout(() => {
+                this.addProduct();
+              }, 1000);
+
+            }
+          })
+
         return;
       }
     }

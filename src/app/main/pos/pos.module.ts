@@ -19,6 +19,8 @@ import { PosSavingComponent } from './pos-saving/pos-saving.component';
 import { MatSelectModule } from '@angular/material/select';
 import { MatDialogModule } from '@angular/material/dialog';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
+import { Ng2ImgMaxModule } from 'ng2-img-max';
+import { ProductCreateEditComponent } from '../products-list/product-create-edit/product-create-edit.component';
 
 
 @NgModule({
@@ -39,12 +41,14 @@ import { MatAutocompleteModule } from '@angular/material/autocomplete';
     MatTableModule,
     MatSelectModule,
     MatDialogModule,
-    MatAutocompleteModule
+    MatAutocompleteModule,
+    Ng2ImgMaxModule
   ],
   entryComponents: [
     PosQuantityComponent,
     PosFinishComponent,
-    PosSavingComponent
+    PosSavingComponent,
+    ProductCreateEditComponent
   ]
 })
 export class PosModule { }
