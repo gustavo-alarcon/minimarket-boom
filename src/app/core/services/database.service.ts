@@ -14,12 +14,13 @@ import * as firebase from 'firebase'
 import { Package } from '../models/package.model';
 import { Ticket } from '../models/ticket.model';
 import { title } from 'process';
+import { StoreSale } from '../models/storeSale.model';
 
 @Injectable({
   providedIn: 'root'
 })
 export class DatabaseService {
-  public version: string = 'V1.0.4r';
+  public version: string = 'V1.0.13r';
   public isOpen: boolean = false;
   public isAdmin: boolean = false;
 
@@ -43,12 +44,8 @@ export class DatabaseService {
 
 
   // POS variables
-  public tabs: Array<Ticket> = [{
-    index: 1,
-    productList: [],
-    total: 0
-  }];
-  public tabCounter = 1;
+  public tabs: Array<Ticket> = [];
+  public tabCounter = 0;
 
   public titleSource = new BehaviorSubject<string>('Cargando ...');
   public currentTitle$ = this.titleSource.asObservable();
@@ -65,6 +62,7 @@ export class DatabaseService {
   recipesRef = `db/minimarketBoom/recipes`;
   buysRef = `db/minimarketBoom/buys`;
   salesRef = `db/minimarketBoom/sales`;
+  storeSalesRef = `db/minimarketBoom/storeSales`;
   configRef = `db/minimarketBoom/config`;
   generalConfigDoc = this.afs.collection(this.configRef).doc<GeneralConfig>('generalConfig');
 
@@ -741,5 +739,23 @@ export class DatabaseService {
       .valueChanges().pipe(
         shareReplay(1)
       );
+  }
+
+  // STORE SALES
+  //Sales
+  getStoreSales(date: { begin: Date, end: Date }): Observable<StoreSale[]> {
+    return this.afs.collection<StoreSale>(this.storeSalesRef,
+      ref => ref.where("createdAt", "<=", date.end).where("createdAt", ">=", date.begin). orderBy("createdAt", 'desc'))
+      .valueChanges();
+  }
+
+  getUserTickets(uid: string): Observable<Array<Ticket>> {
+    return this.afs.collection<Ticket>(`/users/${uid}/tickets`, ref => ref.orderBy("index")).valueChanges()
+  }
+
+  // PRODUCT LIST ENTRIES
+  getProduct(id: string): Observable<Product> {
+    return this.afs.doc<Product>(`${this.productsListRef}/${id}`)
+      .valueChanges().pipe (shareReplay(1));
   }
 }

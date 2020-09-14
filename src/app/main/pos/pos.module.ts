@@ -15,10 +15,14 @@ import { MatMenuModule } from '@angular/material/menu';
 import { PosQuantityComponent } from './pos-quantity/pos-quantity.component';
 import { MatTableModule } from '@angular/material/table';
 import { PosFinishComponent } from './pos-finish/pos-finish.component';
+import { PosSavingComponent } from './pos-saving/pos-saving.component';
+import { MatSelectModule } from '@angular/material/select';
+import { MatDialogModule } from '@angular/material/dialog';
+import { MatAutocompleteModule } from '@angular/material/autocomplete';
 
 
 @NgModule({
-  declarations: [PosComponent, PosQuantityComponent, PosFinishComponent],
+  declarations: [PosComponent, PosQuantityComponent, PosFinishComponent, PosSavingComponent],
   imports: [
     CommonModule,
     PosRoutingModule,
@@ -32,11 +36,15 @@ import { PosFinishComponent } from './pos-finish/pos-finish.component';
     MatTabsModule,
     MatProgressSpinnerModule,
     MatMenuModule,
-    MatTableModule
+    MatTableModule,
+    MatSelectModule,
+    MatDialogModule,
+    MatAutocompleteModule
   ],
   entryComponents: [
     PosQuantityComponent,
-    PosFinishComponent
+    PosFinishComponent,
+    PosSavingComponent
   ]
 })
 export class PosModule { }

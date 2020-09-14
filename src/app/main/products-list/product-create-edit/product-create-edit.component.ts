@@ -103,7 +103,7 @@ export class ProductCreateEditComponent implements OnInit {
           asyncValidators: this.skuRepeatedValidator(this.dbs, this.data),
           updateOn: 'blur'
         }),
-        additionalDescription: [null, Validators.required],
+        additionalDescription: [null],
         category: [null, Validators.required],
         price: [null, [Validators.required, Validators.min(0)]],
         unit: [null, Validators.required],
@@ -212,7 +212,7 @@ export class ProductCreateEditComponent implements OnInit {
     let product: Product = {
       id: null,
       description: this.productForm.get('description').value.trim().toLowerCase(),
-      additionalDescription: this.productForm.get('additionalDescription').value.trim(),
+      additionalDescription: this.productForm.get('additionalDescription').value ? this.productForm.get('additionalDescription').value.trim() : '',
       sku: this.productForm.get('sku').value,
       category: this.productForm.get('category').value,
       price: this.productForm.get('price').value,
@@ -239,10 +239,12 @@ export class ProductCreateEditComponent implements OnInit {
           this.dialogRef.close(true);
         },
           err => {
+            // console.log(err)
             this.dialogRef.close(false);
           })
       },
         err => {
+          // console.log(err)
           this.dialogRef.close(false);
         });
   }

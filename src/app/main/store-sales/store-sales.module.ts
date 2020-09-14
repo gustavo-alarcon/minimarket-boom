@@ -9,6 +9,10 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatDividerModule } from '@angular/material/divider';
+import { SatDatepickerModule, SatNativeDateModule } from 'saturn-datepicker';
+import { MatSelectModule } from '@angular/material/select';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatTableModule } from '@angular/material/table';
 
 
 @NgModule({
@@ -22,7 +26,12 @@ import { MatDividerModule } from '@angular/material/divider';
     MatButtonModule,
     MatFormFieldModule,
     MatInputModule,
-    MatDividerModule
+    MatDividerModule,
+    SatDatepickerModule,
+    SatNativeDateModule,
+    MatSelectModule,
+    MatProgressSpinnerModule,
+    MatTableModule
   ]
 })
 export class StoreSalesModule { }
