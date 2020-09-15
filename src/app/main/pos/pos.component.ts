@@ -102,6 +102,20 @@ export class PosComponent implements OnInit {
     return product.sku ? product.sku : null;
   }
 
+  playSuccessAudio(){
+    let audio = new Audio();
+    audio.src = "../../../assets/audio/good.mp3";
+    audio.load();
+    audio.play();
+  }
+
+  playErrorAudio(){
+    let audio = new Audio();
+    audio.src = "../../../assets/audio/bad.mp3";
+    audio.load();
+    audio.play();
+  }
+
   setTab(index: number): void {
     this.selected.setValue(index);
     if (this.dbs.tabs.length > 0) {
@@ -309,6 +323,7 @@ export class PosComponent implements OnInit {
               this.snackbar.open("Producto agregado", "Aceptar", {
                 duration: 3000
               });
+              this.playSuccessAudio();
               this.loading.next(false);
             })
             .catch(err => {
@@ -351,6 +366,7 @@ export class PosComponent implements OnInit {
                   this.snackbar.open("Producto agregado", "Aceptar", {
                     duration: 3000
                   });
+                  this.playSuccessAudio();
                   this.loading.next(false);
                 })
                 .catch(err => {
@@ -390,6 +406,7 @@ export class PosComponent implements OnInit {
                       this.snackbar.open("Producto agregado", "Aceptar", {
                         duration: 3000
                       });
+                      this.playSuccessAudio();
                       this.loading.next(false);
                     })
                     .catch(err => {
@@ -406,7 +423,7 @@ export class PosComponent implements OnInit {
         this.snackbar.open("Producto NO REGISTRADO", "Aceptar", {
           duration: 4000
         });
-
+        this.playErrorAudio();
         this.dialog.open(ProductCreateEditComponent, {
           data: {
             data: null,
@@ -419,8 +436,9 @@ export class PosComponent implements OnInit {
               setTimeout(() => {
                 this.addProduct();
               }, 1000);
-
             }
+
+            this.search.setValue('');
           })
 
         return;
