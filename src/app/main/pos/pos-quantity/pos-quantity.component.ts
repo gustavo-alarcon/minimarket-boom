@@ -9,7 +9,7 @@ import { MatDialogRef } from '@angular/material/dialog';
 })
 export class PosQuantityComponent implements OnInit {
 
-  quantityFormControl = new FormControl(1);
+  quantityFormControl = new FormControl();
 
   constructor(
     private dialogRef: MatDialogRef<PosQuantityComponent>
@@ -19,7 +19,7 @@ export class PosQuantityComponent implements OnInit {
   }
 
   save(): void {
-    this.dialogRef.close(this.quantityFormControl.value);
+    this.dialogRef.close(parseFloat(this.quantityFormControl.value));
   }
 
   close(): void {
