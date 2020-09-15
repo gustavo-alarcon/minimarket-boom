@@ -54,12 +54,17 @@ export class PosSavingComponent implements OnInit {
               if (doc.exists) {
                 let newStock = doc.data().realStock - item.quantity;
 
-                if (newStock >= 0) {
-                  t.update(productListRef.doc(item.product.id), { realStock: newStock });
-                  return true;
+                if (doc.data().saleType === '3') {
+                  return true
                 } else {
-                  return false;
+                  if (newStock >= 0) {
+                    t.update(productListRef.doc(item.product.id), { realStock: newStock });
+                    return true;
+                  } else {
+                    return false;
+                  }
                 }
+
               }
 
             })
@@ -109,9 +114,9 @@ export class PosSavingComponent implements OnInit {
                   }
 
                   t.set(saleDocRef, newData);
-                  t.update(configRef, {correlativeStore: newCorr});
+                  t.update(configRef, { correlativeStore: newCorr });
 
-                  this.dialogRef.close({list: failedItems, correlative: newCorr});
+                  this.dialogRef.close({ list: failedItems, correlative: newCorr });
                 })
             }).then(() => {
               console.log('transaction commited');

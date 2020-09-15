@@ -133,7 +133,7 @@
                                         </ng-container>
 
                                         <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-                                        <tr mat-row *matRowDef="let row; columns: displayedColumns;" [class.out-of-stock]="row.product.realStock < row.quantity"></tr>
+                                        <tr mat-row *matRowDef="let row; columns: displayedColumns;" [class.out-of-stock]="(row.product.realStock < row.quantity) && (row.saleType === '1' || row.saleType === '2')"></tr>
 
                                     </table>
                                 </div>

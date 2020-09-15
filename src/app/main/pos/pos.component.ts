@@ -102,14 +102,14 @@ export class PosComponent implements OnInit {
     return product.sku ? product.sku : null;
   }
 
-  playSuccessAudio(){
+  playSuccessAudio() {
     let audio = new Audio();
     audio.src = "../../../assets/audio/good.mp3";
     audio.load();
     audio.play();
   }
 
-  playErrorAudio(){
+  playErrorAudio() {
     let audio = new Audio();
     audio.src = "../../../assets/audio/bad.mp3";
     audio.load();
@@ -500,8 +500,31 @@ export class PosComponent implements OnInit {
         if (this.dbs.tabs[this.selected.value].productList[index].product.saleType !== '2') {
           // Add product's quantity
           this.dbs.tabs[this.selected.value].productList[index].quantity++;
+
           // Update total ticket price
           this.updateTicketPrice();
+
+          // Update data table
+          this.dataSource.data = this.dbs.tabs[this.selected.value].productList;
+
+          let userTicketRef = this.af.firestore.collection(`/users/${user.uid}/tickets`).doc(this.dbs.tabs[this.selected.value].id);
+
+          let batch = this.af.firestore.batch();
+
+          batch.update(userTicketRef, { productList: this.dbs.tabs[this.selected.value].productList, total: this.dbs.tabs[this.selected.value].total });
+
+          batch.commit()
+            .then(() => {
+              this.snackbar.open("Producto agregado", "Aceptar", {
+                duration: 3000
+              });
+              this.loading.next(false);
+            })
+            .catch(err => {
+              console.log(err);
+              this.snackbar.open("Hubo un error guardando el ticket");
+            });
+
         } else {
           this.dialog.open(PosQuantityComponent)
             .afterClosed()
@@ -564,6 +587,28 @@ export class PosComponent implements OnInit {
           this.dbs.tabs[this.selected.value].productList[index].quantity--;
           // Update total ticket price
           this.updateTicketPrice();
+
+          // Update data table
+          this.dataSource.data = this.dbs.tabs[this.selected.value].productList;
+
+          let userTicketRef = this.af.firestore.collection(`/users/${user.uid}/tickets`).doc(this.dbs.tabs[this.selected.value].id);
+
+          let batch = this.af.firestore.batch();
+
+          batch.update(userTicketRef, { productList: this.dbs.tabs[this.selected.value].productList, total: this.dbs.tabs[this.selected.value].total });
+
+          batch.commit()
+            .then(() => {
+              this.snackbar.open("Producto restado", "Aceptar", {
+                duration: 3000
+              });
+              this.loading.next(false);
+            })
+            .catch(err => {
+              console.log(err);
+              this.snackbar.open("Hubo un error guardando el ticket");
+              this.loading.next(false);
+            });
         } else {
           this.dialog.open(PosQuantityComponent)
             .afterClosed()
