@@ -21,6 +21,7 @@ export interface Product {
   promoData?: PromoData;
   published?: boolean;
   priority?: number;
+  saleType?: string;
   createdAt: Date;
   createdBy: User;
   editedAt: Date;

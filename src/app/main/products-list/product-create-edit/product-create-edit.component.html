@@ -109,30 +109,14 @@
           </mat-form-field>
 
           <!-- mermaStock  -->
-          <mat-form-field style="margin-bottom: 8px; width: 48%" appearance="outline">
+          <!-- <mat-form-field style="margin-bottom: 8px; width: 48%" appearance="outline">
             <mat-label>Merma</mat-label>
             <input autocomplete="off" formControlName="mermaStock" type="number" matInput placeholder="Merma">
             <mat-error>
               <span *ngIf="productForm.get('mermaStock').errors?.required">Campo requerido</span>
               <span *ngIf="productForm.get('mermaStock').errors?.min">Solo positivos</span>
             </mat-error>
-          </mat-form-field>
-        </div>
-
-        <!-- sellMinimum and alertMinimum -->
-        <div style="display:flex; flex-direction: row; justify-content: space-between; width: 100%">
-          <!-- sellMinimum  -->
-          <mat-form-field style="margin-bottom: 20px; width: 48%" appearance="outline">
-            <mat-label>Mín. bloqueo</mat-label>
-            <input autocomplete="off" formControlName="sellMinimum" type="number" matInput
-              placeholder="Mínimo de bloqueo">
-            <mat-error>
-              <span *ngIf="productForm.get('sellMinimum').errors?.required">Campo requerido</span>
-              <span *ngIf="productForm.get('sellMinimum').errors?.min">Solo positivos</span>
-              <span *ngIf="productForm.get('sellMinimum').errors?.sellMinimumExceeded">
-                El mínimo de bloqueo debe ser menor al mínimo de alerta.</span>
-            </mat-error>
-          </mat-form-field>
+          </mat-form-field> -->
 
           <!-- alertMinimum  -->
           <mat-form-field style="margin-bottom: 20px; width: 48%" appearance="outline">
@@ -148,18 +132,54 @@
           </mat-form-field>
         </div>
 
+        <!-- sellMinimum and alertMinimum -->
+        <div style="display:flex; flex-direction: row; justify-content: space-between; width: 100%; padding: 0.5em; border: 1px solid lightgrey; border-radius: 10px">
+
+          <span>Tipo de venta</span>
+          <mat-radio-group aria-label="Seleccione una opción" formControlName="saleType">
+            <mat-radio-button class="w3-small w3-margin-right" value="1">Unidad</mat-radio-button>
+            <mat-radio-button class="w3-small w3-margin-right" value="2">Granel</mat-radio-button>
+            <mat-radio-button class="w3-small w3-margin-right" value="3">Sin stock</mat-radio-button>
+          </mat-radio-group>
+          <!-- sellMinimum  -->
+          <!-- <mat-form-field style="margin-bottom: 20px; width: 48%" appearance="outline">
+            <mat-label>Mín. bloqueo</mat-label>
+            <input autocomplete="off" formControlName="sellMinimum" type="number" matInput
+              placeholder="Mínimo de bloqueo">
+            <mat-error>
+              <span *ngIf="productForm.get('sellMinimum').errors?.required">Campo requerido</span>
+              <span *ngIf="productForm.get('sellMinimum').errors?.min">Solo positivos</span>
+              <span *ngIf="productForm.get('sellMinimum').errors?.sellMinimumExceeded">
+                El mínimo de bloqueo debe ser menor al mínimo de alerta.</span>
+            </mat-error>
+          </mat-form-field> -->
+
+          <!-- alertMinimum  -->
+          <!-- <mat-form-field style="margin-bottom: 20px; width: 48%" appearance="outline">
+            <mat-label>Mín. alerta</mat-label>
+            <input autocomplete="off" formControlName="alertMinimum" type="number" matInput
+              placeholder="Mínimo de alerta">
+            <mat-error>
+              <span *ngIf="productForm.get('alertMinimum').errors?.required">Campo requerido</span>
+              <span *ngIf="productForm.get('alertMinimum').errors?.min">Solo positivos</span>
+              <span *ngIf="productForm.get('alertMinimum').errors?.sellMinimumExceeded">
+                El mínimo de bloqueo debe ser menor al mínimo de alerta.</span>
+            </mat-error>
+          </mat-form-field> -->
+        </div>
+
         <!-- Photo  -->
         <div
-          style="display:flex; flex-direction: row; justify-content: space-between; align-items: flex-end; margin-bottom: 16px;">
+          style="display:flex; flex-direction: row; justify-content: space-between; align-items: flex-end; margin: 24px 0px 16px 0px;">
           <img class="w3-card-4" (click)="photoURL.click()" *ngIf="productForm.get('photoURL').value!=null"
-            style="width: 50%;" [src]="productForm.get('photoURL').value" alt="fotografía">
+            style="width: 70%;" [src]="productForm.get('photoURL').value" alt="fotografía">
           <img class="w3-card-4" (click)="photoURL.click()" *ngIf="productForm.get('photoURL').value==null"
-            style="width: 50%;" [src]="noImage" alt="sin fotografía">
+            style="width: 70%;" [src]="noImage" alt="sin fotografía">
 
-          <mat-progress-bar *ngIf="photos?.resizing$.photoURL | async" style="width:50%" mode="indeterminate">
+          <mat-progress-bar *ngIf="photos?.resizing$.photoURL | async" style="width:70%" mode="indeterminate">
           </mat-progress-bar>
           <span *ngIf="photos.resizing$.photoURL | async" class="w3-small ms-color-11 ms-font-montserrat"
-            style="width:50%">*comprimiendo</span>
+            style="width:70%">*comprimiendo</span>
           <input style="display: none" #photoURL type="file" accept='image/*'
             (change)="addNewPhoto('photoURL', photoURL.files)" />
         </div>
