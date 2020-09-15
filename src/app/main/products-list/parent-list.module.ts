@@ -39,6 +39,7 @@ import { ParentListComponent } from './parent-list.component';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { ProductEntryComponent } from './product-entry/product-entry.component';
+import { MatRadioModule } from '@angular/material/radio';
 
 
 
@@ -81,7 +82,8 @@ import { ProductEntryComponent } from './product-entry/product-entry.component';
     MatChipsModule,
     MatTabsModule,
     MatTooltipModule,
-    MatProgressSpinnerModule
+    MatProgressSpinnerModule,
+    MatRadioModule
   ],
   providers: [
     ProductCreateEditComponent,
