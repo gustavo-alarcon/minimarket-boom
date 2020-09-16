@@ -37,7 +37,7 @@
                 <mat-form-field class="content search" appearance="outline">
                     <mat-label>Paga con</mat-label>
                     <mat-icon matPrefix class="w3-margin-right">attach_money</mat-icon>
-                    <input matInput type="tel" [formControl]="payment" placeholder="S/.0.00" autocomplete="off">
+                    <input matInput type="tel" [formControl]="payment" placeholder="S/.0.00" autocomplete="off" (keyup.enter)="save()">
                     <mat-error>Campo requerido</mat-error>
                 </mat-form-field>
             </div>
