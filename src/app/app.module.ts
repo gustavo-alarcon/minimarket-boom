@@ -46,7 +46,7 @@ import { StoreClosedDialogComponent } from './shared-dialogs/store-closed-dialog
     BrowserModule,
     AppRoutingModule,
     BrowserAnimationsModule,
-    AngularFireModule.initializeApp(environment.firebaseConfig, "disto-productos"),
+    AngularFireModule.initializeApp(environment.firebaseConfig, "minimarket-boom"),
     AngularFirestoreModule,
     AngularFireAuthModule,
     AngularFireStorageModule,
