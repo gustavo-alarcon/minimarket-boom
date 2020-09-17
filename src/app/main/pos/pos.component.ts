@@ -66,7 +66,7 @@ export class PosComponent implements OnInit {
     this.auth.user$
       .pipe(
         switchMap(user => {
-          if(!user){
+          if (!user) {
             this.snackbar.open("Inicie sesión para recuperar sus tickets! De lo contrario, no podrá realizar nuevas ventas", "Aceptar");
           }
           return this.dbs.getUserTickets(user.uid).pipe(
@@ -297,6 +297,35 @@ export class PosComponent implements OnInit {
       // Ok, is already in basket, just add one more
       if (basketArray[foundIndex].product.saleType !== '2') {
         basketArray[foundIndex].quantity++;
+
+        // Update total ticket price
+        this.updateTicketPrice();
+
+        // Updating tickets in database
+        this.auth.user$
+          .pipe(
+            take(1)
+          )
+          .subscribe(user => {
+            let userTicketRef = this.af.firestore.collection(`/users/${user.uid}/tickets`).doc(this.dbs.tabs[this.selected.value].id);
+
+            let batch = this.af.firestore.batch();
+
+            batch.update(userTicketRef, { productList: this.dbs.tabs[this.selected.value].productList, total: this.dbs.tabs[this.selected.value].total });
+
+            batch.commit()
+              .then(() => {
+                this.snackbar.open("Producto agregado", "Aceptar", {
+                  duration: 3000
+                });
+                this.playSuccessAudio();
+                this.loading.next(false);
+              })
+              .catch(err => {
+                console.log(err);
+                this.snackbar.open("Hubo un error guardando el ticket");
+              });
+          })
       } else {
         this.dialog.open(PosQuantityComponent)
           .afterClosed()

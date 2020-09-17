@@ -132,7 +132,7 @@
                                                         <mat-icon>add_circle</mat-icon>
                                                     </button>
                                                     <button mat-icon-button (click)="removeQuantity(i)"
-                                                        [disabled]="element.quantity === 1 || dbs.tabs[selected.value].status === 'Pagado' || (loading$ | async)">
+                                                        [disabled]="(element.quantity === 1 && element.product.saleType === '1') || dbs.tabs[selected.value].status === 'Pagado' || (loading$ | async)">
                                                         <mat-icon>remove_circle</mat-icon>
                                                     </button>
                                                     <button mat-icon-button color="warn" (click)="removeItem(i)"
