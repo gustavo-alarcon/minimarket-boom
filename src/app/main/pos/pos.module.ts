@@ -21,10 +21,11 @@ import { MatDialogModule } from '@angular/material/dialog';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { Ng2ImgMaxModule } from 'ng2-img-max';
 import { ProductCreateEditComponent } from '../products-list/product-create-edit/product-create-edit.component';
+import { PosUnknownProductComponent } from './pos-unknown-product/pos-unknown-product.component';
 
 
 @NgModule({
-  declarations: [PosComponent, PosQuantityComponent, PosFinishComponent, PosSavingComponent],
+  declarations: [PosComponent, PosQuantityComponent, PosFinishComponent, PosSavingComponent, PosUnknownProductComponent],
   imports: [
     CommonModule,
     PosRoutingModule,
@@ -48,7 +49,8 @@ import { ProductCreateEditComponent } from '../products-list/product-create-edit
     PosQuantityComponent,
     PosFinishComponent,
     PosSavingComponent,
-    ProductCreateEditComponent
+    ProductCreateEditComponent,
+    PosUnknownProductComponent
   ]
 })
 export class PosModule { }
