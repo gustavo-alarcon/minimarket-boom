@@ -133,13 +133,18 @@
         </div>
 
         <!-- sellMinimum and alertMinimum -->
-        <div style="display:flex; flex-direction: row; justify-content: space-between; width: 100%; padding: 0.5em; border: 1px solid lightgrey; border-radius: 10px">
+        <div style="display:flex; flex-direction: column; justify-content: space-between; width: 100%; padding: 0.5em; border: 1px solid lightgrey; border-radius: 10px">
 
           <span>Tipo de venta</span>
           <mat-radio-group aria-label="Seleccione una opción" formControlName="saleType">
             <mat-radio-button class="w3-small w3-margin-right" value="1">Unidad</mat-radio-button>
             <mat-radio-button class="w3-small w3-margin-right" value="2">Granel</mat-radio-button>
-            <mat-radio-button class="w3-small w3-margin-right" value="3">Sin stock</mat-radio-button>
+          </mat-radio-group><br>
+
+          <span>Contabilizar Stock:</span>
+          <mat-radio-group aria-label="Seleccione una opción" formControlName="calcStock">
+            <mat-radio-button class="w3-small w3-margin-right" value="1">Si</mat-radio-button>
+            <mat-radio-button class="w3-small w3-margin-right" value="2">No</mat-radio-button>
           </mat-radio-group>
           <!-- sellMinimum  -->
           <!-- <mat-form-field style="margin-bottom: 20px; width: 48%" appearance="outline">

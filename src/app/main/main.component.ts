@@ -44,7 +44,7 @@ export class MainComponent implements OnInit {
   }
 
   ngOnDestroy() {
-    this.sub.unsubscribe();
+    // this.sub.unsubscribe();
   }
 
   toggleSideMenu(): void {

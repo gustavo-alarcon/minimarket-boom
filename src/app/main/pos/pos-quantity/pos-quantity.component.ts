@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
-import { FormControl } from '@angular/forms';
+import { FormControl, Validators } from '@angular/forms';
 import { MatDialogRef } from '@angular/material/dialog';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 @Component({
   selector: 'app-pos-quantity',
@@ -9,17 +10,27 @@ import { MatDialogRef } from '@angular/material/dialog';
 })
 export class PosQuantityComponent implements OnInit {
 
-  quantityFormControl = new FormControl();
+  quantityFormControl = new FormControl(null, Validators.required);
 
   constructor(
-    private dialogRef: MatDialogRef<PosQuantityComponent>
+    private dialogRef: MatDialogRef<PosQuantityComponent>,
+    private snackbar: MatSnackBar
   ) { }
 
   ngOnInit(): void {
   }
 
   save(): void {
-    this.dialogRef.close(parseFloat(this.quantityFormControl.value));
+    if (this.quantityFormControl.valid) {
+      this.dialogRef.close(parseFloat(this.quantityFormControl.value));
+    } else {
+      this.snackbar.open("Asigne una cantidad", "Aceptar", {
+        duration: 3000
+      });
+    }
+    
+
+    
   }
 
   close(): void {

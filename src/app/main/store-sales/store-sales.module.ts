@@ -13,6 +13,7 @@ import { SatDatepickerModule, SatNativeDateModule } from 'saturn-datepicker';
 import { MatSelectModule } from '@angular/material/select';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatTableModule } from '@angular/material/table';
+import { MatProgressBarModule } from '@angular/material/progress-bar';
 
 
 @NgModule({
@@ -31,7 +32,8 @@ import { MatTableModule } from '@angular/material/table';
     SatNativeDateModule,
     MatSelectModule,
     MatProgressSpinnerModule,
-    MatTableModule
+    MatTableModule,
+    MatProgressBarModule
   ]
 })
 export class StoreSalesModule { }

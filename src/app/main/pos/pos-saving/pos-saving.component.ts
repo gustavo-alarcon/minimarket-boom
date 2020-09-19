@@ -46,34 +46,37 @@ export class PosSavingComponent implements OnInit {
     let transactionsArray = [];
 
     this.data.ticket.productList.forEach(item => {
-      console.log(item.product.id);
-      transactionsArray.push(
-        this.af.firestore.runTransaction(t => {
-          return t.get(productListRef.doc(item.product.id))
-            .then(doc => {
-              if (doc.exists) {
-                let newStock = doc.data().realStock - item.quantity;
 
-                if (doc.data().saleType === '3') {
-                  return true
-                } else {
-                  if (newStock >= 0) {
-                    t.update(productListRef.doc(item.product.id), { realStock: newStock });
-                    return true;
+      if (item.product.id) {
+        transactionsArray.push(
+          this.af.firestore.runTransaction(t => {
+            return t.get(productListRef.doc(item.product.id))
+              .then(doc => {
+                if (doc.exists) {
+                  let newStock = doc.data().realStock - item.quantity;
+
+                  if (doc.data().calcStock !== '1') {
+                    return true
                   } else {
-                    return false;
+                    if (newStock >= 0) {
+                      t.update(productListRef.doc(item.product.id), { realStock: newStock });
+                      return true;
+                    } else {
+                      return false;
+                    }
                   }
+
                 }
 
-              }
+              })
+              .catch(err => {
+                console.log(err);
+                return false;
+              })
+          })
+        )
+      }
 
-            })
-            .catch(err => {
-              console.log(err);
-              return false;
-            })
-        })
-      )
     });
 
 

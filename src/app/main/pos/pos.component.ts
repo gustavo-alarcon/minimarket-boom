@@ -1,4 +1,4 @@
-import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { BehaviorSubject, combineLatest, Observable } from 'rxjs';
 import { AuthService } from 'src/app/core/services/auth.service';
 import { FormControl } from '@angular/forms';
@@ -8,20 +8,20 @@ import { Product } from 'src/app/core/models/product.model';
 import { tap } from 'rxjs/internal/operators/tap';
 import { MatDialog } from '@angular/material/dialog';
 import { PosQuantityComponent } from './pos-quantity/pos-quantity.component';
-import { take, switchMap, startWith, map } from 'rxjs/operators';
+import { take, startWith, map } from 'rxjs/operators';
 import { MatTableDataSource } from '@angular/material/table';
 import { PosFinishComponent } from './pos-finish/pos-finish.component';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Platform } from '@angular/cdk/platform';
 import { AngularFirestore } from '@angular/fire/firestore';
-import { ProductCreateEditComponent } from '../products-list/product-create-edit/product-create-edit.component';
 import { PosUnknownProductComponent } from './pos-unknown-product/pos-unknown-product.component';
+import { LocalStorageService } from 'angular-2-local-storage';
+import { tick } from '@angular/core/testing';
 
 @Component({
   selector: 'app-pos',
   templateUrl: './pos.component.html',
   styleUrls: ['./pos.component.scss'],
-  // changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class PosComponent implements OnInit {
 
@@ -36,7 +36,9 @@ export class PosComponent implements OnInit {
 
   options$: Observable<Array<Product>>;
 
-  tickets$: Observable<Array<Ticket>>;
+  // tickets$: Observable<Array<Ticket>>;
+  tickets: Array<Ticket> = [];
+  ticketsKey: string;
 
   loading = new BehaviorSubject<boolean>(false);
   loading$ = this.loading.asObservable();
@@ -48,7 +50,8 @@ export class PosComponent implements OnInit {
     private dialog: MatDialog,
     private snackbar: MatSnackBar,
     private af: AngularFirestore,
-    public platform: Platform
+    public platform: Platform,
+    private lss: LocalStorageService
   ) { }
 
   ngOnInit(): void {
@@ -64,28 +67,6 @@ export class PosComponent implements OnInit {
           })
         )
 
-    this.auth.user$
-      .pipe(
-        switchMap(user => {
-          if (!user) {
-            this.snackbar.open("Inicie sesión para recuperar sus tickets! De lo contrario, no podrá realizar nuevas ventas", "Aceptar");
-          }
-          return this.dbs.getUserTickets(user.uid).pipe(
-            tap(tickets => {
-              this.dbs.tabs = [...tickets];
-
-              if (this.dbs.tabs.length > 0) {
-                this.dataSource.data = this.dbs.tabs[this.selected.value].productList;
-              }
-
-            })
-          )
-        })
-      ).pipe(
-        take(1)
-      )
-      .subscribe()
-
     this.options$ = combineLatest(
       this.search.valueChanges.pipe(startWith('')),
       this.productList$
@@ -100,6 +81,21 @@ export class PosComponent implements OnInit {
         }
       })
     )
+
+    // Getting tickets from local storage based in user uid
+    this.auth.user$
+      .pipe(take(1))
+      .subscribe(user => {
+        if (user) {
+          this.ticketsKey = 'tickets-' + user.uid;
+          this.tickets = this.lss.get(this.ticketsKey) ? this.lss.get(this.ticketsKey) : [];
+          this.dataSource.data = this.tickets.length > 0 ? this.tickets[this.selected.value].productList : [];
+        } else {
+          this.ticketsKey = null;
+        }
+
+      })
+
   }
 
   showOption(product: Product): string | null {
@@ -122,122 +118,66 @@ export class PosComponent implements OnInit {
 
   setTab(index: number): void {
     this.selected.setValue(index);
-    if (this.dbs.tabs.length > 0) {
-      this.dataSource.data = this.dbs.tabs[this.selected.value].productList;
+    if (this.tickets.length > 0) {
+      this.dataSource.data = this.tickets[this.selected.value].productList;
     }
   }
 
   addTicket() {
+    if(!this.ticketsKey) return;
+
     this.loading.next(true);
-    setTimeout(() => {
-      this.auth.user$
-        .pipe(
-          take(1)
-        )
-        .subscribe(user => {
-          let userTicketRef = this.af.firestore.collection(`/users/${user.uid}/tickets`).doc();
 
-          let batch = this.af.firestore.batch();
+    this.dbs.tabCounter++;
 
-          this.dbs.tabCounter++;
+    let newTicket: Ticket = {
+      index: this.dbs.tabCounter,
+      productList: [],
+      total: 0
+    }
 
-          let newTicket: Ticket = {
-            index: this.dbs.tabCounter,
-            productList: [],
-            total: 0
-          }
+    this.tickets.push(newTicket);
 
-          this.dbs.tabs.push(newTicket);
+    this.selected.setValue(this.tickets.length - 1);
 
-          // setTimeout(() => {
-          this.selected.setValue(this.dbs.tabs.length - 1);
-          // }, 200);
+    this.dataSource.data = this.tickets[this.selected.value].productList;
 
-          this.dbs.tabs[this.selected.value].id = userTicketRef.id;
+    this.lss.set(this.ticketsKey, this.tickets);
 
-          batch.set(userTicketRef, this.dbs.tabs[this.selected.value]);
+    this.snackbar.open("Ticket listo!", "Aceptar", {
+      duration: 3000
+    });
 
-          batch.commit()
-            .then(() => {
-              // console.log(this.selected.value);
-
-              this.dataSource.data = this.dbs.tabs[this.selected.value].productList;
-
-
-              this.snackbar.open("Ticket creado", "Aceptar", {
-                duration: 3000
-              });
-              this.loading.next(false);
-            })
-            .catch(err => {
-              console.log(err);
-              this.snackbar.open("Hubo un error guardando el ticket");
-            });
-        })
-    }, 200);
-    // Saving tickets in database
-
+    this.loading.next(false);
   }
 
   removeTicket(index: number) {
+    if(!this.ticketsKey) return;
     this.loading.next(true);
-    // Updating tickets in database
 
-    this.auth.user$
-      .pipe(
-        take(1)
-      )
-      .subscribe(user => {
-        // let userTicketRef = this.af.firestore.collection(`/users/${user.uid}/tickets`).doc(this.dbs.tabs[this.selected.value].id);
-        this.af.firestore.collection(`/users/${user.uid}/tickets`).doc(this.dbs.tabs[this.selected.value].id)
-          .delete()
-          .then(() => {
-            this.dbs.tabs.splice(index, 1);
-            if (this.dbs.tabs.length > 0) {
-              this.selected.setValue(this.dbs.tabs.length - 1);
-            }
+    // removing ticket from list
+    this.tickets.splice(index, 1);
+    if (this.tickets.length > 0) {
+      this.selected.setValue(this.tickets.length - 1);
+    }
 
-            this.snackbar.open("Ticket borrado", "Aceptar", {
-              duration: 3000
-            });
-            this.loading.next(false);
-          })
-          .catch(err => {
-            console.log(err);
-            this.snackbar.open("Hubo un error guardando el ticket");
-          });
+    this.snackbar.open("Ticket borrado", "Aceptar", {
+      duration: 3000
+    });
 
-        // let batch = this.af.firestore.batch();
-
-        // batch.delete(userTicketRef);
-
-        // batch.commit()
-        //   .then(() => {
-
-        //     this.dbs.tabs.splice(index, 1);
-        //     if (this.dbs.tabs.length > 0) {
-        //       this.selected.setValue(this.dbs.tabs.length - 1);
-        //     }
-
-        //     this.snackbar.open("Ticket borrado", "Aceptar", {
-        //       duration: 3000
-        //     });
-        //     this.loading.next(false);
-        //   })
-        //   .catch(err => {
-        //     console.log(err);
-        //     this.snackbar.open("Hubo un error guardando el ticket");
-        //   });
-      })
+    this.lss.set(this.ticketsKey, this.tickets);
+    this.loading.next(false);
   }
 
   finishTicket(): void {
-    if (this.dbs.tabs[this.selected.value].productList.length < 1) {
+    if(!this.ticketsKey) return;
+
+    if (this.tickets[this.selected.value].productList.length < 1) {
       return
     }
 
     this.dialog.open(PosFinishComponent, {
-      data: this.dbs.tabs[this.selected.value]
+      data: this.tickets[this.selected.value]
     }).afterClosed()
       .pipe(
         take(1),
@@ -247,8 +187,14 @@ export class PosComponent implements OnInit {
               duration: 6000
             });
 
-            this.dbs.tabs[this.selected.value].status = 'Pagado';
+            this.tickets[this.selected.value].status = 'Pagado';
 
+            this.removeTicket(this.selected.value);
+            this.addTicket();
+          } else {
+            this.snackbar.open('Reintentar ticket en VENTAS TIENDA!', 'Aceptar', {
+              duration: 4000
+            });
             this.removeTicket(this.selected.value);
             this.addTicket();
           }
@@ -257,8 +203,10 @@ export class PosComponent implements OnInit {
   }
 
   addProduct(): void {
+    if(!this.ticketsKey) return;
+
     // Adding new ticket if there is no one
-    if (this.dbs.tabs.length === 0) {
+    if (this.tickets.length === 0) {
       this.snackbar.open("Agregando nuevo ticket", "Aceptar", {
         duration: 6000
       });
@@ -267,10 +215,11 @@ export class PosComponent implements OnInit {
 
       setTimeout(() => {
         this.addProduct();
-      }, 1000);
+      }, 300);
 
       return;
     }
+
     // Checking if search field has something to compare
     if (!this.search.value) {
       this.snackbar.open("Debe escanear o escribir el código/nombre del producto", "Aceptar", {
@@ -281,7 +230,7 @@ export class PosComponent implements OnInit {
 
     // search if product already exist in basket
     let foundIndex = -1;
-    let basketArray = this.dbs.tabs[this.selected.value].productList;
+    let basketArray = this.tickets[this.selected.value].productList;
 
     let search = this.search.value.sku ? this.search.value.sku : this.search.value;
 
@@ -304,31 +253,13 @@ export class PosComponent implements OnInit {
         // Clean search input
         this.search.setValue('');
 
-        // Updating tickets in database
-        this.auth.user$
-          .pipe(
-            take(1)
-          )
-          .subscribe(user => {
-            let userTicketRef = this.af.firestore.collection(`/users/${user.uid}/tickets`).doc(this.dbs.tabs[this.selected.value].id);
+        this.snackbar.open("Producto agregado", "Aceptar", {
+          duration: 3000
+        });
+        this.lss.set(this.ticketsKey, this.tickets);
+        this.playSuccessAudio();
+        this.loading.next(false);
 
-            let batch = this.af.firestore.batch();
-
-            batch.update(userTicketRef, { productList: this.dbs.tabs[this.selected.value].productList, total: this.dbs.tabs[this.selected.value].total });
-
-            batch.commit()
-              .then(() => {
-                this.snackbar.open("Producto agregado", "Aceptar", {
-                  duration: 3000
-                });
-                this.playSuccessAudio();
-                this.loading.next(false);
-              })
-              .catch(err => {
-                console.log(err);
-                this.snackbar.open("Hubo un error guardando el ticket");
-              });
-          })
       } else {
         this.dialog.open(PosQuantityComponent)
           .afterClosed()
@@ -343,37 +274,13 @@ export class PosComponent implements OnInit {
               // Clean search input
               this.search.setValue('');
 
-              // Updating tickets in database
-              this.auth.user$
-                .pipe(
-                  take(1)
-                )
-                .subscribe(user => {
-                  let userTicketRef = this.af.firestore.collection(`/users/${user.uid}/tickets`).doc(this.dbs.tabs[this.selected.value].id);
-
-                  let batch = this.af.firestore.batch();
-
-                  batch.update(userTicketRef, { productList: this.dbs.tabs[this.selected.value].productList, total: this.dbs.tabs[this.selected.value].total });
-
-                  batch.commit()
-                    .then(() => {
-                      this.snackbar.open("Producto agregado", "Aceptar", {
-                        duration: 3000
-                      });
-                      this.playSuccessAudio();
-                      this.loading.next(false);
-                    })
-                    .catch(err => {
-                      console.log(err);
-                      this.snackbar.open("Hubo un error guardando el ticket");
-                    });
-                })
-            } else {
-              this.snackbar.open("Asigne una cantidad", "Aceptar", {
+              this.snackbar.open("Producto agregado", "Aceptar", {
                 duration: 3000
               });
-              this.playErrorAudio();
+              this.lss.set(this.ticketsKey, this.tickets);
+              this.playSuccessAudio();
               this.loading.next(false);
+
             }
           })
       }
@@ -387,42 +294,23 @@ export class PosComponent implements OnInit {
 
         if (productResult[0].saleType !== '2') {
           // Push product first in the list
-          this.dbs.tabs[this.selected.value].productList.unshift({ product: productResult[0], quantity: 1 });
+          this.tickets[this.selected.value].productList.unshift({ product: productResult[0], quantity: 1 });
 
           // Update total ticket price
           this.updateTicketPrice();
 
           // Update data table
-          this.dataSource.data = this.dbs.tabs[this.selected.value].productList;
+          this.dataSource.data = this.tickets[this.selected.value].productList;
 
           // Clean search input
           this.search.setValue('');
 
-          // Updating tickets in database
-          this.auth.user$
-            .pipe(
-              take(1)
-            )
-            .subscribe(user => {
-              let userTicketRef = this.af.firestore.collection(`/users/${user.uid}/tickets`).doc(this.dbs.tabs[this.selected.value].id);
-
-              let batch = this.af.firestore.batch();
-
-              batch.update(userTicketRef, { productList: this.dbs.tabs[this.selected.value].productList, total: this.dbs.tabs[this.selected.value].total });
-
-              batch.commit()
-                .then(() => {
-                  this.snackbar.open("Producto agregado", "Aceptar", {
-                    duration: 3000
-                  });
-                  this.playSuccessAudio();
-                  this.loading.next(false);
-                })
-                .catch(err => {
-                  console.log(err);
-                  this.snackbar.open("Hubo un error guardando el ticket");
-                });
-            })
+          this.snackbar.open("Producto agregado", "Aceptar", {
+            duration: 3000
+          });
+          this.lss.set(this.ticketsKey, this.tickets);
+          this.playSuccessAudio();
+          this.loading.next(false);
 
         } else {
           this.dialog.open(PosQuantityComponent)
@@ -431,54 +319,27 @@ export class PosComponent implements OnInit {
             .subscribe(qty => {
               if (qty) {
                 // Push product first in the list
-                this.dbs.tabs[this.selected.value].productList.unshift({ product: productResult[0], quantity: qty });
+                this.tickets[this.selected.value].productList.unshift({ product: productResult[0], quantity: qty });
 
                 // Update total ticket price
                 this.updateTicketPrice();
 
                 // Update data table
-                this.dataSource.data = this.dbs.tabs[this.selected.value].productList;
+                this.dataSource.data = this.tickets[this.selected.value].productList;
 
                 // Clean search input
                 this.search.setValue('');
 
-                // Updating tickets in database
-                this.auth.user$
-                  .pipe(
-                    take(1)
-                  )
-                  .subscribe(user => {
-                    let userTicketRef = this.af.firestore.collection(`/users/${user.uid}/tickets`).doc(this.dbs.tabs[this.selected.value].id);
-
-                    let batch = this.af.firestore.batch();
-
-                    batch.update(userTicketRef, { productList: this.dbs.tabs[this.selected.value].productList, total: this.dbs.tabs[this.selected.value].total });
-
-                    batch.commit()
-                      .then(() => {
-                        this.snackbar.open("Producto agregado", "Aceptar", {
-                          duration: 3000
-                        });
-                        this.playSuccessAudio();
-                        this.loading.next(false);
-                      })
-                      .catch(err => {
-                        console.log(err);
-                        this.snackbar.open("Hubo un error guardando el ticket");
-                      });
-                  })
-              } else {
-                this.snackbar.open("Asigne una cantidad", "Aceptar", {
+                this.snackbar.open("Producto agregado", "Aceptar", {
                   duration: 3000
                 });
-                this.playErrorAudio();
+                this.lss.set(this.ticketsKey, this.tickets);
+                this.playSuccessAudio();
                 this.loading.next(false);
               }
 
             })
         }
-
-
 
       } else {
         this.snackbar.open("Producto NO REGISTRADO", "Aceptar", {
@@ -518,7 +379,7 @@ export class PosComponent implements OnInit {
                   editedBy: null
                 }
 
-                this.dbs.tabs[this.selected.value].productList.unshift({ product: product, quantity: res.quantity });
+                this.tickets[this.selected.value].productList.unshift({ product: product, quantity: res.quantity });
 
                 // Update total ticket price
                 this.updateTicketPrice();
@@ -527,50 +388,25 @@ export class PosComponent implements OnInit {
                 // clean input
                 this.search.setValue('');
 
-                // Updating tickets in database
-                this.auth.user$
-                  .pipe(
-                    take(1)
-                  )
-                  .subscribe(user => {
-                    let userTicketRef = this.af.firestore.collection(`/users/${user.uid}/tickets`).doc(this.dbs.tabs[this.selected.value].id);
-
-                    let batch = this.af.firestore.batch();
-
-                    batch.update(userTicketRef, { productList: this.dbs.tabs[this.selected.value].productList, total: this.dbs.tabs[this.selected.value].total });
-
-                    batch.commit()
-                      .then(() => {
-                        this.snackbar.open("Producto agregado", "Aceptar", {
-                          duration: 3000
-                        });
-                        this.playSuccessAudio();
-                        this.loading.next(false);
-                      })
-                      .catch(err => {
-                        console.log(err);
-                        this.snackbar.open("Hubo un error guardando el ticket");
-                      });
-                  })
+                this.snackbar.open("Producto agregado", "Aceptar", {
+                  duration: 3000
+                });
+                this.lss.set(this.ticketsKey, this.tickets);
+                this.playSuccessAudio();
+                this.loading.next(false);
               }
 
             }
-
-
           })
 
         return;
       }
     }
-
-    // Clean search input
-    // this.search.setValue('');
-
-
-
   }
 
   editItem(index: number): void {
+    if(!this.ticketsKey) return;
+
     this.dialog.open(PosQuantityComponent)
       .afterClosed()
       .pipe(
@@ -588,13 +424,15 @@ export class PosComponent implements OnInit {
   }
 
   updateTicketPrice(): void {
+    if(!this.ticketsKey) return;
+
     let total = 0;
 
-    this.dbs.tabs[this.selected.value].productList.forEach(el => {
+    this.tickets[this.selected.value].productList.forEach(el => {
       total = total + (el.quantity * el.product.price);
     });
 
-    this.dbs.tabs[this.selected.value].total = total;
+    this.tickets[this.selected.value].total = total;
   }
 
   checkStock(product: Product, isAdding: boolean): boolean {
@@ -606,209 +444,102 @@ export class PosComponent implements OnInit {
   }
 
   addQuantity(index: number): void {
+    if(!this.ticketsKey) return;
+
     this.loading.next(true);
 
-    // Updating tickets in database
-    this.auth.user$
-      .pipe(
-        take(1)
-      )
-      .subscribe(user => {
+    if (this.tickets[this.selected.value].productList[index].product.saleType !== '2') {
+      // Add product's quantity
+      this.tickets[this.selected.value].productList[index].quantity++;
 
-        if (this.dbs.tabs[this.selected.value].productList[index].product.saleType !== '2') {
-          // Add product's quantity
-          this.dbs.tabs[this.selected.value].productList[index].quantity++;
+      // Update total ticket price
+      this.updateTicketPrice();
 
-          // Update total ticket price
-          this.updateTicketPrice();
+      this.snackbar.open("Producto agregado", "Aceptar", {
+        duration: 3000
+      });
+      this.lss.set(this.ticketsKey, this.tickets)
+      this.loading.next(false);
 
-          // Update data table
-          this.dataSource.data = this.dbs.tabs[this.selected.value].productList;
+    } else {
+      this.dialog.open(PosQuantityComponent)
+        .afterClosed()
+        .pipe(take(1))
+        .subscribe(qty => {
+          if (qty) {
+            // Add product's quantity
+            this.tickets[this.selected.value].productList[index].quantity = this.tickets[this.selected.value].productList[index].quantity + qty;
 
-          let userTicketRef = this.af.firestore.collection(`/users/${user.uid}/tickets`).doc(this.dbs.tabs[this.selected.value].id);
+            // Update total ticket price
+            this.updateTicketPrice();
 
-          let batch = this.af.firestore.batch();
-
-          batch.update(userTicketRef, { productList: this.dbs.tabs[this.selected.value].productList, total: this.dbs.tabs[this.selected.value].total });
-
-          batch.commit()
-            .then(() => {
-              this.snackbar.open("Producto agregado", "Aceptar", {
-                duration: 3000
-              });
-              this.loading.next(false);
-            })
-            .catch(err => {
-              console.log(err);
-              this.snackbar.open("Hubo un error guardando el ticket");
+            this.snackbar.open("Producto agregado", "Aceptar", {
+              duration: 3000
             });
+            this.lss.set(this.ticketsKey, this.tickets);
+            this.loading.next(false);
+          }
 
-        } else {
-          this.dialog.open(PosQuantityComponent)
-            .afterClosed()
-            .pipe(take(1))
-            .subscribe(qty => {
-              console.log(qty);
-              if (qty) {
-                // Add product's quantity
-                this.dbs.tabs[this.selected.value].productList[index].quantity = this.dbs.tabs[this.selected.value].productList[index].quantity + qty;
-
-                // Update total ticket price
-                this.updateTicketPrice();
-
-                // Update data table
-                this.dataSource.data = this.dbs.tabs[this.selected.value].productList;
-
-                let userTicketRef = this.af.firestore.collection(`/users/${user.uid}/tickets`).doc(this.dbs.tabs[this.selected.value].id);
-
-                let batch = this.af.firestore.batch();
-
-                batch.update(userTicketRef, { productList: this.dbs.tabs[this.selected.value].productList, total: this.dbs.tabs[this.selected.value].total });
-
-                batch.commit()
-                  .then(() => {
-                    this.snackbar.open("Producto agregado", "Aceptar", {
-                      duration: 3000
-                    });
-                    this.loading.next(false);
-                  })
-                  .catch(err => {
-                    console.log(err);
-                    this.snackbar.open("Hubo un error guardando el ticket");
-                  });
-              } else {
-                this.snackbar.open("Debe asignar una cantidad", "Aceptar", {
-                  duration: 3000
-                });
-                this.loading.next(false);
-              }
-
-            })
-        }
-
-
-      })
+        })
+    }
   }
 
   removeQuantity(index: number): void {
+    if(!this.ticketsKey) return;
+
     this.loading.next(true);
 
-    // Updating tickets in database
-    this.auth.user$
-      .pipe(
-        take(1)
-      )
-      .subscribe(user => {
+    if (this.tickets[this.selected.value].productList[index].product.saleType !== '2') {
+      // Add product's quantity
+      this.tickets[this.selected.value].productList[index].quantity--;
+      // Update total ticket price
+      this.updateTicketPrice();
 
-        if (this.dbs.tabs[this.selected.value].productList[index].product.saleType !== '2') {
-          // Add product's quantity
-          this.dbs.tabs[this.selected.value].productList[index].quantity--;
-          // Update total ticket price
-          this.updateTicketPrice();
+      this.snackbar.open("Producto restado", "Aceptar", {
+        duration: 3000
+      });
+      this.lss.set(this.ticketsKey, this.tickets);
+      this.loading.next(false);
 
-          // Update data table
-          this.dataSource.data = this.dbs.tabs[this.selected.value].productList;
+    } else {
+      this.dialog.open(PosQuantityComponent)
+        .afterClosed()
+        .pipe(take(1))
+        .subscribe(qty => {
 
-          let userTicketRef = this.af.firestore.collection(`/users/${user.uid}/tickets`).doc(this.dbs.tabs[this.selected.value].id);
+          if (qty) {
+            // Add product's quantity
+            this.dbs.tabs[this.selected.value].productList[index].quantity = this.dbs.tabs[this.selected.value].productList[index].quantity - qty;
 
-          let batch = this.af.firestore.batch();
+            // Update total ticket price
+            this.updateTicketPrice();
 
-          batch.update(userTicketRef, { productList: this.dbs.tabs[this.selected.value].productList, total: this.dbs.tabs[this.selected.value].total });
-
-          batch.commit()
-            .then(() => {
-              this.snackbar.open("Producto restado", "Aceptar", {
-                duration: 3000
-              });
-              this.loading.next(false);
-            })
-            .catch(err => {
-              console.log(err);
-              this.snackbar.open("Hubo un error guardando el ticket");
-              this.loading.next(false);
+            this.snackbar.open("Producto restado", "Aceptar", {
+              duration: 3000
             });
-        } else {
-          this.dialog.open(PosQuantityComponent)
-            .afterClosed()
-            .pipe(take(1))
-            .subscribe(qty => {
+            this.lss.set(this.ticketsKey, this.tickets);
+            this.loading.next(false);
+          }
 
-              if (qty) {
-                // Add product's quantity
-                this.dbs.tabs[this.selected.value].productList[index].quantity = this.dbs.tabs[this.selected.value].productList[index].quantity - qty;
-
-                // Update total ticket price
-                this.updateTicketPrice();
-
-                // Update data table
-                this.dataSource.data = this.dbs.tabs[this.selected.value].productList;
-
-                let userTicketRef = this.af.firestore.collection(`/users/${user.uid}/tickets`).doc(this.dbs.tabs[this.selected.value].id);
-
-                let batch = this.af.firestore.batch();
-
-                batch.update(userTicketRef, { productList: this.dbs.tabs[this.selected.value].productList, total: this.dbs.tabs[this.selected.value].total });
-
-                batch.commit()
-                  .then(() => {
-                    this.snackbar.open("Producto restado", "Aceptar", {
-                      duration: 3000
-                    });
-                    this.loading.next(false);
-                  })
-                  .catch(err => {
-                    console.log(err);
-                    this.snackbar.open("Hubo un error guardando el ticket");
-                    this.loading.next(false);
-                  });
-              } else {
-                this.snackbar.open("Debe asignar una cantidad", "Aceptar", {
-                  duration: 3000
-                });
-                this.loading.next(false);
-              }
-
-            })
-        }
-
-
-      })
+        })
+    }
   }
 
   removeItem(index: number): void {
+    if(!this.ticketsKey) return;
+
     this.loading.next(true);
 
-    this.dbs.tabs[this.selected.value].productList.splice(index, 1);
+    this.tickets[this.selected.value].productList.splice(index, 1);
 
     // Update total ticket price
     this.updateTicketPrice();
 
-    this.dataSource.data = this.dbs.tabs[this.selected.value].productList;
-
-    // Updating tickets in database
-    this.auth.user$
-      .pipe(
-        take(1)
-      )
-      .subscribe(user => {
-        let userTicketRef = this.af.firestore.collection(`/users/${user.uid}/tickets`).doc(this.dbs.tabs[this.selected.value].id);
-
-        let batch = this.af.firestore.batch();
-
-        batch.update(userTicketRef, { productList: this.dbs.tabs[this.selected.value].productList, total: this.dbs.tabs[this.selected.value].total });
-
-        batch.commit()
-          .then(() => {
-            this.snackbar.open("Producto retirado", "Aceptar", {
-              duration: 3000
-            });
-            this.loading.next(false);
-          })
-          .catch(err => {
-            console.log(err);
-            this.snackbar.open("Hubo un error guardando el ticket");
-          });
-      })
+    this.snackbar.open("Producto retirado", "Aceptar", {
+      duration: 3000
+    });
+    this.lss.set(this.ticketsKey, this.tickets)
+    this.loading.next(false);
   }
 
 }

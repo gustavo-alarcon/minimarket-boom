@@ -62,7 +62,7 @@ export class PosFinishComponent implements OnInit {
         .pipe(take(1))
         .subscribe(res => {
           if (res.list.length > 0) {
-            res.forEach(el => {
+            res.list.forEach(el => {
               this.failedItems.push(this.data.productList[el].product);
             });
 
