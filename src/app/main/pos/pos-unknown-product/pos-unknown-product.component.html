@@ -1,0 +1,50 @@
+<div mat-dialog-title>
+    <div class="header">
+        <span>
+            <mat-icon style="vertical-align: middle; transform: scale(1.2);">widgets</mat-icon>
+            Producto nuevo
+        </span>
+        <button type="button" mat-button (click)="close()" tabindex="-1">
+            <mat-icon>close</mat-icon>
+        </button>
+    </div>
+</div>
+<mat-divider class="w3-margin-top"></mat-divider>
+
+<div mat-dialog-content class="formFieldRounded w3-margin-top">
+
+    <div>
+        <div style="display: flex">
+            <p class="w3-margin-right">¿Desea crear un nuevo producto a partir del código <strong>{{data.sku}}</strong>?
+            </p>
+            <button mat-raised-button color="accent" (click)="create()" tabindex="-1">Crear</button>
+        </div>
+        <p style="font-weight: 600">Agregar solo cantidad y precio</p>
+        <div style="display: flex; flex-wrap: wrap;">
+            <mat-form-field appearance="outline" class="w3-block input">
+                <mat-label>Cantidad</mat-label>
+                <mat-icon matPrefix>widgets</mat-icon>
+                <input matInput type="number" min="0" [formControl]="quantity" placeholder="Cantidad" (keyup.enter)="save()"
+                    autocomplete="off">
+                <mat-hint>* Requerido</mat-hint>
+                <mat-error>Debe asignar una cantidad</mat-error>
+            </mat-form-field>
+            <mat-form-field appearance="outline" class="w3-block input">
+                <mat-label>Precio</mat-label>
+                <mat-icon matPrefix>money_attach</mat-icon>
+                <input matInput type="number" min="0" [formControl]="price" placeholder="Precio" (keyup.enter)="save()"
+                    autocomplete="off">
+                <mat-hint>* Requerido</mat-hint>
+                <mat-error>Debe asignar un precio</mat-error>
+            </mat-form-field>
+
+        </div>
+
+    </div>
+</div>
+
+<mat-divider></mat-divider>
+<mat-dialog-actions align="end">
+    <button mat-raised-button class="w3-margin-right" color="warn" (click)="close()">Cancelar</button>
+    <button mat-raised-button color="accent" (click)="save()">Guardar</button>
+</mat-dialog-actions>
