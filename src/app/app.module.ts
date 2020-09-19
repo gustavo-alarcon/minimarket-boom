@@ -33,6 +33,7 @@ import { MatDialogModule } from '@angular/material/dialog';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatIconModule } from '@angular/material/icon';
 import { StoreClosedDialogComponent } from './shared-dialogs/store-closed-dialog/store-closed-dialog.component';
+import { LocalStorageModule } from 'angular-2-local-storage';
 
 @NgModule({
   declarations: [
@@ -55,7 +56,11 @@ import { StoreClosedDialogComponent } from './shared-dialogs/store-closed-dialog
     MatButtonModule,
     MatDialogModule,
     MatDividerModule,
-    MatIconModule
+    MatIconModule,
+    LocalStorageModule.forRoot({
+      prefix: 'minimarket-boom',
+      storageType: 'localStorage'
+    })
   ],
   providers: [
     AuthService,
