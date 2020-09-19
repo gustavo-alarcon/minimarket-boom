@@ -1,6 +1,7 @@
 import { Component, Inject, OnInit } from '@angular/core';
 import { FormControl, Validators } from '@angular/forms';
 import { MatDialog, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { take } from 'rxjs/operators';
 import { ProductCreateEditComponent } from '../../products-list/product-create-edit/product-create-edit.component';
 
@@ -17,7 +18,8 @@ export class PosUnknownProductComponent implements OnInit {
   constructor(
     @Inject(MAT_DIALOG_DATA) public data: { sku: string },
     private dialog: MatDialog,
-    private dialogRef: MatDialogRef<PosUnknownProductComponent>
+    private dialogRef: MatDialogRef<PosUnknownProductComponent>,
+    private snackbar: MatSnackBar
   ) { }
 
   ngOnInit(): void {
@@ -43,11 +45,22 @@ export class PosUnknownProductComponent implements OnInit {
   }
 
   save(): void {
-    this.dialogRef.close({
-      product: false,
-      price: this.price.value,
-      quantity: this.quantity.value
-    })
+    if (this.price.valid && this.quantity.valid) {
+      this.dialogRef.close({
+        product: false,
+        price: this.price.value,
+        quantity: this.quantity.value
+      })
+    } else {
+      this.snackbar.open("Debe completar ambos campos para guardar el producto", "Aceptar", {
+        duration: 4000
+      });
+    }
+
+  }
+
+  close(): void {
+    this.dialogRef.close();
   }
 
 }
