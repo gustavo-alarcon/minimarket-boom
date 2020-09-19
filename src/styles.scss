@@ -12,7 +12,7 @@
 // Define the palettes for your theme using the Material Design palettes available in palette.scss
 // (imported above). For each palette, you can optionally specify a default, lighter, and darker
 // hue. Available color palettes: https://material.io/design/color/
-$mat-disto-productos-primary-palette: (
+$mat-minimarket-boom-primary-palette: (
   50: #fbe9e7,
   100: #ffccbc,
   200: #ffab91,
@@ -45,7 +45,7 @@ $mat-disto-productos-primary-palette: (
   ),
 );
 
-$mat-disto-productos-accent-palette: (
+$mat-minimarket-boom-accent-palette: (
   50: #fffde7,
   100: #fff9c4,
   200: #fff59d,
@@ -78,23 +78,23 @@ $mat-disto-productos-accent-palette: (
   ),
 );
 
-$disto-productos-primary: mat-palette($mat-disto-productos-primary-palette);
-$disto-productos-accent: mat-palette($mat-disto-productos-accent-palette);
+$minimarket-boom-primary: mat-palette($mat-minimarket-boom-primary-palette);
+$minimarket-boom-accent: mat-palette($mat-minimarket-boom-accent-palette);
 
 // The warn palette is optional (defaults to red).
-$disto-productos-warn: mat-palette($mat-red, 400, 100, 700);
+$minimarket-boom-warn: mat-palette($mat-red, 400, 100, 700);
 
 // Create the theme object (a Sass map containing all of the palettes).
-$disto-productos-light-theme: mat-light-theme($disto-productos-primary, $disto-productos-accent, $disto-productos-warn);
-$disto-productos-dark-theme: mat-dark-theme($disto-productos-primary, $disto-productos-accent, $disto-productos-warn);
+$minimarket-boom-light-theme: mat-light-theme($minimarket-boom-primary, $minimarket-boom-accent, $minimarket-boom-warn);
+$minimarket-boom-dark-theme: mat-dark-theme($minimarket-boom-primary, $minimarket-boom-accent, $minimarket-boom-warn);
 
 // Include theme styles for core and each component used in your app.
 // Alternatively, you can import and @include the theme mixins for each component
 // that you are using.
-@include angular-material-theme($disto-productos-light-theme);
+@include angular-material-theme($minimarket-boom-light-theme);
 
 //Saturn
-@include sat-datepicker-theme($disto-productos-light-theme);
+@include sat-datepicker-theme($minimarket-boom-light-theme);
 
 /* You can add global styles to this file, and also import other style files */
 .background-color {
@@ -106,8 +106,8 @@ $disto-productos-dark-theme: mat-dark-theme($disto-productos-primary, $disto-pro
 }
 
 .dark-theme {
-  @include angular-material-theme($disto-productos-dark-theme);
-  @include sat-datepicker-theme($disto-productos-dark-theme);
+  @include angular-material-theme($minimarket-boom-dark-theme);
+  @include sat-datepicker-theme($minimarket-boom-dark-theme);
 
   .meraki__logo {
     filter: invert(1);

@@ -8,40 +8,51 @@
             <ng-container *ngIf="productList$ | async; else loading">
                 <div style="display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 0.5em">
                     <div class="button-container">
-                        <button mat-mini-fab color="accent" (click)="addTicket()" style="height: 100%;" [disabled]="loading$ | async">
+                        <button mat-mini-fab color="accent" (click)="addTicket()" style="height: 100%;"
+                            [disabled]="loading$ | async">
                             <mat-icon>add_circle</mat-icon>
                         </button>
                     </div>
 
-                    <mat-form-field class="search" appearance="outline" style="padding-bottom: 0px" hintLabel="Al presionar ENTER agregará el primer item de la lista">
+                    <mat-form-field class="search" appearance="outline" style="padding-bottom: 0px"
+                        hintLabel="Al presionar ENTER agregará el primer item de la lista">
                         <mat-label>Buscar/Escanear</mat-label>
                         <mat-icon matPrefix>search</mat-icon>
-                        <input matInput type="text" [formControl]="search" placeholder="Escanear código o escribir nombre"
-                            autocomplete="off" (keyup.enter)="addProduct()" [matAutocomplete]="matCode" autofocus>
-                            <mat-autocomplete #matCode="matAutocomplete" autoActiveFirstOption
-                                               [displayWith]="showOption" optionSelected="addProduct()">
-                                <mat-option *ngFor="let option of options$ | async" [value]="option" (click)="addProduct()">
-                                    {{option.description}} | {{option.sku}}
-                                </mat-option>
-                            </mat-autocomplete>
+                        <input matInput type="text" [formControl]="search"
+                            placeholder="Escanear código o escribir nombre" autocomplete="off"
+                            (keyup.enter)="addProduct()" [matAutocomplete]="matCode" autofocus>
+                        <mat-autocomplete #matCode="matAutocomplete" [displayWith]="showOption"
+                            optionSelected="addProduct()">
+                            <mat-option *ngFor="let option of options$ | async" [value]="option" (click)="addProduct()">
+                                {{option.description}} | {{option.sku}}
+                            </mat-option>
+                        </mat-autocomplete>
                     </mat-form-field>
                 </div>
 
-                <mat-tab-group [selectedIndex]="selected.value" (selectedIndexChange)="setTab($event)">
+                <mat-tab-group [selectedIndex]="selected.value" (selectedIndexChange)="setTab($event)"
+                    animationDuration="0">
                     <mat-tab *ngFor="let tab of dbs.tabs; let index = index">
                         <ng-template mat-tab-label>
 
-                            <span>{{'T-' + (tab.index | number : '2.')}} <button class="w3-margin-right" mat-icon-button
-                                    (click)="removeTicket(index)" style="height: 100%;" [disabled]="loading$ | async">
-                                    <mat-icon>cancel</mat-icon>
-                                </button></span>
+                            <!-- <div style="display:flex; align-items: baseline"> -->
+                            <span>{{'T-' + (tab.index | number : '2.')}} </span>
+                            <span class="fill"></span>
+                            <!-- <button class="w3-margin-left" mat-icon-button (click)="removeTicket(index)"
+                                style="height: 100%;" [disabled]="loading$ | async">
+                                <mat-icon>cancel</mat-icon>
+                            </button> -->
+                            <!-- </div> -->
 
                         </ng-template>
                         <ng-template matTabContent>
                             <div class="tab-container">
                                 <div style="display: flex; justify-content: start; align-items: center;">
                                     <!-- <h4 class="w3-margin-right">Ticket {{tab.index | number : '2.'}}</h4> -->
-
+                                    <button mat-mini-fab (click)="removeTicket(index)" style="height: 100%;"
+                                        [disabled]="loading$ | async" color="warn">
+                                        <mat-icon>delete</mat-icon>
+                                    </button>
 
                                     <span class="fill"></span>
 
@@ -98,7 +109,7 @@
                                             <th mat-header-cell *matHeaderCellDef class="w3-center"
                                                 style="padding: 0em 0.7em"> Cant. </th>
                                             <td mat-cell *matCellDef="let element" class="w3-center">
-                                                <span>{{element.quantity | number: '2.2'}}</span>
+                                                <span>{{element.quantity}}</span>
                                             </td>
                                         </ng-container>
 
@@ -114,14 +125,14 @@
                                             <th mat-header-cell *matHeaderCellDef class="w3-center"
                                                 style="padding: 0em 0.7em"></th>
                                             <td mat-cell *matCellDef="let element; let i = index" style="width: 20px">
-                                                <div
-                                                    style="display: flex; justify-content: space-between" [ngStyle]="{'flex-direction': (platform.ANDROID || platform.IOS) ? 'column' : 'row'}">
+                                                <div style="display: flex; justify-content: space-between"
+                                                    [ngStyle]="{'flex-direction': (platform.ANDROID || platform.IOS) ? 'column' : 'row'}">
                                                     <button mat-icon-button (click)="addQuantity(i)"
                                                         [disabled]="dbs.tabs[selected.value].status === 'Pagado' || (loading$ | async)">
                                                         <mat-icon>add_circle</mat-icon>
                                                     </button>
                                                     <button mat-icon-button (click)="removeQuantity(i)"
-                                                        [disabled]="element.quantity === 1 || dbs.tabs[selected.value].status === 'Pagado' || (loading$ | async)">
+                                                        [disabled]="(element.quantity === 1 && element.product.saleType === '1') || dbs.tabs[selected.value].status === 'Pagado' || (loading$ | async)">
                                                         <mat-icon>remove_circle</mat-icon>
                                                     </button>
                                                     <button mat-icon-button color="warn" (click)="removeItem(i)"
@@ -133,7 +144,9 @@
                                         </ng-container>
 
                                         <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-                                        <tr mat-row *matRowDef="let row; columns: displayedColumns;" [class.out-of-stock]="(row.product.realStock < row.quantity) && (row.saleType === '1' || row.saleType === '2')"></tr>
+                                        <tr mat-row *matRowDef="let row; columns: displayedColumns;"
+                                            [class.out-of-stock]="(row.product.realStock < row.quantity) && (row.saleType === '1' || row.saleType === '2')">
+                                        </tr>
 
                                     </table>
                                 </div>

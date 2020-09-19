@@ -20,16 +20,16 @@ describe('AppComponent', () => {
     expect(app).toBeTruthy();
   });
 
-  it(`should have as title 'disto-productos'`, () => {
+  it(`should have as title 'minimarket-boom'`, () => {
     const fixture = TestBed.createComponent(AppComponent);
     const app = fixture.componentInstance;
-    expect(app.title).toEqual('disto-productos');
+    expect(app.title).toEqual('minimarket-boom');
   });
 
   it('should render title', () => {
     const fixture = TestBed.createComponent(AppComponent);
     fixture.detectChanges();
     const compiled = fixture.nativeElement;
-    expect(compiled.querySelector('.content span').textContent).toContain('disto-productos app is running!');
+    expect(compiled.querySelector('.content span').textContent).toContain('minimarket-boom app is running!');
   });
 });

@@ -91,11 +91,11 @@ export class StoreSalesComponent implements OnInit {
 
     this.locationPadding$ = this.locationSubject.asObservable().pipe(
       map(location => {
-        let aux = location + 1 > 10 ? (location % 10) : location;
-        console.log(aux);
+        // let aux = location + 1 > 10 ? (location % 10) : location;
+        // console.log(aux);
         // let x = 160 + 50 * aux;
-        let x = 22 + 119 * aux;
-        if (aux > 0) {
+        let x = 22 + 142 * location;
+        if (location > 0) {
           console.log(x);
           return x.toFixed(0) + "px"
         } else {
