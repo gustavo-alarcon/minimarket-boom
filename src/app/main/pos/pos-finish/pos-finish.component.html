@@ -61,7 +61,7 @@
     </div>
 
     <ng-container *ngIf="failedItems.length > 0">
-        <p>El ticket fue procesado, pero los siguientes items tiene problemas</p>
+        <p>El ticket fue procesado, pero los siguientes items tuvieron problemas</p>
         <ul>
             <li *ngFor="let item of failedItems">{{item.description}}</li>
         </ul>
