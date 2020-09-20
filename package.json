@@ -1,6 +1,6 @@
 {
   "name": "minimarket-boom",
-  "version": "1.0.22r",
+  "version": "1.0.23r",
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
