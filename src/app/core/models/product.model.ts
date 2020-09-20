@@ -22,6 +22,7 @@ export interface Product {
   published?: boolean;
   priority?: number;
   saleType?: string;
+  calcStock?: string;
   createdAt: Date;
   createdBy: User;
   editedAt: Date;

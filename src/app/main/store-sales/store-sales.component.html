@@ -54,7 +54,7 @@
                         (click)="showDetails(ticket, i)">
                         <ng-container>
                             <div class="column">
-                                <span><strong>#{{ticket.correlative}}</strong>: <span class="status w3-small">{{ticket.status ? ticket.status : 'Sin estado'}}</span></span><br>
+                                <span><strong>#{{ticket.correlative}}</strong>: <span class="status w3-small" [ngClass]="{'w3-green': ticket.status === 'Pagado', 'w3-red': ticket.status === 'Fallido', 'w3-grey': ticket.status === undefined || ticket.status === 'Anulado'}">{{ticket.status ? ticket.status : 'Sin estado'}}</span></span><br>
                                 <span class="header">Fecha</span><br>
                                 <span
                                     class="body w3-small">{{((ticket.createdAt.seconds * 1000) | date : 'dd/MM/yyyy')}}</span><br>
@@ -82,6 +82,11 @@
                 <div class="w3-col s0 m5 l5 details_container">
                     <ng-container *ngIf="actualTicket"  >
                         <div class="details mat-elevation-z4 w3-hide-small" [ngStyle]="{'margin-top': (locationPadding$ | async)}">
+                            <mat-progress-bar mode="indeterminate" *ngIf="loading$ | async"></mat-progress-bar>
+                            <div style="display: flex">
+                                <button mat-raised-button color="accent" *ngIf="actualTicket.status !== 'Anulado'" class="w3-margin-right" (click)="cancel(actualTicket)">Anular</button>
+                                <button mat-raised-button color="accent" *ngIf="actualTicket.status === 'Fallido'" (click)="retry(actualTicket)">Reintentar</button>
+                            </div>
                             <div style="display: flex">
                                 <div class="column">
                                     <span class="header">Correlativo: </span><br>
@@ -142,7 +147,7 @@
                                     </ng-container>
 
                                     <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-                                    <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+                                    <tr mat-row *matRowDef="let row; columns: displayedColumns; let i = index" [ngClass]="{'w3-pale-red': failedItems[i]}"></tr>
 
                                 </table>
                             </div>

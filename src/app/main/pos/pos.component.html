@@ -32,7 +32,7 @@
 
                 <mat-tab-group [selectedIndex]="selected.value" (selectedIndexChange)="setTab($event)"
                     animationDuration="0">
-                    <mat-tab *ngFor="let tab of dbs.tabs; let index = index">
+                    <mat-tab *ngFor="let tab of tickets; let index = index">
                         <ng-template mat-tab-label>
 
                             <!-- <div style="display:flex; align-items: baseline"> -->
@@ -58,23 +58,23 @@
 
                                     <button class="w3-margin-right w3-hide-small" mat-raised-button color="accent"
                                         (click)="finishTicket()"
-                                        [disabled]="dbs.tabs[selected.value].productList.length < 1 || dbs.tabs[selected.value].status === 'Pagado'">
+                                        [disabled]="tickets[selected.value].productList.length < 1 || tickets[selected.value].status === 'Pagado'">
                                         Cobrar
                                     </button>
 
                                     <button class="w3-margin-right w3-hide-large w3-hide-medium" mat-mini-fab
                                         color="accent" (click)="finishTicket()"
-                                        [disabled]="dbs.tabs[selected.value].productList.length < 1 || dbs.tabs[selected.value].status === 'Pagado'"
+                                        [disabled]="tickets[selected.value].productList.length < 1 || tickets[selected.value].status === 'Pagado'"
                                         style="height: 100%;">
                                         <mat-icon>payment</mat-icon>
                                     </button>
 
 
-                                    <ng-container *ngIf="dbs.tabs.length > 0">
+                                    <ng-container *ngIf="tickets.length > 0">
                                         <div color="primary" class="totalPrice">
-                                            <span>{{dbs.tabs[selected.value].total | currency:"S/."}}</span><br>
-                                            <span *ngIf="dbs.tabs[selected.value].status === 'Pagado'"
-                                                style="font-size: 14px; font-weight: 600">{{dbs.tabs[selected.value].status | uppercase}}</span>
+                                            <span>{{tickets[selected.value].total | currency:"S/."}}</span><br>
+                                            <span *ngIf="tickets[selected.value].status === 'Pagado'"
+                                                style="font-size: 14px; font-weight: 600">{{tickets[selected.value].status | uppercase}}</span>
                                         </div>
                                     </ng-container>
                                 </div>
@@ -128,15 +128,15 @@
                                                 <div style="display: flex; justify-content: space-between"
                                                     [ngStyle]="{'flex-direction': (platform.ANDROID || platform.IOS) ? 'column' : 'row'}">
                                                     <button mat-icon-button (click)="addQuantity(i)"
-                                                        [disabled]="dbs.tabs[selected.value].status === 'Pagado' || (loading$ | async)">
+                                                        [disabled]="tickets[selected.value].status === 'Pagado' || (loading$ | async)">
                                                         <mat-icon>add_circle</mat-icon>
                                                     </button>
                                                     <button mat-icon-button (click)="removeQuantity(i)"
-                                                        [disabled]="(element.quantity === 1 && element.product.saleType === '1') || dbs.tabs[selected.value].status === 'Pagado' || (loading$ | async)">
+                                                        [disabled]="(element.quantity === 1 && element.product.saleType === '1') || tickets[selected.value].status === 'Pagado' || (loading$ | async)">
                                                         <mat-icon>remove_circle</mat-icon>
                                                     </button>
                                                     <button mat-icon-button color="warn" (click)="removeItem(i)"
-                                                        [disabled]="dbs.tabs[selected.value].status === 'Pagado' || (loading$ | async)">
+                                                        [disabled]="tickets[selected.value].status === 'Pagado' || (loading$ | async)">
                                                         <mat-icon>delete</mat-icon>
                                                     </button>
                                                 </div>

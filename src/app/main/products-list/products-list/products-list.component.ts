@@ -36,7 +36,7 @@ export class ProductsListComponent implements OnInit {
   productsTableDataSource = new MatTableDataSource<Product>();
   productsDisplayedColumns: string[] = [
     'index', 'photoURL', 'description', 'sku', 'category', 'price',
-    'unitDescription', 'sellMinimum', 'alertMinimum',
+    'unitDescription', 'alertMinimum',
     'realStock', 'published', 'actions'
   ]
 

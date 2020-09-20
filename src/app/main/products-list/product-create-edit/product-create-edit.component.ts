@@ -88,7 +88,8 @@ export class ProductCreateEditComponent implements OnInit {
         [Validators.required, Validators.min(0), , this.minimumSellValidator()]],
         alertMinimum: [this.data.data.alertMinimum,
         [Validators.required, Validators.min(0), , this.minimumSellValidator()]],
-        saleType: [this.data.data.saleType ? this.data.data.saleType : 1, Validators.required],
+        saleType: [this.data.data.saleType ? this.data.data.saleType : '1', Validators.required],
+        calcStock: [this.data.data.calcStock ? this.data.data.calcStock : '2', Validators.required],
         photoURL: [this.data.data.photoURL, Validators.required],
       })
     }
@@ -114,7 +115,8 @@ export class ProductCreateEditComponent implements OnInit {
           [Validators.required, Validators.min(0), , this.minimumSellValidator()]],
         alertMinimum: [0,
           [Validators.required, Validators.min(0), , this.minimumSellValidator()]],
-        saleType: [1, Validators.required],
+        saleType: ['1', Validators.required],
+        calcStock: ['2', Validators.required],
         photoURL: [null, Validators.required],
       })
     }
@@ -230,6 +232,7 @@ export class ProductCreateEditComponent implements OnInit {
       published: this.data.edit ? this.data.data.published : null,
       priority: this.data.edit ? this.data.data.priority : 1, 
       saleType: this.productForm.get('saleType').value,
+      calcStock: this.productForm.get('calcStock').value,
       createdAt: this.data.edit ? this.data.data.createdAt : new Date(),
       createdBy: this.data.edit ? this.data.data.createdBy : user,
       editedAt: this.data.edit ? new Date() : null,
