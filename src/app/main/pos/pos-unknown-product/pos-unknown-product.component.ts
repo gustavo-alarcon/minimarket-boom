@@ -29,7 +29,8 @@ export class PosUnknownProductComponent implements OnInit {
     this.dialog.open(ProductCreateEditComponent, {
       data: {
         data: null,
-        edit: false
+        edit: false,
+        sku: this.data.sku
       }
     }).afterClosed()
       .pipe(take(1))

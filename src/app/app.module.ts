@@ -34,6 +34,7 @@ import { MatDividerModule } from '@angular/material/divider';
 import { MatIconModule } from '@angular/material/icon';
 import { StoreClosedDialogComponent } from './shared-dialogs/store-closed-dialog/store-closed-dialog.component';
 import { LocalStorageModule } from 'angular-2-local-storage';
+import { ThermalPrintModule } from 'ng-thermal-print';
 
 @NgModule({
   declarations: [
@@ -60,7 +61,8 @@ import { LocalStorageModule } from 'angular-2-local-storage';
     LocalStorageModule.forRoot({
       prefix: 'minimarket-boom',
       storageType: 'localStorage'
-    })
+    }),
+    ThermalPrintModule
   ],
   providers: [
     AuthService,

@@ -16,7 +16,9 @@ import { Platform } from '@angular/cdk/platform';
 import { AngularFirestore } from '@angular/fire/firestore';
 import { PosUnknownProductComponent } from './pos-unknown-product/pos-unknown-product.component';
 import { LocalStorageService } from 'angular-2-local-storage';
-import { tick } from '@angular/core/testing';
+import { PrintService, UsbDriver, WebPrintDriver } from 'ng-thermal-print';
+import { PrintDriver } from 'ng-thermal-print/lib/drivers/PrintDriver';
+import { PosTicketComponent } from './pos-ticket/pos-ticket.component';
 
 @Component({
   selector: 'app-pos',
@@ -43,6 +45,10 @@ export class PosComponent implements OnInit {
   loading = new BehaviorSubject<boolean>(false);
   loading$ = this.loading.asObservable();
 
+  status: boolean = false;
+  usbPrintDriver: UsbDriver;
+  webPrintDriver: WebPrintDriver;
+  ip: string = '';
 
   constructor(
     public auth: AuthService,
@@ -51,8 +57,19 @@ export class PosComponent implements OnInit {
     private snackbar: MatSnackBar,
     private af: AngularFirestore,
     public platform: Platform,
-    private lss: LocalStorageService
-  ) { }
+    private lss: LocalStorageService,
+    private printService: PrintService
+  ) {
+    this.usbPrintDriver = new UsbDriver();
+    this.printService.isConnected.subscribe(result => {
+      this.status = result;
+      if (result) {
+        console.log('Connected to printer!!!');
+      } else {
+        console.log('Not connected to printer.');
+      }
+    });
+  }
 
   ngOnInit(): void {
     this.dbs.changeTitle('Punto de Venta');
@@ -90,12 +107,48 @@ export class PosComponent implements OnInit {
           this.ticketsKey = 'tickets-' + user.uid;
           this.tickets = this.lss.get(this.ticketsKey) ? this.lss.get(this.ticketsKey) : [];
           this.dataSource.data = this.tickets.length > 0 ? this.tickets[this.selected.value].productList : [];
+
+          // Get current index
+          if (this.tickets.length) {
+            let idx = 0;
+            this.tickets.forEach(el => {
+              if (el.index > idx) {
+                idx = el.index
+              }
+            });
+            this.dbs.tabCounter = idx;
+          }
+
         } else {
           this.ticketsKey = null;
         }
 
       })
 
+  }
+
+  requestUsb() {
+    this.usbPrintDriver.requestUsb().subscribe(result => {
+      this.printService.setDriver(this.usbPrintDriver, 'ESC/POS');
+    });
+  }
+
+  print() {
+    this.dialog.open(PosTicketComponent, {
+      width: '219px',
+    });
+    // this.printService.init()
+    //   .setBold(true)
+    //   .writeLine('Hello World!')
+    //   .setBold(false)
+    //   .feed(4)
+    //   .cut('full')
+    //   .flush();
+  }
+
+  connectToWebPrint() {
+    this.webPrintDriver = new WebPrintDriver(this.ip);
+    this.printService.setDriver(this.webPrintDriver, 'WebPRNT');
   }
 
   showOption(product: Product): string | null {
@@ -124,7 +177,7 @@ export class PosComponent implements OnInit {
   }
 
   addTicket() {
-    if(!this.ticketsKey) return;
+    if (!this.ticketsKey) return;
 
     this.loading.next(true);
 
@@ -152,7 +205,7 @@ export class PosComponent implements OnInit {
   }
 
   removeTicket(index: number) {
-    if(!this.ticketsKey) return;
+    if (!this.ticketsKey) return;
     this.loading.next(true);
 
     // removing ticket from list
@@ -170,7 +223,7 @@ export class PosComponent implements OnInit {
   }
 
   finishTicket(): void {
-    if(!this.ticketsKey) return;
+    if (!this.ticketsKey) return;
 
     if (this.tickets[this.selected.value].productList.length < 1) {
       return
@@ -203,7 +256,7 @@ export class PosComponent implements OnInit {
   }
 
   addProduct(): void {
-    if(!this.ticketsKey) return;
+    if (!this.ticketsKey) return;
 
     // Adding new ticket if there is no one
     if (this.tickets.length === 0) {
@@ -384,7 +437,7 @@ export class PosComponent implements OnInit {
                 // Update total ticket price
                 this.updateTicketPrice();
                 // Update data table
-                this.dataSource.data = this.dbs.tabs[this.selected.value].productList;
+                this.dataSource.data = this.tickets[this.selected.value].productList;
                 // clean input
                 this.search.setValue('');
 
@@ -397,6 +450,8 @@ export class PosComponent implements OnInit {
               }
 
             }
+            // clean input
+            this.search.setValue('');
           })
 
         return;
@@ -405,7 +460,7 @@ export class PosComponent implements OnInit {
   }
 
   editItem(index: number): void {
-    if(!this.ticketsKey) return;
+    if (!this.ticketsKey) return;
 
     this.dialog.open(PosQuantityComponent)
       .afterClosed()
@@ -413,18 +468,18 @@ export class PosComponent implements OnInit {
         take(1),
         tap(qty => {
           if (qty) {
-            this.dbs.tabs[this.selected.value].productList[index].quantity = qty;
+            this.tickets[this.selected.value].productList[index].quantity = qty;
 
             this.updateTicketPrice();
 
-            this.dataSource.data = this.dbs.tabs[this.selected.value].productList;
+            this.dataSource.data = this.tickets[this.selected.value].productList;
           }
         })
       ).subscribe()
   }
 
   updateTicketPrice(): void {
-    if(!this.ticketsKey) return;
+    if (!this.ticketsKey) return;
 
     let total = 0;
 
@@ -444,7 +499,7 @@ export class PosComponent implements OnInit {
   }
 
   addQuantity(index: number): void {
-    if(!this.ticketsKey) return;
+    if (!this.ticketsKey) return;
 
     this.loading.next(true);
 
@@ -485,7 +540,7 @@ export class PosComponent implements OnInit {
   }
 
   removeQuantity(index: number): void {
-    if(!this.ticketsKey) return;
+    if (!this.ticketsKey) return;
 
     this.loading.next(true);
 
@@ -509,7 +564,7 @@ export class PosComponent implements OnInit {
 
           if (qty) {
             // Add product's quantity
-            this.dbs.tabs[this.selected.value].productList[index].quantity = this.dbs.tabs[this.selected.value].productList[index].quantity - qty;
+            this.tickets[this.selected.value].productList[index].quantity = this.tickets[this.selected.value].productList[index].quantity - qty;
 
             // Update total ticket price
             this.updateTicketPrice();
@@ -526,11 +581,13 @@ export class PosComponent implements OnInit {
   }
 
   removeItem(index: number): void {
-    if(!this.ticketsKey) return;
+    if (!this.ticketsKey) return;
 
     this.loading.next(true);
 
     this.tickets[this.selected.value].productList.splice(index, 1);
+
+    this.dataSource.data = this.tickets[this.selected.value].productList;
 
     // Update total ticket price
     this.updateTicketPrice();
