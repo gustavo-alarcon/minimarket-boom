@@ -1,4 +1,7 @@
-import { Component, OnInit } from '@angular/core';
+import { AfterViewInit, Component, Inject, OnInit } from '@angular/core';
+import { MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { Ticket } from 'src/app/core/models/ticket.model';
+import { AuthService } from 'src/app/core/services/auth.service';
 
 // import * as jsPDF from 'jspdf';
 
@@ -9,20 +12,21 @@ import { Component, OnInit } from '@angular/core';
 })
 export class PosTicketComponent implements OnInit {
 
-  constructor() { }
+  now = new Date();
+
+  constructor(
+    @Inject(MAT_DIALOG_DATA) public data: Ticket,
+    public auth: AuthService
+  ) {
+
+  }
 
   ngOnInit(): void {
+
   }
 
   print(): void {
-    // var doc = new jsPDF();
-    // doc.text(20, 20, 'Hello world!');
-    // doc.text(20, 30, 'This is client-side Javascript, pumping out a PDF.');
-    // doc.addPage();
-    // doc.text(20, 20, 'Do you like that?');
-
-    // // Save the PDF
-    // doc.save('Test.pdf');
+    // window.print();
   }
 
 }

@@ -1,15 +1,57 @@
-<h2 mat-dialog-title>Ticket</h2>
+<mat-divider></mat-divider>
+<mat-dialog-content class="w3-margin-top">
+    <div id="print-section">
+        <div>
+            <div>
+                <h1 style="font-size: 18px; font-family: 'Raleway', sans-serif; text-align: center; margin: auto;">
+                    Minimarket Boom</h1>
+                <span style="font-size: 14px; font-family: 'Raleway', sans-serif;">
+                    ****************************************</span>
+            </div>
 
-<mat-dialog-content>
-    <div #ticket>
-        <p>Nuevo Ticket</p>
-        <P>Lorem ipsum, dolor sit amet consectetur adipisicing elit. Quo nulla at aut nisi ullam illo itaque laborum.
-            Expedita nisi, doloribus nulla perferendis asperiores inventore vitae! Delectus, placeat? Vero, tempora
-            voluptatem!</P>
+            <div>
+                <p style="font-size: 10px; font-family: 'Raleway', sans-serif; text-align: center; margin: auto;"> Todo
+                    lo que buscas en un solo lugar</p>
+                <span style="font-size: 14px; font-family: 'Raleway', sans-serif;">
+                    ****************************************</span>
+            </div>
+
+            <table style="font-size: 10px; font-family: 'Raleway', sans-serif">
+                <thead>
+                    <th>Cant.</th>
+                    <th style="width:147px; margin: 0px 16px;">Desc.</th>
+                    <th>Imp.</th>
+                </thead>
+
+                <tbody>
+                    <tr *ngFor="let product of data.productList">
+                        <td>{{product.quantity}}</td>
+                        <td>{{product.product.description}}</td>
+                        <td>{{(product.quantity * product.product.price) | number : '.2'}}</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div style="margin-top: 16px">
+                <span style="font-size: 14px; font-family: 'Raleway', sans-serif;">
+                    ****************************************</span>
+                <p
+                    style="font-size: 14px; font-family: 'Raleway', sans-serif; font-weight: 600; text-align: center; margin: 0px 0px 8px 0px">
+                    Total: {{data.total | currency : 'S/.'}}</p>
+                <span
+                    style="font-size: 14px; font-family: 'Raleway', sans-serif; font-weight: 600; text-align: center; margin: auto">TICKET
+                    NO PROCESADO</span><br>
+                <span style="font-size: 14px; font-family: 'Raleway', sans-serif;">
+                    ****************************************</span><br>
+                <span style="font-size: 10px; font-family: 'Raleway', sans-serif;"
+                    *ngIf="auth.user$ | async as user">Atendido por: {{user.completeName}} <br>
+                    {{now | date: 'dd-MM-yyyy hh:mm:ss'}}</span>
+            </div>
+        </div>
     </div>
 
 </mat-dialog-content>
 
 <mat-dialog-actions>
-    <button mat-raised-button (click)="print()">Imprimir</button>
+    <button mat-raised-button printSectionId="print-section" ngxPrint color="accent">Imprimir</button>
 </mat-dialog-actions>

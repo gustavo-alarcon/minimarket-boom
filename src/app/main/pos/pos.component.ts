@@ -16,8 +16,6 @@ import { Platform } from '@angular/cdk/platform';
 import { AngularFirestore } from '@angular/fire/firestore';
 import { PosUnknownProductComponent } from './pos-unknown-product/pos-unknown-product.component';
 import { LocalStorageService } from 'angular-2-local-storage';
-import { PrintService, UsbDriver, WebPrintDriver } from 'ng-thermal-print';
-import { PrintDriver } from 'ng-thermal-print/lib/drivers/PrintDriver';
 import { PosTicketComponent } from './pos-ticket/pos-ticket.component';
 
 @Component({
@@ -45,11 +43,6 @@ export class PosComponent implements OnInit {
   loading = new BehaviorSubject<boolean>(false);
   loading$ = this.loading.asObservable();
 
-  status: boolean = false;
-  usbPrintDriver: UsbDriver;
-  webPrintDriver: WebPrintDriver;
-  ip: string = '';
-
   constructor(
     public auth: AuthService,
     public dbs: DatabaseService,
@@ -57,19 +50,8 @@ export class PosComponent implements OnInit {
     private snackbar: MatSnackBar,
     private af: AngularFirestore,
     public platform: Platform,
-    private lss: LocalStorageService,
-    private printService: PrintService
-  ) {
-    this.usbPrintDriver = new UsbDriver();
-    this.printService.isConnected.subscribe(result => {
-      this.status = result;
-      if (result) {
-        console.log('Connected to printer!!!');
-      } else {
-        console.log('Not connected to printer.');
-      }
-    });
-  }
+    private lss: LocalStorageService
+  ) { }
 
   ngOnInit(): void {
     this.dbs.changeTitle('Punto de Venta');
@@ -127,28 +109,11 @@ export class PosComponent implements OnInit {
 
   }
 
-  requestUsb() {
-    this.usbPrintDriver.requestUsb().subscribe(result => {
-      this.printService.setDriver(this.usbPrintDriver, 'ESC/POS');
-    });
-  }
-
   print() {
     this.dialog.open(PosTicketComponent, {
-      width: '219px',
+      data: this.tickets[this.selected.value],
+      width: '250px',
     });
-    // this.printService.init()
-    //   .setBold(true)
-    //   .writeLine('Hello World!')
-    //   .setBold(false)
-    //   .feed(4)
-    //   .cut('full')
-    //   .flush();
-  }
-
-  connectToWebPrint() {
-    this.webPrintDriver = new WebPrintDriver(this.ip);
-    this.printService.setDriver(this.webPrintDriver, 'WebPRNT');
   }
 
   showOption(product: Product): string | null {

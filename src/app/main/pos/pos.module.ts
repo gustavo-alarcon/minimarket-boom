@@ -23,6 +23,7 @@ import { Ng2ImgMaxModule } from 'ng2-img-max';
 import { ProductCreateEditComponent } from '../products-list/product-create-edit/product-create-edit.component';
 import { PosUnknownProductComponent } from './pos-unknown-product/pos-unknown-product.component';
 import { PosTicketComponent } from './pos-ticket/pos-ticket.component';
+import { NgxPrintModule } from 'ngx-print';
 
 
 @NgModule({
@@ -44,7 +45,8 @@ import { PosTicketComponent } from './pos-ticket/pos-ticket.component';
     MatSelectModule,
     MatDialogModule,
     MatAutocompleteModule,
-    Ng2ImgMaxModule
+    Ng2ImgMaxModule,
+    NgxPrintModule
   ],
   entryComponents: [
     PosQuantityComponent,

@@ -32,12 +32,16 @@ export class PosFinishComponent implements OnInit {
 
   failedCorrelative: number;
 
+  now = new Date();
+
+
   constructor(
     @Inject(MAT_DIALOG_DATA) public data: Ticket,
     private dialogRef: MatDialogRef<PosFinishComponent>,
     private dialog: MatDialog,
     private dbs: DatabaseService,
-    private snackbar: MatSnackBar
+    private snackbar: MatSnackBar,
+    public auth: AuthService
   ) { }
 
   ngOnInit(): void {
