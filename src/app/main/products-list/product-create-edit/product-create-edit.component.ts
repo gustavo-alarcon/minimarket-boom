@@ -56,7 +56,7 @@ export class ProductCreateEditComponent implements OnInit {
     private dbs: DatabaseService,
     private snackBar: MatSnackBar,
     private ng2ImgMax: Ng2ImgMaxService,
-    @Inject(MAT_DIALOG_DATA) public data: { data: Product, edit: boolean }
+    @Inject(MAT_DIALOG_DATA) public data: { data: Product, edit: boolean, sku: string }
   ) { }
 
   ngOnInit() {
@@ -100,7 +100,7 @@ export class ProductCreateEditComponent implements OnInit {
           asyncValidators: this.descriptionRepeatedValidator(this.dbs, this.data),
           updateOn: 'blur'
         }),
-        sku: this.fb.control(null, {
+        sku: this.fb.control(this.data.sku ? this.data.sku : null, {
           validators: [Validators.required],
           asyncValidators: this.skuRepeatedValidator(this.dbs, this.data),
           updateOn: 'blur'

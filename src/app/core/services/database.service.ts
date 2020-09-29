@@ -20,7 +20,7 @@ import { StoreSale } from '../models/storeSale.model';
   providedIn: 'root'
 })
 export class DatabaseService {
-  public version: string = 'V1.0.23r';
+  public version: string = 'V1.0.25r';
   public isOpen: boolean = false;
   public isAdmin: boolean = false;
 

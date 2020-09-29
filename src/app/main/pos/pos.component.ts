@@ -16,7 +16,7 @@ import { Platform } from '@angular/cdk/platform';
 import { AngularFirestore } from '@angular/fire/firestore';
 import { PosUnknownProductComponent } from './pos-unknown-product/pos-unknown-product.component';
 import { LocalStorageService } from 'angular-2-local-storage';
-import { tick } from '@angular/core/testing';
+import { PosTicketComponent } from './pos-ticket/pos-ticket.component';
 
 @Component({
   selector: 'app-pos',
@@ -42,7 +42,6 @@ export class PosComponent implements OnInit {
 
   loading = new BehaviorSubject<boolean>(false);
   loading$ = this.loading.asObservable();
-
 
   constructor(
     public auth: AuthService,
@@ -90,12 +89,31 @@ export class PosComponent implements OnInit {
           this.ticketsKey = 'tickets-' + user.uid;
           this.tickets = this.lss.get(this.ticketsKey) ? this.lss.get(this.ticketsKey) : [];
           this.dataSource.data = this.tickets.length > 0 ? this.tickets[this.selected.value].productList : [];
+
+          // Get current index
+          if (this.tickets.length) {
+            let idx = 0;
+            this.tickets.forEach(el => {
+              if (el.index > idx) {
+                idx = el.index
+              }
+            });
+            this.dbs.tabCounter = idx;
+          }
+
         } else {
           this.ticketsKey = null;
         }
 
       })
 
+  }
+
+  print() {
+    this.dialog.open(PosTicketComponent, {
+      data: this.tickets[this.selected.value],
+      width: '250px',
+    });
   }
 
   showOption(product: Product): string | null {
@@ -124,7 +142,7 @@ export class PosComponent implements OnInit {
   }
 
   addTicket() {
-    if(!this.ticketsKey) return;
+    if (!this.ticketsKey) return;
 
     this.loading.next(true);
 
@@ -152,7 +170,7 @@ export class PosComponent implements OnInit {
   }
 
   removeTicket(index: number) {
-    if(!this.ticketsKey) return;
+    if (!this.ticketsKey) return;
     this.loading.next(true);
 
     // removing ticket from list
@@ -170,7 +188,7 @@ export class PosComponent implements OnInit {
   }
 
   finishTicket(): void {
-    if(!this.ticketsKey) return;
+    if (!this.ticketsKey) return;
 
     if (this.tickets[this.selected.value].productList.length < 1) {
       return
@@ -203,7 +221,7 @@ export class PosComponent implements OnInit {
   }
 
   addProduct(): void {
-    if(!this.ticketsKey) return;
+    if (!this.ticketsKey) return;
 
     // Adding new ticket if there is no one
     if (this.tickets.length === 0) {
@@ -384,7 +402,7 @@ export class PosComponent implements OnInit {
                 // Update total ticket price
                 this.updateTicketPrice();
                 // Update data table
-                this.dataSource.data = this.dbs.tabs[this.selected.value].productList;
+                this.dataSource.data = this.tickets[this.selected.value].productList;
                 // clean input
                 this.search.setValue('');
 
@@ -397,6 +415,8 @@ export class PosComponent implements OnInit {
               }
 
             }
+            // clean input
+            this.search.setValue('');
           })
 
         return;
@@ -405,7 +425,7 @@ export class PosComponent implements OnInit {
   }
 
   editItem(index: number): void {
-    if(!this.ticketsKey) return;
+    if (!this.ticketsKey) return;
 
     this.dialog.open(PosQuantityComponent)
       .afterClosed()
@@ -413,18 +433,18 @@ export class PosComponent implements OnInit {
         take(1),
         tap(qty => {
           if (qty) {
-            this.dbs.tabs[this.selected.value].productList[index].quantity = qty;
+            this.tickets[this.selected.value].productList[index].quantity = qty;
 
             this.updateTicketPrice();
 
-            this.dataSource.data = this.dbs.tabs[this.selected.value].productList;
+            this.dataSource.data = this.tickets[this.selected.value].productList;
           }
         })
       ).subscribe()
   }
 
   updateTicketPrice(): void {
-    if(!this.ticketsKey) return;
+    if (!this.ticketsKey) return;
 
     let total = 0;
 
@@ -444,7 +464,7 @@ export class PosComponent implements OnInit {
   }
 
   addQuantity(index: number): void {
-    if(!this.ticketsKey) return;
+    if (!this.ticketsKey) return;
 
     this.loading.next(true);
 
@@ -485,7 +505,7 @@ export class PosComponent implements OnInit {
   }
 
   removeQuantity(index: number): void {
-    if(!this.ticketsKey) return;
+    if (!this.ticketsKey) return;
 
     this.loading.next(true);
 
@@ -509,7 +529,7 @@ export class PosComponent implements OnInit {
 
           if (qty) {
             // Add product's quantity
-            this.dbs.tabs[this.selected.value].productList[index].quantity = this.dbs.tabs[this.selected.value].productList[index].quantity - qty;
+            this.tickets[this.selected.value].productList[index].quantity = this.tickets[this.selected.value].productList[index].quantity - qty;
 
             // Update total ticket price
             this.updateTicketPrice();
@@ -526,11 +546,13 @@ export class PosComponent implements OnInit {
   }
 
   removeItem(index: number): void {
-    if(!this.ticketsKey) return;
+    if (!this.ticketsKey) return;
 
     this.loading.next(true);
 
     this.tickets[this.selected.value].productList.splice(index, 1);
+
+    this.dataSource.data = this.tickets[this.selected.value].productList;
 
     // Update total ticket price
     this.updateTicketPrice();
