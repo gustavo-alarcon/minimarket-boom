@@ -14,7 +14,7 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatTableModule } from '@angular/material/table';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
-
+import { NgxPrintModule } from 'ngx-print';
 
 @NgModule({
   declarations: [StoreSalesComponent],
@@ -33,7 +33,8 @@ import { MatProgressBarModule } from '@angular/material/progress-bar';
     MatSelectModule,
     MatProgressSpinnerModule,
     MatTableModule,
-    MatProgressBarModule
+    MatProgressBarModule,
+    NgxPrintModule
   ]
 })
 export class StoreSalesModule { }

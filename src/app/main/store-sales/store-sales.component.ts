@@ -51,6 +51,8 @@ export class StoreSalesComponent implements OnInit {
 
   failedItems: Array<boolean>;
 
+  now = new Date();
+
   constructor(
     public auth: AuthService,
     private dbs: DatabaseService,

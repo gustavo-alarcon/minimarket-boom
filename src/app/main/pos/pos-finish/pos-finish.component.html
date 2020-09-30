@@ -37,8 +37,7 @@
                 <mat-form-field class="content search" appearance="outline">
                     <mat-label>Paga con</mat-label>
                     <mat-icon matPrefix>attach_money</mat-icon>
-                    <input matInput type="tel" [formControl]="payment" placeholder="S/.0.00" autocomplete="off"
-                        (keyup.enter)="save()" ngxPrint>
+                    <input matInput type="tel" [formControl]="payment" placeholder="S/.0.00" autocomplete="off">
                     <mat-error>Campo requerido</mat-error>
                 </mat-form-field>
             </div>
@@ -78,7 +77,7 @@
         <div>
             <div>
                 <h1 style="font-size: 18px; font-family: 'Raleway', sans-serif; text-align: center; margin: auto;">
-                    Minimarket Boom</h1>
+                    Boom Market</h1>
                 <span style="font-size: 14px; font-family: 'Raleway', sans-serif;">
                     ****************************************</span>
             </div>
@@ -117,6 +116,9 @@
                 <span style="font-size: 10px; font-family: 'Raleway', sans-serif;"
                     *ngIf="auth.user$ | async as user">Atendido por: {{user.completeName}} <br>
                     {{now | date: 'dd-MM-yyyy hh:mm:ss'}}</span>
+                <p
+                    style="font-size: 14px; font-family: 'Raleway', sans-serif; font-weight: 600; text-align: center; margin: 16px 0px 8px 0px">
+                    *** Gracias por su compra ***</p>
             </div>
         </div>
     </div>
@@ -125,6 +127,6 @@
 <div mat-dialog-actions class="w3-margin-top" align="end">
     <button mat-stroked-button class="w3-margin-right" color="warn" (click)="close()">Cancelar</button>
     <button mat-raised-button color="accent" (click)="save()" type="button"
-        [disabled]="payment.value < data.total || !paymentMethod.value"
-        *ngIf="failedItems.length === 0" printSectionId="print-section" ngxPrint>Guardar</button>
+        [disabled]="payment.value < data.total || !paymentMethod.value" *ngIf="failedItems.length === 0"
+        printSectionId="print-section" ngxPrint>Guardar</button>
 </div>
