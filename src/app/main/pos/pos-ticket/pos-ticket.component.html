@@ -4,7 +4,7 @@
         <div>
             <div>
                 <h1 style="font-size: 18px; font-family: 'Raleway', sans-serif; text-align: center; margin: auto;">
-                    Minimarket Boom</h1>
+                    Boom Market</h1>
                 <span style="font-size: 14px; font-family: 'Raleway', sans-serif;">
                     ****************************************</span>
             </div>
@@ -46,6 +46,9 @@
                 <span style="font-size: 10px; font-family: 'Raleway', sans-serif;"
                     *ngIf="auth.user$ | async as user">Atendido por: {{user.completeName}} <br>
                     {{now | date: 'dd-MM-yyyy hh:mm:ss'}}</span>
+                <p
+                    style="font-size: 14px; font-family: 'Raleway', sans-serif; font-weight: 600; text-align: center; margin: 16px 0px 8px 0px">
+                    *** Gracias por su compra ***</p>
             </div>
         </div>
     </div>
