@@ -37,7 +37,7 @@ export class ProductsListComponent implements OnInit {
   productsDisplayedColumns: string[] = [
     'index', 'photoURL', 'description', 'sku', 'category', 'price',
     'unitDescription', 'alertMinimum',
-    'realStock', 'published', 'actions'
+    'realStock', 'published', 'saleType', 'calcStock', 'actions'
   ]
 
   productsObservable$: Observable<Product[]>
@@ -303,7 +303,7 @@ export class ProductsListComponent implements OnInit {
     let headersXlsx = [
       'Descripcion', 'SKU', 'Categoría', 'Precio',
       'Descripción de Unidad', 'Abreviación', 'Peso (KG)', 'Stock Real', 'Mínimo de venta', 'Mínimio de alerta',
-      'Stock de merma', 'Stock Virtual', 'Publicado'
+      'Tipo de venta', 'Contabilizar stock', 'Publicado'
     ]
 
     table_xlsx.push(headersXlsx);
@@ -313,15 +313,15 @@ export class ProductsListComponent implements OnInit {
         product.description,
         product.sku,
         product.category,
-        "S/." + product.price,
-        product.unit.description,
+        product.price,
+        product.unit.description, 
         product.unit.abbreviation,
         product.unit.weight,
         product.realStock,
         product.sellMinimum,
         product.alertMinimum,
-        product.mermaStock,
-        0, //virtualStock
+        product.saleType ? product.saleType : '1',
+        product.calcStock ? product.calcStock: '1',
         product.published ? "Sí" : "No"
       ];
 
