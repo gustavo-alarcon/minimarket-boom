@@ -379,7 +379,7 @@ export class PosComponent implements OnInit {
               } else {
                 let product = {
                   id: null,
-                  description: 'No Registrado',
+                  description: search,
                   price: res.price,
                   sku: search,
                   category: null,
