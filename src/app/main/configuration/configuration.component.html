@@ -546,6 +546,177 @@
 
 
                 </mat-expansion-panel>
+
+
+                <mat-expansion-panel class="w3-margin-bottom">
+                    <mat-expansion-panel-header>
+                        <mat-panel-title>
+                            <h4 class="admin__title">Administración de cajas</h4>
+                        </mat-panel-title>
+                    </mat-expansion-panel-header>
+
+                    <mat-progress-bar *ngIf="loadingCategories$ | async" mode="indeterminate"></mat-progress-bar>
+                    
+                    <div class="admin__container">
+                        <div class="container-search">
+                        
+                                <button mat-raised-button color="accent" class="w3-margin-right"
+                                    (click)="createCashBox(null,false)">
+                                    Crear caja
+                                </button>
+                            
+                                <div class="text-caja">
+                                    <div class="icon-cajas" >
+                                        <mat-icon class="icon-caja" >attach_money</mat-icon>
+                                    </div>
+                                    <p class="text-name-caja">
+                                       0{{counterBox}} Cajas 
+                                    </p>
+                                </div>
+                        
+                                <form class="detail-form formFieldRounded form-search" [formGroup]="searchBoxForm">
+                                    <mat-form-field class="input-search-caja" appearance="outline">
+                                        <mat-label>Buscar</mat-label>
+                                        <input matInput type="text" placeholder="Escriba..." formControlName="box"
+                                            autocomplete="off">
+                                        <mat-icon matPrefix>search</mat-icon>
+                                    </mat-form-field>
+                                </form>
+                            
+                            
+                        </div>
+                        
+                        <div *ngIf="cashBox$ | async as adminList">
+                            <mat-progress-bar *ngIf="loadingCashBox$ | async" mode="indeterminate"></mat-progress-bar>
+                            <div class="">
+                                <table mat-table [dataSource]="dataSourceCashBox" matSort class="w3-table w3-bordered w3-border w3-center">
+                                    <ng-container  matColumnDef="index">
+                                        <th *matHeaderCellDef class="w3-center" style="padding-top: 15px;">
+                                            N°
+                                        </th>
+                                        <td style="padding-top:15px" class="w3-center" mat-cell *matCellDef="let raw; let i = index">
+                                            {{
+                                              1 +
+                                                i +
+                                                paginatorCashBox.pageIndex * paginatorCashBox.pageSize
+                                            }}
+                                          </td>
+                                      
+                                    </ng-container>
+
+                                    <ng-container  matColumnDef="state">
+                                        <th *matHeaderCellDef style="padding-top:15px"  class="w3-border-left w3-center">Estado
+                                        </th>
+                                        <td mat-cell  style="padding-top:10px"  *matCellDef="let raw" class="w3-border-left w3-center">
+                                             
+                                            <span [ngSwitch]="raw.state">
+                                                <button *ngSwitchCase="'Cerrado'" class="btn-state-close">
+                                                    {{raw.state}}
+                                                </button>
+                                                <button *ngSwitchCase="'Abierto'" class="btn-state-open">
+                                                    {{raw.state}}
+                                                </button>
+                                            </span>
+                                                                                        
+                                        </td>
+                                    </ng-container>
+
+                                    <ng-container  matColumnDef="caja">
+                                        <th *matHeaderCellDef   style="padding-top:15px;width: 100px;"  class="w3-border-left w3-center">Caja 
+                                        </th>
+                                        <td mat-cell  style="padding-top:15px; width: 100px;"  *matCellDef="let raw" class="w3-border-left w3-center">
+                                            {{raw.cashier}}
+                                        </td>
+                                    </ng-container>
+                                    <ng-container matColumnDef="user">
+                                        <th *matHeaderCellDef  style="padding-top:15px" class="w3-border-left w3-center">Usuario
+                                        </th>
+                                        <td mat-cell  style="padding-top:15px" *matCellDef="let raw" class="w3-border-left w3-center">
+                                            {{raw.user}}
+                                        </td>
+                                    </ng-container>
+                                    <ng-container class=" w3-center" matColumnDef="password">
+                                        <th *matHeaderCellDef  style="padding-top:15px" class="w3-border-left w3-center">Contraseña
+                                        </th>
+                                        <td mat-cell  style="padding-top:15px" *matCellDef="let raw" class="w3-border-left w3-center">
+                                            {{raw.password}}
+                                        </td>
+                                    </ng-container>  
+
+                                    <ng-container class=" w3-center" matColumnDef="lastOpening">
+                                        <th *matHeaderCellDef style="padding-top:15px" class="w3-border-left w3-center">Última apertura
+                                        </th>
+                                        <td mat-cell style="padding-top:15px" *matCellDef="let raw" class="w3-border-left w3-center">
+                                            {{raw.lastOpening}}
+                                        </td>
+                                    </ng-container>
+
+                                    <ng-container class=" w3-center" matColumnDef="lastClosing">
+                                        <th *matHeaderCellDef style="padding-top:15px" class="w3-border-left w3-center">Último cierre
+                                        </th>
+                                        <td mat-cell style="padding-top:15px" *matCellDef="let raw" class="w3-border-left w3-center">
+                                            {{raw.lastClosing}}
+                                        </td>
+                                    </ng-container>
+
+                                    <ng-container matColumnDef="actions" stickyEnd>
+                                        <th  *matHeaderCellDef
+                                        style="padding-top:15px" class="w3-border-left w3-center">
+                                          Acciones
+                                        </th>
+                                        <td mat-cell *matCellDef="let raw" style="padding-top:15px" class="w3-border-left w3-center">
+                                          <ng-container>
+                                            <mat-menu #rawMenu="matMenu">
+                                              <button class="w3-small" mat-menu-item (click)="editCashBox(raw,true)">
+                                                <mat-icon>edit</mat-icon> 
+                                                Editar
+                                              </button>
+                                              <button class="w3-small" mat-menu-item (click)="deleteCashBox(raw)">
+                                                <mat-icon>delete</mat-icon>
+                                                Eliminar
+                                              </button>
+                                            </mat-menu>
+                          
+                                            <button mat-icon-button [matMenuTriggerFor]="rawMenu">
+                                              <mat-icon>more_vert</mat-icon>
+                                            </button>
+                                          </ng-container>
+                                        </td>
+                                      </ng-container>
+
+
+                                    <tr mat-header-row *matHeaderRowDef="displayedColumnsCashBox; sticky: true"></tr>
+                                    <tr mat-row *matRowDef="let row; columns: displayedColumnsCashBox;"></tr>
+
+                                </table>
+                                <mat-paginator #paginatorCashBox style="background: transparent;"
+                                    [pageSizeOptions]="[5, 10, 20]" showFirstLastButtons>
+                                </mat-paginator>
+                            </div>
+                           <!--  <div class="w3-hide-large w3-hide-medium w3-margin-top">
+                                <ul class="admin__list">
+                                    <li *ngFor="let user of adminList| paginate: { itemsPerPage: 5, currentPage: p1 }"
+                                        class="admin__item">
+                                        <div style="width: 80%;">
+                                            <div style="font-weight: 900;">{{user['completeName']}}</div>
+                                            <mat-hint>{{user['role']}}</mat-hint>
+                                        </div>
+                                        <button mat-icon-button type="button" (click)="deleteAdmin(user)">
+                                            <mat-icon>delete</mat-icon>
+                                        </button>
+                                    </li>
+                                </ul>
+                                <div style="display: flex; width: 100%; justify-content: flex-end;">
+                                    <pagination-controls (pageChange)="p1 = $event" previousLabel="" nextLabel=""
+                                        maxSize="6">
+                                    </pagination-controls>
+                                </div>
+                            </div> -->
+                        </div>
+                    </div>
+
+
+                </mat-expansion-panel>
             </div>
 
         </div>

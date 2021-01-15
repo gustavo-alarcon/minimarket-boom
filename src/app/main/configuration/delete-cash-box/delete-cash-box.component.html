@@ -1,0 +1,22 @@
+<div style="max-width: 320px;">
+    <div mat-dialog-title>
+
+        <h2 class="title-dialog">
+            <mat-icon class="icon-delete">delete</mat-icon>
+
+            Eliminar 
+        </h2>
+        <mat-divider></mat-divider>
+        <mat-progress-bar *ngIf="loading$ | async" mode="indeterminate"></mat-progress-bar>
+    </div>
+  
+    <div mat-dialog-content>
+        <p>¿ Esta seguro de eliminar la {{data.item.cashier}} </p>
+    </div>
+  
+    <div mat-dialog-actions align="end">
+        <button mat-raised-button class="btn-exit" mat-dialog-close >Cerrar</button>
+        <button mat-raised-button class="w3-margin-left btn-save" 
+            [disabled]="loading$ | async" (click)="save()">Borrar</button>
+    </div>
+  </div>

@@ -14,6 +14,9 @@ import { MatTableDataSource } from '@angular/material/table';
 import { MatPaginator } from '@angular/material/paginator';
 import { AddUserComponent } from './add-user/add-user.component';
 import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
+import { AddCashBoxComponent } from './add-cash-box/add-cash-box.component';
+import { CashBox } from '../../core/models/cashBox.model';
+import { DeleteCashBoxComponent } from './delete-cash-box/delete-cash-box.component';
 
 @Component({
   selector: 'app-configuration',
@@ -106,6 +109,22 @@ export class ConfigurationComponent implements OnInit {
     'saturday',
     'sunday'
   ]
+  
+   /*CashBox*/
+   cashBox$: Observable<CashBox[]>;
+
+   loadingCashBox = new BehaviorSubject<boolean>(true);
+   loadingCashBox$ = this.loadingCashBox.asObservable();
+ 
+   dataSourceCashBox = new MatTableDataSource();
+   displayedColumnsCashBox: string[] = ['index', 'state', 'caja', 'user', 'password','lastOpening','lastClosing','actions'];
+ 
+   @ViewChild("paginatorCashBox", { static: false }) set content4(paginator: MatPaginator) {
+     this.dataSourceCashBox.paginator = paginator;
+   }
+
+   searchBoxForm: FormGroup;
+   counterBox:number=0;
 
   constructor(
     private fb: FormBuilder,
@@ -122,6 +141,11 @@ export class ConfigurationComponent implements OnInit {
     this.searchForm = this.fb.group({
       name: null,
       permits: null
+    })
+
+    //CashBox
+    this.searchBoxForm = this.fb.group({
+      box: null,
     })
 
     this.openingFormGroup = this.fb.group({
@@ -229,6 +253,43 @@ export class ConfigurationComponent implements OnInit {
         this.loadingOpening.next(false)
       })
     )
+
+    //CashBox
+    /* this.cashBox$ = this.dbs.getAllCashBox().pipe(
+      tap(res => {
+        if (res) {
+          this.dataSourceCashBox.data = res
+          this.loadingCashBox.next(false)
+        }
+      })
+    ) */
+
+    this.cashBox$ = combineLatest(
+      this.dbs.getAllCashBox(),
+      this.searchBoxForm.get('box').valueChanges.pipe(
+        filter(input => input !== null),
+        startWith<any>(''),
+        map(value => typeof value === 'string' ? value.toLowerCase() : value.cashier.toLowerCase())),
+     
+    ).pipe(
+      map(([cashBox, name, ]) => {
+        return cashBox.sort((a, b) => a['cashier'].localeCompare(b['cashier']))
+          .filter(el => name ? el.cashier.toLowerCase().includes(name) : true)
+          .map((el, i) => {
+            return {
+              ...el,
+              index: i + 1
+            }
+          })
+      }),
+      tap(res => {
+        this.dataSourceCashBox.data = res
+          this.loadingCashBox.next(false)
+
+          this.counterBox = res.length;
+      })
+    )
+
   }
 
 
@@ -494,4 +555,30 @@ export class ConfigurationComponent implements OnInit {
 
   }
 
+  // CashBox
+  createCashBox(data, isedit) {
+    this.dialog.open(AddCashBoxComponent, {
+      data: {
+        item: data,
+        edit: isedit
+      }
+    })
+  }
+
+  editCashBox(data,isedit){
+    this.dialog.open(AddCashBoxComponent, {
+      data: {
+        item: data,
+        edit: isedit
+      }
+    })
+  }
+
+  deleteCashBox(data){  
+    this.dialog.open(DeleteCashBoxComponent, {
+      data: {
+        item: data,
+      }
+    })
+  }
 }

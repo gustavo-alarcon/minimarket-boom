@@ -15,6 +15,7 @@ import { Package } from '../models/package.model';
 import { Ticket } from '../models/ticket.model';
 import { title } from 'process';
 import { StoreSale } from '../models/storeSale.model';
+import { CashBox } from '../models/cashBox.model';
 
 @Injectable({
   providedIn: 'root'
@@ -734,6 +735,8 @@ export class DatabaseService {
       )
   }
 
+ 
+
   getConfiUsers(): Observable<User[]> {
     return this.afs.collection<User>(`/users`, ref => ref.where("role", '>=', ''))
       .valueChanges().pipe(
@@ -758,4 +761,25 @@ export class DatabaseService {
     return this.afs.doc<Product>(`${this.productsListRef}/${id}`)
       .valueChanges().pipe (shareReplay(1));
   }
+
+  // CASH BOX
+  getAllCashBox(): Observable<CashBox[]> {
+    return this.afs.collection<CashBox>('/db/minimarketBoom/cashBox',(ref) =>
+    ref.orderBy('createdAt', 'desc')).valueChanges();
+  }
+
+  getUsersValueChanges(): Observable<any[]> {
+    return this.afs.collection(`/users`, ref => ref.where("role", '>=', ''))
+      .valueChanges().pipe(
+        shareReplay(1)
+      );
+  }
+
+  getcashBoxStatic(): Observable<CashBox[]> {
+    return this.afs.collection<CashBox>(`/db/minimarketBoom/cashBox`)
+      .get().pipe(map((snap) => {
+        return snap.docs.map(el => <CashBox>el.data())
+      }));
+  }
+ 
 }
