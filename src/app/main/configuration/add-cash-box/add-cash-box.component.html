@@ -1,0 +1,66 @@
+<div mat-dialog-title>
+    <h2 class="title-dialog" style="font-size:1.2em">
+        <mat-icon style="vertical-align:middle; margin-right: 8px;">account_circle</mat-icon>
+        {{data.edit?'Editar Caja':'Crear Caja'}}
+    </h2>
+    <mat-divider></mat-divider>
+</div>
+<mat-dialog-content style="max-width: 350px;">
+    <mat-progress-bar mode='indeterminate' *ngIf="loading$ | async"></mat-progress-bar>
+    <form [formGroup]="cashBoxForm">
+        
+        <!-- Caja  -->
+       
+        <mat-form-field class="admin__input w3-small" appearance="outline">
+            <mat-label>Nombre de caja</mat-label>
+            <input matInput type="text" placeholder="Nombre de caja" formControlName="caja"
+              autocomplete="off" />
+            <mat-progress-bar *ngIf="caja.pending" mode="indeterminate"></mat-progress-bar>
+            <mat-error>
+              <span *ngIf="cashBoxForm.get('caja').errors?.required">Campo requerido</span>
+              <span *ngIf="caja.invalid && caja.dirty && caja.value">
+                {{caja.value}} ya existe en la lista.</span>
+            </mat-error>
+          </mat-form-field>
+
+        <!-- Usuario  -->
+        <mat-form-field *ngIf="users$ | async as users" style="margin-bottom: 8px; display: block"
+            appearance="outline">
+            <mat-label>Usuario</mat-label>
+            <input autocomplete="off" formControlName="user" [matAutocomplete]="userAutocomplete" type="text"
+            matInput name="user" />
+            <mat-autocomplete autoActiveFirstOption #userAutocomplete="matAutocomplete">
+            <mat-option *ngFor="let user of users" [value]="user['name']">           
+                {{ user['name']}}           
+            </mat-option>
+
+            </mat-autocomplete>
+            <mat-error>
+            <span *ngIf="cashBoxForm.get('user').errors?.required">Por favor, complete el campo.</span>
+            <span *ngIf="cashBoxForm.get('user').errors?.invalid">Dato inválido. Complete con alguna opción válida.</span>
+            </mat-error>
+        </mat-form-field>
+
+        <!-- Contraseña  -->
+        <mat-form-field class="w3-block" appearance="outline" > <!-- *ngIf=""!data.edit -->
+            <mat-label>Contraseña</mat-label>
+            <input matInput [type]="hidePass ? 'password' : 'text'" formControlName="pass" placeholder="***"
+                autocomplete="off">
+            <button mat-icon-button matSuffix (click)="hidePass = !hidePass" [attr.aria-label]="'Ocultar contraseña'"
+                [attr.aria-pressed]="hidePass">
+                <mat-icon>{{hidePass ? 'visibility_off' : 'visibility'}}</mat-icon>
+            </button>
+            <mat-error>
+                <span *ngIf="cashBoxForm.get('pass').errors?.required">Contraseña requerido</span>
+                <span *ngIf="cashBoxForm.get('pass').hasError('minlength')">Mínimo 6 caracteres</span>
+            </mat-error>
+        </mat-form-field>        
+
+    </form>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+    <button mat-raised-button class="w3-margin-right buttonNoRounded btn-exit" mat-dialog-close>Cancelar</button>
+    <button mat-raised-button class="buttonNoRounded btn-save" (click)="save()" type="button"
+        [disabled]="cashBoxForm.status != 'VALID'">Guardar</button>
+</mat-dialog-actions>

@@ -28,6 +28,9 @@ import { AddUserComponent } from './add-user/add-user.component';
 import { CreateCategoryComponent } from './create-category/create-category.component';
 import { LazyLoadImageModule } from 'ng-lazyload-image';
 import { DragDropModule } from '@angular/cdk/drag-drop';
+import { MatMenuModule } from '@angular/material/menu';
+import { AddCashBoxComponent } from './add-cash-box/add-cash-box.component';
+import { DeleteCashBoxComponent } from './delete-cash-box/delete-cash-box.component';
 
 @NgModule({
   declarations: [
@@ -35,7 +38,9 @@ import { DragDropModule } from '@angular/cdk/drag-drop';
     CreatePayComponent,
     CreateUserComponent,
     AddUserComponent,
-    CreateCategoryComponent
+    CreateCategoryComponent,
+    AddCashBoxComponent,
+    DeleteCashBoxComponent
   ],
   imports: [
     CommonModule,
@@ -62,7 +67,8 @@ import { DragDropModule } from '@angular/cdk/drag-drop';
     Ng2ImgMaxModule,
     HttpClientModule,
     LazyLoadImageModule,
-    DragDropModule
+    DragDropModule,
+    MatMenuModule
   ],
   entryComponents: [
     CreatePayComponent,
