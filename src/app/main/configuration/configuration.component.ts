@@ -255,14 +255,6 @@ export class ConfigurationComponent implements OnInit {
     )
 
     //CashBox
-    /* this.cashBox$ = this.dbs.getAllCashBox().pipe(
-      tap(res => {
-        if (res) {
-          this.dataSourceCashBox.data = res
-          this.loadingCashBox.next(false)
-        }
-      })
-    ) */
 
     this.cashBox$ = combineLatest(
       this.dbs.getAllCashBox(),
@@ -574,7 +566,8 @@ export class ConfigurationComponent implements OnInit {
     })
   }
 
-  deleteCashBox(data){  
+  deleteCashBox(data){
+     
     this.dialog.open(DeleteCashBoxComponent, {
       data: {
         item: data,

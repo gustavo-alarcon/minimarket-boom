@@ -1,0 +1,73 @@
+
+<div class="w3-section w3-margin-left w3-margin-right animated fadeInUp delay-2
+    componente-container">
+  <div style="padding: 0 3vw;">
+    <div
+      style="display: flex; flex-direction: row; justify-content: space-between; align-items: flex-end; flex-wrap: wrap;">
+      <h2 class="title">
+        <mat-icon>monetization_on</mat-icon>
+        Login Caja
+      </h2>
+      
+    </div>
+    <mat-divider></mat-divider>
+    <div style="margin-top: 1em;">
+
+      <div class="container-login-cash">
+        <h2>Apertura de caja</h2>
+
+            <form [formGroup]="loginForm" class="login-form">
+
+              <mat-form-field class="w3-block" appearance="outline"  *ngIf="boxList$ | async as boxs">
+                <mat-label>Selecione una caja </mat-label>
+                <mat-select formControlName="caja" >
+                  <mat-option *ngFor="let box of boxs" [value]="box.cashier">{{box.cashier}}</mat-option >
+               
+                </mat-select>
+                <mat-error>
+                  Campo requerido *
+              </mat-error>
+                
+              </mat-form-field>
+
+              <mat-form-field class="w3-block" appearance="outline">
+                  <mat-label>Contraseña</mat-label>
+                  <input matInput [type]="hidePass ? 'password' : 'text'" formControlName="pass" placeholder="*****"
+                      autocomplete="off">
+                  <button mat-icon-button matSuffix (click)="hidePass = !hidePass" [attr.aria-label]="'Ocultar contraseña'"
+                      [attr.aria-pressed]="hidePass">
+                      <mat-icon>{{hidePass ? 'visibility_off' : 'visibility'}}</mat-icon>
+                  </button>
+                  <mat-error>
+                    Campo requerido *
+                  </mat-error>
+              </mat-form-field>
+      
+              <mat-form-field class="w3-block" appearance="outline" class="w3-block">
+                  <mat-label>Importe Inicial</mat-label>
+                  <input #input autocomplete="off" formControlName="money" type="text" matInput placeholder="Importe inicial">
+                  <mat-error>
+                      Campo requerido
+                  </mat-error>
+              </mat-form-field>
+              
+              <div class="btn-container-submit">
+                <button type="submit" class="btn-submit" (click)="login(loginForm)">
+                    <mat-icon class="icon">vpn_key</mat-icon>
+                      Abrir caja
+                </button>
+               
+              </div>            
+                 <mat-error>
+                  <span *ngIf="validatorPass">la caja seleccionada o contraseña es incorrecta</span>
+               </mat-error> 
+            </form>
+          
+      </div>
+
+
+    </div>
+  </div>
+</div> 
+
+

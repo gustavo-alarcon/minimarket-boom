@@ -9,14 +9,29 @@
         <mat-divider></mat-divider>
         <mat-progress-bar *ngIf="loading$ | async" mode="indeterminate"></mat-progress-bar>
     </div>
-  
-    <div mat-dialog-content>
-        <p>¿ Esta seguro de eliminar la {{data.item.cashier}} </p>
+
+    <div [hidden]="!deleteBox">
+        <div mat-dialog-content>
+            <p>¿ Esta seguro de eliminar la {{data.item.cashier}} ?</p>
+        </div>
+    
+        <div mat-dialog-actions align="end">
+            <button mat-raised-button class="btn-exit" mat-dialog-close >Cerrar</button>
+            <button  mat-raised-button class="w3-margin-left btn-save" 
+                [disabled]="loading$ | async" (click)="save()">Borrar</button>
+        </div>
+    </div>
+
+    <div [hidden]="deleteBox">
+        <div mat-dialog-content>
+            <p>¿ no puede eliminar la {{data.item.cashier}} por que esta abierto? </p>
+        </div>
+    
+        <div mat-dialog-actions align="end">
+            <button mat-raised-button class="btn-exit" mat-dialog-close >Cerrar</button>
+            
+        </div>
     </div>
   
-    <div mat-dialog-actions align="end">
-        <button mat-raised-button class="btn-exit" mat-dialog-close >Cerrar</button>
-        <button mat-raised-button class="w3-margin-left btn-save" 
-            [disabled]="loading$ | async" (click)="save()">Borrar</button>
-    </div>
+    
   </div>

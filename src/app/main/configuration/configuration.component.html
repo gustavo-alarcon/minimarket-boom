@@ -595,12 +595,9 @@
                                             N°
                                         </th>
                                         <td style="padding-top:15px" class="w3-center" mat-cell *matCellDef="let raw; let i = index">
-                                            {{
-                                              1 +
-                                                i +
-                                                paginatorCashBox.pageIndex * paginatorCashBox.pageSize
-                                            }}
-                                          </td>
+                                              {{raw.index + 1-1}}
+
+                                        </td>
                                       
                                     </ng-container>
 
@@ -693,25 +690,7 @@
                                     [pageSizeOptions]="[5, 10, 20]" showFirstLastButtons>
                                 </mat-paginator>
                             </div>
-                           <!--  <div class="w3-hide-large w3-hide-medium w3-margin-top">
-                                <ul class="admin__list">
-                                    <li *ngFor="let user of adminList| paginate: { itemsPerPage: 5, currentPage: p1 }"
-                                        class="admin__item">
-                                        <div style="width: 80%;">
-                                            <div style="font-weight: 900;">{{user['completeName']}}</div>
-                                            <mat-hint>{{user['role']}}</mat-hint>
-                                        </div>
-                                        <button mat-icon-button type="button" (click)="deleteAdmin(user)">
-                                            <mat-icon>delete</mat-icon>
-                                        </button>
-                                    </li>
-                                </ul>
-                                <div style="display: flex; width: 100%; justify-content: flex-end;">
-                                    <pagination-controls (pageChange)="p1 = $event" previousLabel="" nextLabel=""
-                                        maxSize="6">
-                                    </pagination-controls>
-                                </div>
-                            </div> -->
+                          
                         </div>
                     </div>
 

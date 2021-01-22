@@ -1,0 +1,21 @@
+<div style="max-width: 320px;">
+    <div mat-dialog-title>
+
+        <h2 class="title-dialog">
+            <mat-icon class="icon">vpn_key</mat-icon>
+            Apertura de caja 
+        </h2>
+        <mat-divider></mat-divider>
+    </div>
+  
+    <div mat-dialog-content>
+        <p>¿ Esta seguro de abrir la {{data.item['0'].cashier}} ? </p>
+    </div>
+  
+    <div mat-dialog-actions align="end">
+        <button mat-raised-button class="btn-exit" mat-dialog-close >Cerrar</button>
+        <button mat-raised-button class="btn-save" (click)="navigate()" >Abrir</button>
+    </div>
+  </div>
+
+  

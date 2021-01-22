@@ -1,0 +1,68 @@
+.totalPrice {
+    padding: 16px;
+    margin: 4px;
+    height: 40px;
+    margin-left: 8px;
+    background: var(--primary-color);
+    box-shadow: 0px 5.66077px 5.66077px rgba(0, 0, 0, 0.25);
+    border-radius: 10px;
+  
+    font-weight: bold;
+    font-size: 1.5em;
+    line-height: 41px;
+    display: flex;
+    align-items: center;
+    text-align: center;
+    letter-spacing: 0.05em;
+    font-feature-settings: 'pnum' on, 'lnum' on;
+  
+    color: #F2F2F2;
+    background: #27AE60;
+  }
+
+
+  .btn{
+    margin:0px 10px 0px 0px;
+    padding: 5px 30px 5px 30px;
+    font-weight: bold;
+    font-size: 1em;
+  }
+
+  .btn-caja{
+    background: #FFD600;
+    color: #2B2B2B;
+    margin-right: 100px;
+    padding: 5px 40px 5px 40px;
+    font-weight: bold;
+    font-size: 1em;
+  }
+  .btn-config{
+    border-radius: 30px;
+    font-weight: bold;
+  }
+
+  .container-header{
+    margin-left: 70px;
+  }
+  .container-search{
+    display:flex;
+  }
+  .form-search{
+    margin-top: 20px;
+    border-radius: 20px;
+    border: none;
+    width: 500px;
+  }
+  
+  .btn-donwload{
+    position: absolute;
+    right: 150px;
+    background: #FFD600;
+    color: #2B2B2B;
+    margin-top: 25px;
+    margin-bottom: 30px;
+    padding: 5px 40px 5px 40px;
+    font-weight: bold;
+  
+}
+  

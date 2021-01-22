@@ -15,6 +15,8 @@ export class DeleteCashBoxComponent implements OnInit {
   loading = new BehaviorSubject<boolean>(false);
   loading$ = this.loading.asObservable();
 
+  deleteBox=true;
+
   constructor(
     private snackBar: MatSnackBar,
     private afs: AngularFirestore,     
@@ -23,9 +25,15 @@ export class DeleteCashBoxComponent implements OnInit {
     ) { }
 
   ngOnInit(): void {
+    
+    if (this.data.item.state ==="Abierto") {
+
+      this.deleteBox=false
+      
+    }
   }
   
-  save() {
+  save() {   
 
     const batch = this.afs.firestore.batch()
     const cashBoxRef = this.afs.firestore.collection(`/db/minimarketBoom/cashBox`).doc(this.data.item.uid);
