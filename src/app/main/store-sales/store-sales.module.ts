@@ -16,6 +16,10 @@ import { MatTableModule } from '@angular/material/table';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { NgxPrintModule } from 'ngx-print';
 
+
+import { MatNativeDateModule } from '@angular/material/core';
+import {MatDatepickerModule } from '@angular/material/datepicker';
+
 @NgModule({
   declarations: [StoreSalesComponent],
   imports: [
@@ -28,6 +32,10 @@ import { NgxPrintModule } from 'ngx-print';
     MatFormFieldModule,
     MatInputModule,
     MatDividerModule,
+
+    MatNativeDateModule,
+    MatDatepickerModule,
+    
     SatDatepickerModule,
     SatNativeDateModule,
     MatSelectModule,

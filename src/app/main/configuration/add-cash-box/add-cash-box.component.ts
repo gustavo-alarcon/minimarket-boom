@@ -21,9 +21,10 @@ export class AddCashBoxComponent implements OnInit {
  
   cashBoxForm: FormGroup
 
-  users$: Observable<string[]>;
+  /* users$: Observable<string[]>; */
 
-  
+  userSelected: boolean  = false;
+
   hidePass: boolean = true;
   constructor(
     private auth: AuthService,
@@ -34,52 +35,51 @@ export class AddCashBoxComponent implements OnInit {
     private afs: AngularFirestore,    
     @Inject(MAT_DIALOG_DATA) public data: { item: CashBox, edit: boolean }
     ) { 
-
-
-  }
+      }
 
   ngOnInit(): void {
 
     if (this.data.edit) {
       this.cashBoxForm = this.fb.group({
         caja: [this.data.item.cashier, [Validators.required], [this.cashierRepeatedValidator()]],
-        user: [this.data.item.user, Validators.required],
         pass: [this.data.item.password, Validators.required],
 
       })
 
-      //this.cashBoxForm.get('').disable()
     } else {
       this.cashBoxForm = this.fb.group({
         caja: [null, [Validators.required], [this.cashierRepeatedValidator()]],
-        user: [null, Validators.required],
         pass: [null, [Validators.required, Validators.minLength(6)]],
       })
     }
+    
 
-
-    this.users$ = combineLatest(
+   /*  this.users$ = combineLatest(
       this.cashBoxForm.get('user').valueChanges.pipe(
         startWith(''),
         map(name=>name? name:'')
         ),
         this.dbs.getUsersValueChanges()
    ).pipe(map(([formValue,users])=>{
-     console.log('formValue : ',formValue)
-     console.log('users : ',users)
+
      let filter = users.filter(el => formValue ? el.name.toLowerCase().includes(formValue.toLowerCase()):'');
      return filter;
-   }))
+
+    
+    })
+    ) */
+    
+
+   
   }
 
   get caja() {
     return this.cashBoxForm.get('caja');
   }
-
+  showUser(box: CashBox): string | null {
+    return box ? box.user : null;
+  }
   save(){
-    this.cashBoxForm.markAsPending();
-    this.cashBoxForm.disable()
-    this.loading.next(true)
 
     if (this.data.edit) {
       this.edit()
@@ -89,37 +89,40 @@ export class AddCashBoxComponent implements OnInit {
 
   }
   create(): void {
+     
+    console.log(this.cashBoxForm)
 
-    this.auth.user$.pipe(take(1)).subscribe(user => {
+      if (this.cashBoxForm.valid) {
 
-      const batch = this.afs.firestore.batch()
-      const cashBoxRef = this.afs.firestore.collection(`/db/minimarketBoom/cashBox`).doc();
+      this.auth.user$.pipe(take(1)).subscribe(user => {
 
-      let newCashBox = {
-        uid: cashBoxRef.id,
-        cashier: this.cashBoxForm.get('caja').value,
-        user: this.cashBoxForm.get('user').value,
-        password: this.cashBoxForm.get('pass').value,
-        createdBy: user,
-        state:'Cerrado',
-        createdAt: new Date(),
-      }      
+        const batch = this.afs.firestore.batch()
+        const cashBoxRef = this.afs.firestore.collection(`/db/minimarketBoom/cashBox`).doc();
 
-        batch.set(cashBoxRef, newCashBox)
+        let newCashBox = {
+          uid: cashBoxRef.id,
+          cashier: this.cashBoxForm.get('caja').value,
+          password: this.cashBoxForm.get('pass').value,
+          createdBy: user,
+          state:'Cerrado',
+          createdAt: new Date(),
+        }      
 
-        batch.commit().then(() => {
-          this.loading.next(false)
-          this.dialogRef.close();
-          this.snackBar.open('El nuevo caja fue creado satisfactoriamente', 'Cerrar', { duration: 5000 });
-        }) 
-        .catch(err => {
-          console.log(err);
-          this.snackBar.open("Ups! parece que hubo un error ...", "Cerrar");
-        })
+          batch.set(cashBoxRef, newCashBox)
 
-    })  
-         
+          batch.commit().then(() => {
+            this.loading.next(false)
+            this.dialogRef.close();
+            this.snackBar.open('El nuevo caja fue creado satisfactoriamente', 'Cerrar', { duration: 5000 });
+          }) 
+          .catch(err => {
+            console.log(err);
+            this.snackBar.open("Ups! parece que hubo un error ...", "Cerrar");
+          })
 
+      })  
+          
+    }
   }
   edit(){
 
@@ -131,7 +134,6 @@ export class AddCashBoxComponent implements OnInit {
     let updateCashBox = {
       uid: cashBoxRef.id,
       cashier: this.cashBoxForm.get('caja').value,
-      user: this.cashBoxForm.get('user').value,
       password: this.cashBoxForm.get('pass').value,
       createdBy: user,
       state:'Cerrado',

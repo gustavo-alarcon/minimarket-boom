@@ -1,6 +1,7 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ReactiveFormsModule, FormsModule } from '@angular/forms';
+
+import { MatPaginatorModule } from '@angular/material/paginator';
 import { NgxPaginationModule } from 'ngx-pagination';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
@@ -13,42 +14,38 @@ import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatSelectModule } from '@angular/material/select';
 import { MatTableModule } from '@angular/material/table';
-import { MatPaginatorModule } from '@angular/material/paginator';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatTabsModule } from '@angular/material/tabs';
 import { MatExpansionModule } from '@angular/material/expansion';
 import { MatCardModule } from '@angular/material/card';
-import { ConfigurationRoutingModule } from './configuration-routing.module';
-import { ConfigurationComponent } from './configuration.component';
-import { CreatePayComponent } from './create-pay/create-pay.component';
-import { CreateUserComponent } from './create-user/create-user.component';
-import { Ng2ImgMaxModule } from 'ng2-img-max';
-import { HttpClientModule } from '@angular/common/http';
-import { AddUserComponent } from './add-user/add-user.component';
-import { CreateCategoryComponent } from './create-category/create-category.component';
 import { LazyLoadImageModule } from 'ng-lazyload-image';
 import { DragDropModule } from '@angular/cdk/drag-drop';
 import { MatMenuModule } from '@angular/material/menu';
-import { AddCashBoxComponent } from './add-cash-box/add-cash-box.component';
-import { DeleteCashBoxComponent } from './delete-cash-box/delete-cash-box.component';
-
-
 import { MatNativeDateModule } from '@angular/material/core';
-import {MatDatepickerModule } from '@angular/material/datepicker';
+import { MatDatepickerModule } from '@angular/material/datepicker';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+
+/* import { SatDatepickerModule, SatNativeDateModule } from 'saturn-datepicker'; */
+
+
+import { CashRoutingModule } from './cash-routing.module';
+
+import { ShowTotalCashComponent } from './show-total-cash/show-total-cash.component';
+import { AddMoneyCashComponent } from './add-money-cash/add-money-cash.component';
+import { ShowHistoryCashComponent } from './show-history-cash/show-history-cash.component';
+import { RetrieveMoneyCashComponent } from './retrieve-money-cash/retrieve-money-cash.component';
+import { AddMoneyCashConfirmComponent } from './add-money-cash-confirm/add-money-cash-confirm.component';
+import { RetrieveMoneyCashConfirmComponent } from './retrieve-money-cash-confirm/retrieve-money-cash-confirm.component';
+import { CloseCashComponent } from './close-cash/close-cash.component';
+import { EditInitialImportComponent } from './edit-initial-import/edit-initial-import.component';
+
 
 @NgModule({
-  declarations: [
-    ConfigurationComponent,
-    CreatePayComponent,
-    CreateUserComponent,
-    AddUserComponent,
-    CreateCategoryComponent,
-    AddCashBoxComponent,
-    DeleteCashBoxComponent
-  ],
+  declarations: [ShowTotalCashComponent,ShowHistoryCashComponent, AddMoneyCashComponent, RetrieveMoneyCashComponent, AddMoneyCashConfirmComponent, RetrieveMoneyCashConfirmComponent, CloseCashComponent, EditInitialImportComponent],
   imports: [
     CommonModule,
-    ConfigurationRoutingModule,
+    CashRoutingModule,
+    MatPaginatorModule,
     MatIconModule,
     MatButtonModule,
     MatInputModule,
@@ -61,24 +58,20 @@ import {MatDatepickerModule } from '@angular/material/datepicker';
     MatSelectModule,
     MatTabsModule,
     MatTableModule,
-    MatPaginatorModule,
     MatProgressBarModule,
     MatExpansionModule,
     MatCardModule,
-    ReactiveFormsModule,
-    FormsModule,
     NgxPaginationModule,
-    Ng2ImgMaxModule,
-    HttpClientModule,
     LazyLoadImageModule,
     DragDropModule,
     MatMenuModule,
+    MatDatepickerModule,
     MatNativeDateModule,
-    MatDatepickerModule
-  ],
-  entryComponents: [
-    CreatePayComponent,
-    CreateUserComponent
+    FormsModule, 
+    ReactiveFormsModule,
+
+    /* SatDatepickerModule,
+    SatNativeDateModule */
   ]
 })
-export class ConfigurationModule { }
+export class CashModule { }

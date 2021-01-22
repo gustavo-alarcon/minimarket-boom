@@ -781,5 +781,77 @@ export class DatabaseService {
         return snap.docs.map(el => <CashBox>el.data())
       }));
   }
- 
+
+  getUsersValueChanges1(): Observable<CashBox[]> {
+    return this.afs.collection<CashBox>(`/db/minimarketBoom/cashBox`)
+      .valueChanges().pipe(
+        shareReplay(1)
+      );
+  }
+
+  loginCash1(caja:string,pass:string) {
+    return this.afs.collection(`/db/minimarketBoom/cashBox`, ref => ref.where("cashier", '==', caja)
+    .where("password", '==', pass)
+      )
+      .valueChanges()
+      .pipe(
+        shareReplay(1)
+      );
+  }
+  loginCash(caja:string,pass:string): Observable<any[]> {
+    return this.afs.collection('/db/minimarketBoom/cashBox', (ref) =>
+    ref.where("cashier", "==",caja) .where("password", '==', pass)
+  ).get().pipe(
+    map((snap) => {
+      return snap.docs.map((el) => <CashBox>el.data());
+    })
+  );
+  }
+
+ /*  getCashBoxValueChanges():  Observable<any[]> {    
+    return this.afs.collection('/db/minimarketBoom/cashBox').doc<CashBox>('generalConfig')
+    .valueChanges().pipe(shareReplay(1)).pipe(map(res => {
+     if (res) {
+       return res.cashier ? res.warehouses : []
+     } else {
+       return []
+     }
+     
+   })) */
+
+   /* getCashBoxValueChanges():  Observable<CashBox[]> {    
+    return this.afs.collection('/db/minimarketBoom').doc<CashBox>('cashBox')
+    .valueChanges().pipe(shareReplay(1)).pipe(map(res => {
+     if (res) {
+       return res.cashier ? res.cashier  : []
+     } else {
+       return []
+     }
+     
+   })) 
+  }
+   */
+ /*  getCashBoxValueChanges():  Observable<any> {    
+    return this.afs.collection('/db/minimarketBoom').doc<CashBox>('cashBox')
+    .valueChanges().pipe(shareReplay(1)).pipe(map(res => {
+     if (res) {
+       return res.cashier ? res.cashier  : []
+     } else {
+       return []
+     }
+     
+   })) 
+  } */
+  /* getPayments1(): Observable<any> {
+    return this.afs.collection(`/db/minimarketBoom`).doc<CashBox>('cashBox').valueChanges()
+      .pipe(
+        map(res => {
+          return res.;
+        }),
+        shareReplay(1)
+      )
+  } */
+   
+
+
 }

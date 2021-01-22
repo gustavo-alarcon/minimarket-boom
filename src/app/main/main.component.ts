@@ -17,6 +17,7 @@ export class MainComponent implements OnInit {
   version: string
 
   openedMenu: boolean = false;
+  confiOpenedFlag: boolean = false;
 
   sub: any;
   title$: Observable<string>;
@@ -57,6 +58,14 @@ export class MainComponent implements OnInit {
 
   logout() {
     this.auth.logout();
+  }
+
+  confiOpened(): void{
+    this.confiOpenedFlag = true;
+  }
+
+  confiClosed(): void{
+    this.confiOpenedFlag = false;
   }
 
 }
