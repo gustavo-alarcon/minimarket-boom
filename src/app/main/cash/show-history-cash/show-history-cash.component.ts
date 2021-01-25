@@ -14,6 +14,7 @@ export class ShowHistoryCashComponent implements OnInit {
 
   dateForm: FormGroup;
 
+  date = new FormControl();
 
   dataSourceHistory = new MatTableDataSource();
   displayedColumnsHistory: string[] = ['index','opening','closing', 'totalBalance','openingAmount','totalIncome','totalDeaperture','responsable','actions'];

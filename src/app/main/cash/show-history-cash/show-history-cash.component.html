@@ -9,36 +9,51 @@
 
 <mat-dialog-content style="min-width:300px; padding: 1em 1em">
 
-    <div class="container-search">
-
-     <!--  <mat-form-field style="max-width: 250px;" appearance="outline">
-        <mat-label>FECHA/PERIODO</mat-label>
-        <mat-date-range-input [formGroup]="dateForm" [rangePicker]="picker">
-          <input readonly matStartDate formControlName="start" placeholder="Fecha Inicio">
-          <input readonly matEndDate formControlName="end" placeholder="Fecha Final">
-        </mat-date-range-input>
-        <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
-        <mat-date-range-picker #picker></mat-date-range-picker>
-      </mat-form-field> -->
-      
-      <!-- <mat-form-field class="content" appearance="outline">
+    <!-- <div class="container-search">
+           
+      <mat-form-field class="content" appearance="outline">
         <input readonly matInput placeholder="FECHA / PERIODO" [formControl]="date" [satDatepicker]="picker">
         <sat-datepicker #picker [rangeMode]="true"></sat-datepicker>
         <sat-datepicker-toggle matSuffix [for]="picker"></sat-datepicker-toggle>
-      </mat-form-field> -->
+      </mat-form-field>
 
       <button mat-raised-button class="btn-donwload">
         Descargar
       </button>
 
-    </div> 
+    </div>  -->
+    <div class="formFieldRounded"
+    style="display: flex; flex-direction: row; justify-content: space-between; align-items: end; flex-wrap: wrap;">
+       
+        <!-- <mat-form-field class="content" appearance="outline">
+            <input readonly matInput placeholder="FECHA / PERIODO" [formControl]="date" [satDatepicker]="picker">
+            <sat-datepicker #picker [rangeMode]="true"></sat-datepicker>
+            <sat-datepicker-toggle matSuffix [for]="picker"></sat-datepicker-toggle>
+        </mat-form-field> -->
+
+        <div class="container-date">
+          <mat-form-field style="max-width: 250px;" appearance="outline">
+            <mat-label>FECHA/PERIODO</mat-label>
+            <mat-date-range-input [formGroup]="dateForm" [rangePicker]="picker">
+              <input readonly matStartDate formControlName="start" placeholder="Fecha Inicio">
+              <input readonly matEndDate formControlName="end" placeholder="Fecha Final">
+            </mat-date-range-input>
+            <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+            <mat-date-range-picker #picker></mat-date-range-picker>
+          </mat-form-field>
+        
+        </div>
+
+        <div style="display: flex; flex-direction: row; flex-wrap: nowrap; align-items: center;">
+
+          <button mat-raised-button class="btn-donwload">
+            Descargar
+          </button>
+
+        </div>
+    </div>
 
     
-    <button mat-raised-button class="btn-donwload">
-      Descargar
-    </button>
-
-
     <div class="mat-elevation-z8">
         <div style=" overflow:auto">
             <table mat-table [dataSource]="dataSourceHistory" matSort class="w3-table w3-bordered w3-border w3-center">
@@ -150,3 +165,6 @@
 <mat-dialog-actions align="end">
   <button mat-stroked-button class="w3-margin-right color-exit" mat-dialog-close>Cerrar</button>
 </mat-dialog-actions>
+
+
+

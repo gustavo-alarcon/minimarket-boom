@@ -25,7 +25,7 @@ import { MatNativeDateModule } from '@angular/material/core';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 
-/* import { SatDatepickerModule, SatNativeDateModule } from 'saturn-datepicker'; */
+import { SatDatepickerModule, SatNativeDateModule } from 'saturn-datepicker';
 
 
 import { CashRoutingModule } from './cash-routing.module';
@@ -70,8 +70,8 @@ import { EditInitialImportComponent } from './edit-initial-import/edit-initial-i
     FormsModule, 
     ReactiveFormsModule,
 
-    /* SatDatepickerModule,
-    SatNativeDateModule */
+    SatDatepickerModule,
+    SatNativeDateModule
   ]
 })
 export class CashModule { }
