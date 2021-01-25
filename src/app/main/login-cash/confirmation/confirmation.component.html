@@ -9,12 +9,12 @@
     </div>
   
     <div mat-dialog-content>
-        <p>¿ Esta seguro de abrir la {{data.item['0'].cashier}} ? </p>
+        <p>¿ Esta seguro de abrir la {{data.cashBox.cashier}} ? </p>
     </div>
   
     <div mat-dialog-actions align="end">
         <button mat-raised-button class="btn-exit" mat-dialog-close >Cerrar</button>
-        <button mat-raised-button class="btn-save" (click)="navigate()" >Abrir</button>
+        <button mat-raised-button class="btn-save" (click)="openCash()" >Abrir</button>
     </div>
   </div>
 

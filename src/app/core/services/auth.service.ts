@@ -12,6 +12,7 @@ import { Router } from '@angular/router';
 import * as firebase from 'firebase/app';
 import 'firebase/auth';
 import { Platform } from '@angular/cdk/platform';
+import { CashBox } from '../models/cashBox.model';
 
 export const googleProvider = new firebase.auth.GoogleAuthProvider();
 export const facebookProvider = new firebase.auth.FacebookAuthProvider();
@@ -30,7 +31,7 @@ export class AuthService {
     private afs: AngularFirestore,
     private router: Router,
     public snackbar: MatSnackBar,
-    private platform: Platform,
+    private platform: Platform, 
     private dbs: DatabaseService
   ) {
 
@@ -103,6 +104,7 @@ export class AuthService {
       email: user.email,
       displayName: user.displayName,
       photoURL: user.photoURL,
+      //currentCash:user.currentCash,
       lastLogin: new Date(),
       lastBrowser: [key.length ? key.join(", ") : "empty", navigator.userAgent]
     }

@@ -10,14 +10,65 @@
     <h5>¿ Esta seguro de cerrar la caja (Nombre de caja) ?</h5>
     <form [formGroup]="dataFormGroup">
 
-       <mat-form-field class="w3-margin-bottom w3-block" appearance="outline">
+       <mat-form-field class="w3-margin-bottom w3-block" appearance="outline" style="margin-bottom: 10px;">
             <mat-label>Saldo final (S/. Efectivo)</mat-label>
             <input matInput type="number" min="0" step="0.01" formControlName="inicialImport" placeholder="0"
                 autocomplete="off">
             <mat-error>  Requerido * </mat-error>
         </mat-form-field><br>
 
-        <mat-form-field class="w3-block" appearance="outline">
+        <mat-checkbox value="checked" (click)="changeValue(checked)" color="primary">
+            Detallar distribución de efectivo 
+        </mat-checkbox>
+           
+     
+
+          <div *ngIf="checked">
+            <table mat-table [dataSource]="dataSource" matSort class="w3-table w3-bordered w3-border w3-center">
+                
+  
+                <ng-container  matColumnDef="item">
+                    <th *matHeaderCellDef style="padding-top:15px"  class="w3-border-left w3-center">Denominación
+                    </th>
+                    <td mat-cell  style="padding-top:10px"  *matCellDef="let raw" class="w3-border-left w3-center">
+                          {{raw.item}}                                                                                    
+                    </td>
+                </ng-container>
+  
+                <ng-container  matColumnDef="cost">
+                    <th *matHeaderCellDef   style="padding-top:15px;width: 100px;"  class="w3-border-left w3-center">Qty 
+                    </th>
+                    <td mat-cell  style="padding-top:15px; width: 100px;"  *matCellDef="let raw" class="w3-border-left w3-center">
+                        
+                        <input type="number" matInput formControlName="count" placeholder="quantity" value="{{raw.cost}}">
+                        <!-- <mat-form-field>
+                            <input matInput (keyup)="applyFilter($event.target.value)" placeholder="Filter">
+                        </mat-form-field> -->
+                    </td>
+                </ng-container>
+                <ng-container matColumnDef="pay">
+                    <th *matHeaderCellDef  style="padding-top:15px" class="w3-border-left w3-center">saldo Total
+                    </th>
+                    <td mat-cell  style="padding-top:15px" *matCellDef="let raw" class="w3-border-left w3-center">
+                        {{raw.pay}}
+                    </td>
+                </ng-container>
+
+                <ng-container matColumnDef="res">
+                    <th *matHeaderCellDef  style="padding-top:15px" class="w3-border-left w3-center">Total
+                    </th>
+                    <td mat-cell  style="padding-top:15px" *matCellDef="let raw" class="w3-border-left w3-center">
+                         S/.  {{raw.pay * raw.cost }}
+                    </td>
+                </ng-container>
+
+                <tr mat-header-row *matHeaderRowDef="displayedColumns; sticky: true"></tr>
+                <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+                
+            </table>
+          </div>
+
+        <mat-form-field class="w3-block" appearance="outline" style="margin-top: 20px;">
             <mat-label>Contraseña</mat-label>
             <input matInput [type]="hidePass ? 'password' : 'text'" formControlName="pass" placeholder="*****"
                 autocomplete="off">

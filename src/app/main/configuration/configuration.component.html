@@ -605,15 +605,18 @@
                                         <th *matHeaderCellDef style="padding-top:15px"  class="w3-border-left w3-center">Estado
                                         </th>
                                         <td mat-cell  style="padding-top:10px"  *matCellDef="let raw" class="w3-border-left w3-center">
-                                             
-                                            <span [ngSwitch]="raw.state">
+                                              
+                                            <span style="padding: 8px 8px; border-radius: 10px"
+                                                [ngClass]="{'btn-state-open': raw.open,'btn-state-close': !raw.open}">{{raw.open ? 'Abierta' : 'Cerrada'}}
+                                            </span>
+                                            <!-- <span [ngSwitch]="raw.state">
                                                 <button *ngSwitchCase="'Cerrado'" class="btn-state-close">
                                                     {{raw.state}}
                                                 </button>
                                                 <button *ngSwitchCase="'Abierto'" class="btn-state-open">
                                                     {{raw.state}}
                                                 </button>
-                                            </span>
+                                            </span> -->
                                                                                         
                                         </td>
                                     </ng-container>
@@ -629,7 +632,7 @@
                                         <th *matHeaderCellDef  style="padding-top:15px" class="w3-border-left w3-center">Usuario
                                         </th>
                                         <td mat-cell  style="padding-top:15px" *matCellDef="let raw" class="w3-border-left w3-center">
-                                            {{raw.user}}
+                                            {{raw.currentOwner ? raw.currentOwner.displayName : '---'}}
                                         </td>
                                     </ng-container>
                                     <ng-container class=" w3-center" matColumnDef="password">
@@ -644,7 +647,10 @@
                                         <th *matHeaderCellDef style="padding-top:15px" class="w3-border-left w3-center">Última apertura
                                         </th>
                                         <td mat-cell style="padding-top:15px" *matCellDef="let raw" class="w3-border-left w3-center">
-                                            {{raw.lastOpening}}
+                                            <span *ngIf="raw.lastOpening">{{raw.lastOpening | date : 'dd/MM/yyyy'}}</span><br>
+                                            <span *ngIf="raw.lastOpening" class="w3-small"><b>
+                                                    ({{raw.lastOpening | date : 'hh:mm a'}})</b>
+                                            </span>
                                         </td>
                                     </ng-container>
 
@@ -652,7 +658,10 @@
                                         <th *matHeaderCellDef style="padding-top:15px" class="w3-border-left w3-center">Último cierre
                                         </th>
                                         <td mat-cell style="padding-top:15px" *matCellDef="let raw" class="w3-border-left w3-center">
-                                            {{raw.lastClosing}}
+                                            <span *ngIf="raw.lastClosure">{{raw.lastClosure | date : 'dd/MM/yyyy'}}</span><br>
+                                            <span *ngIf="raw.lastClosure" class="w3-small"><b>
+                                                    ({{raw.lastClosure | date : 'hh:mm a'}})</b>
+                                            </span>
                                         </td>
                                     </ng-container>
 

@@ -18,7 +18,9 @@ export class LoginCashComponent implements OnInit {
   hidePass: boolean = true;
   validatorPass:boolean=false;
   
-  boxList$:Observable<CashBox[]>;;
+  boxList$:Observable<CashBox[]>;
+  
+  currentCash:CashBox=null;
 
   constructor(
     private dialog: MatDialog,
@@ -31,7 +33,7 @@ export class LoginCashComponent implements OnInit {
     this.loginForm = this.fb.group({
       caja: ['', Validators.required],
       pass: ['', Validators.required],
-      money: ['', Validators.required],
+      openingBalance: ['', Validators.required],
 
     })
 
@@ -68,32 +70,23 @@ export class LoginCashComponent implements OnInit {
   }
 
   login(data){
-
-    console.log(data.value);
-    
+    console.log(data.value);    
      this.dbs.loginCash(this.loginForm.get('caja').value ,this.loginForm.get('pass').value).pipe(take(1))
      .subscribe(user => {
-
-      console.log(user)
-
+      
+      this.currentCash = user['0'];
        if (user.length>=1) {
-         console.log("Tiene datos : ") 
-        
+
         this.dialog.open(ConfirmationComponent, {
           data: {
-            item: user,
+            cashBox: this.currentCash,
+            openingBalance: this.loginForm.value['openingBalance']
           }
         }) 
        }
        else{
        this.validatorPass=true;
-
-       }
-             
-      
+       }            
      })
-
-    
-
   }
 }

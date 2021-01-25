@@ -26,7 +26,7 @@ export class DeleteCashBoxComponent implements OnInit {
 
   ngOnInit(): void {
     
-    if (this.data.item.state ==="Abierto") {
+    if (this.data.item.open) {
 
       this.deleteBox=false
       
