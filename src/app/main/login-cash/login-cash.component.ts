@@ -63,7 +63,7 @@ export class LoginCashComponent implements OnInit {
       }) */
 
 
-      this.boxList$ = this.dbs.getUsersValueChanges1().pipe(
+      this.boxList$ = this.dbs.getCashierValueChanges().pipe(
       tap(res => {
        return res
       }))

@@ -7,6 +7,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { ConfirmationComponent } from './confirmation/confirmation.component';
 import { MatDividerModule } from '@angular/material/divider';
 import {MatSelectModule} from '@angular/material/select';
+import { MatDialogModule } from '@angular/material/dialog';
 
 
 
@@ -20,7 +21,7 @@ import {MatSelectModule} from '@angular/material/select';
     MatIconModule,
     MatDividerModule,
     MatSelectModule,
-    
+    MatDialogModule,
   ],
 })
 export class LoginCashModule { }

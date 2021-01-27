@@ -11,8 +11,11 @@ import { RetrieveMoneyCashComponent } from './retrieve-money-cash/retrieve-money
 import { EditInitialImportComponent } from './edit-initial-import/edit-initial-import.component';
 import { CloseCashComponent } from './close-cash/close-cash.component';
 import { CashBox } from '../../core/models/cashBox.model';
-import { take } from 'rxjs/operators';
+import { take, tap } from 'rxjs/operators';
 import { AuthService } from '../../core/services/auth.service';
+import { User } from '../../core/models/user.model';
+import { DatabaseService } from '../../core/services/database.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-cash',
@@ -21,7 +24,7 @@ import { AuthService } from '../../core/services/auth.service';
 })
 export class CashComponent implements OnInit {
 
-  currentCash;
+  userCash:User;
  
   /*Cash*/
   cash$: Observable<any[]>;
@@ -37,28 +40,47 @@ export class CashComponent implements OnInit {
   }
   searchBoxForm: FormGroup;
 
+  //Opening
+  opening:any;
+
+
   constructor(   
              private fb: FormBuilder,
              private dialog: MatDialog,
              public auth: AuthService,
-
-    ) { }
+             public dbs: DatabaseService,
+             private router: Router,
+             ) 
+            { }
 
   ngOnInit(): void {
+    this.searchBoxForm = this.fb.group({
+          search: ['', Validators.required]
+        })
 
     this.auth.user$.pipe(take(1)).subscribe(user => {             
-        this.currentCash = user;
-        console.log(' this.currentCash dentro: ',  this.currentCash);
+        this.userCash = user;
+
+         
+        console.log(' this.currentCash dentro: ',  this.userCash);
 
        });
 
-       console.log(' this.currentCash afuera : ', this.currentCash);
+       console.log(' this.currentCash afuera : ', this.userCash);
+    
+    this.dbs.getOpeningById(this.userCash.currentCash.uid,this.userCash.currentCash.currentOpening).subscribe(
+     (question:any) =>      
+       {
+        this.opening =question;
+               
+          console.log(' this.openings : ', this.opening);       
+        }
+       );
+    
 
-    this.searchBoxForm = this.fb.group({
-      search: ['', Validators.required]
-  })
-
+   
   }
+ 
 
   editCash(){
 
@@ -105,7 +127,11 @@ export class CashComponent implements OnInit {
 
   }
   closeCash(){ 
-    this.dialog.open(CloseCashComponent);
+    this.dialog.open(CloseCashComponent,{
+      data:{
+        user:this.userCash
+      }
+    });
 
   }
   

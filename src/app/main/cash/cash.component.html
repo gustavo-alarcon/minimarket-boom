@@ -9,19 +9,12 @@
           Caja
         </h2>
         <div style="display: flex; flex-direction: row; flex-wrap: nowrap; align-items: center;">
-
-         <!--  <ng-container *ngIf="auth.user$ | async as user">
-              <div *ngIf="user.admin || user.accountant" color="primary" class="totalPrice">
-                  {{totalPrice$ | async | currency:"S/."}}</div>
-          </ng-container> -->
-          <ng-container >
-            <div class="totalPrice">
-                S/. 1200.00
+          <ng-container   >           
+            <div class="totalPrice" *ngIf="opening">              
+             {{opening.openingBalance | currency:"S/. "}}
             </div>
-        </ng-container>
-
-        </div>
-        
+          </ng-container>
+        </div>        
     </div>
     <mat-divider></mat-divider>
     <div style="margin-top: 2em;">
