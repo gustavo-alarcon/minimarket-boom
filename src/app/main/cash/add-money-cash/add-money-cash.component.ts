@@ -52,8 +52,6 @@ export class AddMoneyCashComponent implements OnInit {
       })
     )
 
-
-
   }
 
   addMoney(): void {

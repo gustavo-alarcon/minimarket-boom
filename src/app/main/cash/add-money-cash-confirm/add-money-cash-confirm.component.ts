@@ -5,6 +5,7 @@ import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { take } from 'rxjs/operators';
 import { AngularFirestore } from '@angular/fire/firestore';
+import { type } from 'os';
 
 @Component({
   selector: 'app-add-money-cash-confirm',
@@ -49,9 +50,12 @@ export class AddMoneyCashConfirmComponent implements OnInit {
           responsable: this.data.form.responsable,
           paymentType: this.data.form.paymentType,
           incomeType: this.data.form.incomeType,
+          expensesType:null,
           lastEditBy: null,
           nTicket :null,
           approvedBy:user,
+          movementType:'income'
+
         }
   
         batch.set(transactionRef, data)
@@ -59,7 +63,7 @@ export class AddMoneyCashConfirmComponent implements OnInit {
         batch.commit()
         .then(() => {
           this.dialogRef.close();
-          this.snackBar.open("se creo la transacion", "Cerrar");
+          this.snackBar.open("se agrego dinero", "Cerrar");
         })
         .catch(err => {
           console.log(err);

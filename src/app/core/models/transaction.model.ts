@@ -10,4 +10,5 @@ export interface Transaction {
     lastEditBy:string,
     nTicket :string,
     approvedBy:User,
+    movementType:string,
 }

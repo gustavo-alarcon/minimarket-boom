@@ -4,6 +4,8 @@ import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { DatabaseService } from '../../../core/services/database.service';
 import { AuthService } from '../../../core/services/auth.service';
 import { RetrieveMoneyCashConfirmComponent } from '../retrieve-money-cash-confirm/retrieve-money-cash-confirm.component';
+import { Observable } from 'rxjs';
+import { tap } from 'rxjs/operators';
 
 @Component({
   selector: 'app-retrieve-money-cash',
@@ -13,6 +15,10 @@ import { RetrieveMoneyCashConfirmComponent } from '../retrieve-money-cash-confir
 export class RetrieveMoneyCashComponent implements OnInit {
 
   dataFormGroup: FormGroup  ;
+
+  expenses$: Observable<any[]>
+  
+  paymentType$: Observable<any[]>
 
   constructor(
     private fb: FormBuilder,
@@ -24,16 +30,37 @@ export class RetrieveMoneyCashComponent implements OnInit {
 
   ngOnInit(): void {
     this.dataFormGroup = this.fb.group({
-      IncomeImport: ['', Validators.required],
-      departureType: ['', Validators.required],
-      expenseType: ['', Validators.required],
+      import: ['', Validators.required],
+      expensesType: ['', Validators.required],
+      paymentType: ['', Validators.required],
       description: ['', Validators.required],
-      user: ['', Validators.required],
+      responsable: ['', Validators.required],
     })
+
+    // 
+    this.expenses$ = this.dbs.getExpenses().pipe(
+      tap(res => {
+        return res;
+      })
+    ) 
+
+    //
+    this.paymentType$ = this.dbs.getPayments().pipe(
+      tap(res => {
+        return res;
+      })
+    )
   }
   
   retriveMoney(){
-    this.dialog.open(RetrieveMoneyCashConfirmComponent);
+    this.dialog.open(RetrieveMoneyCashConfirmComponent, {
+      data: {
+        form: this.dataFormGroup.value
+      }
+    })
+    .afterClosed().subscribe(res=>{
+      this.dialogRef.close(true);
+    })  
 
   }
 

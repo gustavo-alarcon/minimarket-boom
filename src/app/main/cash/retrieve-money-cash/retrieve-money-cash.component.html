@@ -10,27 +10,24 @@
     <form [formGroup]="dataFormGroup">
 
        <mat-form-field class="w3-margin-bottom w3-block" appearance="outline">
-            <mat-label>Importe Imgresado (S/.)</mat-label>
-            <input matInput type="number" min="0" step="0.01" formControlName="IncomeImport" placeholder="0"
+            <mat-label>Importe retirado (S/.)</mat-label>
+            <input matInput type="number" min="0" step="0.01" formControlName="import" placeholder="0"
                 autocomplete="off">
             <mat-hint>Requerido *</mat-hint>
         </mat-form-field><br>
 
-        <mat-form-field class="w3-margin-bottom w3-block" appearance="outline">
+        <mat-form-field class="w3-margin-bottom w3-block" appearance="outline" *ngIf="expenses$ | async as expenses">
             <mat-label>Tipo de egreso</mat-label>
-            <mat-select formControlName="departureType">
-                <mat-option>prueba</mat-option>
-                <!-- <mat-option *ngFor="let item of departureTypes" [value]="item">{{item}}</mat-option> -->
+            <mat-select formControlName="expensesType">
+                <mat-option *ngFor="let item of expenses" [value]="item.expenses">{{item.expenses}}</mat-option>
             </mat-select>
             <mat-hint>Requerido *</mat-hint>
         </mat-form-field><br>
 
-         <mat-form-field class="w3-margin-bottom w3-block" appearance="outline"
-            *ngIf="dataFormGroup.value['departureType'] === 'GASTO'">
-            <mat-label>Tipo de gasto</mat-label>
-            <mat-select formControlName="expenseType">
-                <mat-option>prueba</mat-option>
-              <!--   <mat-option *ngFor="let item of expenseTypes" [value]="item">{{item}}</mat-option> -->
+         <mat-form-field class="w3-margin-bottom w3-block" appearance="outline" *ngIf="paymentType$ | async as paymentTypes"  >
+            <mat-label>Tipo de pago</mat-label>
+            <mat-select formControlName="paymentType">
+                <mat-option *ngFor="let item of paymentTypes" [value]="item.name">{{item.name}}</mat-option>
             </mat-select>
             <mat-hint>Requerido *</mat-hint>
         </mat-form-field><br>
@@ -44,12 +41,7 @@
 
         <mat-form-field class="w3-margin-bottom w3-block" appearance="outline">
             <mat-label>Responsable</mat-label>
-            <mat-icon matSuffix>arrow_drop_down</mat-icon>
-            <input matInput type="text" formControlName="user" [matAutocomplete]="userAuto" autocomplete="off">
-            <mat-autocomplete #userAuto="matAutocomplete" >
-                <mat-option>pepe</mat-option>
-                <!-- <mat-option *ngFor="let item of filteredUsers | async" [value]="item">{{item.displayName}}</mat-option> -->
-            </mat-autocomplete>
+            <input matInput type="text" formControlName="responsable" placeholder="responsable">
             <mat-hint>Requerido *</mat-hint>
         </mat-form-field><br>
 
@@ -58,8 +50,8 @@
 
 <mat-dialog-actions align="end">
     <button mat-stroked-button class="btn-exit" mat-dialog-close>Cancelar</button>
-    <button mat-raised-button class="btn-save"  (click)="retriveMoney()"
+    <button mat-raised-button class="btn-save"  (click)="retriveMoney()" [disabled]="!dataFormGroup.valid"
         >Retirar</button>
 
-        <!-- [disabled]="!dataFormGroup.valid" -->
+        
 </mat-dialog-actions>

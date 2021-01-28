@@ -79,7 +79,7 @@
 
 <mat-dialog-actions align="end">
     <button mat-stroked-button class="btn-exit" mat-dialog-close>Cancelar</button>
-    <button mat-raised-button class="btn-save" (click)="closeCash()" [disabled]="!dataFormGroup.valid" 
+    <button mat-raised-button class="btn-save" (click)="closeCash()" [disabled]="!dataFormGroup.valid"  *ngIf="!balaceDetail"
         >Si cerrar
     </button>
 

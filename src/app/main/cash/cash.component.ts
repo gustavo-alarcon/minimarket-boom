@@ -60,7 +60,6 @@ export class CashComponent implements OnInit {
 
     this.auth.user$.pipe(take(1)).subscribe(user => {             
         this.userCash = user;
-
          
         console.log(' this.currentCash dentro: ',  this.userCash);
 
@@ -69,16 +68,23 @@ export class CashComponent implements OnInit {
        console.log(' this.currentCash afuera : ', this.userCash);
     
     this.dbs.getOpeningById(this.userCash.currentCash.uid,this.userCash.currentCash.currentOpening).subscribe(
-     (question:any) =>      
+     (opening:any) =>      
        {
-        this.opening =question;
+        this.opening =opening;
                
           console.log(' this.openings : ', this.opening);       
-        }
-       );
+       }
+      );
     
+    this.dbs.getTransactionsById(this.userCash.currentCash.uid,this.userCash.currentCash.currentOpening).subscribe(
+     (cash:any) =>      
+       {
+        this.dataSourceCash =cash;
+               
+        console.log('dataSourceCash : ', cash);       
+       }
+      );
 
-   
   }
  
 

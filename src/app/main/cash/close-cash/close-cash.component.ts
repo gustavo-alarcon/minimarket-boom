@@ -18,6 +18,7 @@ export class CloseCashComponent implements OnInit {
   disableSelect = new FormControl(false);
 
   checked: boolean = false;
+  balaceDetail:boolean=false;
 
   dataFormGroup: FormGroup  ;
   hidePass: boolean = true;
@@ -170,7 +171,11 @@ export class CloseCashComponent implements OnInit {
     console.log('Monto Total : ', this.getTotalMoney())
     console.log('closureBalance : ', closureBalance)
 
-    if (inputValue>=0 && this.getTotalMoney()<= closureBalance) {
+   let  totalMoney=this.getTotalMoney();
+
+    if (inputValue>=0 && totalMoney <= closureBalance) {
+      this.balaceDetail=false;
+
       let index = data.index;
       let valor:number= data.valor;
       let newCount:number = inputValue;
@@ -190,8 +195,8 @@ export class CloseCashComponent implements OnInit {
         
       }     
     } else{
-
-      this.snackBar.open("no puedes ingresar numeros negativos", "Cerrar");
+      this.balaceDetail=true;
+      this.snackBar.open("no puedes ingresar numeros negativos y el monto total no debe mayor al importe ingresado", "Cerrar");
 
     }
    

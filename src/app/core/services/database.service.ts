@@ -831,15 +831,6 @@ export class DatabaseService {
       );
   }
 
-  /* loginCash1(caja:string,pass:string) {
-    return this.afs.collection(`/db/minimarketBoom/cashBox`, ref => ref.where("cashier", '==', caja)
-    .where("password", '==', pass)
-      )
-      .valueChanges()
-      .pipe(
-        shareReplay(1)
-      );
-  } */
   loginCash(caja:string,pass:string): Observable<any[]> {
     return this.afs.collection('/db/minimarketBoom/cashBox', (ref) =>
     ref.where("cashier", "==",caja) .where("password", '==', pass)
@@ -849,60 +840,67 @@ export class DatabaseService {
     })
   );
   }
-
- /*  getCashBoxValueChanges():  Observable<any[]> {    
-    return this.afs.collection('/db/minimarketBoom/cashBox').doc<CashBox>('generalConfig')
-    .valueChanges().pipe(shareReplay(1)).pipe(map(res => {
-     if (res) {
-       return res.cashier ? res.warehouses : []
-     } else {
-       return []
-     }
-     
-   })) */
-
-   /* getCashBoxValueChanges():  Observable<CashBox[]> {    
-    return this.afs.collection('/db/minimarketBoom').doc<CashBox>('cashBox')
-    .valueChanges().pipe(shareReplay(1)).pipe(map(res => {
-     if (res) {
-       return res.cashier ? res.cashier  : []
-     } else {
-       return []
-     }
-     
-   })) 
-  }
-   */
- /*  getCashBoxValueChanges():  Observable<any> {    
-    return this.afs.collection('/db/minimarketBoom').doc<CashBox>('cashBox')
-    .valueChanges().pipe(shareReplay(1)).pipe(map(res => {
-     if (res) {
-       return res.cashier ? res.cashier  : []
-     } else {
-       return []
-     }
-     
-   })) 
-  } */
-  /* getPayments1(): Observable<any> {
-    return this.afs.collection(`/db/minimarketBoom`).doc<CashBox>('cashBox').valueChanges()
-      .pipe(
-        map(res => {
-          return res.;
-        }),
-        shareReplay(1)
-      )
-  } */
    
   getOpeningById(idCash:string,idOpening: string): Observable<any> {
     return this.afs.collection<any>(`/db/minimarketBoom/cashBox/${idCash}/openings`).doc(idOpening)
       .valueChanges().pipe (shareReplay(1));
   }
-  /* getOpeningById1(idCash:string): Observable<any> {
-    return this.afs.collection(`/db/minimarketBoom/cashBox`).doc(idCash)
-      .valueChanges().pipe (shareReplay(1));
-  } */
 
+  
+  getTransactionsById(idCash:string,idOpening: string): Observable<any[]> {
+
+    return this.afs.collection<any>(`/db/minimarketBoom/cashBox/${idCash}/openings/${idOpening}/transactions`,
+        ref => ref. orderBy("regDate", 'desc'))
+        .valueChanges();
+
+       /*  return this.afs.doc<any>(`/db/minimarketBoom/cashBox/${idCash}/openings/${idOpening}transactions`)
+        .valueChanges(); */
+
+  }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  /* getTransactionsById1(idCash:string,idOpening: string): Observable<any> {
+    return this.afs.collection<any>(`/db/minimarketBoom/cashBox/${idCash}/openings/${idOpening}transactions`).doc()
+      .valueChanges().pipe (shareReplay(1));  */
+   
+    
+    /* return this.afs.collection<any>(`/db/minimarketBoom/cashBox/${idCash}/openings/${idOpening}transactions`)
+    .valueChanges().pipe(map((snap) => {
+      return snap.docs.map(el => <CashBox>el.data())
+    })); */
+  //}
  
   
 
