@@ -18,4 +18,7 @@ export interface CashOpening {
     totalImport?: number;
     totalTickets?: number;
     totalDepartures?: number;
+    totalBalance:number;
+    totalIncome:number;
+    totalExpenses:number;
 }

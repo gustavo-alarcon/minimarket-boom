@@ -596,7 +596,6 @@
                                         </th>
                                         <td style="padding-top:15px" class="w3-center" mat-cell *matCellDef="let raw; let i = index">
                                               {{raw.index + 1-1}}
-
                                         </td>
                                       
                                     </ng-container>
@@ -604,20 +603,10 @@
                                     <ng-container  matColumnDef="state">
                                         <th *matHeaderCellDef style="padding-top:15px"  class="w3-border-left w3-center">Estado
                                         </th>
-                                        <td mat-cell  style="padding-top:10px"  *matCellDef="let raw" class="w3-border-left w3-center">
-                                              
+                                        <td mat-cell  style="padding-top:10px"  *matCellDef="let raw" class="w3-border-left w3-center">                                              
                                             <span style="padding: 8px 8px; border-radius: 10px"
                                                 [ngClass]="{'btn-state-open': raw.open,'btn-state-close': !raw.open}">{{raw.open ? 'Abierta' : 'Cerrada'}}
-                                            </span>
-                                            <!-- <span [ngSwitch]="raw.state">
-                                                <button *ngSwitchCase="'Cerrado'" class="btn-state-close">
-                                                    {{raw.state}}
-                                                </button>
-                                                <button *ngSwitchCase="'Abierto'" class="btn-state-open">
-                                                    {{raw.state}}
-                                                </button>
-                                            </span> -->
-                                                                                        
+                                            </span>                                                                       
                                         </td>
                                     </ng-container>
 
@@ -693,7 +682,7 @@
                                     <tr mat-header-row *matHeaderRowDef="displayedColumnsCashBox; sticky: true"></tr>
                                     <tr mat-row *matRowDef="let row; columns: displayedColumnsCashBox;"></tr>
 
-                                </table>
+                                </table>    
                                 <mat-paginator #paginatorCashBox style="background: transparent;"
                                     [pageSizeOptions]="[5, 10, 20]" showFirstLastButtons>
                                 </mat-paginator>

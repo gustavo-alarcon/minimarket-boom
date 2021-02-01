@@ -313,7 +313,6 @@ export class ConfigurationComponent implements OnInit {
       tap(res => {
         this.dataSourceCashBox.data = res
           this.loadingCashBox.next(false)
-
           this.counterBox = res.length;
       })
     )

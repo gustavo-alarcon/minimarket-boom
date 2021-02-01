@@ -41,7 +41,7 @@ export class CloseCashComponent implements OnInit {
               private afs: AngularFirestore,    
               private snackBar: MatSnackBar,    
               private router: Router,
-              @Inject(MAT_DIALOG_DATA) public data: { user: User}
+              @Inject(MAT_DIALOG_DATA) public data: { user: User,opening, totalIncomes:number,totalExpenses:number}
               ) { }
 
   ngOnInit(): void {
@@ -50,6 +50,15 @@ export class CloseCashComponent implements OnInit {
       pass: ['', Validators.required],
       
     })
+
+  }
+
+  totalCashOpening(){
+    let value = this.data.opening.openingBalance;
+    let importInit:number = parseInt(value);
+
+    return importInit +this.data.totalIncomes -this.data.totalExpenses;
+    
   }
 
   changeValue(value) {
@@ -118,7 +127,7 @@ export class CloseCashComponent implements OnInit {
     const cashData = {
       open: false,
       currentOwner: null,
-      lastClosure: Date.now(),
+      lastClosure: new Date(),
       currentOpening: null,
     }
 
@@ -141,9 +150,12 @@ export class CloseCashComponent implements OnInit {
     const openingData = {
       closedBy: this.data.user.displayName,
       closedByUid: this.data.user.uid,
-      closureDate: Date.now(),
+      closureDate: new Date(),
       closureBalance: this.dataFormGroup.value['closureBalance'],      
       detailMoneyDistribution:this.dataSource,
+      totalBalance:this.totalCashOpening(),
+      totalIncome:this.data.totalIncomes,
+      totalExpenses:this.data.totalExpenses,
      /*  
       totalImport: this.data.totalImport,
       totalTickets: this.data.totalTickets,
@@ -185,10 +197,7 @@ export class CloseCashComponent implements OnInit {
       for (let i = 0; i < this.dataSource.length; i++) {      
   
         if (this.dataSource[i].index == index) {
-  
-        const element = this.dataSource[i];
-        console.log(element);
-  
+
         this.dataSource[i].count = inputValue;
         this.dataSource[i].total = newTotal;
         }

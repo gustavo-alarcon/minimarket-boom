@@ -5,6 +5,7 @@ import { AuthService } from '../../../core/services/auth.service';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { take } from 'rxjs/operators';
+import { Ticket } from '../../../core/models/ticket.model';
 
 @Component({
   selector: 'app-retrieve-money-cash-confirm',
@@ -38,20 +39,27 @@ export class RetrieveMoneyCashConfirmComponent implements OnInit {
         
         const batch = this.afs.firestore.batch()
         const transactionRef = this.afs.firestore.collection(`/db/minimarketBoom/cashBox/${user.currentCash.uid}/openings/${user.currentCash.currentOpening}/transactions`).doc();
-  
+       
+        let newTicket:Ticket = {
+          index:null,
+          productList:null,
+          total:this.data.form.import
+        }
+
         const data = {
           uid: transactionRef.id,
-          regDate: Date.now(),
+          createdAt: new Date(),
           description: this.data.form.description,
           import: this.data.form.import,
           responsable: this.data.form.responsable,
-          paymentType: this.data.form.paymentType,
+          paymentMethod: this.data.form.paymentType,
           expensesType: this.data.form.expensesType,
+          type: this.data.form.expensesType,
           incomeType:null,
           lastEditBy: null,
-          nTicket :null,
+          ticket :newTicket,
           approvedBy:user,
-          movementType:'expenses'
+          movementType:'Egreso'
 
         }
   

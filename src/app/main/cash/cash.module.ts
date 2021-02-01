@@ -38,10 +38,13 @@ import { AddMoneyCashConfirmComponent } from './add-money-cash-confirm/add-money
 import { RetrieveMoneyCashConfirmComponent } from './retrieve-money-cash-confirm/retrieve-money-cash-confirm.component';
 import { CloseCashComponent } from './close-cash/close-cash.component';
 import { EditInitialImportComponent } from './edit-initial-import/edit-initial-import.component';
+import { ShowProductListComponent } from './show-product-list/show-product-list.component';
+import { ShowDescriptionComponent } from './show-description/show-description.component';
+import { ShowTransactionsComponent } from './show-transactions/show-transactions.component';
 
 
 @NgModule({
-  declarations: [ShowTotalCashComponent,ShowHistoryCashComponent, AddMoneyCashComponent, RetrieveMoneyCashComponent, AddMoneyCashConfirmComponent, RetrieveMoneyCashConfirmComponent, CloseCashComponent, EditInitialImportComponent],
+  declarations: [ShowTotalCashComponent,ShowHistoryCashComponent, AddMoneyCashComponent, RetrieveMoneyCashComponent, AddMoneyCashConfirmComponent, RetrieveMoneyCashConfirmComponent, CloseCashComponent, EditInitialImportComponent, ShowProductListComponent, ShowDescriptionComponent, ShowTransactionsComponent],
   imports: [
     CommonModule,
     CashRoutingModule,

@@ -43,7 +43,7 @@ export class ConfirmationComponent implements OnInit {
       const updateCashBox = {
         currentOwner: user,
         open: true,
-        lastOpening: Date.now()
+        lastOpening: new Date()
       }
 
       batch.update(cashBoxRef, updateCashBox)

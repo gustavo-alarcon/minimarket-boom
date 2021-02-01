@@ -31,6 +31,7 @@ import { CashComponent } from './cash/cash.component';
 import { LoginCashComponent } from './login-cash/login-cash.component';
 import { MatPaginatorModule } from '@angular/material/paginator';
 import { MatTableModule } from '@angular/material/table';
+import { ReportsComponent } from './reports/reports.component';
 
 
 @NgModule({
@@ -39,7 +40,8 @@ import { MatTableModule } from '@angular/material/table';
     ConfirmationDialogComponent,
     LoginDialogComponent,
     CashComponent,
-    LoginCashComponent
+    LoginCashComponent,
+    ReportsComponent
   ],
   imports: [
     CommonModule,

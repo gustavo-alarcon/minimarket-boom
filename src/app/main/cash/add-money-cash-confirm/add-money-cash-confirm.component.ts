@@ -6,6 +6,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { take } from 'rxjs/operators';
 import { AngularFirestore } from '@angular/fire/firestore';
 import { type } from 'os';
+import { Ticket } from '../../../core/models/ticket.model';
 
 @Component({
   selector: 'app-add-money-cash-confirm',
@@ -36,25 +37,30 @@ export class AddMoneyCashConfirmComponent implements OnInit {
     this.uploading = true;
     
       this.auth.user$.pipe(take(1)).subscribe(user => {    
-      
-        console.log('user confirm : ' , user);
-        
+              
         const batch = this.afs.firestore.batch()
         const transactionRef = this.afs.firestore.collection(`/db/minimarketBoom/cashBox/${user.currentCash.uid}/openings/${user.currentCash.currentOpening}/transactions`).doc();
-  
+        
+        let newTicket:Ticket = {
+          index:null,
+          productList:null,
+          total:this.data.form.import
+        }        
+
         const data = {
           uid: transactionRef.id,
-          regDate: Date.now(),
+          createdAt:new Date(),
           description: this.data.form.description,
           import: this.data.form.import,
           responsable: this.data.form.responsable,
-          paymentType: this.data.form.paymentType,
+          paymentMethod: this.data.form.paymentType,
           incomeType: this.data.form.incomeType,
+          type:this.data.form.incomeType,
           expensesType:null,
           lastEditBy: null,
-          nTicket :null,
+          ticket :newTicket,
           approvedBy:user,
-          movementType:'income'
+          movementType:'Ingreso',
 
         }
   

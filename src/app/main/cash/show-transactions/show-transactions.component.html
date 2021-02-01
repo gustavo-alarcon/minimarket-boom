@@ -1,0 +1,128 @@
+<div class="ms-font-montserrat mat-title">
+    <mat-icon class="ms-icons-color" style="vertical-align:middle">description</mat-icon> Transacciones
+</div>
+<mat-divider class="w3-margin-top"></mat-divider>
+
+<mat-dialog-content class="w3-margin-top" style="min-width:300px">
+
+   
+<div class="w3-margin-top">
+    <div class="">
+        <table mat-table [dataSource]="dataSourceCash" matSort class="w3-table w3-bordered w3-border w3-center">
+         
+            <ng-container  matColumnDef="index">
+              <th *matHeaderCellDef class="w3-center" style="padding-top: 15px;">
+                  N°
+              </th>
+              <td style="padding-top:15px" class="w3-center" mat-cell *matCellDef="let raw; let i = index">
+                    {{i+1}}
+              </td>                
+          </ng-container>
+
+          <ng-container  matColumnDef="date">
+              <th *matHeaderCellDef   style="padding-top:15px;width: 100px;"  class="w3-border-left w3-center">Fecha 
+              </th>
+              <td mat-cell  style="padding-top:15px; width: 100px;"  *matCellDef="let raw" class="w3-border-left w3-center">
+                <span *ngIf="raw.createdAt">{{raw.createdAt["seconds"] * 1000 | date: "dd/MM/yyyy"}}</span><br>
+                <span *ngIf="raw.createdAt" class="w3-small"><b> ({{raw.createdAt["seconds"] * 1000 | date : 'hh:mm a'}})</b> </span>
+              </td>
+          </ng-container>
+          <ng-container matColumnDef="type">
+              <th *matHeaderCellDef  style="padding-top:15px" class="w3-border-left w3-center">Tipo
+              </th>
+              <td mat-cell  style="padding-top:15px" *matCellDef="let raw" class="w3-border-left w3-center">
+                  {{raw.movementType}}
+              </td>
+          </ng-container>
+          <ng-container class=" w3-center" matColumnDef="description">
+              <th *matHeaderCellDef  style="padding-top:15px" class="w3-border-left w3-center">Descripcion
+              </th>
+              <td mat-cell  style="padding-top:15px" *matCellDef="let raw" class="w3-border-left w3-center">
+                  {{raw.description}}
+              </td>
+          </ng-container>  
+
+          <ng-container class=" w3-center" matColumnDef="nTicket">
+              <th *matHeaderCellDef style="padding-top:15px" class="w3-border-left w3-center">N° de Ticket
+              </th>
+              <td mat-cell style="padding-top:15px" *matCellDef="let raw" class="w3-border-left w3-center">
+                {{raw.correlative ? 'N° '+ raw.correlative : '---'}}
+              </td>
+          </ng-container>
+
+          <ng-container class=" w3-center" matColumnDef="import">
+              <th *matHeaderCellDef style="padding-top:15px" class="w3-border-left w3-center">Importe
+              </th>
+              <td mat-cell style="padding-top:15px" *matCellDef="let raw" class="w3-border-left w3-center">
+                 S/.   {{raw.ticket.total}}   
+              </td>
+          </ng-container>
+
+          <ng-container class=" w3-center" matColumnDef="payType">
+            <th *matHeaderCellDef style="padding-top:15px" class="w3-border-left w3-center">Tipo de Pago
+            </th>
+            <td mat-cell style="padding-top:15px" *matCellDef="let raw" class="w3-border-left w3-center">
+                {{raw.paymentMethod.name}}
+            </td>
+        </ng-container>
+
+        <ng-container class=" w3-center" matColumnDef="productList">
+          <th *matHeaderCellDef style="padding-top:15px" class="w3-border-left w3-center">lista de producto
+          </th>
+          <td mat-cell style="padding-top:15px" *matCellDef="let raw" class="w3-border-left w3-center">
+            <!-- <span style="padding: 8px 8px; border-radius: 10px"
+                [ngClass]="{'btn-state-open': raw.open,'btn-state-close': !raw.open}">{{raw.open ? 'Abierta' : 'Cerrada'}}
+            </span>   -->
+
+           <!--  <button mat-raised-button class="btn-product-list" *ngIf="raw.correlative" (click)="showProductList(raw)">
+              lista de productos
+            </button>
+
+            <button mat-raised-button class="btn-description" *ngIf="raw.import" (click)="showDescription(raw.description)" >
+              Descripcion
+            </button> -->
+
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="actions" stickyEnd>
+          <th  *matHeaderCellDef
+          style="padding-top:15px" class="w3-border-left w3-center">
+            Acciones
+          </th>
+          <td mat-cell *matCellDef="let raw" style="padding-top:15px" class="w3-border-left w3-center">
+            <ng-container>
+              <mat-menu #rawMenu="matMenu">
+                <!-- <button class="w3-small" mat-menu-item (click)="editCash()">
+                  <mat-icon>edit</mat-icon> 
+                  Editar
+                </button>
+                <button class="w3-small" mat-menu-item (click)="deleteCash()">
+                  <mat-icon>delete</mat-icon>
+                  Eliminar
+                </button> -->
+              </mat-menu>
+
+              <button mat-icon-button [matMenuTriggerFor]="rawMenu">
+                <mat-icon>more_vert</mat-icon>
+              </button>
+            </ng-container>
+          </td>
+        </ng-container>
+
+
+        <tr mat-header-row *matHeaderRowDef="displayedColumnsCash; sticky: true"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumnsCash;"></tr>
+
+        </table>    
+        <mat-paginator #paginatorCash style="background: transparent;"
+            [pageSizeOptions]="[5, 10, 20]" showFirstLastButtons>
+        </mat-paginator>
+    </div>      
+</div>     
+   
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+    <button mat-stroked-button class="btn-exit"  mat-dialog-close style="background: #EB5757;color:white;padding:2px 30px 2px 30px;">Salir</button>
+</mat-dialog-actions>
