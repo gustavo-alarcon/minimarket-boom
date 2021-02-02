@@ -70,18 +70,15 @@
           <th *matHeaderCellDef style="padding-top:15px" class="w3-border-left w3-center">lista de producto
           </th>
           <td mat-cell style="padding-top:15px" *matCellDef="let raw" class="w3-border-left w3-center">
-            <!-- <span style="padding: 8px 8px; border-radius: 10px"
-                [ngClass]="{'btn-state-open': raw.open,'btn-state-close': !raw.open}">{{raw.open ? 'Abierta' : 'Cerrada'}}
-            </span>   -->
+           
 
-           <!--  <button mat-raised-button class="btn-product-list" *ngIf="raw.correlative" (click)="showProductList(raw)">
+            <button mat-raised-button class="btn-product-list" *ngIf="raw.correlative" (click)="showProductList(raw)">
               lista de productos
             </button>
 
             <button mat-raised-button class="btn-description" *ngIf="raw.import" (click)="showDescription(raw.description)" >
               Descripcion
-            </button> -->
-
+            </button>
           </td>
         </ng-container>
 
@@ -91,16 +88,16 @@
             Acciones
           </th>
           <td mat-cell *matCellDef="let raw" style="padding-top:15px" class="w3-border-left w3-center">
-            <ng-container>
+            <ng-container *ngIf="!raw.correlative">
               <mat-menu #rawMenu="matMenu">
-                <!-- <button class="w3-small" mat-menu-item (click)="editCash()">
+                <button class="w3-small" mat-menu-item (click)="editCash()">
                   <mat-icon>edit</mat-icon> 
                   Editar
                 </button>
                 <button class="w3-small" mat-menu-item (click)="deleteCash()">
                   <mat-icon>delete</mat-icon>
                   Eliminar
-                </button> -->
+                </button>
               </mat-menu>
 
               <button mat-icon-button [matMenuTriggerFor]="rawMenu">

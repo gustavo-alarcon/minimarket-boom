@@ -2,10 +2,11 @@ import { Component, OnInit, Inject, ViewChild } from '@angular/core';
 import { AngularFirestore } from '@angular/fire/firestore';
 import { DatabaseService } from '../../../core/services/database.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { MAT_DIALOG_DATA, MatDialog } from '@angular/material/dialog';
 import { MatTableDataSource } from '@angular/material/table';
-import { Transaction } from '../../../core/models/transaction.model';
 import { MatPaginator } from '@angular/material/paginator';
+import { ShowDescriptionComponent } from '../show-description/show-description.component';
+import { ShowProductListComponent } from '../show-product-list/show-product-list.component';
 
 @Component({
   selector: 'app-show-transactions',
@@ -21,23 +22,44 @@ export class ShowTransactionsComponent implements OnInit {
     this.dataSourceCash.paginator = paginator;
   }
   constructor(
-    private afs: AngularFirestore,    
     public dbs: DatabaseService,
-    private snackBar: MatSnackBar,
+    private dialog: MatDialog,
     @Inject(MAT_DIALOG_DATA) public data: { idUserCash,idTransacion }) { }
 
   ngOnInit(): void {
-
-    console.log('data : ',this.data)
     
     this.dbs.getTransactionsById(this.data.idUserCash,this.data.idTransacion).subscribe(
       (transaction:any) =>      
         {
-             console.log(' this.openings : ', transaction);  
              this.dataSourceCash.data=transaction;     
         }
        );
     
+  }
+
+  showDescription(description){
+    this.dialog.open(ShowDescriptionComponent,{
+      data:{
+        description:description,
+      }
+    });
+
+  }
+
+  showProductList(product){
+    this.dialog.open(ShowProductListComponent,{
+      data:{
+        product:product
+      }
+    });
+  }  
+
+  
+  editCash(){
+
+  }
+  deleteCash(){
+
   }
 
 }

@@ -847,22 +847,16 @@ export class DatabaseService {
   }
 
   getAllOpeningsById(idCash:string): Observable<any[]> {    
-      return this.afs.collection<any>(`/db/minimarketBoom/cashBox/${idCash}/openings`)
+      return this.afs.collection<any>(`/db/minimarketBoom/cashBox/${idCash}/openings`,
+      ref => ref. orderBy("openingDate", 'desc'))
       .valueChanges();
 
   }
-  getAllOpeningsById1(idCash: string, date: {begin: Date, end: Date}): Observable<any[]> {
-    return this.afs
-      .collection(`/db/minimarketBoom/cashBox/${idCash}/openings`,
-        (ref) => ref.where('createdAt', '>=', date.begin).where('createdAt', '<=', date.end).orderBy("createdAt", "desc")
-      )
-      .valueChanges()
-      .pipe(shareReplay(1));
-  }
+  
   
   getTransactionsById(idCash:string,idOpening: string): Observable<any[]> {
     return this.afs.collection<any>(`/db/minimarketBoom/cashBox/${idCash}/openings/${idOpening}/transactions`,
-        ref => ref. orderBy("createdAt", 'desc'))
+        ref => ref.orderBy("createdAt", 'desc'))
         .valueChanges();
 
   }

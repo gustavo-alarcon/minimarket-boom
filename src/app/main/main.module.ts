@@ -66,7 +66,9 @@ import { ReportsComponent } from './reports/reports.component';
     MatTableModule,
 
     MatNativeDateModule,
-    MatDatepickerModule
+    MatDatepickerModule,
+
+  
   ],
   entryComponents: [
     ConfirmationDialogComponent,

@@ -115,6 +115,12 @@
                                 Punto de venta
                         </button>
 
+                        <button mat-button class="w3-block menu__button" *ngIf="user.currentCash ? user.currentCash.open : false" routerLink="reports"
+                            (click)="toggleSideMenu()">
+                                <mat-icon class="menu__icon">insert_chart</mat-icon>
+                                Reportes
+                        </button>
+
                         <button mat-button class="w3-block menu__button" routerLink="login-cash"
                                 style="text-align:left;border-radius:0px 0px 0px 0px;" 
                                 *ngIf="user.currentCash ? !user.currentCash.open : true"
@@ -191,3 +197,7 @@
 
     </mat-sidenav-container>
 </div>
+
+
+
+

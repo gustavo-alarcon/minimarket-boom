@@ -22,8 +22,6 @@ export class ShowHistoryCashComponent implements OnInit {
 
   date = new FormControl();
 
-  // Show History
-  //show-history-cash.component.htmlhistory$: Observable<object[]>;
   history$: Observable<any>;
 
 
@@ -47,7 +45,6 @@ export class ShowHistoryCashComponent implements OnInit {
 
   ngOnInit(): void {
 
-    console.log('data : ', this.data)
     const view = this.dbs.getCurrentMonthOfViewDate();
 
     let beginDate = view.from;

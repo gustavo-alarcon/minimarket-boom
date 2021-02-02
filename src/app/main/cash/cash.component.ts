@@ -27,6 +27,8 @@ import { ShowDescriptionComponent } from './show-description/show-description.co
 })
 export class CashComponent implements OnInit {
 
+  barChartData='Prueba';
+
   userCash:User;
  
   /*Cash*/
@@ -115,7 +117,7 @@ export class CashComponent implements OnInit {
       ).pipe(
         map(([cash, name, ]) => {
     
-          return cash.sort((a, b) => a['description'].localeCompare(b['description']))
+          return cash
             .filter(el => name ? el.description.toLowerCase().includes(name) : true)
             .map((el, i) => {
               return {
