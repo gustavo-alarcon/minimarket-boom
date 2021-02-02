@@ -1,4 +1,4 @@
-<div class="w3-section w3-margin-left w3-margin-right animated fadeInUp delay-2
+<!-- <div class="w3-section w3-margin-left w3-margin-right animated fadeInUp delay-2
 componente-container">
 <div style="padding: 0 3vw;">
   <div style="display: flex; flex-direction: row; justify-content: space-between; align-items: flex-end; flex-wrap: wrap;">
@@ -32,7 +32,7 @@ componente-container">
             [options]="barChartOptions"
             [plugins]="barChartPlugins"
             [legend]="barChartLegend"
-            [chartType]="barChartType">
+            [chartType]="barChartType"> 
           </canvas>
         </div>
         <button mat-button mat-raised-button color="primary" (click)="randomize()">Update</button>
@@ -46,3 +46,17 @@ componente-container">
 
 </div>
 </div> 
+ -->
+
+
+ <div class="chart-wrapper">
+  <canvas baseChart 
+      [datasets]="lineChartData" 
+      [labels]="lineChartLabels" 
+      [options]="lineChartOptions"
+      [colors]="lineChartColors" 
+      [legend]="lineChartLegend" 
+      [chartType]="lineChartType" 
+      [plugins]="lineChartPlugins">
+  </canvas>
+</div>

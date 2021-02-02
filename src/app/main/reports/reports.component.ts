@@ -1,7 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { FormGroup, FormControl } from '@angular/forms';
 import { ChartOptions, ChartType, ChartDataSets } from 'chart.js';
-import { Label } from 'ng2-charts';
+import { Color, Label } from 'ng2-charts';
+
 import { DatabaseService } from '../../core/services/database.service';
 
 @Component({
@@ -9,9 +10,30 @@ import { DatabaseService } from '../../core/services/database.service';
   templateUrl: './reports.component.html',
   styleUrls: ['./reports.component.scss']
 })
-export class ReportsComponent implements OnInit {
+export class ReportsComponent  {
 
-  
+  lineChartData: ChartDataSets[] = [
+    { data: [85, 72, 78, 75, 77, 75], label: 'Crude oil prices' },
+  ];
+
+  lineChartLabels: Label[] = ['January', 'February', 'March', 'April', 'May', 'June'];
+
+  lineChartOptions = {
+    responsive: true,
+  };
+
+  lineChartColors: Color[] = [
+    {
+      borderColor: 'black',
+      backgroundColor: 'rgba(255,255,0,0.28)',
+    },
+  ];
+
+  lineChartLegend = true;
+  lineChartPlugins = [];
+  lineChartType = 'line';
+
+  /* 
   dateForm: FormGroup;
 
   //Chart JS
@@ -39,9 +61,9 @@ export class ReportsComponent implements OnInit {
 
   constructor( 
             public dbs: DatabaseService,
-    ) { }
+    ) { } */
 
-  ngOnInit(): void {
+  /* ngOnInit(): void {
     const view = this.dbs.getCurrentMonthOfViewDate();
 
     let beginDate = view.from;
@@ -53,10 +75,10 @@ export class ReportsComponent implements OnInit {
       end: new FormControl(endDate)
     });
 
-  }
+  } */
 
    // events
-   public chartClicked({ event, active }: { event: MouseEvent, active: {}[] }): void {
+  /*  public chartClicked({ event, active }: { event: MouseEvent, active: {}[] }): void {
     console.log(event, active);
   }
 
@@ -76,7 +98,7 @@ export class ReportsComponent implements OnInit {
       40 ];
     
  
-  }
+  } */
 
 
 }
