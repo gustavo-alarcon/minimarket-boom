@@ -4,6 +4,8 @@ import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { DatabaseService } from '../../../core/services/database.service';
 import { AuthService } from '../../../core/services/auth.service';
 import { AddMoneyCashConfirmComponent } from '../add-money-cash-confirm/add-money-cash-confirm.component';
+import { Observable } from 'rxjs';
+import { tap } from 'rxjs/operators';
 
 @Component({
   selector: 'app-add-money-cash',
@@ -12,7 +14,12 @@ import { AddMoneyCashConfirmComponent } from '../add-money-cash-confirm/add-mone
 })
 export class AddMoneyCashComponent implements OnInit {
   
-  dataFormGroup: FormGroup  ;
+  dataFormGroup: FormGroup;
+
+  income$: Observable<any[]>
+  
+  paymentType$: Observable<any[]>
+
 
   constructor(    
     private fb: FormBuilder,
@@ -24,18 +31,43 @@ export class AddMoneyCashComponent implements OnInit {
 
   ngOnInit(): void {
     this.dataFormGroup = this.fb.group({
-      IncomeImport: ['', Validators.required],
-      departureType: ['', Validators.required],
-      expenseType: ['', Validators.required],
+      import: ['', Validators.required],
+      incomeType: ['', Validators.required],
+      paymentType: ['', Validators.required],
       description: ['', Validators.required],
-      user: ['', Validators.required],
-
+      responsable: ['', Validators.required],
     })
+   
+    // tipo Ingreso
+    this.income$ = this.dbs.getIncomes().pipe(
+      tap(res => {
+        return res;
+      })
+    ) 
+
+    //
+    this.paymentType$ = this.dbs.getPayments().pipe(
+      tap(res => {
+        return res;
+      })
+    )
+
   }
 
-  addMoney(){
-    this.dialog.open(AddMoneyCashConfirmComponent);
+  addMoney(): void {
+
+    this.dialog.open(AddMoneyCashConfirmComponent, {
+      data: {
+        form: this.dataFormGroup.value
+      }
+    })
+    .afterClosed().subscribe(res=>{
+
+      this.dialogRef.close(true);
+
+    })  
 
   }
+
 
 }

@@ -1,0 +1,53 @@
+
+
+<div class="w3-section w3-margin-left w3-margin-right animated fadeInUp delay-2
+componente-container">
+<div style="padding: 0 3vw;">
+  <div style="display: flex; flex-direction: row; justify-content: space-between; align-items: flex-end; flex-wrap: wrap;">
+      <h2 class="title">
+        <mat-icon>insert_chart</mat-icon>
+        Reportes
+      </h2>
+            
+  </div>
+  <mat-divider></mat-divider>
+  <div style="margin-top: 2em;">
+    <div class="container-date">
+        <mat-form-field class="w3-margin-top w3-margin-bottom w3-block" style="max-width: 350px;" appearance="outline">
+          <mat-label>FECHA/PERIODO</mat-label>
+          <mat-date-range-input [formGroup]="dateForm" [rangePicker]="picker">
+            <input readonly matStartDate formControlName="start" placeholder="Fecha Inicio">
+            <input readonly matEndDate formControlName="end" placeholder="Fecha Final">
+          </mat-date-range-input>
+          <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+          <mat-date-range-picker #picker></mat-date-range-picker>
+        </mat-form-field>    
+    </div>     
+    
+   
+    <div>
+      <div>
+        <div style="display: block">
+         <!--  <canvas baseChart
+            [datasets]="barChartData"
+            [labels]="barChartLabels"
+            [options]="barChartOptions"
+            [plugins]="barChartPlugins"
+            [legend]="barChartLegend"
+            [chartType]="barChartType">
+          </canvas> -->
+        </div>
+        <button mat-button mat-raised-button color="primary" (click)="randomize()">Update</button>
+      </div>
+    </div>
+
+
+  </div>
+
+
+
+</div>
+</div> 
+
+
+

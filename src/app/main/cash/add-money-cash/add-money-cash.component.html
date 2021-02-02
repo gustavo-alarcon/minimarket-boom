@@ -9,57 +9,64 @@
 <mat-dialog-content class="w3-margin-top" style="min-width:300px">
     <form [formGroup]="dataFormGroup">
 
-       <mat-form-field class="w3-margin-bottom w3-block" appearance="outline">
-            <mat-label>Importe Imgresado (S/.)</mat-label>
-            <input matInput type="number" min="0" step="0.01" formControlName="IncomeImport" placeholder="0"
-                autocomplete="off">
-            <mat-error>  Requerido * </mat-error>
-        </mat-form-field><br>
+        <div class="w3-row">
+            <div class="w3-half">
+                <div class="w3-margin">
+                    <span class="ms-color-11 mat-subheading-1 w3-margin-bottom"><b>Información</b></span>
+                    <mat-divider class="w3-margin-bottom"></mat-divider>
 
-        <mat-form-field class="w3-margin-bottom w3-block" appearance="outline">
-            <mat-label>Tipo de egreso</mat-label>
-            <mat-select formControlName="departureType">
-                <mat-option>prueba</mat-option>
-                <!-- <mat-option *ngFor="let item of departureTypes" [value]="item">{{item}}</mat-option> -->
-            </mat-select>
-            <mat-error>  Requerido * </mat-error>
-        </mat-form-field><br>
+                    <mat-form-field class="w3-margin-bottom w3-block" appearance="outline">
+                        <mat-label>Importe Imgresado (S/.)</mat-label>
+                        <input matInput type="number" min="0" step="0.01" formControlName="import" placeholder="0"
+                            autocomplete="off">
+                        <mat-error>  Requerido * </mat-error>
+                    </mat-form-field><br>
+            
+                    <mat-form-field class="w3-margin-bottom w3-block" appearance="outline">
+                        <mat-label>Descripción</mat-label>
+                        <textarea matInput cols="10" rows="5" formControlName="description" placeholder="Describa ..."
+                            autocomplete="off"></textarea>
+                            <mat-error>  Requerido * </mat-error>
+                        </mat-form-field><br>
+            
+                    <mat-form-field class="w3-margin-bottom w3-block" appearance="outline">
+                        <mat-label>Responsable</mat-label>
+                        <input matInput type="text" formControlName="responsable" placeholder="responsable"  autocomplete="off">            
+                        <mat-error>  Requerido * </mat-error>
+                    </mat-form-field><br>
+                </div>
+            </div>
+            <div class="w3-half">
+                <div class="w3-margin">
+                    <span class="ms-color-11 mat-subheading-1 w3-margin-bottom"><b>Detalles</b></span>
+                    <mat-divider class="w3-margin-bottom"></mat-divider>
 
-         <mat-form-field class="w3-margin-bottom w3-block" appearance="outline"
-            *ngIf="dataFormGroup.value['departureType'] === 'GASTO'">
-            <mat-label>Tipo de gasto</mat-label>
-            <mat-select formControlName="expenseType">
-                <mat-option>prueba</mat-option>
-              <!--   <mat-option *ngFor="let item of expenseTypes" [value]="item">{{item}}</mat-option> -->
-            </mat-select>
-            <mat-error>  Requerido * </mat-error>
-        </mat-form-field><br>
+                    <mat-form-field class="w3-margin-bottom w3-block" appearance="outline" *ngIf="income$ | async as incomes">
+                        <mat-label>Tipo de ingreso</mat-label>
+                        <mat-select formControlName="incomeType">
+                            <mat-option *ngFor="let item of incomes" [value]="item.income">{{item.income}}</mat-option>
+                        </mat-select>
+                        <mat-error>  Requerido * </mat-error>
+                    </mat-form-field><br>
 
-        <mat-form-field class="w3-margin-bottom w3-block" appearance="outline">
-            <mat-label>Descripción</mat-label>
-            <textarea matInput cols="10" rows="5" formControlName="description" placeholder="Describa ..."
-                autocomplete="off"></textarea>
-                <mat-error>  Requerido * </mat-error>
-            </mat-form-field><br>
-
-        <mat-form-field class="w3-margin-bottom w3-block" appearance="outline">
-            <mat-label>Responsable</mat-label>
-            <mat-icon matSuffix>arrow_drop_down</mat-icon>
-            <input matInput type="text" formControlName="user" [matAutocomplete]="userAuto" autocomplete="off">
-            <mat-autocomplete #userAuto="matAutocomplete" >
-                <mat-option>pepe</mat-option>
-                <!-- <mat-option *ngFor="let item of filteredUsers | async" [value]="item">{{item.displayName}}</mat-option> -->
-            </mat-autocomplete>
-            <mat-error>  Requerido * </mat-error>
-        </mat-form-field><br>
+                    <mat-form-field class="w3-margin-bottom w3-block" appearance="outline" *ngIf="paymentType$ | async as payments">
+                        <mat-label>Tipo de pago</mat-label>
+                        <mat-select formControlName="paymentType">
+                            <mat-option *ngFor="let payment of payments" [value]="payment">{{payment.name}}</mat-option>
+                        </mat-select>
+                        <mat-error>  Requerido * </mat-error>
+                    </mat-form-field><br>
+                </div>
+            </div>
+        </div>     
 
     </form>
 </mat-dialog-content>
 
 <mat-dialog-actions align="end">
     <button mat-stroked-button class="btn-exit"  mat-dialog-close>Cancelar</button>
-    <button mat-raised-button class="btn-save" (click)="addMoney()" 
+    <button mat-raised-button class="btn-save" (click)="addMoney()"  [disabled]="!dataFormGroup.valid"
        >Agregar</button>
-      <!--  [disabled]="!dataFormGroup.valid" -->
+      
 </mat-dialog-actions>
 

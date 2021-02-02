@@ -79,8 +79,19 @@
                                 <mat-icon class="menu__icon">storefront</mat-icon>
                                 Venta tienda
                             </button>
+
                             <button mat-button class="w3-block menu__button" routerLink="login-cash"
-                                style="text-align:left;border-radius:0px 0px 0px 0px;" (click)="toggleSideMenu()">
+                                style="text-align:left;border-radius:0px 0px 0px 0px;" (click)="toggleSideMenuLogin(1)"
+                                *ngIf="user.currentCash ? !user.currentCash.open : true"
+                                >
+                                <mat-icon class="menu__icon">login</mat-icon>
+                                Login Caja
+                            </button>
+
+                            <button mat-button class="w3-block menu__button" routerLink="cash"
+                                style="text-align:left;border-radius:0px 0px 0px 0px;" (click)="toggleSideMenu()"
+                                *ngIf="user.currentCash ? user.currentCash.open : false"
+                                >
                                 <mat-icon class="menu__icon">monetization_on</mat-icon>
                                 Caja
                             </button>
@@ -97,11 +108,27 @@
                             <mat-icon class="menu__icon">assignment</mat-icon>
                             Ventas tienda
                         </button>
-                        <button mat-button class="w3-block menu__button" *ngIf="user?.admin || user?.seller" routerLink="pos"
+
+                        <button mat-button class="w3-block menu__button" *ngIf="user.currentCash ? user.currentCash.open : false" routerLink="pos"
                             (click)="toggleSideMenu()">
-                            <mat-icon class="menu__icon">phonelink_ring</mat-icon>
-                            Punto de venta
+                                <mat-icon class="menu__icon">phonelink_ring</mat-icon>
+                                Punto de venta
                         </button>
+
+                        <button mat-button class="w3-block menu__button" *ngIf="user.currentCash ? user.currentCash.open : false" routerLink="reports"
+                            (click)="toggleSideMenu()">
+                                <mat-icon class="menu__icon">insert_chart</mat-icon>
+                                Reportes
+                        </button>
+
+                        <button mat-button class="w3-block menu__button" routerLink="login-cash"
+                                style="text-align:left;border-radius:0px 0px 0px 0px;" 
+                                *ngIf="user.currentCash ? !user.currentCash.open : true"
+                                (click)="toggleSideMenuLogin(2)"
+                                > 
+                                <mat-icon class="menu__icon">login</mat-icon>
+                                Login Caja
+                        </button>                                             
                         
                         <mat-divider></mat-divider>
                         <button mat-button class="w3-block menu__button" routerLink="/main" (click)="toggleSideMenu()">
@@ -170,3 +197,7 @@
 
     </mat-sidenav-container>
 </div>
+
+
+
+

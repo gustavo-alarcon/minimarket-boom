@@ -42,7 +42,7 @@ export class AuthService {
       this.afAuth.authState.pipe(
         switchMap(user => {
           if (user) {
-            this.updateUserData(user);
+            //this.updateUserData(user);
             return this.afs.collection('users').doc<User>(user.uid)
               .valueChanges()
               // .pipe(
@@ -81,13 +81,22 @@ export class AuthService {
         break;
     }
 
+    
+
     if (this.platform.ANDROID || this.platform.IOS) {
       return this.afAuth.signInWithRedirect(provider)
+        .then(auth=>{
+          this.updateUserData(auth['user']);
+        })
         .catch(error => {
           this.handleError(error)
         });
     } else {
+      
       return this.afAuth.signInWithPopup(provider)
+      .then(auth=>{
+        this.updateUserData(auth['user']);
+      })
         .catch(error => {
           this.handleError(error)
         })

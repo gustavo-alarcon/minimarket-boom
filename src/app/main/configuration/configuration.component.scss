@@ -191,6 +191,19 @@
     padding:  5px 15px 5px 10px ;
     
 }
+
+.containerIncomes{
+    display: flex;
+}
+
+.ingresos{
+  width: 50%;
+}
+
+.egresos{
+    width: 50%;
+  }
+
 @media (max-width: 600px) {
     .banner__frame {
         margin: 0 0 20px 0;

@@ -1,5 +1,6 @@
-<div style="max-width: 320px;">
-    <div mat-dialog-title>
+
+<mat-dialog-content class="w3-margin-top" style="min-width:300px">
+    <div>
 
         <h2 class="title-dialog">
             <mat-icon class="icon">vpn_key</mat-icon>
@@ -7,15 +8,15 @@
         </h2>
         <mat-divider></mat-divider>
     </div>
-  
-    <div mat-dialog-content>
+    <div>
         <p>¿ Esta seguro de abrir la {{data.cashBox.cashier}} ? </p>
     </div>
   
-    <div mat-dialog-actions align="end">
-        <button mat-raised-button class="btn-exit" mat-dialog-close >Cerrar</button>
-        <button mat-raised-button class="btn-save" (click)="openCash()" >Abrir</button>
-    </div>
-  </div>
+    
+</mat-dialog-content>
 
-  
+<mat-dialog-actions align="end">
+    <button mat-raised-button class="btn-exit" mat-dialog-close >Cerrar</button>
+    <button mat-raised-button class="btn-save" (click)="openCash()" >Abrir</button>
+
+</mat-dialog-actions>

@@ -28,7 +28,7 @@ export class MainComponent implements OnInit {
     public themeService: ThemeService,
     private dialog: MatDialog,
     private dbs: DatabaseService,
-    public route: Router
+    public router: Router
   ) {
 
   }
@@ -47,7 +47,15 @@ export class MainComponent implements OnInit {
   ngOnDestroy() {
     // this.sub.unsubscribe();
   }
+  navigatePos(){
+    this.router.navigateByUrl('main/cash');
 
+  }
+  toggleSideMenuLogin(login){
+    this.openedMenu = !this.openedMenu;
+    console.log('login a : ',login)
+
+  }
   toggleSideMenu(): void {
     this.openedMenu = !this.openedMenu;
   }

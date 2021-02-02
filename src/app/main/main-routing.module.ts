@@ -70,6 +70,11 @@ const routes: Routes = [
         loadChildren: () => import('./cash/cash.module').then(mod => mod.CashModule),
         /* canActivate: [AuthGuard] */
       },
+      {
+        path: 'reports',
+        loadChildren: () => import('./reports/reports.module').then(mod => mod.ReportsModule),
+        /* canActivate: [AuthGuard] */
+      },
     ]
   }
 ]

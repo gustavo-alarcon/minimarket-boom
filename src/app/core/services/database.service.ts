@@ -21,7 +21,7 @@ import { CashBox } from '../models/cashBox.model';
   providedIn: 'root'
 })
 export class DatabaseService {
-  public version: string = 'V1.0.26r';
+  public version: string = 'V1.0.27r';
   public isOpen: boolean = false;
   public isAdmin: boolean = false;
 
@@ -734,8 +734,50 @@ export class DatabaseService {
         shareReplay(1)
       )
   }
+  
+  getIncomes(): Observable<any> {
+    return this.afs.collection(`/db/minimarketBoom/config`).doc('generalConfig').valueChanges()
+      .pipe(
+        map(res => res['incomes']),
+        map(res => {
+          return res.sort((a, b) => {
+            const nameA = a.name;
+            const nameB = b.name;
 
- 
+            let comparison = 0;
+            if (nameA > nameB) {
+              comparison = 1;
+            } else if (nameA < nameB) {
+              comparison = -1;
+            }
+            return comparison;
+          });
+        }),
+        shareReplay(1)
+      )
+  } 
+
+  getExpenses(): Observable<any> {
+    return this.afs.collection(`/db/minimarketBoom/config`).doc('generalConfig').valueChanges()
+      .pipe(
+        map(res => res['expenses']),
+        map(res => {
+          return res.sort((a, b) => {
+            const nameA = a.name;
+            const nameB = b.name;
+
+            let comparison = 0;
+            if (nameA > nameB) {
+              comparison = 1;
+            } else if (nameA < nameB) {
+              comparison = -1;
+            }
+            return comparison;
+          });
+        }),
+        shareReplay(1)
+      )
+  } 
 
   getConfiUsers(): Observable<User[]> {
     return this.afs.collection<User>(`/users`, ref => ref.where("role", '>=', ''))
@@ -782,22 +824,13 @@ export class DatabaseService {
       }));
   }
 
-  getUsersValueChanges1(): Observable<CashBox[]> {
+  getCashierValueChanges(): Observable<CashBox[]> {
     return this.afs.collection<CashBox>(`/db/minimarketBoom/cashBox`)
       .valueChanges().pipe(
         shareReplay(1)
       );
   }
 
-  loginCash1(caja:string,pass:string) {
-    return this.afs.collection(`/db/minimarketBoom/cashBox`, ref => ref.where("cashier", '==', caja)
-    .where("password", '==', pass)
-      )
-      .valueChanges()
-      .pipe(
-        shareReplay(1)
-      );
-  }
   loginCash(caja:string,pass:string): Observable<any[]> {
     return this.afs.collection('/db/minimarketBoom/cashBox', (ref) =>
     ref.where("cashier", "==",caja) .where("password", '==', pass)
@@ -807,51 +840,28 @@ export class DatabaseService {
     })
   );
   }
-
- /*  getCashBoxValueChanges():  Observable<any[]> {    
-    return this.afs.collection('/db/minimarketBoom/cashBox').doc<CashBox>('generalConfig')
-    .valueChanges().pipe(shareReplay(1)).pipe(map(res => {
-     if (res) {
-       return res.cashier ? res.warehouses : []
-     } else {
-       return []
-     }
-     
-   })) */
-
-   /* getCashBoxValueChanges():  Observable<CashBox[]> {    
-    return this.afs.collection('/db/minimarketBoom').doc<CashBox>('cashBox')
-    .valueChanges().pipe(shareReplay(1)).pipe(map(res => {
-     if (res) {
-       return res.cashier ? res.cashier  : []
-     } else {
-       return []
-     }
-     
-   })) 
-  }
-   */
- /*  getCashBoxValueChanges():  Observable<any> {    
-    return this.afs.collection('/db/minimarketBoom').doc<CashBox>('cashBox')
-    .valueChanges().pipe(shareReplay(1)).pipe(map(res => {
-     if (res) {
-       return res.cashier ? res.cashier  : []
-     } else {
-       return []
-     }
-     
-   })) 
-  } */
-  /* getPayments1(): Observable<any> {
-    return this.afs.collection(`/db/minimarketBoom`).doc<CashBox>('cashBox').valueChanges()
-      .pipe(
-        map(res => {
-          return res.;
-        }),
-        shareReplay(1)
-      )
-  } */
    
+  getOpeningById(idCash:string,idOpening: string): Observable<any> {
+    return this.afs.collection<any>(`/db/minimarketBoom/cashBox/${idCash}/openings`).doc(idOpening)
+      .valueChanges().pipe (shareReplay(1));
+  }
 
+  getAllOpeningsById(idCash:string): Observable<any[]> {    
+      return this.afs.collection<any>(`/db/minimarketBoom/cashBox/${idCash}/openings`,
+      ref => ref. orderBy("openingDate", 'desc'))
+      .valueChanges();
+
+  }
+  
+  
+  getTransactionsById(idCash:string,idOpening: string): Observable<any[]> {
+    return this.afs.collection<any>(`/db/minimarketBoom/cashBox/${idCash}/openings/${idOpening}/transactions`,
+        ref => ref.orderBy("createdAt", 'desc'))
+        .valueChanges();
+
+  }
+
+
+  
 
 }

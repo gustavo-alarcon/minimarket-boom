@@ -36,9 +36,6 @@ import { StoreClosedDialogComponent } from './shared-dialogs/store-closed-dialog
 import { LocalStorageModule } from 'angular-2-local-storage';
 
 
-import { MatNativeDateModule } from '@angular/material/core';
-import { MatDatepickerModule } from '@angular/material/datepicker';
-
 @NgModule({
   declarations: [
     AppComponent,
@@ -62,10 +59,7 @@ import { MatDatepickerModule } from '@angular/material/datepicker';
     MatDividerModule,
     MatIconModule,
 
-    MatNativeDateModule,
-    MatDatepickerModule,
 
-    
     LocalStorageModule.forRoot({
       prefix: 'minimarket-boom',
       storageType: 'localStorage'

@@ -27,7 +27,7 @@ export class PosSavingComponent implements OnInit {
     public auth: AuthService,
     private dbs: DatabaseService,
     private af: AngularFirestore,
-    private snackbar: MatSnackBar
+    private snackBar: MatSnackBar,
   ) { }
 
   ngOnInit(): void {
@@ -113,8 +113,13 @@ export class PosSavingComponent implements OnInit {
                     rightItems: rightItems,
                     correlative: newCorr,
                     createdBy: user,
-                    createdAt: new Date()
+                    createdAt: new Date(),
+                    description:'Venta tienda',
+                    movementType:'Ingreso',
+
                   }
+
+                  this.saveDataInTransactions(newData,user);
 
                   t.set(saleDocRef, newData);
                   t.update(configRef, { correlativeStore: newCorr });
@@ -123,10 +128,29 @@ export class PosSavingComponent implements OnInit {
                 })
             }).then(() => {
               console.log('transaction commited');
+
             }).catch(err => console.log(err))
           })
       })
       .catch(err => console.log(err))
+  }
+  saveDataInTransactions(data,user){
+
+      const batch = this.af.firestore.batch()
+      const transactionRef = this.af.firestore.collection(`/db/minimarketBoom/cashBox/${user.currentCash.uid}/openings/${user.currentCash.currentOpening}/transactions`).doc();
+  
+        batch.set(transactionRef, data)
+  
+        batch.commit()
+        .then(() => {
+          
+        })
+        .catch(err => {
+          console.log(err);
+        })
+        
+      
+
   }
 
 }

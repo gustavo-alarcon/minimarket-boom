@@ -29,13 +29,13 @@ export class ConfirmationComponent implements OnInit {
   ) { }
 
   ngOnInit(): void {
-    console.log('data : ', this.data);
+    
   }
   
   openCash(){
     this.uploading = true;
-    this.auth.user$.pipe(take(1)).subscribe(user => {      
-      
+    this.auth.user$.pipe(take(1)).subscribe(user => {    
+            
       // update cashBox
       const batch = this.afs.firestore.batch()
       const cashBoxRef = this.afs.firestore.collection(`/db/minimarketBoom/cashBox`).doc(this.data.cashBox.uid);
@@ -43,14 +43,14 @@ export class ConfirmationComponent implements OnInit {
       const updateCashBox = {
         currentOwner: user,
         open: true,
-        lastOpening: Date.now()
+        lastOpening: new Date()
       }
 
       batch.update(cashBoxRef, updateCashBox)
 
       batch.commit()
       .then(() => {
-        this.dialogRef.close();
+        this.dialogRef.close(true);
         this.snackBar.open("Caja fue editado!", "Cerrar");
         this.createOpening(updateCashBox.lastOpening,user);
       })
@@ -79,7 +79,8 @@ export class ConfirmationComponent implements OnInit {
         closureBalance: null,
         importAdded: null,
         importWithdrawn: null,
-        cashCount: null
+        cashCount: null,
+        detailMoneyDistribution:null,
       }      
 
         batch.set(openingRef, openingData)
@@ -88,7 +89,7 @@ export class ConfirmationComponent implements OnInit {
           //this.loading.next(false)
           this.dialogRef.close();
           this.snackBar.open('se creo opening', 'Cerrar', { duration: 5000 });
-          this.updateCashBox(openingRef.id ,user);
+          this.updateUserCashBox(openingRef.id ,user);
         }) 
         .catch(err => {
           console.log(err);
@@ -96,7 +97,7 @@ export class ConfirmationComponent implements OnInit {
         }) 
   }
 
-  updateCashBox(idOpening,user){
+  updateUserCashBox(idOpening,user){
     // update cashBox
     const batch = this.afs.firestore.batch()
     const cashBoxRef = this.afs.firestore.collection(`/db/minimarketBoom/cashBox`).doc(this.data.cashBox.uid);
@@ -112,10 +113,7 @@ export class ConfirmationComponent implements OnInit {
       this.dialogRef.close();
       this.snackBar.open("Caja abierta :D !", "Cerrar");    
 
-      this.addCurrentCashUser(user);
-
-      this.router.navigateByUrl('main/cash');
-      this.dialogRef.close();
+      this.addCurrentCashUser(user);      
      
     })
     .catch(err => {
@@ -142,6 +140,9 @@ export class ConfirmationComponent implements OnInit {
 
       batch.commit()
       .then(() => {
+
+        this.router.navigateByUrl('main/cash');
+        this.dialogRef.close();
        
       })
       .catch(err => {
