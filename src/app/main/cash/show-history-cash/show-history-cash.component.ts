@@ -7,9 +7,9 @@ import { FormGroup, FormControl } from '@angular/forms';
 import { startWith, map, tap, switchMap } from 'rxjs/operators';
 import { combineLatest, Observable, BehaviorSubject } from 'rxjs';
 import * as XLSX from 'xlsx';
-import { CashOpening } from '../../../core/models/cashOpening.model';
-import { ShowTransactionsComponent } from '../show-transactions/show-transactions.component';
+ import { CashOpening } from '../../../core/models/cashOpening.model';
 import { AuthService } from '../../../core/services/auth.service';
+import { ShowTransactionsComponent } from '../show-transactions/show-transactions.component';
 
 @Component({
   selector: 'app-show-history-cash',

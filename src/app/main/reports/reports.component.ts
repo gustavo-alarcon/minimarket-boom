@@ -1,10 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { FormGroup, FormControl } from '@angular/forms';
-import { ChartDataSets, ChartOptions, ChartType } from 'chart.js';
+import { ChartOptions, ChartType, ChartDataSets } from 'chart.js';
 import { Label } from 'ng2-charts';
-
 import { DatabaseService } from '../../core/services/database.service';
-//import * as pluginDataLabels from 'chartjs-plugin-datalabels';
 
 @Component({
   selector: 'app-reports',
@@ -14,7 +12,6 @@ import { DatabaseService } from '../../core/services/database.service';
 export class ReportsComponent implements OnInit {
 
   
-
   dateForm: FormGroup;
 
   //Chart JS
@@ -81,6 +78,5 @@ export class ReportsComponent implements OnInit {
  
   }
 
+
 }
-
-
