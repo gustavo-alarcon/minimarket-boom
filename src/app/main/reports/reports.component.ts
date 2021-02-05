@@ -1,86 +1,260 @@
-import { Component, OnInit } from '@angular/core';
+import { map, tap, startWith } from 'rxjs/operators';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { FormGroup, FormControl } from '@angular/forms';
-import { ChartDataSets, ChartOptions, ChartType } from 'chart.js';
-import { Label } from 'ng2-charts';
+import { ChartOptions, ChartType, ChartDataSets } from 'chart.js';
+import { Color, Label } from 'ng2-charts';
 
 import { DatabaseService } from '../../core/services/database.service';
-//import * as pluginDataLabels from 'chartjs-plugin-datalabels';
+import { Observable, combineLatest } from 'rxjs';
+import { Product } from '../../core/models/product.model';
+import { MatTableDataSource } from '@angular/material/table';
+import { MatPaginator } from '@angular/material/paginator';
+import { ProductPerformance } from '../../core/models/productPerformance.model';
+
+import{Chart} from 'node_modules/chart.js';
+
 
 @Component({
   selector: 'app-reports',
   templateUrl: './reports.component.html',
   styleUrls: ['./reports.component.scss']
 })
-export class ReportsComponent implements OnInit {
-
-  
+export class ReportsComponent  {
 
   dateForm: FormGroup;
+  
+  bestSeller$: Observable<any>;
+  lessSold$: Observable<any[]>;
+  
 
-  //Chart JS
+  minStock$: Observable<Product[]>
+  paymentType$:Observable<Product[]>;
 
-  public barChartOptions: ChartOptions = {
-    responsive: true,
-    // We use these empty structures as placeholders for dynamic theming.
-    scales: { xAxes: [{}], yAxes: [{}] },
-    plugins: {
-      datalabels: {
-        anchor: 'end',
-        align: 'end',
-      }
-    }
-  };
-  public barChartLabels: Label[] = ['2006', '2007', '2008', '2009', '2010', '2011', '2012'];
-  public barChartType: ChartType = 'bar';
-  public barChartLegend = true;
-  //public barChartPlugins = [pluginDataLabels];
+  dataSourceProduct = new MatTableDataSource();
+  displayedColumnsProduct: string[] = ['index','description','stock'];
 
-  barChartData: ChartDataSets[] = [
-    { data: [65, 59, 80, 81, 56, 55, 40], label: 'Series A' },
-    { data: [28, 48, 40, 19, 86, 27, 90], label: 'Series B' }
-  ];
-
+  @ViewChild("paginatorProduct", { static: false }) set content(paginator: MatPaginator) {
+    this.dataSourceProduct.paginator = paginator;
+  }
   constructor( 
-            public dbs: DatabaseService,
-    ) { }
+    public dbs: DatabaseService,
+) { }
 
-  ngOnInit(): void {
-    const view = this.dbs.getCurrentMonthOfViewDate();
+ngOnInit(): void {
+  const view = this.dbs.getCurrentMonthOfViewDate();
 
-    let beginDate = view.from;
-    let endDate = new Date();
-    endDate.setHours(23, 59, 59);
+  let beginDate = view.from;
+  let endDate = new Date();
+  endDate.setHours(23, 59, 59);
 
-    this.dateForm = new FormGroup({
-      start: new FormControl(beginDate),
-      end: new FormControl(endDate)
-    });
+  this.dateForm = new FormGroup({
+    start: new FormControl(beginDate),
+    end: new FormControl(endDate)
+  });
 
-  }
+  //show product min stock
+  this.minStock$ = this.dbs.getProductListOrderByMinStock().pipe(
+    tap(res => {
+      let newProductMinStock:Product[]=[];
 
-   // events
-   public chartClicked({ event, active }: { event: MouseEvent, active: {}[] }): void {
-    console.log(event, active);
-  }
+      res.map((product)=> {
+        if (product.realStock <= product.alertMinimum ) {  
+          newProductMinStock.push( product);
+        };
+      });
 
-  public chartHovered({ event, active }: { event: MouseEvent, active: {}[] }): void {
-    console.log(event, active);
-  }
+      newProductMinStock.sort((a,b)=>a.realStock-b.realStock)
+     this.dataSourceProduct.data = newProductMinStock;
+    })
+  )
 
-  public randomize(): void {
-    // Only Change 3 values
-    this.barChartData[0].data = [
-      Math.round(Math.random() * 100),
-      59,
-      80,
-      (Math.random() * 100),
-      56,
-      (Math.random() * 100),
-      40 ];
-    
+  //product bets seller 
+  this.bestSeller$= combineLatest(         
+    this.dbs.getAllProductPerformance(),
+    this.dateForm.get('start').valueChanges.pipe(
+      startWith(beginDate),
+      map(begin => begin.setHours(0, 0, 0, 0))
+    ),
+    this.dateForm.get('end').valueChanges.pipe(
+      startWith(endDate),
+      map(end =>  end?end.setHours(23, 59, 59):null)
+    )
+  ).pipe(
+    map(([productPerformance,startdate,enddate]) => {
+
+      let date = {begin:startdate,end:enddate}
+
+     let filterProductByDate =[];
+     filterProductByDate =  productPerformance.filter((el) => {
+      return this.getFilterTime(el.createdAt, date);
+      });
+      
+      let groupByProduct:ProductPerformance[] = [];
+
+      filterProductByDate.reduce((res, value)=> {
+        if (!res[value.sku]) {
+          res[value.sku] = { sku: value.sku,description: value.description, quantity: 0 };
+          groupByProduct.push(res[value.sku])
+        }
+        res[value.sku].quantity += value.quantity;
+        return res;
+      }, {});
+      
+      groupByProduct.sort((a,b)=>b.quantity-a.quantity);
+      
+      let bestSeller = groupByProduct.slice(0,10);
+
+      let nameProductMax=[];
+      let stockProductMax=[];
+
+      bestSeller.map((res)=>{
+       nameProductMax.push(res.description);
+       stockProductMax.push(res.quantity);
+       
+      })    
+     
+        new Chart(document.getElementById("bestSeller"), {
+          type: 'horizontalBar',
+          data: {
+            labels: nameProductMax,
+            datasets: [
+              {
+                label: "mas vendido",
+                backgroundColor: ["#27AE60", "#05ED67","#FDD651","#F9A826","#EE8434"],
+                data: stockProductMax,
+                fill:false      
+              }
+            ],
+          },
+          options: {
+            legend: { display: false },
+            title: {
+              display: true,
+              text: '% de ventas'
+            },
+            scales: {
+              xAxes: [{
+                  ticks: {
+                      beginAtZero: true
+                  }
+              }]
+            }
+          }
+        })
+
+    return bestSeller; 
+
+    })
+  )
+
+
+  //product less Sold
+  this.lessSold$= combineLatest(         
+    this.dbs.getAllProductPerformance(),
+    this.dbs.getAllProductList(),
+    this.dateForm.get('start').valueChanges.pipe(
+      startWith(beginDate),
+      map(begin => begin.setHours(0, 0, 0, 0))
+    ),
+    this.dateForm.get('end').valueChanges.pipe(
+      startWith(endDate),
+      map(end =>  end?end.setHours(23, 59, 59):null)
+    )
+  ).pipe(
+    map(([productPerformance,products,startdate,enddate]) => {
+
+      let date = {begin:startdate,end:enddate}
+
+      let filterProductByDate =[];
+      filterProductByDate =  productPerformance.filter((el) => {
+       return this.getFilterTime(el.createdAt, date);
+       });
+
+      let groupByProductPerformance:ProductPerformance[] = [];
+      filterProductByDate.reduce((res, value)=> {
+        if (!res[value.sku]) {
+          res[value.sku] = { sku: value.sku,description: value.description, quantity: 0 };
+          groupByProductPerformance.push(res[value.sku])
+        }
+        res[value.sku].quantity += value.quantity;
+        return res;
+      }, {});
+
+      //comprare to ProductPerformance with products
+      let productsCombine=[];
+
+      products.forEach(products=>{
+        let found = false;
+        groupByProductPerformance.every(groupByProductPerformance=>{
+          let exist = groupByProductPerformance.sku === products.sku;
+          if(exist){
+            productsCombine.push(groupByProductPerformance);
+            found = exist;
+          }
+          return !exist
+        })
+
+        if (!found) {
+          productsCombine.push({sku:products.sku,description:products.description, quantity:0})
+        }
+      })
+
+     productsCombine.sort((a,b)=>b.quantity-a.quantity);
+      
+      let lessSold = productsCombine.slice(productsCombine.length-10,productsCombine.length);
+      lessSold.sort((a,b)=>a.quantity-b.quantity);
+
+      let nameProductMin=[];
+      let stockProductMin=[];
+
+     lessSold.map((res)=>{
+      nameProductMin.push(res.description);
+      stockProductMin.push(res.quantity);
+       
+    } )
+     
+        new Chart(document.getElementById("lessSold"), {
+          type: 'horizontalBar',
+          data: {
+           labels: nameProductMin,
+            datasets: [
+              {
+                label: "mas vendido",
+                backgroundColor: ["#FD1010", "#EB5757","#F9A826","#FEDE72","#FFD600"],
+                data: stockProductMin,
+                fill:false      
+              }
+            ],
+          },
+          options: {
+            legend: { display: false },
+            title: {
+              display: true,
+              text: '% de ventas'
+            },
+            scales: {
+              xAxes: [{
+                  ticks: {
+                      beginAtZero: true
+                  }
+              }]
+            }
+          }
+        })
+
+    return lessSold;
+
+    })
+  )
+
+ } 
+
+ getFilterTime(el, time) {
+  let date = el.toMillis();
+  let begin = time.begin;
+  let end = time.end;
+  return date >= begin && date <= end;
+}
  
-  }
 
 }
-
-

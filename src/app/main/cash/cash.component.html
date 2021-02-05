@@ -80,7 +80,8 @@
                         N°
                     </th>
                     <td style="padding-top:15px" class="w3-center" mat-cell *matCellDef="let raw; let i = index">
-                          {{i+1}}
+                      {{1 + i + paginatorCash.pageIndex * paginatorCash.pageSize}}
+
                     </td>                
                 </ng-container>
   
