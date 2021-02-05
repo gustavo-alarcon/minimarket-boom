@@ -6,6 +6,7 @@ import { Observable } from 'rxjs';
 import { tap, map, take } from 'rxjs/operators';
 import { DatabaseService } from '../../core/services/database.service';
 import { CashBox } from '../../core/models/cashBox.model';
+import { ActivatedRoute } from '@angular/router';
 
 @Component({
   selector: 'app-login-cash',
@@ -22,46 +23,28 @@ export class LoginCashComponent implements OnInit {
   
   currentCash:CashBox=null;
 
+  navigate:string;
+
   constructor(
     private dialog: MatDialog,
     private fb: FormBuilder,
     public dbs: DatabaseService,
+    private route: ActivatedRoute
+    ) { 
 
-    ) { }
+    }
 
   ngOnInit(): void {
+    this.dbs.changeTitle('Login')
+
+    this.navigate = this.route.snapshot.paramMap.get("login");
+
     this.loginForm = this.fb.group({
       caja: ['', Validators.required],
       pass: ['', Validators.required],
       openingBalance: ['', Validators.required],
 
     })
-
-    /* this.boxList$ = this.auth.user$.pipe(
-      tap((user) => {
-        
-        } 
-      })
-    ); */
-
-   /* this.boxList$ = this.dbs.getUsersValueChanges1().pipe(
-    map(el => el['cashier']),
-    tap(res => {
-      if (res) {
-        // this.categories = res
-        this.indCategory = res.length + 1
-      }
-      this.loadingCategories.next(false)
-    }); */
-
-    /* this.boxList$ = this.dbs.getAllCashBox().pipe(
-      tap(res => {
-        if (res) {
-          this.dataSourceCashBox.data = res
-          this.loadingCashBox.next(false)
-        }
-      }) */
-
 
       this.boxList$ = this.dbs.getCashierValueChanges().pipe(
       tap(res => {
@@ -80,7 +63,8 @@ export class LoginCashComponent implements OnInit {
         this.dialog.open(ConfirmationComponent, {
           data: {
             cashBox: this.currentCash,
-            openingBalance: this.loginForm.value['openingBalance']
+            openingBalance: this.loginForm.value['openingBalance'],
+            login:this.navigate
           }
         }) 
        }

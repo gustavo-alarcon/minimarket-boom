@@ -61,7 +61,7 @@ const routes: Routes = [
         canActivate: [AuthGuard]
       },
       {
-        path: 'login-cash',
+        path: 'login-cash/:login',
         loadChildren: () => import('./login-cash/login-cash.module').then(mod => mod.LoginCashModule),
        /* S */
       },      

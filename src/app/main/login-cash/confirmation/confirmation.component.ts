@@ -25,7 +25,7 @@ export class ConfirmationComponent implements OnInit {
       private dialogRef: MatDialogRef<ConfirmationComponent>,
       private snackBar: MatSnackBar,    
       private router: Router,
-      @Inject(MAT_DIALOG_DATA) public data: { cashBox:CashBox ,openingBalance:number},
+      @Inject(MAT_DIALOG_DATA) public data: { cashBox:CashBox ,openingBalance:number,login:string},
   ) { }
 
   ngOnInit(): void {
@@ -141,7 +141,7 @@ export class ConfirmationComponent implements OnInit {
       batch.commit()
       .then(() => {
 
-        this.router.navigateByUrl('main/cash');
+        this.router.navigateByUrl(`main/${this.data.login}` );
         this.dialogRef.close();
        
       })

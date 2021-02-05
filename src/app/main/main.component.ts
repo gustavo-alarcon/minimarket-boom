@@ -47,15 +47,19 @@ export class MainComponent implements OnInit {
   ngOnDestroy() {
     // this.sub.unsubscribe();
   }
-  navigatePos(){
-    this.router.navigateByUrl('main/cash');
-
-  }
-  toggleSideMenuLogin(login){
+  navigateCash(){
     this.openedMenu = !this.openedMenu;
-    console.log('login a : ',login)
+    let route ='cash'
+    this.router.navigate(['main/login-cash', route]);
 
   }
+  navigatePOS(){
+    this.openedMenu = !this.openedMenu;
+    let route ='pos'
+    this.router.navigate(['main/login-cash', route]);
+
+  }
+
   toggleSideMenu(): void {
     this.openedMenu = !this.openedMenu;
   }

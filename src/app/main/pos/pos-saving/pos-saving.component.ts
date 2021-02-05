@@ -48,18 +48,33 @@ export class PosSavingComponent implements OnInit {
     this.data.ticket.productList.forEach(item => {
 
       if (item.product.id) {
+        console.log(item.product.id)
         transactionsArray.push(
           this.af.firestore.runTransaction(t => {
             return t.get(productListRef.doc(item.product.id))
               .then(doc => {
                 if (doc.exists) {
+
                   let newStock = doc.data().realStock - item.quantity;
+                  let newCorr = doc.data().correlativePerformance + 1;
+
+                  let data ={
+                    createdAt:new Date(),
+                    sku:item.product.sku, 
+                    description:item.product.description,
+                    quantity:item.quantity,
+                    //correlative:newCorr,
+                  }
+                  this.productPerformance(data);
 
                   if (doc.data().calcStock !== '1') {
+                     
                     return true
                   } else {
                     if (newStock >= 0) {
                       t.update(productListRef.doc(item.product.id), { realStock: newStock });
+                      
+                     // t.set(productPerformanceRf.doc(),data);
                       return true;
                     } else {
                       return false;
@@ -135,7 +150,6 @@ export class PosSavingComponent implements OnInit {
       .catch(err => console.log(err))
   }
   saveDataInTransactions(data,user){
-
       const batch = this.af.firestore.batch()
       const transactionRef = this.af.firestore.collection(`/db/minimarketBoom/cashBox/${user.currentCash.uid}/openings/${user.currentCash.currentOpening}/transactions`).doc();
   
@@ -147,10 +161,22 @@ export class PosSavingComponent implements OnInit {
         })
         .catch(err => {
           console.log(err);
-        })
-        
-      
+        }) 
+  }
 
+  productPerformance(data){
+    const batch = this.af.firestore.batch()
+    const productPerformanceRf = this.af.firestore.collection('/db/minimarketBoom/productPerformance').doc();
+
+        batch.set(productPerformanceRf, data)
+  
+        batch.commit()
+        .then(() => {
+         // console.log('se guardo ..')
+        })
+        .catch(err => {
+          console.log(err);
+        })   
   }
 
 }

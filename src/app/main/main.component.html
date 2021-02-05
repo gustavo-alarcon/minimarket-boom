@@ -65,38 +65,20 @@
                             Lista de Productos
                         </button>
 
-
-                        <mat-expansion-panel style="box-shadow:none; border-radius:0px 0px 0px 0px" class="w3-block"
-                            [ngClass]="{'ms-expansion-panel-menu':confiOpenedFlag}" (opened)="confiOpened()" (closed)="confiClosed()">
-                            <mat-expansion-panel-header  class="menu__button">                                
-                                <mat-panel-title style="font-weight:500" [ngClass]="{'ms-expansion-panel-title':confiOpenedFlag}">
-                                <mat-icon class="menu__icon">assignment</mat-icon> Ventas
-                                </mat-panel-title>
-                            </mat-expansion-panel-header>
-
-                            <button mat-button class="w3-block menu__button" routerLink=""
-                                style="text-align:left;border-radius:0px 0px 0px 0px" (click)="toggleSideMenu()">
-                                <mat-icon class="menu__icon">storefront</mat-icon>
-                                Venta tienda
-                            </button>
-
-                            <button mat-button class="w3-block menu__button" routerLink="login-cash"
-                                style="text-align:left;border-radius:0px 0px 0px 0px;" (click)="toggleSideMenuLogin(1)"
-                                *ngIf="user.currentCash ? !user.currentCash.open : true"
-                                >
-                                <mat-icon class="menu__icon">login</mat-icon>
-                                Login Caja
-                            </button>
-
-                            <button mat-button class="w3-block menu__button" routerLink="cash"
-                                style="text-align:left;border-radius:0px 0px 0px 0px;" (click)="toggleSideMenu()"
-                                *ngIf="user.currentCash ? user.currentCash.open : false"
-                                >
-                                <mat-icon class="menu__icon">monetization_on</mat-icon>
-                                Caja
-                            </button>
-
-                        </mat-expansion-panel>
+                        <button mat-button class="w3-block menu__button"  (click)="navigateCash()"
+                            style="text-align:left;border-radius:0px 0px 0px 0px;" 
+                            *ngIf="user.currentCash ? !user.currentCash.open : true"
+                            >  
+                            <mat-icon class="menu__icon">login</mat-icon>
+                            Administrar Caja
+                        </button>
+                        <button mat-button class="w3-block menu__button" routerLink="cash"
+                            style="text-align:left;border-radius:0px 0px 0px 0px;" (click)="toggleSideMenu()"
+                            *ngIf="user.currentCash ? user.currentCash.open : false"
+                            >
+                            <mat-icon class="menu__icon">monetization_on</mat-icon>
+                            Caja
+                        </button>
 
                         <button mat-button class="w3-block menu__button" *ngIf="user?.admin || user?.seller" routerLink="online-sales"
                             (click)="toggleSideMenu()">
@@ -120,14 +102,14 @@
                                 <mat-icon class="menu__icon">insert_chart</mat-icon>
                                 Reportes
                         </button>
-
-                        <button mat-button class="w3-block menu__button" routerLink="login-cash"
+                       
+                        <button mat-button class="w3-block menu__button"
                                 style="text-align:left;border-radius:0px 0px 0px 0px;" 
                                 *ngIf="user.currentCash ? !user.currentCash.open : true"
-                                (click)="toggleSideMenuLogin(2)"
+                                (click)="navigatePOS()"
                                 > 
                                 <mat-icon class="menu__icon">login</mat-icon>
-                                Login Caja
+                                POS
                         </button>                                             
                         
                         <mat-divider></mat-divider>

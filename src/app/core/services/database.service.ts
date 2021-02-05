@@ -16,6 +16,7 @@ import { Ticket } from '../models/ticket.model';
 import { title } from 'process';
 import { StoreSale } from '../models/storeSale.model';
 import { CashBox } from '../models/cashBox.model';
+import { ProductPerformance } from '../models/productPerformance.model';
 
 @Injectable({
   providedIn: 'root'
@@ -861,7 +862,55 @@ export class DatabaseService {
 
   }
 
+  getProductListOrderByMinStock(): Observable<Product[]> {
+    return this.afs.collection<Product>(`/db/minimarketBoom/productsList`
+    ).valueChanges();
+  }   
 
+  getAllProductPerformance(): Observable<ProductPerformance[]> {
+    return this.afs.collection<ProductPerformance>(`/db/minimarketBoom/productPerformance`
+    ).valueChanges();
+  }
+  getAllProductList(): Observable<Product[]> {
+    return this.afs.collection<Product>(`/db/minimarketBoom/productsList`
+    ).valueChanges();
+  }  
+
+  /* getProductListOrderByMinStock1(): Observable<any> {
+    return this.afs.collection(`/db/minimarketBoom/productsList`).valueChanges()
+      .pipe(
+        map(res => res['realStock']),
+        map(res => {
+          return res.sort((a, b) => {
+            const nameA = a.name;
+            const nameB = b.name;
+
+            let comparison = 0;
+            if (nameA > nameB) {
+              comparison = 1;
+            } else if (nameA < nameB) {
+              comparison = -1;
+            }
+            return comparison;
+          });
+        }),
+        shareReplay(1)
+      )
+  } */
   
+/*   getProductsListByCategory(category: string): Observable<Product[]> {
+    return this.afs
+      .collection<Product>(this.productsListRef, (ref) =>
+        ref.where('category', '==', category)
+      )
+      .get()
+      .pipe(
+        map((snap) => {
+          return snap.docs.map((el) => <Product>el.data());
+        })
+      );
+  } */
 
 }
+
+

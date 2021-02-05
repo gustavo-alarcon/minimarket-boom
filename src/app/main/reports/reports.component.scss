@@ -1,0 +1,78 @@
+
+.container-reports{
+    display: flex;
+}
+.product-sales{
+    width: 70%;
+    margin-top: 10px;
+    margin-right: 10px;
+}
+
+.reports{
+    padding: 16px;
+    margin: 4px;
+    box-shadow: 0px 0px 5.66077px 5.66077px rgba(177, 175, 175, 0.25);
+    border-radius: 10px;  
+    margin-bottom: 40px;
+}
+
+.body-report{
+  display: flex;
+}
+
+.descriptions{
+    width: 40%;
+}
+
+.charts{
+    width: 60%;
+
+}
+
+.row-header{
+    display: flex;
+    font-weight: bold;
+    font-size: medium;
+    margin-top: 20px;
+}
+.row{
+    margin-right: 70px;    
+}
+
+.row-body{
+    display: flex;
+}
+
+
+.product-stock{
+    width: 30%;
+    margin-top: 10px;
+}
+
+
+table {
+    width: 100%;
+    margin: 20px auto;
+    table-layout: auto;
+  }
+  
+  .fixed {
+    table-layout: fixed;
+  }
+  
+  table,
+  td,
+  th {
+    border-collapse: collapse;
+  }
+  
+  th,
+  td {
+    padding: 10px;
+    //border: solid 1px;
+    text-align: center;
+  }
+
+  .charts{
+      margin-top: 30px;
+  }
