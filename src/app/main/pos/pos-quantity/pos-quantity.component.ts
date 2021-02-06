@@ -27,10 +27,7 @@ export class PosQuantityComponent implements OnInit {
       this.snackbar.open("Asigne una cantidad", "Aceptar", {
         duration: 3000
       });
-    }
-    
-
-    
+    }    
   }
 
   close(): void {

@@ -68,13 +68,14 @@ export class CashComponent implements OnInit {
             { }
 
   ngOnInit(): void {
+    this.dbs.changeTitle('Caja')
+
     this.searchBoxForm = this.fb.group({
           search: ['', Validators.required]
         })
 
     this.auth.user$.pipe(take(1)).subscribe(user => {             
         this.userCash = user;   
-        console.log('this.userCash : ', this.userCash)     
        });
 
     
@@ -85,27 +86,9 @@ export class CashComponent implements OnInit {
         
         this.openingBalace= this.opening.openingBalance;
 
-          console.log(' this.openings : ', this.opening);       
        }
       );
     
-    /* this.dbs.getTransactionsById(this.userCash.currentCash.uid,this.userCash.currentCash.currentOpening).subscribe(
-     (cash:any) =>      
-       {
-        this.dataSourceCash =cash;
-                
-        console.log('dataSourceCash : ', cash);       
-      }
-      ); */
-
-   /*  this.cash$ == combineLatest(
-        this.dbs.getTransactionsById(this.userCash.currentCash.uid,this.userCash.currentCash.currentOpening)
-      ).pipe(
-        map(([transaction]) => {
-          this.dataSourceCash.data =transaction;
-          return transaction;
-        })
-      ); */
     
     this.cash$ = combineLatest(
       this.dbs.getTransactionsById(this.userCash.currentCash.uid,this.userCash.currentCash.currentOpening),
