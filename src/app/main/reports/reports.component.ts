@@ -41,6 +41,8 @@ export class ReportsComponent  {
 ) { }
 
 ngOnInit(): void {
+  this.dbs.changeTitle('Reportes')
+
   const view = this.dbs.getCurrentMonthOfViewDate();
 
   let beginDate = view.from;
@@ -120,7 +122,7 @@ ngOnInit(): void {
             datasets: [
               {
                 label: "mas vendido",
-                backgroundColor: ["#27AE60", "#05ED67","#FDD651","#F9A826","#EE8434"],
+                backgroundColor: ["#088A29", "#04B404","#3ADF00","#80FF00","#C8FE2E","#F4FA58", "#FACC2E","#FFBF00","#FE9A2E","#FF8000"],
                 data: stockProductMax,
                 fill:false      
               }
@@ -220,7 +222,7 @@ ngOnInit(): void {
             datasets: [
               {
                 label: "mas vendido",
-                backgroundColor: ["#FD1010", "#EB5757","#F9A826","#FEDE72","#FFD600"],
+                backgroundColor: ["#FF0000", "#FE2E2E","#FE642E","#FE642E","#FF8000","#FAAC58", "#F7D358","#FFBF00","#F7FE2E","#FFFF00"],
                 data: stockProductMin,
                 fill:false      
               }

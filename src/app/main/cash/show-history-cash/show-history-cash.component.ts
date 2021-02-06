@@ -98,7 +98,6 @@ export class ShowHistoryCashComponent implements OnInit {
   showTransations(dataOpening){
     this.dialog.open(ShowTransactionsComponent,{
       data:{
-        //userCash:this.data.userCash,  
         idTransacion:dataOpening.uid,  
         idUserCash:this.data.userCash.currentCash.uid,  
       }

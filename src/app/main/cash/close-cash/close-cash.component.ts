@@ -68,14 +68,11 @@ export class CloseCashComponent implements OnInit {
   applyFilter(filterValue: string) {
     filterValue = filterValue.trim();
     filterValue = filterValue.toLowerCase();
-    //this.dataSource.res = filterValue;
   }
   
   closeCash(){
     console.log('close Data : ' , this.data.user)
     console.log(this.dataFormGroup.invalid)
-
-    //if (this.dataFormGroup.invalid) {
         
       console.log('this.dataFormGroup.invalid')
        let closureBalance = this.dataFormGroup.value['closureBalance'];
@@ -156,13 +153,7 @@ export class CloseCashComponent implements OnInit {
       totalBalance:this.totalCashOpening(),
       totalIncome:this.data.totalIncomes,
       totalExpenses:this.data.totalExpenses,
-     /*  
-      totalImport: this.data.totalImport,
-      totalTickets: this.data.totalTickets,
-      totalDepartures: this.data.totalDepartures,
-      totalTicketsByPaymentType: this.data.totalTicketsByPaymentType,
-      totalDeparturesByPaymentType: this.data.totalDeparturesByPaymentType 
-      */
+    
     }
 
       batch.update(openingRef, openingData)
