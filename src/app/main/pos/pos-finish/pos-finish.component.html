@@ -125,8 +125,9 @@
 </div>
 <mat-divider></mat-divider>
 <div mat-dialog-actions class="w3-margin-top" align="end">
-    <button mat-stroked-button class="w3-margin-right" color="warn" (click)="close()">Cancelar</button>
-    <button mat-raised-button color="accent" (click)="save()" type="button"
+    <button mat-stroked-button class="w3-margin-right" color="warn" (click)="close()">Cancelar</button> 
+    <button  #btnSave  class="btn-save" type="button" color="accent"
         [disabled]="payment.value < data.total || !paymentMethod.value" *ngIf="failedItems.length === 0"
-        printSectionId="print-section" ngxPrint>Guardar</button>
+        printSectionId="print-section" ngxPrint (click)="save()" >Guardar</button> 
+    
 </div>

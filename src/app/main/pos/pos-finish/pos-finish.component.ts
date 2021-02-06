@@ -1,4 +1,4 @@
-import { Component, OnInit, Inject, HostListener } from '@angular/core';
+import { Component, OnInit, Inject, HostListener, Renderer2, ViewChild, ElementRef } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogRef, MatDialog } from '@angular/material/dialog';
 import { Ticket } from 'src/app/core/models/ticket.model';
 import { AuthService } from 'src/app/core/services/auth.service';
@@ -20,13 +20,14 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 })
 export class PosFinishComponent implements OnInit {
 
+  @ViewChild('btnSave') btnSave: ElementRef;
+
   @HostListener('window:keyup', ['$event'])
   keyEvent(event: KeyboardEvent) {
     //console.log(event);
-
     if (event.keyCode === 115) {
-      this.save();
-    }
+       this.renderer.selectRootElement(this.btnSave.nativeElement).click();        
+    }    
 
   }
 
@@ -51,8 +52,9 @@ export class PosFinishComponent implements OnInit {
     private dialog: MatDialog,
     private dbs: DatabaseService,
     private snackbar: MatSnackBar,
-    public auth: AuthService
-  ) { }
+    public auth: AuthService,
+    private renderer: Renderer2
+  ) { }  
 
   ngOnInit(): void {
     this.paymentTypes$ = this.dbs.getPayments();
