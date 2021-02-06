@@ -22,7 +22,7 @@ import { ProductPerformance } from '../models/productPerformance.model';
   providedIn: 'root'
 })
 export class DatabaseService {
-  public version: string = 'V1.0.27r';
+  public version: string = 'V2.0.27r';
   public isOpen: boolean = false;
   public isAdmin: boolean = false;
 
