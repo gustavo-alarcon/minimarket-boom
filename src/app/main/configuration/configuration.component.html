@@ -636,9 +636,9 @@
                                         <th *matHeaderCellDef style="padding-top:15px" class="w3-border-left w3-center">Última apertura
                                         </th>
                                         <td mat-cell style="padding-top:15px" *matCellDef="let raw" class="w3-border-left w3-center">
-                                            <span *ngIf="raw.lastOpening">{{raw.lastOpening | date : 'dd/MM/yyyy'}}</span><br>
+                                            <span *ngIf="raw.lastOpening">{{(raw.lastOpening.seconds * 1000) | date : 'dd/MM/yyyy'}}</span><br>
                                             <span *ngIf="raw.lastOpening" class="w3-small"><b>
-                                                    ({{raw.lastOpening | date : 'hh:mm a'}})</b>
+                                                    ({{(raw.lastOpening.seconds * 1000) | date : 'hh:mm:ss'}})</b>
                                             </span>
                                         </td>
                                     </ng-container>
@@ -647,9 +647,9 @@
                                         <th *matHeaderCellDef style="padding-top:15px" class="w3-border-left w3-center">Último cierre
                                         </th>
                                         <td mat-cell style="padding-top:15px" *matCellDef="let raw" class="w3-border-left w3-center">
-                                            <span *ngIf="raw.lastClosure">{{raw.lastClosure | date : 'dd/MM/yyyy'}}</span><br>
+                                            <span *ngIf="raw.lastClosure">{{(raw.lastClosure.seconds * 1000) | date : 'dd/MM/yyyy'}}</span><br>
                                             <span *ngIf="raw.lastClosure" class="w3-small"><b>
-                                                    ({{raw.lastClosure | date : 'hh:mm a'}})</b>
+                                                    ({{(raw.lastClosure.seconds * 1000) | date : 'hh:mm:ss'}})</b>
                                             </span>
                                         </td>
                                     </ng-container>
