@@ -219,6 +219,26 @@
             </td>
           </ng-container>
 
+          <ng-container matColumnDef="saleType">
+            <th *matHeaderCellDef style=" font-size: 0.9em;padding:0px 1em; font-weight: 500; color: #828282; "
+              class="w3-center w3-padding  ">
+              Tipo de venta
+            </th>
+            <td style="font-size:10px; padding:0px 8px; font-weight: bold;" *matCellDef="let raw">
+              {{raw.saleType === '1' ? 'Unidad' : 'Granel'}}
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="calcStock">
+            <th *matHeaderCellDef style=" font-size: 0.9em;padding:0px 1em; font-weight: 500; color: #828282; margin-right: 1em;"
+              class="w3-center w3-padding">
+              Cont. Stock
+            </th>
+            <td style="font-size:10px; padding:0px 8px; font-weight: bold; margin-right: 1em" *matCellDef="let raw">
+              {{raw.calcStock === '1' ? 'Si' : 'No'}}
+            </td>
+          </ng-container>
+
           <ng-container matColumnDef="actions" stickyEnd>
             <th *matHeaderCellDef style=" font-size: 0.9em;padding:0px 1em; font-weight: 500; color: #828282; "
               class="w3-center w3-padding w3-border-left w3-border-lightgrey">Acciones</th>

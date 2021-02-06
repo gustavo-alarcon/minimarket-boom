@@ -20,13 +20,28 @@ import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { LoginDialogComponent } from './login-dialog/login-dialog.component';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatInputModule } from '@angular/material/input';
+import {MatSelectModule} from '@angular/material/select';
+
+
+import { MatNativeDateModule } from '@angular/material/core';
+import { MatDatepickerModule } from '@angular/material/datepicker';
+
+import { MatExpansionModule } from '@angular/material/expansion';
+import { CashComponent } from './cash/cash.component';
+import { LoginCashComponent } from './login-cash/login-cash.component';
+import { MatPaginatorModule } from '@angular/material/paginator';
+import { MatTableModule } from '@angular/material/table';
+import { ReportsComponent } from './reports/reports.component';
 
 
 @NgModule({
   declarations: [
     MainComponent,
     ConfirmationDialogComponent,
-    LoginDialogComponent
+    LoginDialogComponent,
+    CashComponent,
+    LoginCashComponent,
+    ReportsComponent
   ],
   imports: [
     CommonModule,
@@ -45,6 +60,15 @@ import { MatInputModule } from '@angular/material/input';
     FormsModule,
     MatCheckboxModule,
     MatInputModule,
+    MatExpansionModule,
+    MatSelectModule,
+    MatPaginatorModule,
+    MatTableModule,
+
+    MatNativeDateModule,
+    MatDatepickerModule,
+
+  
   ],
   entryComponents: [
     ConfirmationDialogComponent,

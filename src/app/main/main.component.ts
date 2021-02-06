@@ -17,6 +17,7 @@ export class MainComponent implements OnInit {
   version: string
 
   openedMenu: boolean = false;
+  confiOpenedFlag: boolean = false;
 
   sub: any;
   title$: Observable<string>;
@@ -27,7 +28,7 @@ export class MainComponent implements OnInit {
     public themeService: ThemeService,
     private dialog: MatDialog,
     private dbs: DatabaseService,
-    public route: Router
+    public router: Router
   ) {
 
   }
@@ -46,6 +47,18 @@ export class MainComponent implements OnInit {
   ngOnDestroy() {
     // this.sub.unsubscribe();
   }
+  navigateCash(){
+    this.openedMenu = !this.openedMenu;
+    let route ='cash'
+    this.router.navigate(['main/login-cash', route]);
+
+  }
+  navigatePOS(){
+    this.openedMenu = !this.openedMenu;
+    let route ='pos'
+    this.router.navigate(['main/login-cash', route]);
+
+  }
 
   toggleSideMenu(): void {
     this.openedMenu = !this.openedMenu;
@@ -57,6 +70,14 @@ export class MainComponent implements OnInit {
 
   logout() {
     this.auth.logout();
+  }
+
+  confiOpened(): void{
+    this.confiOpenedFlag = true;
+  }
+
+  confiClosed(): void{
+    this.confiOpenedFlag = false;
   }
 
 }

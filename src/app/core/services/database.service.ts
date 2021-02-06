@@ -15,12 +15,14 @@ import { Package } from '../models/package.model';
 import { Ticket } from '../models/ticket.model';
 import { title } from 'process';
 import { StoreSale } from '../models/storeSale.model';
+import { CashBox } from '../models/cashBox.model';
+import { ProductPerformance } from '../models/productPerformance.model';
 
 @Injectable({
   providedIn: 'root'
 })
 export class DatabaseService {
-  public version: string = 'V1.0.26r';
+  public version: string = 'V2.0.27r';
   public isOpen: boolean = false;
   public isAdmin: boolean = false;
 
@@ -733,6 +735,50 @@ export class DatabaseService {
         shareReplay(1)
       )
   }
+  
+  getIncomes(): Observable<any> {
+    return this.afs.collection(`/db/minimarketBoom/config`).doc('generalConfig').valueChanges()
+      .pipe(
+        map(res => res['incomes']),
+        map(res => {
+          return res.sort((a, b) => {
+            const nameA = a.name;
+            const nameB = b.name;
+
+            let comparison = 0;
+            if (nameA > nameB) {
+              comparison = 1;
+            } else if (nameA < nameB) {
+              comparison = -1;
+            }
+            return comparison;
+          });
+        }),
+        shareReplay(1)
+      )
+  } 
+
+  getExpenses(): Observable<any> {
+    return this.afs.collection(`/db/minimarketBoom/config`).doc('generalConfig').valueChanges()
+      .pipe(
+        map(res => res['expenses']),
+        map(res => {
+          return res.sort((a, b) => {
+            const nameA = a.name;
+            const nameB = b.name;
+
+            let comparison = 0;
+            if (nameA > nameB) {
+              comparison = 1;
+            } else if (nameA < nameB) {
+              comparison = -1;
+            }
+            return comparison;
+          });
+        }),
+        shareReplay(1)
+      )
+  } 
 
   getConfiUsers(): Observable<User[]> {
     return this.afs.collection<User>(`/users`, ref => ref.where("role", '>=', ''))
@@ -758,4 +804,113 @@ export class DatabaseService {
     return this.afs.doc<Product>(`${this.productsListRef}/${id}`)
       .valueChanges().pipe (shareReplay(1));
   }
+
+  // CASH BOX
+  getAllCashBox(): Observable<CashBox[]> {
+    return this.afs.collection<CashBox>('/db/minimarketBoom/cashBox',(ref) =>
+    ref.orderBy('createdAt', 'desc')).valueChanges();
+  }
+
+  getUsersValueChanges(): Observable<any[]> {
+    return this.afs.collection(`/users`, ref => ref.where("role", '>=', ''))
+      .valueChanges().pipe(
+        shareReplay(1)
+      );
+  }
+
+  getcashBoxStatic(): Observable<CashBox[]> {
+    return this.afs.collection<CashBox>(`/db/minimarketBoom/cashBox`)
+      .get().pipe(map((snap) => {
+        return snap.docs.map(el => <CashBox>el.data())
+      }));
+  }
+
+  getCashierValueChanges(): Observable<CashBox[]> {
+    return this.afs.collection<CashBox>(`/db/minimarketBoom/cashBox`)
+      .valueChanges().pipe(
+        shareReplay(1)
+      );
+  }
+
+  loginCash(caja:string,pass:string): Observable<any[]> {
+    return this.afs.collection('/db/minimarketBoom/cashBox', (ref) =>
+    ref.where("cashier", "==",caja) .where("password", '==', pass)
+  ).get().pipe(
+    map((snap) => {
+      return snap.docs.map((el) => <CashBox>el.data());
+    })
+  );
+  }
+   
+  getOpeningById(idCash:string,idOpening: string): Observable<any> {
+    return this.afs.collection<any>(`/db/minimarketBoom/cashBox/${idCash}/openings`).doc(idOpening)
+      .valueChanges().pipe (shareReplay(1));
+  }
+
+  getAllOpeningsById(idCash:string): Observable<any[]> {    
+      return this.afs.collection<any>(`/db/minimarketBoom/cashBox/${idCash}/openings`,
+      ref => ref. orderBy("openingDate", 'desc'))
+      .valueChanges();
+
+  }
+  
+  
+  getTransactionsById(idCash:string,idOpening: string): Observable<any[]> {
+    return this.afs.collection<any>(`/db/minimarketBoom/cashBox/${idCash}/openings/${idOpening}/transactions`,
+        ref => ref.orderBy("createdAt", 'desc'))
+        .valueChanges();
+
+  }
+
+  getProductListOrderByMinStock(): Observable<Product[]> {
+    return this.afs.collection<Product>(`/db/minimarketBoom/productsList`
+    ).valueChanges();
+  }   
+
+  getAllProductPerformance(): Observable<ProductPerformance[]> {
+    return this.afs.collection<ProductPerformance>(`/db/minimarketBoom/productPerformance`
+    ).valueChanges();
+  }
+  getAllProductList(): Observable<Product[]> {
+    return this.afs.collection<Product>(`/db/minimarketBoom/productsList`
+    ).valueChanges();
+  }  
+
+  /* getProductListOrderByMinStock1(): Observable<any> {
+    return this.afs.collection(`/db/minimarketBoom/productsList`).valueChanges()
+      .pipe(
+        map(res => res['realStock']),
+        map(res => {
+          return res.sort((a, b) => {
+            const nameA = a.name;
+            const nameB = b.name;
+
+            let comparison = 0;
+            if (nameA > nameB) {
+              comparison = 1;
+            } else if (nameA < nameB) {
+              comparison = -1;
+            }
+            return comparison;
+          });
+        }),
+        shareReplay(1)
+      )
+  } */
+  
+/*   getProductsListByCategory(category: string): Observable<Product[]> {
+    return this.afs
+      .collection<Product>(this.productsListRef, (ref) =>
+        ref.where('category', '==', category)
+      )
+      .get()
+      .pipe(
+        map((snap) => {
+          return snap.docs.map((el) => <Product>el.data());
+        })
+      );
+  } */
+
 }
+
+

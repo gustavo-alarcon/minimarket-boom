@@ -1,0 +1,106 @@
+<div class="ms-font-montserrat mat-title ms-color-11">
+    <mat-icon class="ms-icons-color" style="position: relative; top: 5px; font-size: 1.5em;">attach_money</mat-icon> Totales
+</div>
+<mat-divider></mat-divider>
+
+<mat-dialog-content style="min-width:300px;">
+    <div class="w3-row">
+        <div class="w3-third">
+            <div class="w3-margin">
+                <p class="ms-font-montserrat mat-subheading-2 ms-color-11">Caja (Efectivo)</p>
+                <table class="w3-table w3-striped w3-border mat-elevation-z8">
+                    <tr>
+                        <th style="min-width:100px">Fuente</th>
+                        <th>Importe</th>
+                    </tr>
+                    <tr class="w3-border-top w3-border-gray">
+                        <td>Importe inicial:</td>
+                        <td>{{data.opening.openingBalance | currency:"S/. "}}</td>
+                    </tr>
+                    <tr>
+                        <td>Total Ingresos:</td>
+                        <td>{{totalIncome | currency : 'S/.'}}</td>
+                    </tr>
+                    <tr>
+                        <td>Egresos:</td>
+                             <td>{{totalExpenses | currency : 'S/.'}}</td>
+                       </tr>
+                    <tr class="w3-border-top w3-border-gray">
+                        <td>Saldo Total</td>
+                        <td > <span class="color-total" >{{ totalCash() | currency : 'S/.'}}</span> </td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+        <div class="w3-third">
+            <div class="w3-margin">
+                <p class="ms-font-montserrat mat-subheading2 ms-color-11">Ingresos por tipo</p>
+                <table class="w3-table w3-striped w3-border mat-elevation-z8">
+                    <tr>
+                        <th style="min-width:50px">Fuente</th>
+                        <th>Importe</th>
+                    </tr>
+                    <tr class="w3-border-top w3-border-gray">
+                        <td>Venta Efectivo:</td>
+                        <td>{{totalIncomeEfectivo | currency : 'S/.'}}</td>
+                    </tr>
+                    <tr>
+                        <td>Ventas Tarjeta Visa:</td>
+                        <td>{{totalIncomeVisa | currency : 'S/.'}}</td>
+                    </tr>
+                    <tr>
+                        <td>Ventas por Yape:</td>
+                        <td>{{ totalIncomeYape | currency : 'S/.'}}</td>
+                    </tr>
+                    <tr>
+                        <td>Ventas por IZIPAY:</td>
+                        <td>{{ totalIncomeIZIPAY | currency : 'S/.'}}</td>
+                    </tr>
+    
+                    <tr class="w3-border-top w3-border-gray">
+                        <td>Total</td>
+                        <td> <span class="color-total" >{{totalIncomeType() | currency : 'S/.'}}</span></td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+        <div class="w3-third">
+            <div class="w3-margin">
+                <p class="ms-font-montserrat mat-subheading2 ms-color-11">Egresos por tipo</p>
+                <table class="w3-table w3-striped w3-border mat-elevation-z8">
+                    <tr>
+                        <th style="min-width:100px">Fuente</th>
+                        <th>Importe</th>
+                    </tr>
+                    <tr class="w3-border-top w3-border-gray">
+                        <td>Salida por Efectivo:</td>
+                        <td>{{totalExpensesEfectivo | currency : 'S/.'}}</td>
+                    </tr>
+                    <tr>
+                        <td>Salida por Tarjeta Visa:</td>
+                        <td>{{totalExpensesVisa | currency : 'S/.'}}</td>
+                    </tr>
+                    <tr>
+                        <td>Salida por Yape:</td>
+                        <td>{{ totalExpensesYape | currency : 'S/.'}}</td>
+                    </tr>
+                    <tr>
+                        <td>Salida por IZIPAY:</td>
+                        <td>{{ totalExpensesIZIPAY | currency : 'S/.'}}</td>
+                    </tr>
+                    <tr class="w3-border-top w3-border-gray">
+                        <td>Total Egresos</td>
+                        <td> <span class="color-total" >{{totalExpensesType() | currency : 'S/.'}}</span></td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+    </div>
+
+   
+</mat-dialog-content>
+
+<mat-divider class="w3-margin-top"></mat-divider>
+<mat-dialog-actions align="end">
+    <button mat-stroked-button class="w3-margin-right color-exit" mat-dialog-close>Cerrar</button>
+</mat-dialog-actions>

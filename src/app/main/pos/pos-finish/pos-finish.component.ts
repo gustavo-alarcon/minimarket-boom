@@ -1,4 +1,4 @@
-import { Component, OnInit, Inject } from '@angular/core';
+import { Component, OnInit, Inject, HostListener } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogRef, MatDialog } from '@angular/material/dialog';
 import { Ticket } from 'src/app/core/models/ticket.model';
 import { AuthService } from 'src/app/core/services/auth.service';
@@ -19,6 +19,16 @@ import { MatSnackBar } from '@angular/material/snack-bar';
   styleUrls: ['./pos-finish.component.scss']
 })
 export class PosFinishComponent implements OnInit {
+
+  @HostListener('window:keyup', ['$event'])
+  keyEvent(event: KeyboardEvent) {
+    //console.log(event);
+
+    if (event.keyCode === 115) {
+      this.save();
+    }
+
+  }
 
   loading = new BehaviorSubject<boolean>(false);
   loading$ = this.loading.asObservable();

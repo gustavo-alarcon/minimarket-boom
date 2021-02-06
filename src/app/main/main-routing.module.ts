@@ -2,6 +2,8 @@ import { NgModule } from '@angular/core';
 import { MainComponent } from './main.component';
 import { Routes, RouterModule } from '@angular/router';
 import { AuthGuard } from '../core/auth.guard';
+import { LoginCashComponent } from './login-cash/login-cash.component';
+import { LoginCashModule } from './login-cash/login-cash.module';
 
 const routes: Routes = [
   {
@@ -57,6 +59,21 @@ const routes: Routes = [
         path: 'customers',
         loadChildren: () => import('./customers/customers.module').then(mod => mod.CustomersModule),
         canActivate: [AuthGuard]
+      },
+      {
+        path: 'login-cash/:login',
+        loadChildren: () => import('./login-cash/login-cash.module').then(mod => mod.LoginCashModule),
+       /* S */
+      },      
+      {
+        path: 'cash',
+        loadChildren: () => import('./cash/cash.module').then(mod => mod.CashModule),
+        /* canActivate: [AuthGuard] */
+      },
+      {
+        path: 'reports',
+        loadChildren: () => import('./reports/reports.module').then(mod => mod.ReportsModule),
+        /* canActivate: [AuthGuard] */
       },
     ]
   }

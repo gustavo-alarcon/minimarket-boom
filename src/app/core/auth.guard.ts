@@ -44,8 +44,12 @@ export class AuthGuard implements CanActivate {
             return user ? (!!user.admin || !!user.logistic) : false;
           case 'configuration':
             return user ? !!user.admin : false;
+          case 'reports':
+              return user ? !!user.admin : false;
+          case 'login-cash':
+              return user ? !!user.admin : false;
           default:
-            return true;
+            return true; 
         }
       }),
       tap(res => {

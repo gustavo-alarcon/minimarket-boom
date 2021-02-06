@@ -3,11 +3,12 @@ import { CanActivateChild, ActivatedRouteSnapshot, RouterStateSnapshot, UrlTree,
 import { Observable } from 'rxjs';
 import { DatabaseService } from './services/database.service';
 import { tap } from 'rxjs/internal/operators/tap';
-import { map, switchMap, take, shareReplay } from 'rxjs/operators';
+import { map, switchMap, take, shareReplay, catchError } from 'rxjs/operators';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { AuthService } from './services/auth.service';
 import { StoreClosedDialogComponent } from '../shared-dialogs/store-closed-dialog/store-closed-dialog.component';
+import { of } from 'rxjs/internal/observable/of';
 
 @Injectable({
   providedIn: 'root'
@@ -25,7 +26,6 @@ export class OpeningGuard implements CanActivateChild {
   ];
 
   constructor(
-    private router: Router,
     private dbs: DatabaseService,
     private auth: AuthService,
     private snackbar: MatSnackBar,
@@ -46,6 +46,11 @@ export class OpeningGuard implements CanActivateChild {
     return this.auth.user$.pipe(
       switchMap(user => {
         return this.dbs.opening$.pipe(
+          catchError(err => {
+            console.log(err);
+            console.log('caught rethrown error, providing fallback value');
+            return of([]);
+          }),
           map(res => {
 
             // Conditioning the system based in opening and closing time
@@ -58,7 +63,7 @@ export class OpeningGuard implements CanActivateChild {
             } else {
               // console.log('is not admin')
               this.dbs.isAdmin = false;
-              
+
               // Calculating the actual decimal time based in hours
               let now = new Date();
               let day = now.getDay();
@@ -141,6 +146,7 @@ export class OpeningGuard implements CanActivateChild {
           //   // }
 
           // })
+
         );
       })
     )

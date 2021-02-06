@@ -1,3 +1,4 @@
+import { CashBox } from './cashBox.model';
 export interface User {
   uid: string;
   email: string;
@@ -9,6 +10,7 @@ export interface User {
   lastName2?: string;
   completeName?: string;
   displayName?: string;
+  currentCash?:CashBox | null;
   token?: string;
   admin?: boolean;
   seller?: boolean;

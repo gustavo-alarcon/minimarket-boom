@@ -12,6 +12,7 @@ import { Router } from '@angular/router';
 import * as firebase from 'firebase/app';
 import 'firebase/auth';
 import { Platform } from '@angular/cdk/platform';
+import { CashBox } from '../models/cashBox.model';
 
 export const googleProvider = new firebase.auth.GoogleAuthProvider();
 export const facebookProvider = new firebase.auth.FacebookAuthProvider();
@@ -30,7 +31,7 @@ export class AuthService {
     private afs: AngularFirestore,
     private router: Router,
     public snackbar: MatSnackBar,
-    private platform: Platform,
+    private platform: Platform, 
     private dbs: DatabaseService
   ) {
 
@@ -41,7 +42,7 @@ export class AuthService {
       this.afAuth.authState.pipe(
         switchMap(user => {
           if (user) {
-            this.updateUserData(user);
+            //this.updateUserData(user);
             return this.afs.collection('users').doc<User>(user.uid)
               .valueChanges()
               // .pipe(
@@ -80,13 +81,22 @@ export class AuthService {
         break;
     }
 
+    
+
     if (this.platform.ANDROID || this.platform.IOS) {
       return this.afAuth.signInWithRedirect(provider)
+        .then(auth=>{
+          this.updateUserData(auth['user']);
+        })
         .catch(error => {
           this.handleError(error)
         });
     } else {
+      
       return this.afAuth.signInWithPopup(provider)
+      .then(auth=>{
+        this.updateUserData(auth['user']);
+      })
         .catch(error => {
           this.handleError(error)
         })
@@ -103,6 +113,7 @@ export class AuthService {
       email: user.email,
       displayName: user.displayName,
       photoURL: user.photoURL,
+      //currentCash:user.currentCash,
       lastLogin: new Date(),
       lastBrowser: [key.length ? key.join(", ") : "empty", navigator.userAgent]
     }

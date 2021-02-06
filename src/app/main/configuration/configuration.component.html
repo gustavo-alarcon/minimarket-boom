@@ -546,6 +546,289 @@
 
 
                 </mat-expansion-panel>
+
+
+                <mat-expansion-panel class="w3-margin-bottom">
+                    <mat-expansion-panel-header>
+                        <mat-panel-title>
+                            <h4 class="admin__title">Administración de cajas</h4>
+                        </mat-panel-title>
+                    </mat-expansion-panel-header>
+
+                    <mat-progress-bar *ngIf="loadingCategories$ | async" mode="indeterminate"></mat-progress-bar>
+                    
+                    <div class="admin__container">
+                        <div class="container-search">
+                        
+                                <button mat-raised-button color="accent" class="w3-margin-right"
+                                    (click)="createCashBox(null,false)">
+                                    Crear caja
+                                </button>
+                            
+                                <div class="text-caja">
+                                    <div class="icon-cajas" >
+                                        <mat-icon class="icon-caja" >attach_money</mat-icon>
+                                    </div>
+                                    <p class="text-name-caja">
+                                       0{{counterBox}} Cajas 
+                                    </p>
+                                </div>
+                        
+                                <form class="detail-form formFieldRounded form-search" [formGroup]="searchBoxForm">
+                                    <mat-form-field class="input-search-caja" appearance="outline">
+                                        <mat-label>Buscar</mat-label>
+                                        <input matInput type="text" placeholder="Escriba..." formControlName="box"
+                                            autocomplete="off">
+                                        <mat-icon matPrefix>search</mat-icon>
+                                    </mat-form-field>
+                                </form>
+                            
+                            
+                        </div>
+                        
+                        <div *ngIf="cashBox$ | async as adminList">
+                            <mat-progress-bar *ngIf="loadingCashBox$ | async" mode="indeterminate"></mat-progress-bar>
+                            <div class="">
+                                <table mat-table [dataSource]="dataSourceCashBox" matSort class="w3-table w3-bordered w3-border w3-center">
+                                    <ng-container  matColumnDef="index">
+                                        <th *matHeaderCellDef class="w3-center" style="padding-top: 15px;">
+                                            N°
+                                        </th>
+                                        <td style="padding-top:15px" class="w3-center" mat-cell *matCellDef="let raw; let i = index">
+                                              {{raw.index + 1-1}}
+                                        </td>
+                                      
+                                    </ng-container>
+
+                                    <ng-container  matColumnDef="state">
+                                        <th *matHeaderCellDef style="padding-top:15px"  class="w3-border-left w3-center">Estado
+                                        </th>
+                                        <td mat-cell  style="padding-top:10px"  *matCellDef="let raw" class="w3-border-left w3-center">                                              
+                                            <span style="padding: 8px 8px; border-radius: 10px"
+                                                [ngClass]="{'btn-state-open': raw.open,'btn-state-close': !raw.open}">{{raw.open ? 'Abierta' : 'Cerrada'}}
+                                            </span>                                                                       
+                                        </td>
+                                    </ng-container>
+
+                                    <ng-container  matColumnDef="caja">
+                                        <th *matHeaderCellDef   style="padding-top:15px;width: 100px;"  class="w3-border-left w3-center">Caja 
+                                        </th>
+                                        <td mat-cell  style="padding-top:15px; width: 100px;"  *matCellDef="let raw" class="w3-border-left w3-center">
+                                            {{raw.cashier}}
+                                        </td>
+                                    </ng-container>
+                                    <ng-container matColumnDef="user">
+                                        <th *matHeaderCellDef  style="padding-top:15px" class="w3-border-left w3-center">Usuario
+                                        </th>
+                                        <td mat-cell  style="padding-top:15px" *matCellDef="let raw" class="w3-border-left w3-center">
+                                            {{raw.currentOwner ? raw.currentOwner.displayName : '---'}}
+                                        </td>
+                                    </ng-container>
+                                    <ng-container class=" w3-center" matColumnDef="password">
+                                        <th *matHeaderCellDef  style="padding-top:15px" class="w3-border-left w3-center">Contraseña
+                                        </th>
+                                        <td mat-cell  style="padding-top:15px" *matCellDef="let raw" class="w3-border-left w3-center">
+                                            {{raw.password}}
+                                        </td>
+                                    </ng-container>  
+
+                                    <ng-container class=" w3-center" matColumnDef="lastOpening">
+                                        <th *matHeaderCellDef style="padding-top:15px" class="w3-border-left w3-center">Última apertura
+                                        </th>
+                                        <td mat-cell style="padding-top:15px" *matCellDef="let raw" class="w3-border-left w3-center">
+                                            <span *ngIf="raw.lastOpening">{{(raw.lastOpening.seconds * 1000) | date : 'dd/MM/yyyy'}}</span><br>
+                                            <span *ngIf="raw.lastOpening" class="w3-small"><b>
+                                                    ({{(raw.lastOpening.seconds * 1000) | date : 'hh:mm:ss'}})</b>
+                                            </span>
+                                        </td>
+                                    </ng-container>
+
+                                    <ng-container class=" w3-center" matColumnDef="lastClosing">
+                                        <th *matHeaderCellDef style="padding-top:15px" class="w3-border-left w3-center">Último cierre
+                                        </th>
+                                        <td mat-cell style="padding-top:15px" *matCellDef="let raw" class="w3-border-left w3-center">
+                                            <span *ngIf="raw.lastClosure">{{(raw.lastClosure.seconds * 1000) | date : 'dd/MM/yyyy'}}</span><br>
+                                            <span *ngIf="raw.lastClosure" class="w3-small"><b>
+                                                    ({{(raw.lastClosure.seconds * 1000) | date : 'hh:mm:ss'}})</b>
+                                            </span>
+                                        </td>
+                                    </ng-container>
+
+                                    <ng-container matColumnDef="actions" stickyEnd>
+                                        <th  *matHeaderCellDef
+                                        style="padding-top:15px" class="w3-border-left w3-center">
+                                          Acciones
+                                        </th>
+                                        <td mat-cell *matCellDef="let raw" style="padding-top:15px" class="w3-border-left w3-center">
+                                          <ng-container>
+                                            <mat-menu #rawMenu="matMenu">
+                                              <button class="w3-small" mat-menu-item (click)="editCashBox(raw,true)">
+                                                <mat-icon>edit</mat-icon> 
+                                                Editar
+                                              </button>
+                                              <button class="w3-small" mat-menu-item (click)="deleteCashBox(raw)">
+                                                <mat-icon>delete</mat-icon>
+                                                Eliminar
+                                              </button>
+                                            </mat-menu>
+                          
+                                            <button mat-icon-button [matMenuTriggerFor]="rawMenu">
+                                              <mat-icon>more_vert</mat-icon>
+                                            </button>
+                                          </ng-container>
+                                        </td>
+                                      </ng-container>
+
+                                    <tr mat-header-row *matHeaderRowDef="displayedColumnsCashBox; sticky: true"></tr>
+                                    <tr mat-row *matRowDef="let row; columns: displayedColumnsCashBox;"></tr>
+
+                                </table>    
+                                <mat-paginator #paginatorCashBox style="background: transparent;"
+                                    [pageSizeOptions]="[5, 10, 20]" showFirstLastButtons>
+                                </mat-paginator>
+                            </div>
+                          
+                        </div>
+                    </div>
+                </mat-expansion-panel>
+
+                <mat-expansion-panel class="w3-margin-bottom">
+                    <mat-expansion-panel-header>
+                        <mat-panel-title>
+                            <h4 class="admin__title">Tipos de Ingresos y Egresos </h4>
+                        </mat-panel-title>
+                    </mat-expansion-panel-header>
+
+                    <div class="containerIncomes">
+
+                        <div class="ingresos">
+                            <div>
+                                <form class="detail-form formFieldRounded" [formGroup]="incomeForm">
+                                    <mat-form-field class="admin__input w3-small" appearance="outline">
+                                        <mat-icon matPrefix></mat-icon>
+                                        <mat-label>tipo de ingreso</mat-label>
+                                        <input matInput type="text" placeholder="Escriba..." formControlName="income"
+                                            autocomplete="off">
+                                        <mat-error>
+                                            <span *ngIf="incomeForm.get('income').errors?.required">Campo requerido</span>
+                                            <span *ngIf="incomeForm.get('income').hasError('repeatedValidatorIncome')">
+                                                ingreso Repetido
+                                            </span>
+                                        </mat-error>
+                                    </mat-form-field>
+    
+                                    <button mat-mini-fab color="accent" class="w3-hide-small mat-normal"
+                                        (click)="addIncomes()" [disabled]="!incomeForm.valid">
+                                        <mat-icon>add</mat-icon>
+                                    </button>
+    
+                                </form>
+    
+                            </div>
+    
+                            <div *ngIf="income$ | async ">
+                                <mat-progress-bar *ngIf="loadingIncome$ | async" mode="indeterminate"></mat-progress-bar>
+                                <div class="w3-hide-small ">
+                                    <table mat-table [dataSource]="dataSourceIncome" matSort class="ms-table">
+    
+                                        <ng-container class=" w3-center" matColumnDef="income">
+                                            <th *matHeaderCellDef class="w3-cente ms-table__th">Ingresos
+                                            </th>
+                                            <td mat-cell *matCellDef="let element" class="ms-table__td">
+                                                {{element['income']}}
+                                            </td>
+                                        </ng-container>    
+                                      
+                                        <ng-container class="w3-center" matColumnDef="actions" sticky>
+                                            <th *matHeaderCellDef style="padding-left:0.5em;"
+                                                class="w3-center ms-table__th">
+                                                Acciones</th>
+                                            <td mat-cell *matCellDef="let element" class="w3-center ms-table__td">
+                                                <button mat-icon-button (click)="editIncome(element)">
+                                                    <mat-icon>edit</mat-icon>
+                                                </button>
+                                                <button mat-icon-button (click)="deleteIncome(element)">
+                                                    <mat-icon>delete</mat-icon>
+                                                </button>
+                                            </td>
+                                        </ng-container>
+                                        <tr mat-header-row *matHeaderRowDef="displayedColumnsIncome; sticky: true"></tr>
+                                        <tr mat-row *matRowDef="let row; columns: displayedColumnsIncome;"></tr>
+    
+                                    </table>
+                                    <mat-paginator #paginatorIcome style="background: transparent;"
+                                        [pageSizeOptions]="[5, 10, 20]" showFirstLastButtons>
+                                    </mat-paginator>
+                                </div>
+                                
+                            </div>
+                        </div>
+
+                        <div class="egresos">
+                            <div>
+                                <form class="detail-form formFieldRounded" [formGroup]="expensesForm">
+                                    <mat-form-field class="admin__input w3-small" appearance="outline">
+                                        <mat-icon matPrefix></mat-icon>
+                                        <mat-label>tipo de egreso</mat-label>
+                                        <input matInput type="text" placeholder="Escriba..." formControlName="expenses"
+                                            autocomplete="off">
+                                        <mat-error>
+                                            <span *ngIf="expensesForm.get('expenses').errors?.required">Campo requerido</span>
+                                            <span *ngIf="expensesForm.get('expenses').hasError('repeatedValidatorExpenses')">
+                                                Egreso Repetido
+                                            </span>
+                                        </mat-error>
+                                    </mat-form-field>
+    
+                                    <button mat-mini-fab color="accent" class="w3-hide-small mat-normal"
+                                        (click)="addExpenses()" [disabled]="!expensesForm.valid">
+                                        <mat-icon>add</mat-icon>
+                                    </button>    
+                                </form>    
+                            </div>
+    
+                            <div *ngIf="expenses$ | async "> 
+                                <mat-progress-bar *ngIf="loadingExpenses$ | async" mode="indeterminate"></mat-progress-bar>
+                                <div class="w3-hide-small ">
+                                    <table mat-table [dataSource]="dataSourceExpenses" matSort class="ms-table">
+    
+                                        <ng-container class=" w3-center" matColumnDef="expenses">
+                                            <th *matHeaderCellDef class="w3-cente ms-table__th">Egresos
+                                            </th>
+                                            <td mat-cell *matCellDef="let element" class="ms-table__td">
+                                                {{element['expenses']}}
+                                            </td>
+                                        </ng-container>    
+                                      
+                                        <ng-container class="w3-center" matColumnDef="actions" sticky>
+                                            <th *matHeaderCellDef style="padding-left:0.5em;"
+                                                class="w3-center ms-table__th">
+                                                Acciones</th>
+                                            <td mat-cell *matCellDef="let element" class="w3-center ms-table__td">
+                                                <button mat-icon-button (click)="editExpenses(element)">
+                                                    <mat-icon>edit</mat-icon>
+                                                </button>
+                                                <button mat-icon-button (click)="deleteExpenses(element)">
+                                                    <mat-icon>delete</mat-icon>
+                                                </button>
+                                            </td>
+                                        </ng-container>
+                                        <tr mat-header-row *matHeaderRowDef="displayedColumnsExpenses; sticky: true"></tr>
+                                        <tr mat-row *matRowDef="let row; columns: displayedColumnsExpenses;"></tr>
+    
+                                    </table>
+                                    <mat-paginator #paginatorExpenses style="background: transparent;"
+                                        [pageSizeOptions]="[5, 10, 20]" showFirstLastButtons>
+                                    </mat-paginator>
+                                </div>
+                                
+                            </div>
+                        </div>
+                        
+
+                    </div>
+                </mat-expansion-panel>
+
             </div>
 
         </div>

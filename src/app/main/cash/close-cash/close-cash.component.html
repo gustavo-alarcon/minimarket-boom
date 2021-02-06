@@ -1,0 +1,86 @@
+<div class="ms-font-montserrat mat-title">
+    <mat-icon class="ms-icons-color" style="vertical-align:middle">vpn_key</mat-icon> Cierre de caja
+</div>
+
+<mat-divider class="w3-margin-top"></mat-divider>
+
+<!-- <mat-progress-bar mode="indeterminate" *ngIf="loading"></mat-progress-bar> -->
+
+<mat-dialog-content class="w3-margin-top" style="min-width:300px">
+    <h5>¿ Esta seguro de cerrar la caja {{data.user.currentCash.cashier}} ?</h5>
+    <form [formGroup]="dataFormGroup">
+
+       <mat-form-field class="w3-margin-bottom w3-block" appearance="outline" style="margin-bottom: 10px;">
+            <mat-label>Saldo final (S/. Efectivo)</mat-label>
+            <input matInput type="number" min="0" step="0.01" formControlName="closureBalance" placeholder="0"
+                autocomplete="off">
+            <mat-error>  Requerido * </mat-error>
+        </mat-form-field><br>
+
+        <div>
+            <mat-checkbox value="checked" (click)="changeValue(checked)" color="primary">
+            Detallar distribución de efectivo 
+            </mat-checkbox>  
+
+            <div *ngIf="checked">
+                <table mat-table [dataSource]="dataSource" matSort class="w3-table w3-bordered w3-border w3-center">                
+    
+                    <ng-container  matColumnDef="money">
+                        <th *matHeaderCellDef style="padding-top:15px"  class="w3-border-left w3-center">Denominación
+                        </th>
+                        <td mat-cell  style="padding-top:10px"  *matCellDef="let raw" class="w3-border-left w3-center">
+                            {{raw.money}}                                                                                    
+                        </td>
+                    </ng-container>
+    
+                    <ng-container  matColumnDef="count">
+                        <th *matHeaderCellDef   style="padding-top:15px;width: 100px;"  class="w3-border-left w3-center">Qty 
+                        </th>
+                        <td mat-cell  style="padding-top:15px; width: 100px;"  *matCellDef="let raw" class="w3-border-left w3-center">
+                            
+                            <input type="number" matInput placeholder="quantity" value="{{raw.count}}"
+                            (change)="changeInput($event ,raw)"
+                            >
+                        </td>
+                    </ng-container>
+
+                    <ng-container matColumnDef="total">
+                        <th *matHeaderCellDef  style="padding-top:15px" class="w3-border-left w3-center">Total
+                        </th>
+                        <td mat-cell  style="padding-top:15px" *matCellDef="let raw" class="w3-border-left w3-center">
+                            S/.  {{raw.total}}
+                        </td>
+                    </ng-container>
+
+                    <tr mat-header-row *matHeaderRowDef="displayedColumns; sticky: true"></tr>
+                    <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+                    
+                </table>
+            </div>
+            <mat-error>  Revise * </mat-error>
+        </div>      
+
+        <mat-form-field class="w3-block" appearance="outline" style="margin-top: 20px;">
+            <mat-label>Contraseña</mat-label>
+            <input matInput [type]="hidePass ? 'password' : 'text'" formControlName="pass" placeholder="*****"
+                autocomplete="off">
+            <button mat-icon-button matSuffix (click)="hidePass = !hidePass" [attr.aria-label]="'Ocultar contraseña'"
+                [attr.aria-pressed]="hidePass">
+                <mat-icon>{{hidePass ? 'visibility_off' : 'visibility'}}</mat-icon>
+            </button>
+            <mat-error>
+              Campo requerido *
+            </mat-error>
+        </mat-form-field>
+
+       
+    </form>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+    <button mat-stroked-button class="btn-exit" mat-dialog-close>Cancelar</button>
+    <button mat-raised-button class="btn-save" (click)="closeCash()" [disabled]="!dataFormGroup.valid"  *ngIf="!balaceDetail"
+        >Si cerrar
+    </button>
+
+</mat-dialog-actions>

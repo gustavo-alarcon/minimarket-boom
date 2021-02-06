@@ -1,0 +1,158 @@
+<div class="w3-section w3-margin-left w3-margin-right animated fadeInUp delay-2
+componente-container">
+<div style="padding: 0 3vw;">
+  <div style="display: flex; flex-direction: row; justify-content: space-between; align-items: flex-end; flex-wrap: wrap;">
+      <h2 class="title">
+        <mat-icon>insert_chart</mat-icon>
+        Reportes
+      </h2>
+            
+  </div>
+  <mat-divider></mat-divider>
+  <div style="margin-top: 2em;">
+    <div class="container-date">
+        <mat-form-field class="w3-margin-top w3-margin-bottom w3-block" style="max-width: 350px;" appearance="outline">
+          <mat-label>FECHA/PERIODO</mat-label>
+          <mat-date-range-input [formGroup]="dateForm" [rangePicker]="picker">
+            <input readonly matStartDate formControlName="start" placeholder="Fecha Inicio">
+            <input readonly matEndDate formControlName="end" placeholder="Fecha Final">
+          </mat-date-range-input>
+          <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+          <mat-date-range-picker #picker></mat-date-range-picker>
+        </mat-form-field>    
+    </div>
+    
+    <div class="container-reports">
+
+      <div class="product-sales">
+        <div class="reports">
+          <div class="header-report">
+            <h3>Los mas Vendidos</h3>
+            <mat-divider></mat-divider>
+          </div>
+
+          <div class="body-report">
+            <div class="descriptions">
+
+              <table class="" *ngIf="bestSeller$ |async as bestSeller">
+                <thead>
+                  <tr>
+                    <th>Nro</th>
+                    <th>Descripcion</th>
+                    <th>Cantidad</th>
+                  </tr>
+                </thead>
+                <tbody *ngFor="let item of bestSeller ,let i=index">
+                  <tr>
+                    <td>{{i+1}}</td>
+                    <td>{{item.description}}</td>
+                    <td>{{item.quantity}}</td>
+                  </tr>                 
+                </tbody>                
+              </table>
+              
+            </div>
+
+            <div class="charts">
+              <canvas id="bestSeller" width="400" height="400"></canvas>
+            </div>
+
+          </div>
+        </div>
+
+
+        <div class="reports">
+          <div class="header-report">
+            <h3>Los menos Vendidos</h3>
+            <mat-divider></mat-divider>
+          </div>
+
+          <div class="body-report"> 
+            <div class="descriptions">
+              <table class="" *ngIf="lessSold$ |async as lessSold">
+                <thead>
+                  <tr>
+                    <th>Nro</th>
+                    <th>Descripcion</th>
+                    <th>Cantidad</th>
+                  </tr>
+                </thead>
+                <tbody *ngFor="let item of lessSold ,let i=index">
+                  <tr>
+                    <td>{{i+1}}</td>
+                    <td>{{item.description}}</td>
+                    <td>{{item.quantity}}</td>
+                  </tr>                 
+                </tbody>                
+              </table>
+            </div>
+
+            <div class="charts">
+              <canvas id="lessSold" width="400" height="400"></canvas>
+            </div>
+
+          </div>
+        </div>
+
+      </div>
+   
+      <div class="product-stock">
+        <div class="reports">
+          <div class="header-report">
+            <h3>Productos con stock minimos</h3>
+            <mat-divider></mat-divider>
+          </div>
+
+          <div class="body-report">
+            <div class="" *ngIf="minStock$ |async">
+             
+              <table mat-table [dataSource]="dataSourceProduct" matSort class="w3-table w3-bordered w3-border w3-center">
+               
+                  <ng-container  matColumnDef="index">
+                    <th *matHeaderCellDef class="w3-center" style="padding-top: 15px;">
+                        Nro
+                    </th>
+                    <td style="padding-top:15px" class="w3-center" mat-cell *matCellDef="let raw; let i = index">
+                      
+                      {{1 + i + paginatorProduct.pageIndex * paginatorProduct.pageSize}}
+
+                    </td>                
+                </ng-container>
+      
+                <ng-container  matColumnDef="description">
+                    <th *matHeaderCellDef   style="padding-top:15px;width: 220px;"  class="w3-border-left w3-center">Descripcion
+                    </th>
+                    <td mat-cell  style="padding-top:15px; width: 220px;"  *matCellDef="let raw" class="w3-border-left w3-center">
+                     {{raw.description}}
+                    </td>
+                </ng-container>
+                <ng-container matColumnDef="stock">
+                    <th *matHeaderCellDef  style="padding-top:15px" class="w3-border-left w3-center">Stock
+                    </th>
+                    <td mat-cell  style="padding-top:15px" *matCellDef="let raw" class="w3-border-left w3-center">
+                        {{raw.realStock}}
+                    </td>
+                </ng-container>   
+      
+              <tr mat-header-row *matHeaderRowDef="displayedColumnsProduct; sticky: true"></tr>
+              <tr mat-row *matRowDef="let row; columns: displayedColumnsProduct;"></tr>
+      
+              </table>    
+              <mat-paginator #paginatorProduct style="background: transparent;"
+                  [pageSizeOptions]="[20]" showFirstLastButtons>
+              </mat-paginator>
+          </div>
+
+          </div>
+        </div>
+          
+      </div>
+
+    </div>
+   
+  </div>
+
+</div>
+</div> 
+
+

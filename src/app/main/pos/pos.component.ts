@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, HostListener, OnInit } from '@angular/core';
 import { BehaviorSubject, combineLatest, Observable } from 'rxjs';
 import { AuthService } from 'src/app/core/services/auth.service';
 import { FormControl } from '@angular/forms';
@@ -24,6 +24,17 @@ import { PosTicketComponent } from './pos-ticket/pos-ticket.component';
   styleUrls: ['./pos.component.scss'],
 })
 export class PosComponent implements OnInit {
+
+    
+  @HostListener('window:keyup', ['$event'])
+  keyEvent(event: KeyboardEvent) {
+    //console.log(event);
+
+    if (event.keyCode === 113) {
+      this.finishTicket();
+    }
+
+  }
 
   displayedColumns: string[] = ['product', 'price', 'quantity', 'total', 'actions'];
   dataSource = new MatTableDataSource<{ product: Product, quantity: number }>();
@@ -108,6 +119,8 @@ export class PosComponent implements OnInit {
       })
 
   }
+  
+  
 
   print() {
     this.dialog.open(PosTicketComponent, {
@@ -122,14 +135,14 @@ export class PosComponent implements OnInit {
 
   playSuccessAudio() {
     let audio = new Audio();
-    audio.src = "../../../assets/audio/good.mp3";
+    //audio.src = "../../../assets/audio/good.mp3";
     audio.load();
     audio.play();
   }
 
   playErrorAudio() {
     let audio = new Audio();
-    audio.src = "../../../assets/audio/bad.mp3";
+    //audio.src = "../../../assets/audio/bad.mp3";
     audio.load();
     audio.play();
   }
@@ -379,7 +392,7 @@ export class PosComponent implements OnInit {
               } else {
                 let product = {
                   id: null,
-                  description: 'No Registrado',
+                  description: search,
                   price: res.price,
                   sku: search,
                   category: null,

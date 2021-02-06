@@ -1,0 +1,147 @@
+
+
+<div class="ms-font-montserrat mat-title ms-color-11">
+    <mat-icon class="ms-icons-color" style="vertical-align:middle">history</mat-icon> Historial de caja
+</div>
+<mat-divider></mat-divider>
+
+<mat-dialog-content style="min-width:300px; padding: 1em 1em">
+  
+    <div class="formFieldRounded"
+    style="display: flex; flex-direction: row; justify-content: space-between; align-items: end; flex-wrap: wrap;">
+        
+        <div class="container-date">
+          <mat-form-field class="w3-margin-top w3-margin-bottom w3-block" style="max-width: 350px;" appearance="outline">
+            <mat-label>FECHA/PERIODO</mat-label>
+            <mat-date-range-input [formGroup]="dateForm" [rangePicker]="picker">
+              <input readonly matStartDate formControlName="start" placeholder="Fecha Inicio">
+              <input readonly matEndDate formControlName="end" placeholder="Fecha Final">
+            </mat-date-range-input>
+            <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+            <mat-date-range-picker #picker></mat-date-range-picker>
+          </mat-form-field>    
+        </div>
+
+        <div style="display: flex; flex-direction: row; flex-wrap: nowrap; align-items: center;">
+
+          <button mat-raised-button class="btn-donwload" (click)="downloadXls()">
+            Descargar
+          </button>
+
+        </div>
+    </div>
+
+    <div *ngIf="history$ | async">
+      <!-- <mat-progress-bar *ngIf="loadingHistory$ | async" mode="indeterminate"></mat-progress-bar> -->
+      <div class="">
+          <table mat-table [dataSource]="dataSourceHistory" matSort class="w3-table w3-bordered w3-border w3-center">
+            
+            <ng-container  matColumnDef="index">
+                <th *matHeaderCellDef class="w3-center" style="padding-top: 15px;">
+                    N°
+                </th>
+                <td style="padding-top:15px" class="w3-center" mat-cell *matCellDef="let raw; let i = index">
+                  {{1 + i + paginatorHistory.pageIndex * paginatorHistory.pageSize}}
+
+                </td>                
+            </ng-container>          
+
+            <ng-container  matColumnDef="opening">
+                <th *matHeaderCellDef   style="padding-top:15px;width: 100px;"  class="w3-border-left w3-center">Apertura 
+                </th>
+                <td mat-cell  style="padding-top:15px; width: 100px;"  *matCellDef="let raw" class="w3-border-left w3-center">
+                  <span *ngIf="raw.openingDate">{{raw.openingDate["seconds"] * 1000 | date: "dd/MM/yyyy"}}</span><br>
+                  <span *ngIf="raw.openingDate" class="w3-small"><b> ({{raw.openingDate["seconds"] * 1000 | date : 'hh:mm a'}})</b> </span>
+                </td>
+            </ng-container>
+
+            <ng-container  matColumnDef="closing">
+              <th *matHeaderCellDef   style="padding-top:15px;width: 100px;"  class="w3-border-left w3-center">Cierre  
+              </th>
+              <td mat-cell  style="padding-top:15px; width: 100px;"  *matCellDef="let raw" class="w3-border-left w3-center">
+                <span *ngIf="raw.closureDate">{{raw.closureDate["seconds"] * 1000 | date: "dd/MM/yyyy"}}</span><br>
+                <span *ngIf="raw.closureDate" class="w3-small"><b> ({{raw.closureDate["seconds"] * 1000 | date : 'hh:mm a'}})</b> </span>
+              </td>
+          </ng-container>
+          
+            <ng-container matColumnDef="totalBalance">
+                <th *matHeaderCellDef  style="padding-top:15px" class="w3-border-left w3-center">saldo total
+                </th>
+                <td mat-cell  style="padding-top:15px" *matCellDef="let raw" class="w3-border-left w3-center">
+                    {{raw.totalBalance | currency:"S/. "}}
+                </td>
+            </ng-container>
+
+            <ng-container class=" w3-center" matColumnDef="openingAmount">
+                <th *matHeaderCellDef  style="padding-top:15px" class="w3-border-left w3-center">importe de apertura
+                </th>
+                <td mat-cell  style="padding-top:15px" *matCellDef="let raw" class="w3-border-left w3-center">
+                    {{raw.openingBalance | currency:"S/. "}}
+                </td>
+            </ng-container>  
+
+            <ng-container class=" w3-center" matColumnDef="totalIncome">
+                <th *matHeaderCellDef style="padding-top:15px" class="w3-border-left w3-center">total de ingresos
+                </th>
+                <td mat-cell style="padding-top:15px" *matCellDef="let raw" class="w3-border-left w3-center">
+                  {{raw.totalIncome | currency:"S/. "}}
+                </td>
+            </ng-container>
+
+            <ng-container class=" w3-center" matColumnDef="totalDeaperture">
+                <th *matHeaderCellDef style="padding-top:15px" class="w3-border-left w3-center">total de egresos
+                </th>
+                <td mat-cell style="padding-top:15px" *matCellDef="let raw" class="w3-border-left w3-center">
+                    {{raw.totalExpenses  | currency:"S/. "}}
+                </td>
+            </ng-container>
+
+            <ng-container class=" w3-center" matColumnDef="responsable">
+              <th *matHeaderCellDef style="padding-top:15px" class="w3-border-left w3-center">responsable
+              </th>
+              <td mat-cell style="padding-top:15px" *matCellDef="let raw" class="w3-border-left w3-center">
+                  {{raw.closedBy}}
+              </td>
+          </ng-container>
+
+          <ng-container matColumnDef="actions" stickyEnd>
+            <th  *matHeaderCellDef
+            style="padding-top:15px" class="w3-border-left w3-center">
+              Acciones
+            </th>
+            <td mat-cell *matCellDef="let raw" style="padding-top:15px" class="w3-border-left w3-center">
+              <ng-container>
+                <mat-menu #rawMenu="matMenu">
+                  <button class="w3-small" mat-menu-item (click)="showTransations(raw)">
+                    <mat-icon>folder</mat-icon> 
+                    Mostrar Transacciones
+                  </button>
+                </mat-menu>
+
+                <button mat-icon-button [matMenuTriggerFor]="rawMenu">
+                  <mat-icon>more_vert</mat-icon>
+                </button>
+              </ng-container>
+            </td>
+          </ng-container>
+
+          <tr mat-header-row *matHeaderRowDef="displayedColumnsHistory; sticky: true"></tr>
+          <tr mat-row *matRowDef="let row; columns: displayedColumnsHistory;"></tr>
+
+          </table>    
+          <mat-paginator #paginatorHistory style="background: transparent;"
+              [pageSizeOptions]="[5, 10, 20]" showFirstLastButtons>
+          </mat-paginator>
+      </div>        
+    </div>
+
+
+</mat-dialog-content>
+
+<mat-divider class="w3-margin-top"></mat-divider>
+<mat-dialog-actions align="end">
+  <button mat-stroked-button class="w3-margin-right color-exit" mat-dialog-close>Cerrar</button>
+</mat-dialog-actions>
+
+
+

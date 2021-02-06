@@ -14,6 +14,9 @@ import { MatTableDataSource } from '@angular/material/table';
 import { MatPaginator } from '@angular/material/paginator';
 import { AddUserComponent } from './add-user/add-user.component';
 import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
+import { AddCashBoxComponent } from './add-cash-box/add-cash-box.component';
+import { CashBox } from '../../core/models/cashBox.model';
+import { DeleteCashBoxComponent } from './delete-cash-box/delete-cash-box.component';
 
 @Component({
   selector: 'app-configuration',
@@ -106,6 +109,58 @@ export class ConfigurationComponent implements OnInit {
     'saturday',
     'sunday'
   ]
+  
+   /*CashBox*/
+   cashBox$: Observable<CashBox[]>;
+
+   loadingCashBox = new BehaviorSubject<boolean>(true);
+   loadingCashBox$ = this.loadingCashBox.asObservable();
+ 
+   dataSourceCashBox = new MatTableDataSource();
+   displayedColumnsCashBox: string[] = ['index', 'state', 'caja', 'user', 'password','lastOpening','lastClosing','actions'];
+ 
+   @ViewChild("paginatorCashBox", { static: false }) set content4(paginator: MatPaginator) {
+     this.dataSourceCashBox.paginator = paginator;
+   }
+
+   searchBoxForm: FormGroup;
+   counterBox:number=0;
+
+   /*Ingresos*/
+   income$: Observable<object[]>
+  repeats$: Observable<boolean>
+
+  loadingIncome = new BehaviorSubject<boolean>(true);
+  loadingIncome$ = this.loadingIncome.asObservable();
+
+  dataSourceIncome = new MatTableDataSource();
+  displayedColumnsIncome: string[] = ['income', 'actions'];
+
+  @ViewChild("paginatorIcome", { static: false }) set content5(paginator: MatPaginator) {
+    this.dataSourceIncome.paginator = paginator;
+  }
+
+  existIncome: Array<any> = []
+  incomeForm: FormGroup
+
+
+  /*Egresos*/
+  expenses$: Observable<object[]>
+  repeatss$: Observable<boolean>
+
+  loadingExpenses = new BehaviorSubject<boolean>(true);
+  loadingExpenses$ = this.loadingExpenses.asObservable();
+
+  dataSourceExpenses = new MatTableDataSource();
+  displayedColumnsExpenses: string[] = ['expenses', 'actions'];
+
+  @ViewChild("paginatorExpenses", { static: false }) set content6(paginator: MatPaginator) {
+    this.dataSourceExpenses.paginator = paginator;
+  }
+
+  existExpenses: Array<any> = []
+  expensesForm: FormGroup
+
 
   constructor(
     private fb: FormBuilder,
@@ -122,6 +177,11 @@ export class ConfigurationComponent implements OnInit {
     this.searchForm = this.fb.group({
       name: null,
       permits: null
+    })
+
+    //CashBox
+    this.searchBoxForm = this.fb.group({
+      box: null,
     })
 
     this.openingFormGroup = this.fb.group({
@@ -227,6 +287,63 @@ export class ConfigurationComponent implements OnInit {
           this.openingFormGroup.get(`${this.days[index]}_closing`).setValue(element['closing']);
         });
         this.loadingOpening.next(false)
+      })
+    )
+
+    //CashBox
+
+    this.cashBox$ = combineLatest(
+      this.dbs.getAllCashBox(),
+      this.searchBoxForm.get('box').valueChanges.pipe(
+        filter(input => input !== null),
+        startWith<any>(''),
+        map(value => typeof value === 'string' ? value.toLowerCase() : value.cashier.toLowerCase())),
+     
+    ).pipe(
+      map(([cashBox, name, ]) => {
+        return cashBox.sort((a, b) => a['cashier'].localeCompare(b['cashier']))
+          .filter(el => name ? el.cashier.toLowerCase().includes(name) : true)
+          .map((el, i) => {
+            return {
+              ...el,
+              index: i + 1
+            }
+          })
+      }),
+      tap(res => {
+        this.dataSourceCashBox.data = res
+          this.loadingCashBox.next(false)
+          this.counterBox = res.length;
+      })
+    )
+
+    // Ingresos
+    this.incomeForm = this.fb.group({
+      income: ['', [Validators.required], [this.repeatedValidatorIncome()]],
+    })
+
+    this.income$ = this.dbs.getIncomes().pipe(
+      tap(res => {
+        if (res) {
+          this.dataSourceIncome.data = res
+          this.existIncome = res
+          this.loadingIncome.next(false)
+        }
+      })
+    )
+    
+    // Egresos
+    this.expensesForm = this.fb.group({
+      expenses: ['', [Validators.required], [this.repeatedValidatorExpenses()]],
+    })
+
+    this.expenses$ = this.dbs.getExpenses().pipe(
+      tap(res => {
+        if (res) {
+          this.dataSourceExpenses.data = res
+          this.existExpenses = res
+          this.loadingExpenses.next(false)
+        }
       })
     )
   }
@@ -494,4 +611,130 @@ export class ConfigurationComponent implements OnInit {
 
   }
 
+  // CashBox
+  createCashBox(data, isedit) {
+    this.dialog.open(AddCashBoxComponent, {
+      data: {
+        item: data,
+        edit: isedit
+      }
+    })
+  }
+
+  editCashBox(data,isedit){
+    this.dialog.open(AddCashBoxComponent, {
+      data: {
+        item: data,
+        edit: isedit
+      }
+    })
+  }
+
+  deleteCashBox(data){
+     
+    this.dialog.open(DeleteCashBoxComponent, {
+      data: {
+        item: data,
+      }
+    })
+  }
+ 
+  // Incomes
+
+  repeatedValidatorIncome() {
+    return (control: AbstractControl) => {
+      const value = control.value.toLowerCase();
+      return of(this.existIncome).pipe(
+        map(res => {
+          return res.findIndex(el => el['income'].toLowerCase() == value) >= 0 ? { repeatedValidatorIncome: true } : null
+        }))
+    }
+  }
+
+  addIncomes() {
+    let income = this.incomeForm.value
+    let min = [income]
+    let before = [...this.existIncome]
+    this.existIncome = min.concat(before)
+    this.loadingIncome.next(true)
+    this.updateIncomes()
+
+    this.incomeForm = this.fb.group({
+      income: ['', [Validators.required],  [this.repeatedValidatorIncome()] ],
+    })
+  }
+
+  updateIncomes() {
+    this.incomeForm.disable()
+    const batch = this.af.firestore.batch()
+    const ref = this.af.firestore.collection(`/db/minimarketBoom/config`).doc('generalConfig')
+    batch.update(ref, {
+      incomes: this.existIncome
+    })
+    batch.commit().then(() => {
+      this.loadingIncome.next(false)
+      this.incomeForm.enable()
+    })
+  }
+
+  deleteIncome(income) {
+    let index = this.existIncome.findIndex(el => el['name'] == income['name'])
+    this.existIncome.splice(index, 1)
+    this.loadingIncome.next(true)
+    this.updateIncomes()
+  }
+
+  editIncome(inome) {
+    this.incomeForm.setValue(inome)
+    this.deleteIncome(inome)
+  }
+
+    // Expenses
+    repeatedValidatorExpenses() {
+      return (control: AbstractControl) => {
+        const value = control.value.toLowerCase();
+        return of(this.existExpenses).pipe(
+          map(res => {
+            return res.findIndex(el => el['expenses'].toLowerCase() == value) >= 0 ? { repeatedValidatorExpenses: true } : null
+          }))
+      }
+    }
+
+    addExpenses() {
+      let expense = this.expensesForm.value
+      let min = [expense]
+      let before = [...this.existExpenses]
+      this.existExpenses = min.concat(before)
+      this.loadingExpenses.next(true)
+      this.updateExpenses()
+  
+      this.expensesForm = this.fb.group({
+        expenses: ['', [Validators.required], [this.repeatedValidatorExpenses()]],
+      })
+    }
+  
+    updateExpenses() {
+      this.expensesForm.disable()
+      const batch = this.af.firestore.batch()
+      const ref = this.af.firestore.collection(`/db/minimarketBoom/config`).doc('generalConfig')
+      batch.update(ref, {
+        expenses: this.existExpenses
+      })
+      batch.commit().then(() => {
+        this.loadingExpenses.next(false)
+        this.expensesForm.enable()
+      })
+    }
+  
+    deleteExpenses(expense) {
+      let index = this.existExpenses.findIndex(el => el['name'] == expense['name'])
+      this.existExpenses.splice(index, 1)
+      this.loadingExpenses.next(true)
+      this.updateExpenses()
+    }
+  
+    editExpenses(expense) {
+      this.expensesForm.setValue(expense)
+      this.deleteExpenses(expense)
+    }
 }

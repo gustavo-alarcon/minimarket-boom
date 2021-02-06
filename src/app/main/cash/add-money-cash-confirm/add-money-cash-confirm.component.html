@@ -1,0 +1,27 @@
+<div class="ms-font-montserrat mat-title">
+    <mat-icon class="ms-icons-color" style="vertical-align:middle">add_circle</mat-icon> Agregar dinero
+</div>
+<mat-divider class="w3-margin-top"></mat-divider>
+
+<!-- <mat-progress-bar mode="indeterminate" *ngIf="loading"></mat-progress-bar>
+ -->
+ 
+<mat-dialog-content class="w3-margin-top" style="min-width:300px">
+    <h4>¿ Esta seguro de agregar el importe: S/.  {{data.form.import}}?    </h4>
+    <h5>Descripción : {{data.form.description}}</h5>
+
+    <mat-progress-bar mode="indeterminate" style="margin-bottom:0.5em" *ngIf="uploading"></mat-progress-bar>
+
+    <div style="display:flex; align-items:center" *ngIf="uploading">
+        <mat-icon class="w3-margin-right" [ngStyle]="{'color': flags.added ? 'forestgreen' : 'gray'}">check_circle
+        </mat-icon>
+        <span class="w3-margin-right ms-font-montserrat w3-small">Agregando dinero</span>
+    </div>
+   
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+    <button mat-stroked-button class="btn-exit"  mat-dialog-close>Cancelar</button>
+    <button mat-raised-button class="btn-save" (click)="add()" [disabled]="uploading" >Si agregar</button>
+</mat-dialog-actions>
+
