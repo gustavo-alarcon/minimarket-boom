@@ -52,7 +52,7 @@ export class ConfirmationComponent implements OnInit {
       batch.commit()
         .then(() => {
           this.dialogRef.close(true);
-          this.snackBar.open("Caja fue editado!", "Cerrar");
+         // this.snackBar.open("Caja fue editado!", "Cerrar");
           this.createOpening(updateCashBox.lastOpening, user);
         })
         .catch(err => {
@@ -89,7 +89,7 @@ export class ConfirmationComponent implements OnInit {
     batch.commit().then(() => {
       //this.loading.next(false)
       this.dialogRef.close();
-      this.snackBar.open('se creo opening', 'Cerrar', { duration: 5000 });
+      //this.snackBar.open('se creo opening', 'Cerrar', { duration: 5000 });
       this.updateUserCashBox(openingRef.id, user);
     })
       .catch(err => {

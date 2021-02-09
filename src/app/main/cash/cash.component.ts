@@ -57,6 +57,7 @@ export class CashComponent implements OnInit {
 
   counter:number=0;
 
+  title:string;
 
   constructor(   
              private fb: FormBuilder,
@@ -69,6 +70,10 @@ export class CashComponent implements OnInit {
 
   ngOnInit(): void {
     this.dbs.changeTitle('Caja')
+    /* this.dbs.currentTitle$.subscribe(res => {
+      console.log(res);
+      this.title = res
+    }); */
 
     this.searchBoxForm = this.fb.group({
           search: ['', Validators.required]

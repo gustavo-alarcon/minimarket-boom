@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, SimpleChanges } from '@angular/core';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
 import { ConfirmationComponent } from './confirmation/confirmation.component';
@@ -35,11 +35,16 @@ export class LoginCashComponent implements OnInit {
   ) {
 
   }
+  ngOnChanges(changes: SimpleChanges) {     
+    this.ngOnInit();
+  }
 
   ngOnInit(): void {
     this.dbs.changeTitle('Login')
 
     this.navigate = this.route.snapshot.paramMap.get("login");
+
+    console.log('this.navigate : ',this.navigate)
 
     this.loginForm = this.fb.group({
       caja: ['', Validators.required],

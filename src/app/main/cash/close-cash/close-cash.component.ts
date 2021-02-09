@@ -71,17 +71,12 @@ export class CloseCashComponent implements OnInit {
   }
   
   closeCash(){
-    console.log('close Data : ' , this.data.user)
-    console.log(this.dataFormGroup.invalid)
-        
-      console.log('this.dataFormGroup.invalid')
        let closureBalance = this.dataFormGroup.value['closureBalance'];
        let password = this.dataFormGroup.value['pass'];
        let passwordCurrentUser=this.data.user.currentCash.password;
 
        if (password == passwordCurrentUser) {
         
-        console.log('close cash box')
          
         this.updateUserCashBox();
         this.updateOpening();
