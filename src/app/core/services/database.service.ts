@@ -158,7 +158,7 @@ export class DatabaseService {
   }
 
   getProductsListValueChanges() {
-    return this.afs.collection<Product>(this.productsListRef, ref => ref.orderBy("priority", "desc"))
+    return this.afs.collection<Product>(this.productsListRef)
       .valueChanges().pipe(
         shareReplay(1)
       );

@@ -8,7 +8,7 @@ import { Product } from 'src/app/core/models/product.model';
 import { tap } from 'rxjs/internal/operators/tap';
 import { MatDialog } from '@angular/material/dialog';
 import { PosQuantityComponent } from './pos-quantity/pos-quantity.component';
-import { take, startWith, map } from 'rxjs/operators';
+import { take, startWith, map, debounceTime } from 'rxjs/operators';
 import { MatTableDataSource } from '@angular/material/table';
 import { PosFinishComponent } from './pos-finish/pos-finish.component';
 import { MatSnackBar } from '@angular/material/snack-bar';
@@ -17,6 +17,8 @@ import { AngularFirestore } from '@angular/fire/firestore';
 import { PosUnknownProductComponent } from './pos-unknown-product/pos-unknown-product.component';
 import { LocalStorageService } from 'angular-2-local-storage';
 import { PosTicketComponent } from './pos-ticket/pos-ticket.component';
+import { timeEnd } from 'console';
+import { start } from 'repl';
 
 @Component({
   selector: 'app-pos',
@@ -25,7 +27,7 @@ import { PosTicketComponent } from './pos-ticket/pos-ticket.component';
 })
 export class PosComponent implements OnInit {
 
-    
+
   @HostListener('window:keyup', ['$event'])
   keyEvent(event: KeyboardEvent) {
     //console.log(event);
@@ -44,6 +46,7 @@ export class PosComponent implements OnInit {
 
   productList$: Observable<Array<Product>>;
   productList: Array<Product> = [];
+  resultList: Array<Product> = [];
 
   options$: Observable<Array<Product>>;
 
@@ -54,7 +57,7 @@ export class PosComponent implements OnInit {
   loading = new BehaviorSubject<boolean>(false);
   loading$ = this.loading.asObservable();
 
-  @ViewChild('search') searchElement: ElementRef;
+  @ViewChild('searchInput') searchElement: ElementRef;
 
   constructor(
     public auth: AuthService,
@@ -79,20 +82,35 @@ export class PosComponent implements OnInit {
           })
         )
 
-    this.options$ = combineLatest(
-      this.search.valueChanges.pipe(startWith('')),
-      this.productList$
-    ).pipe(
-      map(([search, productList]) => {
-        let term: string = search.toString().toLowerCase().trim();
-        if (term === '') {
-          return []
-        } else {
-          let options = productList.filter(el => el.description.toLowerCase().includes(term) || el.sku.toLowerCase().includes(term));
-          return options
-        }
-      })
-    )
+    this.options$ =
+      this.search.valueChanges
+        .pipe(
+          startWith(''),
+          map(search => {
+            let term = search.sku ? search.sku : search;
+            
+            term = term.toLowerCase().trim();
+
+            this.resultList = this.productList.filter(el => el.description.toLowerCase().includes(term) || el.sku.toLowerCase().includes(term));
+            return this.resultList
+
+          })
+        )
+    // this.options$ = combineLatest(
+    //   this.search.valueChanges.pipe(startWith('')),
+    //   this.dbs.getProductsListValueChanges()
+    // ).pipe(
+    //   map(([search, productList]) => {
+
+    //     let term: string = search.toString().toLowerCase().trim();
+    //     if (term === '') {
+    //       return []
+    //     } else {
+    //       let options = productList.filter(el => el.description.toLowerCase().includes(term) || el.sku.toLowerCase().includes(term));
+    //       return options
+    //     }
+    //   })
+    // )
 
     // Getting tickets from local storage based in user uid
     this.auth.user$
@@ -121,8 +139,8 @@ export class PosComponent implements OnInit {
       })
 
   }
-  
-  
+
+
 
   print() {
     this.dialog.open(PosTicketComponent, {
@@ -218,7 +236,7 @@ export class PosComponent implements OnInit {
       .pipe(
         take(1),
         tap(res => {
-          
+
           if (res) {
             this.snackbar.open("Ticket finalizado exitosamente!", "Aceptar", {
               duration: 6000
@@ -235,13 +253,15 @@ export class PosComponent implements OnInit {
             // this.removeTicket(this.selected.value);
             // this.addTicket();
           }
-          
+
           this.searchElement.nativeElement.focus();
         })
       ).subscribe()
   }
 
   addProduct(): void {
+    this.loading.next(true);
+
     if (!this.ticketsKey) return;
 
     // Adding new ticket if there is no one
@@ -327,8 +347,8 @@ export class PosComponent implements OnInit {
     } else {
       // Let's put one in the basket
       // search for sku in product list
-      let productResult = this.productList.filter(el => el.sku === search);
-
+      let productResult = this.resultList.filter(el => el.sku === search);
+      
       if (productResult.length > 0) {
 
         if (productResult[0].saleType !== '2') {
@@ -434,7 +454,6 @@ export class PosComponent implements OnInit {
                 this.playSuccessAudio();
                 this.loading.next(false);
               }
-
             }
             // clean input
             this.search.setValue('');
@@ -443,6 +462,7 @@ export class PosComponent implements OnInit {
         return;
       }
     }
+    this.loading.next(false);
   }
 
   editItem(index: number): void {

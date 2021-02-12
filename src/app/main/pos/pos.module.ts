@@ -24,6 +24,7 @@ import { ProductCreateEditComponent } from '../products-list/product-create-edit
 import { PosUnknownProductComponent } from './pos-unknown-product/pos-unknown-product.component';
 import { PosTicketComponent } from './pos-ticket/pos-ticket.component';
 import { NgxPrintModule } from 'ngx-print';
+import { MatProgressBarModule } from '@angular/material/progress-bar';
 
 
 @NgModule({
@@ -40,6 +41,7 @@ import { NgxPrintModule } from 'ngx-print';
     MatDividerModule,
     MatTabsModule,
     MatProgressSpinnerModule,
+    MatProgressBarModule,
     MatMenuModule,
     MatTableModule,
     MatSelectModule,

@@ -24,13 +24,15 @@
                         hintLabel="Al presionar ENTER agregará el primer item de la lista">
                         <mat-label>Buscar/Escanear</mat-label>
                         <mat-icon matPrefix>search</mat-icon>
-                        <input #search matInput type="text" [formControl]="search"
+                        <input #searchInput matInput type="text" [formControl]="search"
                             placeholder="Escanear código o escribir nombre" autocomplete="off"
                             (keyup.enter)="addProduct()" [matAutocomplete]="matCode" autofocus>
+                            <mat-progress-bar mode="indeterminate" *ngIf="loading$ | async"></mat-progress-bar>
                         <mat-autocomplete #matCode="matAutocomplete" [displayWith]="showOption"
                             optionSelected="addProduct()">
-                            <mat-option *ngFor="let option of options$ | async" [value]="option" (click)="addProduct()">
-                                {{option.description}} | {{option.sku}}
+                            <mat-option *ngFor="let option of options$ | async | slice: 0:10" [value]="option"
+                                (click)="addProduct()">
+                                <span class="w3-medium">{{option.description}} (<strong>{{option.sku}}</strong>)</span>
                             </mat-option>
                         </mat-autocomplete>
                     </mat-form-field>
@@ -81,7 +83,8 @@
                                         <div color="primary" class="totalPrice">
                                             <span>{{tickets[selected.value].total | currency:"S/."}}</span><br>
                                             <span *ngIf="tickets[selected.value].status === 'Pagado'"
-                                                style="font-size: 14px; font-weight: 600">{{tickets[selected.value].status | uppercase}}</span>
+                                                style="font-size: 14px; font-weight: 600">{{tickets[selected.value].status
+                                                | uppercase}}</span>
                                         </div>
                                     </ng-container>
                                 </div>
@@ -124,7 +127,8 @@
                                             <th mat-header-cell *matHeaderCellDef style="padding: 0em 0.7em"> Importe
                                             </th>
                                             <td mat-cell *matCellDef="let element; let i = index">
-                                                <span>{{element.quantity * element.product.price | currency: 'S/.'}}</span>
+                                                <span>{{element.quantity * element.product.price | currency:
+                                                    'S/.'}}</span>
                                             </td>
                                         </ng-container>
 
@@ -139,7 +143,7 @@
                                                         <mat-icon>add_circle</mat-icon>
                                                     </button>
                                                     <button mat-icon-button (click)="removeQuantity(i)"
-                                                        [disabled]="(element.quantity === 1 && element.product.saleType === '1') || tickets[selected.value].status === 'Pagado' || (loading$ | async)">
+                                                        [disabled]="(element.quantity === 1 && (element.product.saleType === '1' || !element.product.saleType)) || tickets[selected.value].status === 'Pagado' || (loading$ | async)">
                                                         <mat-icon>remove_circle</mat-icon>
                                                     </button>
                                                     <button mat-icon-button color="warn" (click)="removeItem(i)"
