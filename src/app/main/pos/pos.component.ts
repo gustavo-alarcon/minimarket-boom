@@ -1,4 +1,4 @@
-import { Component, HostListener, OnInit } from '@angular/core';
+import { Component, ElementRef, HostListener, OnInit, ViewChild } from '@angular/core';
 import { BehaviorSubject, combineLatest, Observable } from 'rxjs';
 import { AuthService } from 'src/app/core/services/auth.service';
 import { FormControl } from '@angular/forms';
@@ -53,6 +53,8 @@ export class PosComponent implements OnInit {
 
   loading = new BehaviorSubject<boolean>(false);
   loading$ = this.loading.asObservable();
+
+  @ViewChild('search') searchElement: ElementRef;
 
   constructor(
     public auth: AuthService,
@@ -152,6 +154,7 @@ export class PosComponent implements OnInit {
     if (this.tickets.length > 0) {
       this.dataSource.data = this.tickets[this.selected.value].productList;
     }
+    this.searchElement.nativeElement.focus();
   }
 
   addTicket() {
@@ -180,6 +183,7 @@ export class PosComponent implements OnInit {
     });
 
     this.loading.next(false);
+    this.searchElement.nativeElement.focus();
   }
 
   removeTicket(index: number) {
@@ -198,6 +202,7 @@ export class PosComponent implements OnInit {
 
     this.lss.set(this.ticketsKey, this.tickets);
     this.loading.next(false);
+    this.searchElement.nativeElement.focus();
   }
 
   finishTicket(): void {
@@ -213,6 +218,7 @@ export class PosComponent implements OnInit {
       .pipe(
         take(1),
         tap(res => {
+          
           if (res) {
             this.snackbar.open("Ticket finalizado exitosamente!", "Aceptar", {
               duration: 6000
@@ -223,12 +229,14 @@ export class PosComponent implements OnInit {
             this.removeTicket(this.selected.value);
             this.addTicket();
           } else {
-            this.snackbar.open('Reintentar ticket en VENTAS TIENDA!', 'Aceptar', {
-              duration: 4000
-            });
-            this.removeTicket(this.selected.value);
-            this.addTicket();
+            // this.snackbar.open('Reintentar ticket en VENTAS TIENDA!', 'Aceptar', {
+            //   duration: 4000
+            // });
+            // this.removeTicket(this.selected.value);
+            // this.addTicket();
           }
+          
+          this.searchElement.nativeElement.focus();
         })
       ).subscribe()
   }
@@ -515,6 +523,8 @@ export class PosComponent implements OnInit {
 
         })
     }
+
+    this.searchElement.nativeElement.focus();
   }
 
   removeQuantity(index: number): void {
@@ -556,6 +566,8 @@ export class PosComponent implements OnInit {
 
         })
     }
+
+    this.searchElement.nativeElement.focus();
   }
 
   removeItem(index: number): void {
@@ -575,6 +587,7 @@ export class PosComponent implements OnInit {
     });
     this.lss.set(this.ticketsKey, this.tickets)
     this.loading.next(false);
+    this.searchElement.nativeElement.focus();
   }
 
 }
