@@ -124,13 +124,7 @@
                         </button>
                         <p class="w3-margin-bottom"></p>
 
-                        <div class="w3-center">
-                            <button *ngIf="auth.user$ | async" class="w3-margin-top" mat-raised-button color="accent"
-                                (click)="auth.logout()">
-                                <mat-icon style="margin-right: 5px;">account_circle</mat-icon>
-                                Cerrar Sesión
-                            </button>
-                        </div>
+                        
                     </div>
                 </div>
 
@@ -171,6 +165,15 @@
                 </div>
                 <span class="toolbar_title">| <strong> {{title}}</strong></span>
                 <span style="flex: 1 1 auto;"></span>
+
+                <div class="w3-center">
+                    <button *ngIf="auth.user$ | async" class="w3-margin-top" mat-raised-button color="white"
+                        (click)="auth.logout()">
+                        <mat-icon style="margin-right: 5px;">account_circle</mat-icon>
+                        Cerrar Sesión
+                    </button>
+                </div>
+
             </mat-toolbar>
             <div class="main__space">
                 <router-outlet></router-outlet>
